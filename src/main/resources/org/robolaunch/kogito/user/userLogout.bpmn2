@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_9vJHgCOzEDuLzOA-hrIPeQ" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+  <bpmn2:interface id="_95E83D0A-32E2-4D4A-A477-25680158C471_ServiceInterface" name="org.robolaunch.service.AccountService" implementationRef="org.robolaunch.service.AccountService">
+    <bpmn2:operation id="_95E83D0A-32E2-4D4A-A477-25680158C471_ServiceOperation" name="logout" implementationRef="logout"/>
+  </bpmn2:interface>
+  <bpmn2:collaboration id="_3E22C5D0-DD85-48D8-86F0-A57D89EE0FA2" name="Default Collaboration">
+    <bpmn2:participant id="_843DFEC6-2513-4F8F-BCE9-3A8AA0FBEA2D" name="Pool Participant" processRef="userLogout"/>
+  </bpmn2:collaboration>
+  <bpmn2:process id="userLogout" drools:packageName="org.robolaunch.kogito.user" drools:version="1.0" drools:adHoc="false" name="userLogout" isExecutable="true" processType="Public">
+    <bpmn2:sequenceFlow id="_4DDADC9D-8CC2-4EF3-A533-211AC999677C" sourceRef="_95E83D0A-32E2-4D4A-A477-25680158C471" targetRef="_9B32B17A-EB53-4C01-B69F-ACF2E8159576">
+      <bpmn2:extensionElements>
+        <drools:metaData name="isAutoConnection.target">
+          <drools:metaValue><![CDATA[true]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="_1B2EFC1B-2A52-4FDA-85F5-3C89D9172E70" sourceRef="_EB42225B-F3C0-4A74-8414-3E7617AA0F35" targetRef="_95E83D0A-32E2-4D4A-A477-25680158C471">
+      <bpmn2:extensionElements>
+        <drools:metaData name="isAutoConnection.target">
+          <drools:metaValue><![CDATA[true]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+    </bpmn2:sequenceFlow>
+    <bpmn2:serviceTask id="_95E83D0A-32E2-4D4A-A477-25680158C471" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.AccountService" drools:serviceoperation="logout" name="User Logout" implementation="Java" operationRef="_95E83D0A-32E2-4D4A-A477-25680158C471_ServiceOperation">
+      <bpmn2:extensionElements>
+        <drools:metaData name="elementname">
+          <drools:metaValue><![CDATA[User Logout]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>_1B2EFC1B-2A52-4FDA-85F5-3C89D9172E70</bpmn2:incoming>
+      <bpmn2:outgoing>_4DDADC9D-8CC2-4EF3-A533-211AC999677C</bpmn2:outgoing>
+    </bpmn2:serviceTask>
+    <bpmn2:endEvent id="_9B32B17A-EB53-4C01-B69F-ACF2E8159576">
+      <bpmn2:incoming>_4DDADC9D-8CC2-4EF3-A533-211AC999677C</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:startEvent id="_EB42225B-F3C0-4A74-8414-3E7617AA0F35">
+      <bpmn2:outgoing>_1B2EFC1B-2A52-4FDA-85F5-3C89D9172E70</bpmn2:outgoing>
+    </bpmn2:startEvent>
+  </bpmn2:process>
+  <bpmndi:BPMNDiagram>
+    <bpmndi:BPMNPlane bpmnElement="userLogout">
+      <bpmndi:BPMNShape id="shape__EB42225B-F3C0-4A74-8414-3E7617AA0F35" bpmnElement="_EB42225B-F3C0-4A74-8414-3E7617AA0F35">
+        <dc:Bounds height="56" width="56" x="639" y="426"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape__9B32B17A-EB53-4C01-B69F-ACF2E8159576" bpmnElement="_9B32B17A-EB53-4C01-B69F-ACF2E8159576">
+        <dc:Bounds height="56" width="56" x="927" y="426"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape__95E83D0A-32E2-4D4A-A477-25680158C471" bpmnElement="_95E83D0A-32E2-4D4A-A477-25680158C471">
+        <dc:Bounds height="102" width="154" x="734" y="403"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_shape__EB42225B-F3C0-4A74-8414-3E7617AA0F35_to_shape__95E83D0A-32E2-4D4A-A477-25680158C471" bpmnElement="_1B2EFC1B-2A52-4FDA-85F5-3C89D9172E70">
+        <di:waypoint x="667" y="454"/>
+        <di:waypoint x="811" y="403"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_shape__95E83D0A-32E2-4D4A-A477-25680158C471_to_shape__9B32B17A-EB53-4C01-B69F-ACF2E8159576" bpmnElement="_4DDADC9D-8CC2-4EF3-A533-211AC999677C">
+        <di:waypoint x="811" y="454"/>
+        <di:waypoint x="955" y="426"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmn2:relationship type="BPSimData">
+    <bpmn2:extensionElements>
+      <bpsim:BPSimData>
+        <bpsim:Scenario id="default" name="Simulationscenario">
+          <bpsim:ScenarioParameters/>
+          <bpsim:ElementParameters elementRef="_EB42225B-F3C0-4A74-8414-3E7617AA0F35">
+            <bpsim:TimeParameters>
+              <bpsim:ProcessingTime>
+                <bpsim:NormalDistribution mean="0" standardDeviation="0"/>
+              </bpsim:ProcessingTime>
+            </bpsim:TimeParameters>
+          </bpsim:ElementParameters>
+          <bpsim:ElementParameters elementRef="_95E83D0A-32E2-4D4A-A477-25680158C471">
+            <bpsim:TimeParameters>
+              <bpsim:ProcessingTime>
+                <bpsim:NormalDistribution mean="0" standardDeviation="0"/>
+              </bpsim:ProcessingTime>
+            </bpsim:TimeParameters>
+            <bpsim:ResourceParameters>
+              <bpsim:Availability>
+                <bpsim:FloatingParameter value="0"/>
+              </bpsim:Availability>
+              <bpsim:Quantity>
+                <bpsim:FloatingParameter value="0"/>
+              </bpsim:Quantity>
+            </bpsim:ResourceParameters>
+            <bpsim:CostParameters>
+              <bpsim:UnitCost>
+                <bpsim:FloatingParameter value="0"/>
+              </bpsim:UnitCost>
+            </bpsim:CostParameters>
+          </bpsim:ElementParameters>
+        </bpsim:Scenario>
+      </bpsim:BPSimData>
+    </bpmn2:extensionElements>
+    <bpmn2:source>_9vJHgCOzEDuLzOA-hrIPeQ</bpmn2:source>
+    <bpmn2:target>_9vJHgCOzEDuLzOA-hrIPeQ</bpmn2:target>
+  </bpmn2:relationship>
+</bpmn2:definitions>

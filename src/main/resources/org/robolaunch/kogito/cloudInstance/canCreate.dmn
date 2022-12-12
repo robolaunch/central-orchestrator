@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dmn:definitions xmlns:dmn="http://www.omg.org/spec/DMN/20180521/MODEL/" xmlns="https://kiegroup.org/dmn/_8F76F595-8EC5-4F0F-A5A1-0888552C6180" xmlns:feel="http://www.omg.org/spec/DMN/20180521/FEEL/" xmlns:kie="http://www.drools.org/kie/dmn/1.2" xmlns:dmndi="http://www.omg.org/spec/DMN/20180521/DMNDI/" xmlns:di="http://www.omg.org/spec/DMN/20180521/DI/" xmlns:dc="http://www.omg.org/spec/DMN/20180521/DC/" id="_4EB95F79-2206-4E4D-8008-00651170C0B6" name="RCResult" typeLanguage="http://www.omg.org/spec/DMN/20180521/FEEL/" namespace="https://kiegroup.org/dmn/_8F76F595-8EC5-4F0F-A5A1-0888552C6180">
+  <dmn:extensionElements/>
+  <dmn:itemDefinition id="_B11C69D8-8DBA-484E-A2A6-C5B71792BFED" name="tCreateRCResult" isCollection="false">
+    <dmn:itemComponent id="_208C6541-8944-4A2F-92C3-4E2DF95673F6" name="reason" isCollection="false">
+      <dmn:typeRef>string</dmn:typeRef>
+    </dmn:itemComponent>
+    <dmn:itemComponent id="_ACD13370-DF61-42D4-B7FE-68D146B93763" name="canCreate" isCollection="false">
+      <dmn:typeRef>boolean</dmn:typeRef>
+    </dmn:itemComponent>
+  </dmn:itemDefinition>
+  <dmn:inputData id="_719ECDBC-0C1D-4784-B5B2-2D0C8CD25CD8" name="roboticsCloudCount">
+    <dmn:extensionElements/>
+    <dmn:variable id="_F57695A8-8085-44E6-9B19-F570A9144FB6" name="roboticsCloudCount" typeRef="number"/>
+  </dmn:inputData>
+  <dmn:decision id="_B451C810-D138-4EC0-8874-1419C9FD8256" name="tCreateRCResult">
+    <dmn:extensionElements/>
+    <dmn:variable id="_34485FA9-C8D4-4534-BB30-3B43779E9383" name="tCreateRCResult" typeRef="tCreateRCResult"/>
+    <dmn:informationRequirement id="_CAC07420-A468-4772-8FB8-96EDCD754DB0">
+      <dmn:requiredInput href="#_719ECDBC-0C1D-4784-B5B2-2D0C8CD25CD8"/>
+    </dmn:informationRequirement>
+    <dmn:informationRequirement id="_1316F6DB-3DB3-4F08-A076-E790AB93E5FD">
+      <dmn:requiredInput href="#_AEA5DF92-46FC-4C12-8803-8670AAB60D92"/>
+    </dmn:informationRequirement>
+    <dmn:decisionTable id="_F4681E48-1FB0-4B8C-8D20-4D9586146543" hitPolicy="UNIQUE" preferredOrientation="Rule-as-Row">
+      <dmn:input id="_AC743786-7114-4D63-A312-628F4B3C2EF8">
+        <dmn:inputExpression id="_249ADF2F-8784-46F7-96ED-DEF0D1BE71EF" typeRef="boolean">
+          <dmn:text>isOrganizationEnterprise</dmn:text>
+        </dmn:inputExpression>
+      </dmn:input>
+      <dmn:input id="_46BB187E-472F-45BD-9B42-2B237157F42B">
+        <dmn:inputExpression id="_127BAE23-666B-4EB9-986F-0AD67E82465B" typeRef="number">
+          <dmn:text>roboticsCloudCount</dmn:text>
+        </dmn:inputExpression>
+      </dmn:input>
+      <dmn:output id="_89A57F03-81B7-48AA-970E-02ACE4AAD95E" name="canCreate" typeRef="boolean"/>
+      <dmn:output id="_2F79A640-4E36-4AD0-A8A7-C2AA050F5D60" name="reason" typeRef="string"/>
+      <dmn:annotation name="annotation-1"/>
+      <dmn:rule id="_8855DBCC-E088-4681-A4BE-5DCDB03123F4">
+        <dmn:inputEntry id="_D18A8436-E272-435E-8BE6-497BC13F4ED1">
+          <dmn:text>true</dmn:text>
+        </dmn:inputEntry>
+        <dmn:inputEntry id="_FA7D680A-224C-4E9F-B2B9-2A9B44E48D9C">
+          <dmn:text>&lt; 10</dmn:text>
+        </dmn:inputEntry>
+        <dmn:outputEntry id="_63FD0AEB-4043-4D49-9E89-82FE55503F78">
+          <dmn:text>true</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_D58C94BD-C547-493B-B633-0F99AE99EA11">
+          <dmn:text>""</dmn:text>
+        </dmn:outputEntry>
+        <dmn:annotationEntry>
+          <dmn:text/>
+        </dmn:annotationEntry>
+      </dmn:rule>
+      <dmn:rule id="_C10854AD-1B6E-4DB2-9F4F-0D24D19A003E">
+        <dmn:inputEntry id="_E93542AD-B93D-4EC7-BC19-FF3707920D66">
+          <dmn:text>true</dmn:text>
+        </dmn:inputEntry>
+        <dmn:inputEntry id="_EF760E60-8B68-4E44-A7EC-8FEEEF904199">
+          <dmn:text>&gt;= 10</dmn:text>
+        </dmn:inputEntry>
+        <dmn:outputEntry id="_48CCC1AB-4D47-46AB-8DBD-9DAB8B29C9A2">
+          <dmn:text>false</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_7443A6FA-99AA-48B9-81E6-DA65327011E5">
+          <dmn:text>"Organization cannot have more than 10 robotics cloud."</dmn:text>
+        </dmn:outputEntry>
+        <dmn:annotationEntry>
+          <dmn:text/>
+        </dmn:annotationEntry>
+      </dmn:rule>
+      <dmn:rule id="_88ECD30B-B8CD-4858-B784-92C84CF3967A">
+        <dmn:inputEntry id="_213716DE-7C3E-434B-B7C0-EF75F74C0CE6">
+          <dmn:text>false</dmn:text>
+        </dmn:inputEntry>
+        <dmn:inputEntry id="_AAA2E609-7EA6-41D8-9322-CE8C2B900F35">
+          <dmn:text>&lt; 5</dmn:text>
+        </dmn:inputEntry>
+        <dmn:outputEntry id="_63588F2A-FBF3-4D11-914E-BE44EA1EBC76">
+          <dmn:text>true</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_915692A2-D82E-4795-8379-E509A72BB8C4">
+          <dmn:text>""</dmn:text>
+        </dmn:outputEntry>
+        <dmn:annotationEntry>
+          <dmn:text/>
+        </dmn:annotationEntry>
+      </dmn:rule>
+      <dmn:rule id="_B941B4C5-C14D-4BF9-BEDF-26DE57B7AAC4">
+        <dmn:inputEntry id="_5BACF0BE-42F6-4B32-B236-557970A4FD74">
+          <dmn:text>false</dmn:text>
+        </dmn:inputEntry>
+        <dmn:inputEntry id="_D323EAAC-4964-4192-BDA4-A47897E6B0CA">
+          <dmn:text>&gt;= 5</dmn:text>
+        </dmn:inputEntry>
+        <dmn:outputEntry id="_17A6FF5F-6C31-46A2-8355-9A7CB9B4D947">
+          <dmn:text>false</dmn:text>
+        </dmn:outputEntry>
+        <dmn:outputEntry id="_856A82F8-FBA3-45D5-820B-2A5F791C86BD">
+          <dmn:text>"Organization cannot have more than 5 robotics cloud."</dmn:text>
+        </dmn:outputEntry>
+        <dmn:annotationEntry>
+          <dmn:text/>
+        </dmn:annotationEntry>
+      </dmn:rule>
+    </dmn:decisionTable>
+  </dmn:decision>
+  <dmn:inputData id="_AEA5DF92-46FC-4C12-8803-8670AAB60D92" name="isOrganizationEnterprise">
+    <dmn:extensionElements/>
+    <dmn:variable id="_09800D96-64FF-43A4-8350-332CC010B5F2" name="isOrganizationEnterprise" typeRef="boolean"/>
+  </dmn:inputData>
+  <dmndi:DMNDI>
+    <dmndi:DMNDiagram id="_77939BC4-AAB4-435F-BB90-3A3A35F02090" name="DRG">
+      <di:extension>
+        <kie:ComponentsWidthsExtension>
+          <kie:ComponentWidths dmnElementRef="_F4681E48-1FB0-4B8C-8D20-4D9586146543">
+            <kie:width>50</kie:width>
+            <kie:width>221</kie:width>
+            <kie:width>158</kie:width>
+            <kie:width>124</kie:width>
+            <kie:width>466</kie:width>
+            <kie:width>115</kie:width>
+          </kie:ComponentWidths>
+        </kie:ComponentsWidthsExtension>
+      </di:extension>
+      <dmndi:DMNShape id="dmnshape-drg-_719ECDBC-0C1D-4784-B5B2-2D0C8CD25CD8" dmnElementRef="_719ECDBC-0C1D-4784-B5B2-2D0C8CD25CD8" isCollapsed="false">
+        <dmndi:DMNStyle>
+          <dmndi:FillColor red="255" green="255" blue="255"/>
+          <dmndi:StrokeColor red="0" green="0" blue="0"/>
+          <dmndi:FontColor red="0" green="0" blue="0"/>
+        </dmndi:DMNStyle>
+        <dc:Bounds x="364" y="328" width="150" height="53"/>
+        <dmndi:DMNLabel/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-drg-_B451C810-D138-4EC0-8874-1419C9FD8256" dmnElementRef="_B451C810-D138-4EC0-8874-1419C9FD8256" isCollapsed="false">
+        <dmndi:DMNStyle>
+          <dmndi:FillColor red="255" green="255" blue="255"/>
+          <dmndi:StrokeColor red="0" green="0" blue="0"/>
+          <dmndi:FontColor red="0" green="0" blue="0"/>
+        </dmndi:DMNStyle>
+        <dc:Bounds x="559" y="308" width="138" height="93"/>
+        <dmndi:DMNLabel/>
+      </dmndi:DMNShape>
+      <dmndi:DMNShape id="dmnshape-drg-_AEA5DF92-46FC-4C12-8803-8670AAB60D92" dmnElementRef="_AEA5DF92-46FC-4C12-8803-8670AAB60D92" isCollapsed="false">
+        <dmndi:DMNStyle>
+          <dmndi:FillColor red="255" green="255" blue="255"/>
+          <dmndi:StrokeColor red="0" green="0" blue="0"/>
+          <dmndi:FontColor red="0" green="0" blue="0"/>
+        </dmndi:DMNStyle>
+        <dc:Bounds x="543" y="208" width="168" height="61"/>
+        <dmndi:DMNLabel/>
+      </dmndi:DMNShape>
+      <dmndi:DMNEdge id="dmnedge-drg-_CAC07420-A468-4772-8FB8-96EDCD754DB0-AUTO-TARGET" dmnElementRef="_CAC07420-A468-4772-8FB8-96EDCD754DB0">
+        <di:waypoint x="439" y="354.5"/>
+        <di:waypoint x="559" y="354.5"/>
+      </dmndi:DMNEdge>
+      <dmndi:DMNEdge id="dmnedge-drg-_1316F6DB-3DB3-4F08-A076-E790AB93E5FD-AUTO-TARGET" dmnElementRef="_1316F6DB-3DB3-4F08-A076-E790AB93E5FD">
+        <di:waypoint x="627" y="238.5"/>
+        <di:waypoint x="628" y="401"/>
+      </dmndi:DMNEdge>
+    </dmndi:DMNDiagram>
+  </dmndi:DMNDI>
+</dmn:definitions>

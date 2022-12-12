@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_yIxmIFkNEDuNI8QPoyEeMA" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+  <bpmn2:itemDefinition id="_loginRequestItem" structureRef="org.robolaunch.models.LoginRefreshTokenOrganization"/>
+  <bpmn2:itemDefinition id="_loginResponseItem" structureRef="org.robolaunch.models.LoginResponse"/>
+  <bpmn2:itemDefinition id="__8758DF08-E34E-42C0-BF60-F67799D37A0F_loginRequestInputXItem" structureRef="org.robolaunch.models.LoginRefreshTokenOrganization"/>
+  <bpmn2:itemDefinition id="__8758DF08-E34E-42C0-BF60-F67799D37A0F_loginResponseOutputXItem" structureRef="org.robolaunch.models.LoginResponse"/>
+  <bpmn2:interface id="_8758DF08-E34E-42C0-BF60-F67799D37A0F_ServiceInterface" name="org.robolaunch.service.AccountService" implementationRef="org.robolaunch.service.AccountService">
+    <bpmn2:operation id="_8758DF08-E34E-42C0-BF60-F67799D37A0F_ServiceOperation" name="refreshResponseOrganization" implementationRef="refreshResponseOrganization"/>
+  </bpmn2:interface>
+  <bpmn2:collaboration id="_8AA330B3-907E-4FD8-88A7-045483967DE2" name="Default Collaboration">
+    <bpmn2:participant id="_272826D8-C932-4F80-8419-7F77172F45E7" name="Pool Participant" processRef="refreshTokenOrganization"/>
+  </bpmn2:collaboration>
+  <bpmn2:process id="refreshTokenOrganization" drools:packageName="org.robolaunch.kogito.user" drools:version="1.0" drools:adHoc="false" name="refreshTokenOrganization" isExecutable="true" processType="Public">
+    <bpmn2:property id="loginRequest" itemSubjectRef="_loginRequestItem" name="loginRequest"/>
+    <bpmn2:property id="loginResponse" itemSubjectRef="_loginResponseItem" name="loginResponse"/>
+    <bpmn2:sequenceFlow id="_E5F10D9C-6A96-45EC-94CC-F8094D22A3B9" sourceRef="_8758DF08-E34E-42C0-BF60-F67799D37A0F" targetRef="_F5D3A3AD-3AEF-48A2-89B2-6A98138314D7">
+      <bpmn2:extensionElements>
+        <drools:metaData name="isAutoConnection.target">
+          <drools:metaValue><![CDATA[true]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="_6B663295-AA86-49A2-8E19-E607707EE3F2" sourceRef="_58ECA43D-BD0F-4F10-A4B0-FC4FF2369890" targetRef="_8758DF08-E34E-42C0-BF60-F67799D37A0F">
+      <bpmn2:extensionElements>
+        <drools:metaData name="isAutoConnection.target">
+          <drools:metaValue><![CDATA[true]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+    </bpmn2:sequenceFlow>
+    <bpmn2:endEvent id="_F5D3A3AD-3AEF-48A2-89B2-6A98138314D7">
+      <bpmn2:incoming>_E5F10D9C-6A96-45EC-94CC-F8094D22A3B9</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:serviceTask id="_8758DF08-E34E-42C0-BF60-F67799D37A0F" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.AccountService" drools:serviceoperation="refreshResponseOrganization" name="Send New JWT Tokens Organization" implementation="Java" operationRef="_8758DF08-E34E-42C0-BF60-F67799D37A0F_ServiceOperation">
+      <bpmn2:extensionElements>
+        <drools:metaData name="elementname">
+          <drools:metaValue><![CDATA[Send New JWT Tokens Organization]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>_6B663295-AA86-49A2-8E19-E607707EE3F2</bpmn2:incoming>
+      <bpmn2:outgoing>_E5F10D9C-6A96-45EC-94CC-F8094D22A3B9</bpmn2:outgoing>
+      <bpmn2:ioSpecification>
+        <bpmn2:dataInput id="_8758DF08-E34E-42C0-BF60-F67799D37A0F_loginRequestInputX" drools:dtype="org.robolaunch.models.LoginRefreshTokenOrganization" itemSubjectRef="__8758DF08-E34E-42C0-BF60-F67799D37A0F_loginRequestInputXItem" name="loginRequest"/>
+        <bpmn2:dataOutput id="_8758DF08-E34E-42C0-BF60-F67799D37A0F_loginResponseOutputX" drools:dtype="org.robolaunch.models.LoginResponse" itemSubjectRef="__8758DF08-E34E-42C0-BF60-F67799D37A0F_loginResponseOutputXItem" name="loginResponse"/>
+        <bpmn2:inputSet>
+          <bpmn2:dataInputRefs>_8758DF08-E34E-42C0-BF60-F67799D37A0F_loginRequestInputX</bpmn2:dataInputRefs>
+        </bpmn2:inputSet>
+        <bpmn2:outputSet>
+          <bpmn2:dataOutputRefs>_8758DF08-E34E-42C0-BF60-F67799D37A0F_loginResponseOutputX</bpmn2:dataOutputRefs>
+        </bpmn2:outputSet>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataInputAssociation>
+        <bpmn2:sourceRef>loginRequest</bpmn2:sourceRef>
+        <bpmn2:targetRef>_8758DF08-E34E-42C0-BF60-F67799D37A0F_loginRequestInputX</bpmn2:targetRef>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataOutputAssociation>
+        <bpmn2:sourceRef>_8758DF08-E34E-42C0-BF60-F67799D37A0F_loginResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>loginResponse</bpmn2:targetRef>
+      </bpmn2:dataOutputAssociation>
+    </bpmn2:serviceTask>
+    <bpmn2:startEvent id="_58ECA43D-BD0F-4F10-A4B0-FC4FF2369890">
+      <bpmn2:outgoing>_6B663295-AA86-49A2-8E19-E607707EE3F2</bpmn2:outgoing>
+    </bpmn2:startEvent>
+  </bpmn2:process>
+  <bpmndi:BPMNDiagram>
+    <bpmndi:BPMNPlane bpmnElement="refreshTokenOrganization">
+      <bpmndi:BPMNShape id="shape__58ECA43D-BD0F-4F10-A4B0-FC4FF2369890" bpmnElement="_58ECA43D-BD0F-4F10-A4B0-FC4FF2369890">
+        <dc:Bounds height="56" width="56" x="157" y="423"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape__8758DF08-E34E-42C0-BF60-F67799D37A0F" bpmnElement="_8758DF08-E34E-42C0-BF60-F67799D37A0F">
+        <dc:Bounds height="102" width="154" x="261" y="400"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape__F5D3A3AD-3AEF-48A2-89B2-6A98138314D7" bpmnElement="_F5D3A3AD-3AEF-48A2-89B2-6A98138314D7">
+        <dc:Bounds height="56" width="56" x="463" y="423"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_shape__58ECA43D-BD0F-4F10-A4B0-FC4FF2369890_to_shape__8758DF08-E34E-42C0-BF60-F67799D37A0F" bpmnElement="_6B663295-AA86-49A2-8E19-E607707EE3F2">
+        <di:waypoint x="185" y="451"/>
+        <di:waypoint x="261" y="451"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_shape__8758DF08-E34E-42C0-BF60-F67799D37A0F_to_shape__F5D3A3AD-3AEF-48A2-89B2-6A98138314D7" bpmnElement="_E5F10D9C-6A96-45EC-94CC-F8094D22A3B9">
+        <di:waypoint x="338" y="451"/>
+        <di:waypoint x="463" y="451"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmn2:relationship type="BPSimData">
+    <bpmn2:extensionElements>
+      <bpsim:BPSimData>
+        <bpsim:Scenario id="default" name="Simulationscenario">
+          <bpsim:ScenarioParameters/>
+          <bpsim:ElementParameters elementRef="_58ECA43D-BD0F-4F10-A4B0-FC4FF2369890">
+            <bpsim:TimeParameters>
+              <bpsim:ProcessingTime>
+                <bpsim:NormalDistribution mean="0" standardDeviation="0"/>
+              </bpsim:ProcessingTime>
+            </bpsim:TimeParameters>
+          </bpsim:ElementParameters>
+          <bpsim:ElementParameters elementRef="_8758DF08-E34E-42C0-BF60-F67799D37A0F">
+            <bpsim:TimeParameters>
+              <bpsim:ProcessingTime>
+                <bpsim:NormalDistribution mean="0" standardDeviation="0"/>
+              </bpsim:ProcessingTime>
+            </bpsim:TimeParameters>
+            <bpsim:ResourceParameters>
+              <bpsim:Availability>
+                <bpsim:FloatingParameter value="0"/>
+              </bpsim:Availability>
+              <bpsim:Quantity>
+                <bpsim:FloatingParameter value="0"/>
+              </bpsim:Quantity>
+            </bpsim:ResourceParameters>
+            <bpsim:CostParameters>
+              <bpsim:UnitCost>
+                <bpsim:FloatingParameter value="0"/>
+              </bpsim:UnitCost>
+            </bpsim:CostParameters>
+          </bpsim:ElementParameters>
+        </bpsim:Scenario>
+      </bpsim:BPSimData>
+    </bpmn2:extensionElements>
+    <bpmn2:source>_yIxmIFkNEDuNI8QPoyEeMA</bpmn2:source>
+    <bpmn2:target>_yIxmIFkNEDuNI8QPoyEeMA</bpmn2:target>
+  </bpmn2:relationship>
+</bpmn2:definitions>
