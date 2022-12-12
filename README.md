@@ -46,20 +46,22 @@ The aim of this project is to make robolaunch accessible and usable for everyone
 
 ## Quick Start
 
-[EDIT THIS: Explain how starters can try the project's functionality.]
+After cloning this repository:
+1. Build the application with Maven:
+```
+mvn clean install
+```
+2. Install and configure kogito components using [this docker-compose file](https://github.com/kiegroup/kogito-examples/blob/stable/kogito-quarkus-examples/process-usertasks-timer-quarkus-with-console/docker-compose/docker-compose-infinispan.yml).
 
-After [using this project as template](https://github.com/robolaunch/template/generate), you can:
-- Update generic fields at README, specialize it to the project
-- Create first release to stage new features
-- Add custom workflows for CI/CD
-- Specialize issue & PR templates if needed
+3. Start the Central Orchestrator in development mode:
+```
+mvn quarkus:dev
+```
 
 ## Aims & Roadmap
 
-[EDIT THIS: Add roadmap items for the project.]
-
-- Extending the open source conventions
-- Enforcing conventional commit messages
+- Reducing the entry barrier for robotics
+- Make robotics development and deployment easier and faster.
 
 ## Contributing
 
