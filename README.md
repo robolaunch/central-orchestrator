@@ -1,32 +1,30 @@
 # <img src="https://raw.githubusercontent.com/robolaunch/trademark/main/logos/svg/rocket.svg" width="40" height="40" align="top"> Central Orchestrator
 
-[EDIT THIS: You can put badges to the README using [shields.io](https://shields.io/). Explain the repository's purpose shortly.]x
+Central Orchestrator collects all other robolaunch components under the same roof. Makes robolaunch accessible and usable by the end users.
 
 <div align="center">
   <p align="center">
     <a href="https://github.com/robolaunch/template/releases">
-      <img src="https://img.shields.io/badge/python-3.7-blue" alt="release">
+      <img src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=java&logoColor=white" alt="release">
     </a>
-    <a href="https://github.com/robolaunch/template/releases">
-      <img src="https://img.shields.io/badge/release-v2.0.7-green" alt="release">
+    <a href="https://github.com/robolaunch/central-orchestrator/releases">
+      <img src="https://img.shields.io/badge/release-v0.0.1-green" alt="release">
     </a>
-    <a href="https://github.com/robolaunch/template/blob/main/LICENSE">
-      <img src="https://img.shields.io/github/license/robolaunch/template" alt="license">
+    <a href="https://github.com/robolaunch/central-orchestrator/blob/main/LICENSE">
+      <img src="https://img.shields.io/github/license/robolaunch/central-orchestrator" alt="license">
     </a>
-    <a href="https://github.com/robolaunch/template/issues">
-      <img src="https://img.shields.io/github/issues/robolaunch/template" alt="issues">
+    <a href="https://github.com/robolaunch/central-orchestrator/issues">
+      <img src="https://img.shields.io/github/issues/robolaunch/central-orchestrator" alt="issues">
     </a>
-    <a href="https://github.com/robolaunch/template/actions">
+    <a href="https://github.com/robolaunch/central-orchestrator/actions">
       <img src="https://img.shields.io/badge/build-passing-dgreen" alt="build">
     </a>
   </p>
 </div>
 
-robolaunch Template helps organization members to have a generic project template before opening a repository. [Use this repository as a template](https://github.com/robolaunch/template/generate) for the new [robolaunch Organization](https://github.com/robolaunch) repository and specialize it according to project's needs.
+Central Orchestrator integrates other robolaunch components, and generates an end user consumable endpoints.
 
 ## Table of Contents
-
-[EDIT THIS: Add your headers to table of contents.]
 
 - [Overview](#overview)
 - [Quick Start](#quick-start)
@@ -38,17 +36,13 @@ robolaunch Template helps organization members to have a generic project templat
 
 ## Overview
 
-[EDIT THIS: Give more insight about the project. Provide a feature list.]
+The aim of this project is to make robolaunch accessible and usable for everyone.
 
-The aim of this project is to maintain a generic template for robolaunch projects. Members of robolaunch organization can fork this repository and start developing their projects following conventions such as:
-
-- Following a code of conduct
-- Having a contributing guide
-- Having a style guide
-- Applying Apache 2.0 license
-- Having a README template
-- Having issue & pull request templates
-- Using worklows for testing & build
+- Kubernetes Integration
+- User Management
+- Resource Management
+- Observability & Monitoring
+- Robot Management
 
 ## Quick Start
 
