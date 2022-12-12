@@ -118,6 +118,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   @PostConstruct
   public void initializeApis() throws IOException {
     ApiClient apiClient = ClientBuilder.standard().build();
+    ApiClient api = Config.fromToken("", backendUrl);
     this.machinesApi = new DynamicKubernetesApi("cluster.k8s.io",
         "v1alpha1", "machines",
         apiClient);

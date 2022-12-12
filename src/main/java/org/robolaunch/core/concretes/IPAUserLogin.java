@@ -54,7 +54,6 @@ public class IPAUserLogin implements IPALogin {
         wr.close();
         String cookiesHeader = userConnection.getHeaderField("Set-Cookie");
         List<HttpCookie> cookies = HttpCookie.parse(cookiesHeader);
-        System.out.println("IPA Cookies: " + cookies);
         return cookies;
     }
 
@@ -80,7 +79,6 @@ public class IPAUserLogin implements IPALogin {
         // Status code is not working properly for this reason message should be read to
         // be ensure
         while ((line = bufferedReader.readLine()) != null) {
-            // System.out.println(line);
             if (line.contains("rejected")) {
                 throw new InternalError("Password change operation is rejected" + userConnection.getResponseCode());
             }

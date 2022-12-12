@@ -186,8 +186,11 @@ public class KeycloakService {
   /* Adding group mappers on keycloak */
   public Response addGroupMapper(Organization organization) throws ApplicationException, InternalError, IOException {
     try {
+      System.out.println("Enters group mapper");
       keycloakAdminRepository.addGroupMapper(organization);
+      System.out.println("Mediate group mapper");
       keycloakAdminRepository.syncFederationMainRealm();
+      System.out.println("Outs group mapper");
       keycloakLogger.info("Group Mapper added for organization: " + organization.getName() + "");
       return new Response(true, UUID.randomUUID().toString());
     } catch (Exception e) {
