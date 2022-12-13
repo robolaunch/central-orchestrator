@@ -1,24 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_0MzocEPaEDukV6dxgyhenw" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_WHhtgF0hEDuiIPWQg_0Q4w" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_organizationItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="_departmentItem" structureRef="org.robolaunch.models.DepartmentBasic"/>
   <bpmn2:itemDefinition id="_usersItem" structureRef="java.util.ArrayList&lt;org.robolaunch.models.GroupMember&gt;"/>
+  <bpmn2:itemDefinition id="_responseTeamMembersItem" structureRef="org.robolaunch.models.response.ResponseTeamMembers"/>
   <bpmn2:itemDefinition id="__ACD8531E-2B23-4DC6-9F3A-B313E361D990_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="__ACD8531E-2B23-4DC6-9F3A-B313E361D990_departmentInputXItem" structureRef="org.robolaunch.models.DepartmentBasic"/>
-  <bpmn2:itemDefinition id="__ACD8531E-2B23-4DC6-9F3A-B313E361D990_usersOutputXItem" structureRef="java.util.ArrayList&lt;org.robolaunch.models.GroupMember&gt;"/>
+  <bpmn2:itemDefinition id="__ACD8531E-2B23-4DC6-9F3A-B313E361D990_responseTeamMembersOutputXItem" structureRef="org.robolaunch.models.response.ResponseTeamMembers"/>
   <bpmn2:interface id="_ACD8531E-2B23-4DC6-9F3A-B313E361D990_ServiceInterface" name="org.robolaunch.service.DepartmentService" implementationRef="org.robolaunch.service.DepartmentService">
     <bpmn2:operation id="_ACD8531E-2B23-4DC6-9F3A-B313E361D990_ServiceOperation" name="getDepartmentUsers" implementationRef="getDepartmentUsers"/>
   </bpmn2:interface>
   <bpmn2:interface id="_048AA91E-751F-445A-83A1-BC7933570EA7_ServiceInterface" name="org.robolaunch.service.GroupService" implementationRef="org.robolaunch.service.GroupService">
     <bpmn2:operation id="_048AA91E-751F-445A-83A1-BC7933570EA7_ServiceOperation" name="grantAdminPrivileges" implementationRef="grantAdminPrivileges"/>
   </bpmn2:interface>
-  <bpmn2:collaboration id="_934FBFF4-689B-4946-BF73-43A34D6B644A" name="Default Collaboration">
-    <bpmn2:participant id="_76D9B2D5-B565-4249-AA45-360F653F9835" name="Pool Participant" processRef="getTeamUsers"/>
+  <bpmn2:collaboration id="_33B989FC-6C02-4BEC-8DE8-818B4ECAC413" name="Default Collaboration">
+    <bpmn2:participant id="_216CF9AE-91CA-43B6-8003-8F33152A778B" name="Pool Participant" processRef="getTeamUsers"/>
   </bpmn2:collaboration>
   <bpmn2:process id="getTeamUsers" drools:packageName="org.robolaunch.kogito.team" drools:version="1.0" drools:adHoc="false" name="getTeamUsers" isExecutable="true" processType="Public">
-    <bpmn2:property id="organization" itemSubjectRef="_organizationItem" name="organization"/>
-    <bpmn2:property id="department" itemSubjectRef="_departmentItem" name="department"/>
-    <bpmn2:property id="users" itemSubjectRef="_usersItem" name="users"/>
+    <bpmn2:property id="organization" itemSubjectRef="_organizationItem" name="organization">
+      <bpmn2:extensionElements>
+        <drools:metaData name="customTags">
+          <drools:metaValue><![CDATA[input]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+    </bpmn2:property>
+    <bpmn2:property id="department" itemSubjectRef="_departmentItem" name="department">
+      <bpmn2:extensionElements>
+        <drools:metaData name="customTags">
+          <drools:metaValue><![CDATA[input]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+    </bpmn2:property>
+    <bpmn2:property id="users" itemSubjectRef="_usersItem" name="users">
+      <bpmn2:extensionElements>
+        <drools:metaData name="customTags">
+          <drools:metaValue><![CDATA[output]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+    </bpmn2:property>
+    <bpmn2:property id="responseTeamMembers" itemSubjectRef="_responseTeamMembersItem" name="responseTeamMembers">
+      <bpmn2:extensionElements>
+        <drools:metaData name="customTags">
+          <drools:metaValue><![CDATA[output]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+    </bpmn2:property>
     <bpmn2:sequenceFlow id="_FCCB1CDE-3136-4F95-A008-92245EC43A64" sourceRef="_048AA91E-751F-445A-83A1-BC7933570EA7" targetRef="_ACD8531E-2B23-4DC6-9F3A-B313E361D990">
       <bpmn2:extensionElements>
         <drools:metaData name="isAutoConnection.source">
@@ -57,13 +83,13 @@
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_ACD8531E-2B23-4DC6-9F3A-B313E361D990_organizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__ACD8531E-2B23-4DC6-9F3A-B313E361D990_organizationInputXItem" name="organization"/>
         <bpmn2:dataInput id="_ACD8531E-2B23-4DC6-9F3A-B313E361D990_departmentInputX" drools:dtype="org.robolaunch.models.DepartmentBasic" itemSubjectRef="__ACD8531E-2B23-4DC6-9F3A-B313E361D990_departmentInputXItem" name="department"/>
-        <bpmn2:dataOutput id="_ACD8531E-2B23-4DC6-9F3A-B313E361D990_usersOutputX" drools:dtype="java.util.ArrayList&lt;org.robolaunch.models.GroupMember&gt;" itemSubjectRef="__ACD8531E-2B23-4DC6-9F3A-B313E361D990_usersOutputXItem" name="users"/>
+        <bpmn2:dataOutput id="_ACD8531E-2B23-4DC6-9F3A-B313E361D990_responseTeamMembersOutputX" drools:dtype="org.robolaunch.models.response.ResponseTeamMembers" itemSubjectRef="__ACD8531E-2B23-4DC6-9F3A-B313E361D990_responseTeamMembersOutputXItem" name="responseTeamMembers"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_ACD8531E-2B23-4DC6-9F3A-B313E361D990_organizationInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_ACD8531E-2B23-4DC6-9F3A-B313E361D990_departmentInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_ACD8531E-2B23-4DC6-9F3A-B313E361D990_usersOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_ACD8531E-2B23-4DC6-9F3A-B313E361D990_responseTeamMembersOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -75,8 +101,8 @@
         <bpmn2:targetRef>_ACD8531E-2B23-4DC6-9F3A-B313E361D990_departmentInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_ACD8531E-2B23-4DC6-9F3A-B313E361D990_usersOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>users</bpmn2:targetRef>
+        <bpmn2:sourceRef>_ACD8531E-2B23-4DC6-9F3A-B313E361D990_responseTeamMembersOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>responseTeamMembers</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:endEvent id="_3AAA5291-B588-46AA-8C45-E16F4C2F4537">
@@ -92,7 +118,7 @@
         <dc:Bounds height="56" width="56" x="538" y="457"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__3AAA5291-B588-46AA-8C45-E16F4C2F4537" bpmnElement="_3AAA5291-B588-46AA-8C45-E16F4C2F4537">
-        <dc:Bounds height="56" width="56" x="1027" y="454"/>
+        <dc:Bounds height="56" width="56" x="1022" y="454"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__ACD8531E-2B23-4DC6-9F3A-B313E361D990" bpmnElement="_ACD8531E-2B23-4DC6-9F3A-B313E361D990">
         <dc:Bounds height="57" width="157" x="823.5" y="454"/>
@@ -106,7 +132,7 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__ACD8531E-2B23-4DC6-9F3A-B313E361D990_to_shape__3AAA5291-B588-46AA-8C45-E16F4C2F4537" bpmnElement="_0C3FF050-D8A3-4CE0-BEA7-8F3EAAC09889">
         <di:waypoint x="902" y="482.5"/>
-        <di:waypoint x="1055" y="454"/>
+        <di:waypoint x="1050" y="454"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__048AA91E-751F-445A-83A1-BC7933570EA7_to_shape__ACD8531E-2B23-4DC6-9F3A-B313E361D990" bpmnElement="_FCCB1CDE-3136-4F95-A008-92245EC43A64">
         <di:waypoint x="778" y="482.5"/>
@@ -169,7 +195,7 @@
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_0MzocEPaEDukV6dxgyhenw</bpmn2:source>
-    <bpmn2:target>_0MzocEPaEDukV6dxgyhenw</bpmn2:target>
+    <bpmn2:source>_WHhtgF0hEDuiIPWQg_0Q4w</bpmn2:source>
+    <bpmn2:target>_WHhtgF0hEDuiIPWQg_0Q4w</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>

@@ -20,6 +20,7 @@ import org.robolaunch.models.Organization;
 import org.robolaunch.models.Response;
 import org.robolaunch.models.Result;
 import org.robolaunch.models.User;
+import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.repository.abstracts.GroupAdminRepository;
 import org.robolaunch.repository.abstracts.GroupRepository;
 import org.robolaunch.repository.abstracts.KeycloakAdminRepository;
@@ -238,12 +239,11 @@ public class DepartmentService {
   }
 
   /* Adding the given user to the given department. */
-  public void addUserToDepartment(User user, Organization organization, DepartmentBasic department)
-      throws ApplicationException {
+  public PlainResponse addUserToDepartment(User user, Organization organization, DepartmentBasic department) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       List<Department> departments = groupRepository.getTeams(organization, "member_group");
       Iterator<Department> it = departments.iterator();
-
       while (it.hasNext()) {
         Department d = it.next();
         Organization org = new Organization();
@@ -254,10 +254,15 @@ public class DepartmentService {
         }
       }
       departmentLogger.info("User added to department.");
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("User added to department.");
     } catch (Exception e) {
       departmentLogger.error("Error adding user to department: " + e.getMessage());
-      throw new ApplicationException("Error happened while adding user to department.");
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("An error occured while adding user to department.");
     }
+    return plainResponse;
+
   }
 
   /*
@@ -265,11 +270,12 @@ public class DepartmentService {
    * description field as
    * name.
    */
-  public Response changeDepartmentName(Organization organization, DepartmentBasic department, String newName)
-      throws ApplicationException {
+  public PlainResponse changeDepartmentName(Organization organization, DepartmentBasic department, String newName) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       if (department.getName().equals("admins")) {
-        return new Response(false, "You cannot change the name of admins department.");
+        plainResponse.setSuccess(false);
+        plainResponse.setMessage("You cannot change the name of managers team.");
       }
 
       Boolean isExists = false;
@@ -288,7 +294,8 @@ public class DepartmentService {
       }
 
       if (isExists) {
-        return new Response(false, "Department with this name already exists.");
+        plainResponse.setSuccess(false);
+        plainResponse.setMessage("Team with this name already exists.");
       }
 
       Iterator<Department> it = departments.iterator();
@@ -304,12 +311,16 @@ public class DepartmentService {
         }
       }
       groupAdminRepository.changeDepartmentName(organization, dept, newName);
-      departmentLogger.info("Department name changed.");
-      return new Response(true, UUID.randomUUID().toString());
+      departmentLogger.info("Team name changed.");
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Team name is successfully changed.");
     } catch (Exception e) {
       departmentLogger.error("Error happened when changing department name: " + e.getMessage());
-      return new Response(false, "An error happened.");
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("An error occured while changing team name.");
     }
+
+    return plainResponse;
   }
 
   /* Adding the given user to given department as manager. */
@@ -338,13 +349,11 @@ public class DepartmentService {
   }
 
   /* Delete user from department, also delete from manager lists in case. */
-  public Response deleteUserFromDepartment(User user, Organization organization, DepartmentBasic department)
-      throws ApplicationException {
+  public PlainResponse deleteUserFromDepartment(User user, Organization organization, DepartmentBasic department) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       List<Department> departments = groupRepository.getTeams(organization, "member_group");
-
       Iterator<Department> it = departments.iterator();
-
       while (it.hasNext()) {
         Department d = it.next();
         Organization org = new Organization();
@@ -358,21 +367,23 @@ public class DepartmentService {
         }
       }
       departmentLogger.info("User " + user.getUsername() + " removed from group");
-      return new Response(true, UUID.randomUUID().toString());
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("User removed from the team.");
     } catch (Exception e) {
       departmentLogger.error("Error deleting user from group: " + e.getMessage());
-      return new Response(false, UUID.randomUUID().toString());
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("An error occured while deleting user from the team.");
     }
+    return plainResponse;
   }
 
   /* Converting manager to user in department. */
-  public Response deleteUserManagershipFromDepartment(User user, Organization organization, DepartmentBasic department)
-      throws ApplicationException {
+  public PlainResponse deleteUserManagershipFromDepartment(User user, Organization organization,
+      DepartmentBasic department) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       List<Department> departments = groupRepository.getTeams(organization, "member_group");
-
       Iterator<Department> it = departments.iterator();
-
       while (it.hasNext()) {
         Department d = it.next();
         Organization org = new Organization();
@@ -384,11 +395,14 @@ public class DepartmentService {
       }
       groupAdminRepository.removeUserManagerFromGroup(user, organization);
       departmentLogger.info("User " + user.getUsername() + " removed from organization");
-      return new Response(true, UUID.randomUUID().toString());
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("User managership is removed successfully.");
     } catch (Exception e) {
       departmentLogger.error("Error deleting user managership from group: " + e.getMessage());
-      return new Response(false, UUID.randomUUID().toString());
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("An error occured while deleting user managership from the team.");
     }
+    return plainResponse;
   }
 
   /* Deleting a department from organization */
