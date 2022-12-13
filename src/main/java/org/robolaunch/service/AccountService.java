@@ -18,6 +18,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.robolaunch.core.abstracts.IPAAdmin;
 import org.robolaunch.core.concretes.IPAAdminLogin;
 import org.robolaunch.exception.ApplicationException;
+import org.robolaunch.exception.UserNotFoundException;
 import org.robolaunch.models.CurrentUser;
 import org.robolaunch.models.Department;
 import org.robolaunch.models.GroupMember;
@@ -31,16 +32,19 @@ import org.robolaunch.models.LoginResponseWithIPA;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.RegisteredDepartment;
 import org.robolaunch.models.Response;
+import org.robolaunch.models.ResponseEntity;
 import org.robolaunch.models.Result;
 import org.robolaunch.models.User;
+import org.robolaunch.models.response.PlainResponse;
+import org.robolaunch.models.response.ResponseCurrentUser;
+import org.robolaunch.models.response.ResponseLogin;
+import org.robolaunch.models.response.ResponseRefreshToken;
 import org.robolaunch.repository.abstracts.GroupAdminRepository;
 import org.robolaunch.repository.abstracts.GroupRepository;
 import org.robolaunch.repository.abstracts.KeycloakAdminRepository;
 import org.robolaunch.repository.abstracts.KeycloakRepository;
 import org.robolaunch.repository.abstracts.UserAdminRepository;
 import org.robolaunch.repository.abstracts.UserRepository;
-
-import com.google.gson.Gson;
 
 import io.quarkus.arc.log.LoggerName;
 import org.jboss.logging.Logger;
@@ -99,7 +103,8 @@ public class AccountService {
         return new Result("Error creating user", false);
     }
 
-    public LoginResponse userLogin(LoginRequest loginRequest) throws InterruptedException, ExecutionException {
+    public ResponseLogin userLogin(LoginRequest loginRequest) throws InterruptedException, ExecutionException {
+        ResponseLogin responseLogin = new ResponseLogin();
         try {
             LoginResponseWithIPA response = keycloakRepository.login(loginRequest);
             List<HttpCookie> cookies = response.getCookies();
@@ -107,28 +112,57 @@ public class AccountService {
                 groupRepository.appendCookie(cookie);
                 userRepository.appendCookie(cookie);
             });
-            System.out.println("Res: " + response);
-            return response.getLoginResponse().get();
+            responseLogin.setMessage("Login successful.");
+            responseLogin.setSuccess(true);
+            responseLogin.setData(response.getLoginResponse().get());
+            return responseLogin;
+        } catch (UserNotFoundException e) {
+            responseLogin.setMessage(e.getMessage());
+            responseLogin.setSuccess(false);
+            responseLogin.setData(null);
+            return responseLogin;
+        } catch (ApplicationException e) {
+            responseLogin.setMessage(e.getMessage());
+            responseLogin.setSuccess(false);
+            responseLogin.setData(null);
+            return responseLogin;
         } catch (Exception e) {
-            accountLogger.error("Error logging in user", e);
-            throw new ApplicationException("Error logging in user" + e.getMessage() + " : " + e.getLocalizedMessage());
+            responseLogin.setMessage("An unexpected error occurred. Please try again later.");
+            responseLogin.setSuccess(false);
+            responseLogin.setData(null);
+            return responseLogin;
         }
     }
 
-    public LoginResponse userLoginOrganization(LoginRequestOrganization loginRequestOrganization)
+    public ResponseLogin userLoginOrganization(LoginRequestOrganization loginRequestOrganization)
             throws InterruptedException, ExecutionException {
+        ResponseLogin responseLogin = new ResponseLogin();
         try {
             LoginResponseWithIPA response = keycloakRepository.loginOrganization(loginRequestOrganization);
-            System.out.println("Res: " + response);
             List<HttpCookie> cookies = response.getCookies();
             cookies.forEach(cookie -> {
                 groupRepository.appendCookie(cookie);
                 userRepository.appendCookie(cookie);
             });
-            return response.getLoginResponse().get();
+            responseLogin.setMessage("Login successful.");
+            responseLogin.setSuccess(true);
+            responseLogin.setData(response.getLoginResponse().get());
+            return responseLogin;
+        } catch (UserNotFoundException e) {
+            responseLogin.setMessage(e.getMessage());
+            responseLogin.setSuccess(false);
+            responseLogin.setData(null);
+            return responseLogin;
+        } catch (ApplicationException e) {
+            responseLogin.setMessage(e.getMessage());
+            responseLogin.setSuccess(false);
+            responseLogin.setData(null);
+            return responseLogin;
         } catch (Exception e) {
-            accountLogger.error("Error logging in user", e);
-            throw new ApplicationException("Error logging in user" + e.getMessage() + " : " + e.getLocalizedMessage());
+            responseLogin.setMessage("An unexpected error occurred. Please try again later.");
+            responseLogin.setSuccess(false);
+            responseLogin.setData(null);
+            return responseLogin;
         }
     }
 
@@ -254,7 +288,8 @@ public class AccountService {
         return currentUser;
     }
 
-    public CurrentUser getCurrentUser(Organization organization) throws ApplicationException {
+    public ResponseCurrentUser getCurrentUser(Organization organization) {
+        ResponseCurrentUser responseCurrentUser = new ResponseCurrentUser();
         try {
             User user = new User();
             user.setUsername(jwt.getClaim("preferred_username"));
@@ -284,37 +319,49 @@ public class AccountService {
                 }
             }
             currentUser.setDepartments(depts);
-            accountLogger.info("Current user: " + currentUser);
 
-            return currentUser;
+            responseCurrentUser.setSuccess(true);
+            responseCurrentUser.setUser(currentUser);
+            responseCurrentUser.setMessage("User data retrieved successfully.");
         } catch (Exception e) {
-            throw new ApplicationException("Error getting current user.");
-
+            responseCurrentUser.setMessage("Error getting current user.");
+            responseCurrentUser.setSuccess(false);
         }
+        return responseCurrentUser;
+
     }
 
-    public LoginResponse refreshResponse(LoginRefreshToken loginRequest) throws ApplicationException {
+    public ResponseRefreshToken refreshResponse(LoginRefreshToken loginRequest) {
+        ResponseRefreshToken responseRefreshToken = new ResponseRefreshToken();
         try {
             CompletableFuture<LoginResponse> response = keycloakRepository.refreshLogin(loginRequest);
             LoginResponse finalResp = response.get();
-            return finalResp;
+            responseRefreshToken.setSuccess(true);
+            responseRefreshToken.setMessage("Refresh token sent successfully.");
+            responseRefreshToken.setData(finalResp);
         } catch (Exception e) {
-            throw new ApplicationException("Error sending refresh token.");
-
+            responseRefreshToken.setSuccess(false);
+            responseRefreshToken.setMessage("Error sending refresh token.");
         }
+        return responseRefreshToken;
+
     }
 
-    public LoginResponse refreshResponseOrganization(LoginRefreshTokenOrganization loginRequestOrganization)
+    public ResponseRefreshToken refreshResponseOrganization(LoginRefreshTokenOrganization loginRequestOrganization)
             throws ApplicationException {
+        ResponseRefreshToken responseRefreshToken = new ResponseRefreshToken();
         try {
             CompletableFuture<LoginResponse> response = keycloakRepository
                     .refreshLoginOrganization(loginRequestOrganization);
             LoginResponse finalResp = response.get();
-            return finalResp;
+            responseRefreshToken.setSuccess(true);
+            responseRefreshToken.setMessage("Refresh token sent successfully.");
+            responseRefreshToken.setData(finalResp);
         } catch (Exception e) {
-            throw new ApplicationException("Error sending refresh token.");
-
+            responseRefreshToken.setSuccess(false);
+            responseRefreshToken.setMessage("Error sending refresh token.");
         }
+        return responseRefreshToken;
     }
 
     /* START Registration Flow */
@@ -405,16 +452,23 @@ public class AccountService {
         }
     }
 
-    public Result userUpdateUser(String currentUsername, User user) throws ApplicationException {
+    public PlainResponse userUpdateUser(String currentUsername, User user) throws ApplicationException {
+        PlainResponse plainResponse = new PlainResponse();
         try {
+            if (!jwt.getClaim("preferred_username").equals(currentUsername)) {
+                plainResponse.setSuccess(false);
+                plainResponse.setMessage("You are not authorized to update this user.");
+                return plainResponse;
+            }
             userRepository.updateUser(currentUsername, user);
             accountLogger.info("User " + user.getUsername() + " updated");
-            return new Result("User updated successfully.", true);
+            plainResponse.setSuccess(true);
+            plainResponse.setMessage("User is successfully updated.");
         } catch (Exception e) {
-            accountLogger.error("Error happened when updating user " + e.getMessage());
-            return new Result("Error updating user.", false);
-
+            plainResponse.setSuccess(false);
+            plainResponse.setMessage("Error happened when updating user.");
         }
+        return plainResponse;
     }
 
     public Boolean doesFirstNameExist(String firstName) throws ApplicationException {

@@ -1,18 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_iAt9cFkNEDu8GIJRo69zug" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_Vh9KAF0bEDuPy-wgnTIhGw" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_loginRequestItem" structureRef="org.robolaunch.models.LoginRefreshToken"/>
-  <bpmn2:itemDefinition id="_loginResponseItem" structureRef="org.robolaunch.models.LoginResponse"/>
+  <bpmn2:itemDefinition id="_responseRefreshTokenItem" structureRef="org.robolaunch.models.response.ResponseRefreshToken"/>
   <bpmn2:itemDefinition id="__9EBE4835-7294-44D6-9290-6DC5CAE3BDF5_loginRequestInputXItem" structureRef="org.robolaunch.models.LoginRefreshToken"/>
-  <bpmn2:itemDefinition id="__9EBE4835-7294-44D6-9290-6DC5CAE3BDF5_loginResponseOutputXItem" structureRef="org.robolaunch.models.LoginResponse"/>
+  <bpmn2:itemDefinition id="__9EBE4835-7294-44D6-9290-6DC5CAE3BDF5_responseRefreshTokenOutputXItem" structureRef="org.robolaunch.models.response.ResponseRefreshToken"/>
   <bpmn2:interface id="_9EBE4835-7294-44D6-9290-6DC5CAE3BDF5_ServiceInterface" name="org.robolaunch.service.AccountService" implementationRef="org.robolaunch.service.AccountService">
     <bpmn2:operation id="_9EBE4835-7294-44D6-9290-6DC5CAE3BDF5_ServiceOperation" name="refreshResponse" implementationRef="refreshResponse"/>
   </bpmn2:interface>
-  <bpmn2:collaboration id="_F5E251A0-048D-4010-9003-EB0BECF72EC3" name="Default Collaboration">
-    <bpmn2:participant id="_69783691-8328-4171-AF64-DFEC04771AC5" name="Pool Participant" processRef="refreshToken"/>
+  <bpmn2:collaboration id="_E4B21D22-FCAD-4152-B97A-1F439958DCF6" name="Default Collaboration">
+    <bpmn2:participant id="_805B6623-2BA8-450F-B802-0B41AF43A177" name="Pool Participant" processRef="refreshToken"/>
   </bpmn2:collaboration>
   <bpmn2:process id="refreshToken" drools:packageName="org.robolaunch.kogito.user" drools:version="1.0" drools:adHoc="false" name="refreshToken" isExecutable="true" processType="Public">
-    <bpmn2:property id="loginRequest" itemSubjectRef="_loginRequestItem" name="loginRequest"/>
-    <bpmn2:property id="loginResponse" itemSubjectRef="_loginResponseItem" name="loginResponse"/>
+    <bpmn2:property id="loginRequest" itemSubjectRef="_loginRequestItem" name="loginRequest">
+      <bpmn2:extensionElements>
+        <drools:metaData name="customTags">
+          <drools:metaValue><![CDATA[input]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+    </bpmn2:property>
+    <bpmn2:property id="responseRefreshToken" itemSubjectRef="_responseRefreshTokenItem" name="responseRefreshToken">
+      <bpmn2:extensionElements>
+        <drools:metaData name="customTags">
+          <drools:metaValue><![CDATA[output]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+    </bpmn2:property>
     <bpmn2:sequenceFlow id="_3FF9433E-A9F3-41F9-AE00-64CE505D1445" sourceRef="_9EBE4835-7294-44D6-9290-6DC5CAE3BDF5" targetRef="_C3DBD2BC-9B47-48A9-AC4B-FF66180704FD"/>
     <bpmn2:sequenceFlow id="_818A8972-6054-414C-AFCA-18372E12BCDF" sourceRef="_58FDE56C-EBD9-42E4-80A1-908AA53220DE" targetRef="_9EBE4835-7294-44D6-9290-6DC5CAE3BDF5">
       <bpmn2:extensionElements>
@@ -34,12 +46,12 @@
       <bpmn2:outgoing>_3FF9433E-A9F3-41F9-AE00-64CE505D1445</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_9EBE4835-7294-44D6-9290-6DC5CAE3BDF5_loginRequestInputX" drools:dtype="org.robolaunch.models.LoginRefreshToken" itemSubjectRef="__9EBE4835-7294-44D6-9290-6DC5CAE3BDF5_loginRequestInputXItem" name="loginRequest"/>
-        <bpmn2:dataOutput id="_9EBE4835-7294-44D6-9290-6DC5CAE3BDF5_loginResponseOutputX" drools:dtype="org.robolaunch.models.LoginResponse" itemSubjectRef="__9EBE4835-7294-44D6-9290-6DC5CAE3BDF5_loginResponseOutputXItem" name="loginResponse"/>
+        <bpmn2:dataOutput id="_9EBE4835-7294-44D6-9290-6DC5CAE3BDF5_responseRefreshTokenOutputX" drools:dtype="org.robolaunch.models.response.ResponseRefreshToken" itemSubjectRef="__9EBE4835-7294-44D6-9290-6DC5CAE3BDF5_responseRefreshTokenOutputXItem" name="responseRefreshToken"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_9EBE4835-7294-44D6-9290-6DC5CAE3BDF5_loginRequestInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_9EBE4835-7294-44D6-9290-6DC5CAE3BDF5_loginResponseOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_9EBE4835-7294-44D6-9290-6DC5CAE3BDF5_responseRefreshTokenOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -47,8 +59,8 @@
         <bpmn2:targetRef>_9EBE4835-7294-44D6-9290-6DC5CAE3BDF5_loginRequestInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_9EBE4835-7294-44D6-9290-6DC5CAE3BDF5_loginResponseOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>loginResponse</bpmn2:targetRef>
+        <bpmn2:sourceRef>_9EBE4835-7294-44D6-9290-6DC5CAE3BDF5_responseRefreshTokenOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>responseRefreshToken</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:endEvent id="_C3DBD2BC-9B47-48A9-AC4B-FF66180704FD">
@@ -114,7 +126,7 @@
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_iAt9cFkNEDu8GIJRo69zug</bpmn2:source>
-    <bpmn2:target>_iAt9cFkNEDu8GIJRo69zug</bpmn2:target>
+    <bpmn2:source>_Vh9KAF0bEDuPy-wgnTIhGw</bpmn2:source>
+    <bpmn2:target>_Vh9KAF0bEDuPy-wgnTIhGw</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>

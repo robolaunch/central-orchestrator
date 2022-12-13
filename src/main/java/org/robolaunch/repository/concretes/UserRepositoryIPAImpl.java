@@ -22,11 +22,9 @@ import org.robolaunch.models.Organization;
 import org.robolaunch.models.User;
 import org.robolaunch.repository.abstracts.UserRepository;
 import org.apache.commons.lang3.StringUtils;
-import org.bouncycastle.math.Primes.STOutput;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 
 @ApplicationScoped
 public class UserRepositoryIPAImpl implements UserRepository {

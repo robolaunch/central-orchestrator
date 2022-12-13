@@ -39,7 +39,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 
 import io.kubernetes.client.custom.V1Patch;
@@ -63,11 +62,8 @@ import io.kubernetes.client.openapi.models.V1Service;
 import io.kubernetes.client.openapi.models.V1ServiceAccount;
 import io.kubernetes.client.util.ClientBuilder;
 import io.kubernetes.client.util.Config;
-import io.kubernetes.client.util.KubeConfig;
 import io.kubernetes.client.util.ModelMapper;
 import io.kubernetes.client.util.Yaml;
-import io.kubernetes.client.util.authenticators.GCPAuthenticator;
-import io.kubernetes.client.util.authenticators.OpenIDConnectAuthenticator;
 import io.kubernetes.client.util.credentials.AccessTokenAuthentication;
 import io.kubernetes.client.util.credentials.ClientCertificateAuthentication;
 import io.kubernetes.client.util.generic.KubernetesApiResponse;
@@ -118,7 +114,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   @PostConstruct
   public void initializeApis() throws IOException {
     ApiClient apiClient = ClientBuilder.standard().build();
-    ApiClient api = Config.fromToken("", backendUrl);
     this.machinesApi = new DynamicKubernetesApi("cluster.k8s.io",
         "v1alpha1", "machines",
         apiClient);

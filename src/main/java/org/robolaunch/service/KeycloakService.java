@@ -13,8 +13,8 @@ import org.robolaunch.models.LoginRequest;
 import org.robolaunch.models.LoginResponse;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.Response;
-import org.robolaunch.models.Result;
 import org.robolaunch.models.User;
+import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.repository.abstracts.GroupAdminRepository;
 import org.robolaunch.repository.abstracts.GroupRepository;
 import org.robolaunch.repository.abstracts.KeycloakAdminRepository;
@@ -281,18 +281,22 @@ public class KeycloakService {
     }
   }
 
-  public Result forgotPasswordWithEmail(String email) throws IOException {
+  public PlainResponse forgotPasswordWithEmail(String email) throws IOException {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       User user = userAdminRepository.getUserByEmail(email);
       keycloakAdminRepository.forgotPassword(user.getUsername());
       keycloakLogger.info("User password email sent to " + email + "");
-      return new Result(
-          "An email with link to reset password will be sent to " + email + " if it matches our records."
-              + "Please check your email.",
-          true);
+      plainResponse.setSuccess(true);
+      plainResponse
+          .setMessage("An email with link to reset password will be sent to " + email + " if it matches our records."
+              + "Please check your email.");
+      return plainResponse;
     } catch (ApplicationException e) {
       keycloakLogger.error("Error happened when password email sent: " + e);
-      return new Result("Error sending password mail. Please try again.", false);
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Error sending password mail. Please try again.");
+      return plainResponse;
     }
   }
 
@@ -307,32 +311,34 @@ public class KeycloakService {
     }
   }
 
-  public Result changePassword(LoginRequest loginRequest) throws ApplicationException {
+  public PlainResponse changePassword(LoginRequest loginRequest) throws ApplicationException {
+    PlainResponse plainResponse = new PlainResponse();
     try {
-
       User user = new User();
       user.setUsername(jwt.getClaim("preferred_username"));
       if (!user.getUsername().equals(loginRequest.getUsername())) {
-        throw new ApplicationException("Username does not match.");
+        plainResponse.setSuccess(false);
+        plainResponse.setMessage("User does not exist.");
+        return plainResponse;
       }
       LoginResponse loginResponse = accountService.login(loginRequest);
       if (loginResponse.getIdToken() != null) {
         keycloakAdminRepository.forgotPassword(user.getUsername());
         keycloakLogger.info("User change password mail sent.");
-        return new Result(
-            "An email with link to reset password will be sent to you. "
-                + "Please check your email.",
-            true);
+        plainResponse.setSuccess(true);
+        plainResponse.setMessage("Change password mail is sent to user.");
+        return plainResponse;
       } else {
-        throw new ApplicationException("Please check your credentials and try again.");
+        plainResponse.setSuccess(false);
+        plainResponse.setMessage("You are not authorized.");
+        return plainResponse;
       }
 
     } catch (Exception e) {
       keycloakLogger.error("Error happened when password change mail sent: " + e);
-      return new Result(
-          "Error changing password, please check your credentials.",
-          false);
-
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("An error occured changing the password. Please try again.");
+      return plainResponse;
     }
   }
 

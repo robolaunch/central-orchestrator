@@ -11,20 +11,24 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.robolaunch.core.abstracts.IPAAdmin;
 import org.robolaunch.core.abstracts.IPALogin;
-import org.robolaunch.core.concretes.IPAAdminLogin;
 import org.robolaunch.core.concretes.IPAUserLogin;
+import org.robolaunch.exception.ApplicationException;
+import org.robolaunch.exception.UserNotFoundException;
+import org.robolaunch.models.KeycloakLoginResponse;
 import org.robolaunch.models.LoginRefreshToken;
 import org.robolaunch.models.LoginRefreshTokenOrganization;
 import org.robolaunch.models.LoginRequest;
 import org.robolaunch.models.LoginRequestOrganization;
 import org.robolaunch.models.LoginResponse;
 import org.robolaunch.models.LoginResponseWithIPA;
+import org.robolaunch.models.User;
 import org.robolaunch.repository.abstracts.GroupAdminRepository;
 import org.robolaunch.repository.abstracts.KeycloakRepository;
 import org.robolaunch.repository.abstracts.UserAdminRepository;
 import org.robolaunch.service.KeycloakService;
+
+import com.google.gson.Gson;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
@@ -68,39 +72,46 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
         CompletableFuture<LoginResponse> response = new CompletableFuture<>();
 
         if (loginRequestOrganization.getUsername().contains("@")) {
-            System.out.println("Login with email");
-            String username = userAdminRepository.getUserByEmail(loginRequestOrganization.getUsername()).getUsername();
-            System.out.println("Username: " + username);
-            loginRequestOrganization.setUsername(username);
+            User usr = userAdminRepository.getUserByEmail(loginRequestOrganization.getUsername());
+            if (usr == null) {
+                throw new UserNotFoundException("User not found");
+            }
+            loginRequestOrganization.setUsername(usr.getUsername());
         }
-
         MultiMap userFormData = convertUserOrganization(loginRequestOrganization);
         this.client
                 .post("/auth/realms/" + loginRequestOrganization.getOrganization() + "/protocol/openid-connect/token")
                 .sendForm(userFormData).onFailure(
                         throwable -> {
-                            System.out.println("Error: " + throwable.getMessage());
-                            System.out.println("Error: " + throwable.getCause());
                             response.completeExceptionally(throwable);
+                            throw new ApplicationException("Login failed.");
                         })
                 .onSuccess(
                         httpResponse -> {
+                            if (httpResponse.bodyAsJsonObject().getString("error").equals("invalid_grant")) {
+                                response.completeExceptionally(new InternalError("Login failed"));
+                                throw new ApplicationException("Login failed.");
+                            }
                             if (httpResponse.statusCode() == 200) {
-                                LoginResponse logResponse = new LoginResponse();
-                                logResponse.setAccessToken(httpResponse.bodyAsJsonObject().getString("access_token"));
-                                logResponse.setExpiresIn(httpResponse.bodyAsJsonObject().getString("expires_in"));
-                                logResponse.setRefreshExpiresIn(
+                                LoginResponse loginResponse = new LoginResponse();
+                                loginResponse
+                                        .setAccessToken(httpResponse.bodyAsJsonObject().getString("access_token"));
+                                loginResponse.setExpiresIn(httpResponse.bodyAsJsonObject().getString("expires_in"));
+                                loginResponse.setRefreshExpiresIn(
                                         httpResponse.bodyAsJsonObject().getString("refresh_expires_in"));
-                                logResponse.setIdToken(httpResponse.bodyAsJsonObject().getString("id_token"));
-                                logResponse.setRefreshToken(httpResponse.bodyAsJsonObject().getString("refresh_token"));
-                                response.complete(logResponse);
+                                loginResponse.setIdToken(httpResponse.bodyAsJsonObject().getString("id_token"));
+                                loginResponse
+                                        .setRefreshToken(
+                                                httpResponse.bodyAsJsonObject().getString("refresh_token"));
+                                response.complete(loginResponse);
                             } else {
                                 response.completeExceptionally(new InternalError("Login failed"));
+                                throw new ApplicationException("Login failed.");
                             }
                         })
 
                 .toCompletionStage().toCompletableFuture()
-                .orTimeout(10000, TimeUnit.MILLISECONDS)
+                .orTimeout(8000, TimeUnit.MILLISECONDS)
                 .thenAccept(resp -> {
                     if (resp.statusCode() != 200) {
                         response.completeExceptionally(new InternalError());
@@ -108,7 +119,7 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
                     response.complete(resp.bodyAsJson(LoginResponse.class));
                 }).exceptionally(throwable -> {
                     response.completeExceptionally(throwable);
-                    return null;
+                    throw new ApplicationException("An unexpected error happened.");
                 });
 
         IPALogin ipaLogin = new IPAUserLogin();
@@ -136,14 +147,15 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
 
     @Override
     public LoginResponseWithIPA login(LoginRequest loginRequest)
-            throws InternalError, IOException {
+            throws InternalError, IOException, UserNotFoundException {
         CompletableFuture<LoginResponse> response = new CompletableFuture<>();
 
         if (loginRequest.getUsername().contains("@")) {
-            System.out.println("Login with email");
-            String username = userAdminRepository.getUserByEmail(loginRequest.getUsername()).getUsername();
-            System.out.println("Username: " + username);
-            loginRequest.setUsername(username);
+            User usr = userAdminRepository.getUserByEmail(loginRequest.getUsername());
+            if (usr == null) {
+                throw new UserNotFoundException("User not found");
+            }
+            loginRequest.setUsername(usr.getUsername());
         }
 
         MultiMap userFormData = convertUser(loginRequest);
@@ -151,28 +163,29 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
                 .post("/auth/realms/kogito/protocol/openid-connect/token")
                 .sendForm(userFormData).onFailure(
                         throwable -> {
-                            System.out.println("Error: " + throwable.getMessage());
-                            System.out.println("Error: " + throwable.getCause());
                             response.completeExceptionally(throwable);
+                            throw new ApplicationException("Login failed.");
                         })
                 .onSuccess(
                         httpResponse -> {
                             if (httpResponse.statusCode() == 200) {
-                                LoginResponse logResponse = new LoginResponse();
-                                logResponse.setAccessToken(httpResponse.bodyAsJsonObject().getString("access_token"));
-                                logResponse.setExpiresIn(httpResponse.bodyAsJsonObject().getString("expires_in"));
-                                logResponse.setRefreshExpiresIn(
+                                LoginResponse loginResponse = new LoginResponse();
+                                loginResponse.setAccessToken(httpResponse.bodyAsJsonObject().getString("access_token"));
+                                loginResponse.setExpiresIn(httpResponse.bodyAsJsonObject().getString("expires_in"));
+                                loginResponse.setRefreshExpiresIn(
                                         httpResponse.bodyAsJsonObject().getString("refresh_expires_in"));
-                                logResponse.setIdToken(httpResponse.bodyAsJsonObject().getString("id_token"));
-                                logResponse.setRefreshToken(httpResponse.bodyAsJsonObject().getString("refresh_token"));
-                                response.complete(logResponse);
+                                loginResponse.setIdToken(httpResponse.bodyAsJsonObject().getString("id_token"));
+                                loginResponse
+                                        .setRefreshToken(httpResponse.bodyAsJsonObject().getString("refresh_token"));
+                                response.complete(loginResponse);
                             } else {
                                 response.completeExceptionally(new InternalError("Login failed"));
+                                throw new ApplicationException("Login failed.");
                             }
                         })
 
                 .toCompletionStage().toCompletableFuture()
-                .orTimeout(10000, TimeUnit.MILLISECONDS)
+                .orTimeout(8000, TimeUnit.MILLISECONDS)
                 .thenAccept(resp -> {
                     if (resp.statusCode() != 200) {
                         response.completeExceptionally(new InternalError());
@@ -180,7 +193,7 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
                     response.complete(resp.bodyAsJson(LoginResponse.class));
                 }).exceptionally(throwable -> {
                     response.completeExceptionally(throwable);
-                    return null;
+                    throw new ApplicationException("An unexpected error happened.");
                 });
 
         IPALogin ipaLogin = new IPAUserLogin();
@@ -240,15 +253,14 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
                 .toCompletionStage().toCompletableFuture()
                 .orTimeout(5000, TimeUnit.MILLISECONDS)
                 .thenAccept(httpResponse -> {
-                    LoginResponse logResponse = new LoginResponse();
-                    logResponse.setAccessToken(httpResponse.bodyAsJsonObject().getString("access_token"));
-                    logResponse.setExpiresIn(httpResponse.bodyAsJsonObject().getString("expires_in"));
-                    logResponse.setRefreshExpiresIn(
+                    LoginResponse loginResponse = new LoginResponse();
+                    loginResponse.setAccessToken(httpResponse.bodyAsJsonObject().getString("access_token"));
+                    loginResponse.setExpiresIn(httpResponse.bodyAsJsonObject().getString("expires_in"));
+                    loginResponse.setRefreshExpiresIn(
                             httpResponse.bodyAsJsonObject().getString("refresh_expires_in"));
-                    logResponse.setIdToken(httpResponse.bodyAsJsonObject().getString("id_token"));
-                    logResponse.setRefreshToken(httpResponse.bodyAsJsonObject().getString("refresh_token"));
-
-                    response.complete(logResponse);
+                    loginResponse.setIdToken(httpResponse.bodyAsJsonObject().getString("id_token"));
+                    loginResponse.setRefreshToken(httpResponse.bodyAsJsonObject().getString("refresh_token"));
+                    response.complete(loginResponse);
                 }).exceptionally(throwable -> {
                     response.completeExceptionally(throwable);
                     return null;
@@ -276,15 +288,14 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
                 .toCompletionStage().toCompletableFuture()
                 .orTimeout(5000, TimeUnit.MILLISECONDS)
                 .thenAccept(httpResponse -> {
-                    LoginResponse logResponse = new LoginResponse();
-                    logResponse.setAccessToken(httpResponse.bodyAsJsonObject().getString("access_token"));
-                    logResponse.setExpiresIn(httpResponse.bodyAsJsonObject().getString("expires_in"));
-                    logResponse.setRefreshExpiresIn(
+                    LoginResponse loginResponse = new LoginResponse();
+                    loginResponse.setAccessToken(httpResponse.bodyAsJsonObject().getString("access_token"));
+                    loginResponse.setExpiresIn(httpResponse.bodyAsJsonObject().getString("expires_in"));
+                    loginResponse.setRefreshExpiresIn(
                             httpResponse.bodyAsJsonObject().getString("refresh_expires_in"));
-                    logResponse.setIdToken(httpResponse.bodyAsJsonObject().getString("id_token"));
-                    logResponse.setRefreshToken(httpResponse.bodyAsJsonObject().getString("refresh_token"));
-
-                    response.complete(logResponse);
+                    loginResponse.setIdToken(httpResponse.bodyAsJsonObject().getString("id_token"));
+                    loginResponse.setRefreshToken(httpResponse.bodyAsJsonObject().getString("refresh_token"));
+                    response.complete(loginResponse);
                 }).exceptionally(throwable -> {
                     response.completeExceptionally(throwable);
                     return null;

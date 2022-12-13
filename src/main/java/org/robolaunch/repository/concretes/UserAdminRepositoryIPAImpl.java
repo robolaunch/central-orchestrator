@@ -18,6 +18,7 @@ import org.robolaunch.core.abstracts.RandomGenerator;
 import org.robolaunch.core.abstracts.UserAdapter;
 import org.robolaunch.core.concretes.RandomGeneratorImpl;
 import org.robolaunch.exception.ApplicationException;
+import org.robolaunch.exception.UserNotFoundException;
 import org.robolaunch.models.InvitedUser;
 import org.robolaunch.models.User;
 import org.robolaunch.repository.abstracts.UserAdminRepository;
@@ -245,14 +246,15 @@ public class UserAdminRepositoryIPAImpl implements UserAdminRepository {
     String getRequest = userAdapter.findByEmail(email);
     String body = String.format("{\"id\": 0, \"method\": \"user_find/1\", \"params\": %s}", getRequest);
     JsonNode userJson = makeRequestForUser(body);
-    if (userJson == null) {
-      throw new ApplicationException("User not found");
+    System.out.println("User json: " + userJson);
+    if (userJson.get("uid") == null) {
+      System.out.println("Enters");
+      return null;
     }
     User user = new User();
     user.setUsername(userJson.get("uid").get(0).asText());
     user.setFirstName(userJson.get("givenname").get(0).asText());
     user.setLastName(userJson.get("sn").get(0).asText());
-    System.out.println("User found: " + user.getUsername());
     return user;
   }
 
