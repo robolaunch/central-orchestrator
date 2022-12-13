@@ -22,6 +22,8 @@ import org.robolaunch.models.Organization;
 import org.robolaunch.models.Response;
 import org.robolaunch.models.Result;
 import org.robolaunch.models.User;
+import org.robolaunch.models.response.PlainResponse;
+import org.robolaunch.models.response.ResponseOrganizationMembers;
 import org.robolaunch.repository.abstracts.GroupAdminRepository;
 import org.robolaunch.repository.abstracts.GroupRepository;
 import org.robolaunch.repository.abstracts.KeycloakAdminRepository;
@@ -191,17 +193,20 @@ public class OrganizationService {
   }
 
   /* Get users of the given organization. */
-  public ArrayList<GroupMember> getOrganizationUsers(Organization organization) throws ApplicationException {
+  public ResponseOrganizationMembers getOrganizationUsers(Organization organization) throws ApplicationException {
+    ResponseOrganizationMembers responseOrganizationMembers = new ResponseOrganizationMembers();
     try {
       ArrayList<GroupMember> members = groupRepository.getGroupMembers(organization);
+      responseOrganizationMembers.setSuccess(true);
+      responseOrganizationMembers.setMessage("Organization users sent.");
+      responseOrganizationMembers.setData(members);
       organizationLogger.info("Members sent.");
-      return members;
     } catch (Exception e) {
       organizationLogger.error("Error sending members: " + e.getMessage());
-      throw new ApplicationException(
-          "Cannot get organization users. Make sure that organization with this name exists.");
-
+      responseOrganizationMembers.setSuccess(false);
+      responseOrganizationMembers.setMessage("Error sending members.");
     }
+    return responseOrganizationMembers;
   }
 
   /*
@@ -209,7 +214,8 @@ public class OrganizationService {
    * delete from subgroups too.
    * Also delete from manager lists of the subgroups.
    */
-  public void deleteUserFromOrganization(User user, Organization organization) throws ApplicationException {
+  public PlainResponse deleteUserFromOrganization(User user, Organization organization) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       Boolean isMemberOrganization = groupRepository.isGroupMember(user, organization);
 
@@ -225,7 +231,9 @@ public class OrganizationService {
         if (groupRepository.isGroupManager(user, organization)) {
           Set<User> managers = groupRepository.getUsers(organization, "membermanager_user");
           if (managers.size() == 1) {
-            throw new ApplicationException("Only manager cannot be deleted from organization.");
+            plainResponse.setSuccess(false);
+            plainResponse.setMessage("Only manager cannot be deleted from organization.");
+            return plainResponse;
           }
           groupAdminRepository.removeUserManagerFromGroup(user, organization);
         }
@@ -257,23 +265,30 @@ public class OrganizationService {
         }
       });
       organizationLogger.info("User " + user.getUsername() + " removed from organization");
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("User deleted from organization.");
     } catch (Exception e) {
       organizationLogger.error("Error deleting user from group: " + e.getMessage());
-      throw new ApplicationException("An error occured deleting user.");
-
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("An error occured while deleting user from organization.");
     }
+    return plainResponse;
   }
 
   /* Converting manager to user in organization. */
-  public void deleteUserManagershipFromOrganization(User user, Organization organization)
-      throws ApplicationException {
+  public PlainResponse deleteUserManagershipFromOrganization(User user, Organization organization) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       groupAdminRepository.removeUserManagerFromGroup(user, organization);
       organizationLogger.info("User " + user.getUsername() + " removed from organization");
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("User managership deleted from organization.");
     } catch (Exception e) {
       organizationLogger.error("Error deleting user managership from group: " + e.getMessage());
-      throw new ApplicationException("User managership cannot be deleted.");
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("An error occured while deleting user managership from organization.");
     }
+    return plainResponse;
   }
 
   /* Get all departments of the given organization. */
@@ -290,15 +305,19 @@ public class OrganizationService {
   }
 
   /* Adding the given user to given organization as manager */
-  public void addUserToOrganizationAsManager(User user, Organization organization) throws ApplicationException {
+  public PlainResponse addUserToOrganizationAsManager(User user, Organization organization) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       groupAdminRepository.addUserToGroupAsManager(user, organization);
       organizationLogger.info("User " + user.getUsername() + " added to group as manager");
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("User added to organization as manager.");
     } catch (Exception e) {
       organizationLogger.error("Error happened when adding user to group " + e.getMessage());
-      throw new ApplicationException("Error happened while creating department.");
-
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("An error occured adding user to organization as manager.");
     }
+    return plainResponse;
   }
 
   public void deleteOrganizationGroup(Organization organization) throws ApplicationException {
