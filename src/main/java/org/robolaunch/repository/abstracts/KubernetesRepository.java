@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.robolaunch.models.CloudInstance;
 import org.robolaunch.models.Organization;
 
+import io.kubernetes.client.openapi.ApiClient;
 import io.smallrye.graphql.execution.ExecutionException;
 
 public interface KubernetesRepository {

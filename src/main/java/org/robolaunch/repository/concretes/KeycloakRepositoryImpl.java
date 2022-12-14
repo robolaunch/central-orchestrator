@@ -15,7 +15,6 @@ import org.robolaunch.core.abstracts.IPALogin;
 import org.robolaunch.core.concretes.IPAUserLogin;
 import org.robolaunch.exception.ApplicationException;
 import org.robolaunch.exception.UserNotFoundException;
-import org.robolaunch.models.KeycloakLoginResponse;
 import org.robolaunch.models.LoginRefreshToken;
 import org.robolaunch.models.LoginRefreshTokenOrganization;
 import org.robolaunch.models.LoginRequest;
@@ -27,8 +26,6 @@ import org.robolaunch.repository.abstracts.GroupAdminRepository;
 import org.robolaunch.repository.abstracts.KeycloakRepository;
 import org.robolaunch.repository.abstracts.UserAdminRepository;
 import org.robolaunch.service.KeycloakService;
-
-import com.google.gson.Gson;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
@@ -88,10 +85,16 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
                         })
                 .onSuccess(
                         httpResponse -> {
-                            if (httpResponse.bodyAsJsonObject().getString("error").equals("invalid_grant")) {
-                                response.completeExceptionally(new InternalError("Login failed"));
-                                throw new ApplicationException("Login failed.");
-                            }
+                            System.out.println("Got the things: " + httpResponse.bodyAsJsonObject());
+                            /*
+                             * if
+                             * (httpResponse.bodyAsJsonObject().getString("error").equals("invalid_grant"))
+                             * {
+                             * System.out.println("Clearly not authorized.");
+                             * response.completeExceptionally(new InternalError("Login failed"));
+                             * throw new ApplicationException("Login failed.");
+                             * }
+                             */
                             if (httpResponse.statusCode() == 200) {
                                 LoginResponse loginResponse = new LoginResponse();
                                 loginResponse

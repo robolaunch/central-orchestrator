@@ -16,7 +16,6 @@ import org.robolaunch.repository.abstracts.CloudInstanceHelperRepository;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.util.ClientBuilder;
-import io.kubernetes.client.util.KubeConfig;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi;
 import io.kubernetes.client.util.generic.options.ListOptions;
 import io.quarkus.arc.log.LoggerName;
@@ -513,11 +512,13 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public void customApiClient(String bufferName) throws IOException, InterruptedException {
+  public void userApiClient(String bufferName) throws IOException, InterruptedException {
     try {
-      cloudInstanceHelperRepository.customApiClient(bufferName);
+      String token = jwt.getRawToken();
+      cloudInstanceHelperRepository.testingUserApiClient(bufferName, token);
+      cloudInstanceHelperLogger.info("User ApiClient tested!");
     } catch (ApiException e) {
-      cloudInstanceHelperLogger.error("Error while calling customApiClient: " + e.getMessage());
+      cloudInstanceHelperLogger.error("Error while testing user ApiClient: " + e.getMessage());
       System.out.println(e.getResponseBody());
       System.out.println(e.getCode());
     }

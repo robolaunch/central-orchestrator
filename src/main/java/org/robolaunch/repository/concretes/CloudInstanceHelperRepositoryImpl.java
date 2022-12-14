@@ -51,8 +51,10 @@ import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.apis.RbacAuthorizationV1Api;
 import io.kubernetes.client.openapi.models.V1ClusterRole;
 import io.kubernetes.client.openapi.models.V1ClusterRoleBinding;
+import io.kubernetes.client.openapi.models.V1ConfigMap;
 import io.kubernetes.client.openapi.models.V1Deployment;
 import io.kubernetes.client.openapi.models.V1DeploymentList;
+import io.kubernetes.client.openapi.models.V1Namespace;
 import io.kubernetes.client.openapi.models.V1Node;
 import io.kubernetes.client.openapi.models.V1NodeList;
 import io.kubernetes.client.openapi.models.V1Pod;
@@ -65,6 +67,7 @@ import io.kubernetes.client.util.Config;
 import io.kubernetes.client.util.ModelMapper;
 import io.kubernetes.client.util.Yaml;
 import io.kubernetes.client.util.credentials.AccessTokenAuthentication;
+import io.kubernetes.client.util.credentials.Authentication;
 import io.kubernetes.client.util.credentials.ClientCertificateAuthentication;
 import io.kubernetes.client.util.generic.KubernetesApiResponse;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi;
@@ -114,6 +117,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   @PostConstruct
   public void initializeApis() throws IOException {
     ApiClient apiClient = ClientBuilder.standard().build();
+
     this.machinesApi = new DynamicKubernetesApi("cluster.k8s.io",
         "v1alpha1", "machines",
         apiClient);
@@ -325,6 +329,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     ListOptions listOptions = new ListOptions();
     listOptions.setLabelSelector("buffered=true, !robolaunch.io/organization");
     var vcs = virtualClustersApi.list(listOptions);
+    System.out.println("Buffered vc count: " + vcs.getObject().getItems().size());
     int randomInteger = (int) Math.floor(Math.random() * (vcCount));
     String bufferName = vcs.getObject().getItems().get(randomInteger).getMetadata().getLabels()
         .get("robolaunch.io/buffer-instance");
@@ -817,9 +822,12 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
-  public ApiClient customApiClient(String bufferName)
+  public ApiClient userApiClient(String bufferName, String token)
       throws IOException, ApiException, InterruptedException {
     String namespaceName = getNamespaceNameWithBufferName(bufferName);
+    V1Secret sc = coreV1Api.readNamespacedSecret("admin-kubeconfig", namespaceName, null);
+    var certData = sc.getData().get("admin-kubeconfig");
+    String cert = new String(certData, StandardCharsets.UTF_8);
 
     String nodePort = "";
     for (V1Service service : coreV1Api
@@ -840,12 +848,16 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
         break;
       }
     }
-    String url = "https://" + masterIP + ":" + nodePort;
 
-    V1Secret sc = coreV1Api.readNamespacedSecret("admin-kubeconfig", namespaceName, null);
-    var certData = sc.getData().get("admin-kubeconfig");
-    String cert = new String(certData, StandardCharsets.UTF_8);
+    System.out.println("ExternalIP: " + "https://" + masterIP + ":" + nodePort);
 
+    String generatedcloudInstanceName = "vc-" + bufferName;
+
+    while (!virtualClustersApi.get("default", generatedcloudInstanceName).getObject().getRaw().get("status")
+        .getAsJsonObject()
+        .get("phase").getAsString().equals("Running")) {
+      Thread.sleep(3000);
+    }
     org.yaml.snakeyaml.Yaml yaml = new org.yaml.snakeyaml.Yaml();
     var yml = yaml.load(cert);
     ObjectMapper mapper = new ObjectMapper();
@@ -859,17 +871,27 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
     byte[] byteCertificateAuthData = Base64.getDecoder().decode(certificateAuthorityData.getBytes("UTF-8"));
 
-    System.out.println("Token: " + jwt.getRawToken());
-    ApiClient client = new ClientBuilder().setBasePath(url)
-        .setAuthentication(new AccessTokenAuthentication(jwt.getRawToken()))
-        .setVerifyingSsl(false)
-        .setCertificateAuthority(byteCertificateAuthData).build();
-    CoreV1Api coreApi = new CoreV1Api(client);
+    String basePath = "https://" + masterIP + ":" + nodePort;
+    /* Virtual Cluster Client */
+    ApiClient newClient = new ClientBuilder().setBasePath(basePath)
+        .setAuthentication(new AccessTokenAuthentication(token))
+        .setCertificateAuthority(byteCertificateAuthData)
+        .setVerifyingSsl(true)
+        .build();
+    return newClient;
+  }
 
-    System.out.println("ExternalIP: " + "https://" + masterIP + ":" + nodePort);
+  public void testingUserApiClient(String bufferName, String token)
+      throws IOException, ApiException, InterruptedException {
+    System.out.println("At least enters.");
+    ApiClient userClient = userApiClient(bufferName, token);
+    System.out.println("Just got the userClient!");
+    CoreV1Api vcCoreV1Api = new CoreV1Api(userClient);
 
-    System.out.println("hehey: " + coreApi.listNamespace(null, null, null, null, null, null, null, null, null, null));
-    return null;
+    var podList = vcCoreV1Api.listConfigMapForAllNamespaces(null, null, null, null, null, null, null, null, null, null);
+    for (V1ConfigMap ns : podList.getItems()) {
+      System.out.println("Node name: " + ns.getMetadata().getName());
+    }
   }
 
 }

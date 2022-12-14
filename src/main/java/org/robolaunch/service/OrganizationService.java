@@ -24,6 +24,7 @@ import org.robolaunch.models.Result;
 import org.robolaunch.models.User;
 import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.models.response.ResponseOrganizationMembers;
+import org.robolaunch.models.response.ResponseUserOrganizations;
 import org.robolaunch.repository.abstracts.GroupAdminRepository;
 import org.robolaunch.repository.abstracts.GroupRepository;
 import org.robolaunch.repository.abstracts.KeycloakAdminRepository;
@@ -420,17 +421,23 @@ public class OrganizationService {
     }
   }
 
-  public ArrayList<Organization> getUserOrganizations() throws ApplicationException {
+  public ResponseUserOrganizations getUserOrganizations() throws ApplicationException {
+    ResponseUserOrganizations responseUserOrganizations = new ResponseUserOrganizations();
     try {
       User user = new User();
       user.setUsername(jwt.getClaim("preferred_username"));
-      ArrayList<Organization> organizations = userRepository.getOrganizations(user);
+      ArrayList<Organization> organizations = userAdminRepository.getOrganizations(user);
+      responseUserOrganizations.setSuccess(true);
+      responseUserOrganizations.setMessage("User organizations sent.");
+      responseUserOrganizations.setData(organizations);
       organizationLogger.info("User " + user.getUsername() + " organizations fetched");
-      return organizations;
     } catch (Exception e) {
       organizationLogger.error("Error happend getting user group: " + e);
-      throw new ApplicationException("Error getting user organization.");
+      responseUserOrganizations.setSuccess(false);
+      responseUserOrganizations.setMessage("User organizations cannot be sent.");
+      responseUserOrganizations.setData(null);
     }
+    return responseUserOrganizations;
   }
 
   public Integer getRoboticsCloudCount(Organization organization, String departmentName) {

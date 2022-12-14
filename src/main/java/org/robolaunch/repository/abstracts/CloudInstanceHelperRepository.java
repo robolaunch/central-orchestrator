@@ -112,6 +112,9 @@ public interface CloudInstanceHelperRepository {
                         ErrorResponseException, InsufficientDataException, InternalException, InvalidResponseException,
                         NoSuchAlgorithmException, ServerException, XmlParserException, IllegalArgumentException;
 
-        public ApiClient customApiClient(String bufferName)
+        public ApiClient userApiClient(String bufferName, String token)
+                        throws IOException, ApiException, InterruptedException;
+
+        public void testingUserApiClient(String bufferName, String token)
                         throws IOException, ApiException, InterruptedException;
 }
