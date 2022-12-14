@@ -406,12 +406,14 @@ public class DepartmentService {
   }
 
   /* Deleting a department from organization */
-  public Response deleteDepartment(Organization organization, DepartmentBasic department) throws ApplicationException {
+  public PlainResponse deleteDepartment(Organization organization, DepartmentBasic department) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       String departmentName = department.getName();
       if (departmentName.equals("admins") && departmentName.equals("invitedUsers")) {
-        departmentLogger.error("This department cannot be deleted.");
-        return new Response(false, "'admins' and 'invitedUsers' departments cannot be deleted.");
+        plainResponse.setSuccess(false);
+        plainResponse.setMessage("This team cannot be deleted.");
+        return plainResponse;
       }
       List<Department> departments = groupRepository.getTeams(organization, "member_group");
       Iterator<Department> it = departments.iterator();
@@ -427,11 +429,15 @@ public class DepartmentService {
         }
       }
       groupAdminRepository.deleteGroup(dept);
-      departmentLogger.info("Department deleted.");
-      return new Response(true, UUID.randomUUID().toString());
+      departmentLogger.info("Team deleted.");
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Team successfully deleted.");
+      return plainResponse;
     } catch (Exception e) {
       departmentLogger.error("Error deleting department: " + e.getMessage());
-      return new Response(false, "An error occured when deleting department.");
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("An error occured while deleting team.");
+      return plainResponse;
     }
   }
 
