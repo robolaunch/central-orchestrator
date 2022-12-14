@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.net.CookieManager;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -134,7 +136,7 @@ public class GroupAdminRepositoryIPAImpl implements GroupAdminRepository {
     return cookieManager.getCookieStore().getCookies();
   }
 
-  public void clearCookies() {
+  public void clearCookies() throws URISyntaxException {
     cookieManager.getCookieStore().removeAll();
   }
 

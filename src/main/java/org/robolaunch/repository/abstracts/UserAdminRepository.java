@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.net.HttpCookie;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
+import java.util.ArrayList;
 
 import org.robolaunch.exception.ApplicationException;
 import org.robolaunch.models.InvitedUser;
+import org.robolaunch.models.Organization;
 import org.robolaunch.models.User;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -50,6 +52,8 @@ public interface UserAdminRepository {
         String createUserFromInviteWithPassword(InvitedUser user)
                         throws JsonProcessingException, InternalError, IOException, ApplicationException;
 
-        public User getUserByUsername(String username) throws JsonProcessingException, IOException;
+        User getUserByUsername(String username) throws JsonProcessingException, IOException;
+
+        ArrayList<Organization> getOrganizations(User user) throws IOException;
 
 }

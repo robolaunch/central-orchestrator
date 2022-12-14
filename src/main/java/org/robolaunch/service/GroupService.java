@@ -77,6 +77,15 @@ public class GroupService {
     }
   }
 
+  public void deleteAdminCookies() {
+    try {
+      groupAdminRepository.clearCookies();
+      groupLogger.info("Admin cookies deleted.");
+    } catch (Exception e) {
+      groupLogger.error("Error deleting admin cookies.");
+    }
+  }
+
   public void addUserToIPAGroup(User user, Organization organization) throws ApplicationException {
     try {
       groupAdminRepository.addUserToGroup(user, organization);

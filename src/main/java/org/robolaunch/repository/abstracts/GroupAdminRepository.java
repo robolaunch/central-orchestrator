@@ -2,6 +2,7 @@ package org.robolaunch.repository.abstracts;
 
 import java.io.IOException;
 import java.net.HttpCookie;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Set;
 
@@ -20,7 +21,7 @@ public interface GroupAdminRepository {
 
         List<HttpCookie> getCurrentCookies();
 
-        void clearCookies();
+        void clearCookies() throws URISyntaxException;
 
         void addUserToGroup(User user, Organization group)
                         throws IOException, InternalError, ApplicationException;
