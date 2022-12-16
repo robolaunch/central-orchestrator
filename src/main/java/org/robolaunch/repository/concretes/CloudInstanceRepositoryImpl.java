@@ -65,6 +65,7 @@ import io.kubernetes.client.openapi.models.V1Namespace;
 import io.kubernetes.client.openapi.models.V1Node;
 import io.kubernetes.client.openapi.models.V1ObjectMeta;
 import io.kubernetes.client.openapi.models.V1ObjectMetaBuilder;
+import io.kubernetes.client.openapi.models.V1PolicyRule;
 import io.kubernetes.client.openapi.models.V1Role;
 import io.kubernetes.client.openapi.models.V1RoleBinding;
 import io.kubernetes.client.openapi.models.V1Secret;
@@ -72,6 +73,7 @@ import io.kubernetes.client.openapi.models.V1Service;
 import io.kubernetes.client.openapi.models.V1ServiceAccount;
 import io.kubernetes.client.openapi.models.V1StatefulSet;
 import io.kubernetes.client.openapi.models.V1StatefulSetList;
+import io.kubernetes.client.openapi.models.V1Subject;
 import io.kubernetes.client.openapi.models.V1ValidatingWebhookConfiguration;
 import io.kubernetes.client.util.ClientBuilder;
 import io.kubernetes.client.util.Config;
@@ -1658,13 +1660,21 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         Object obj = list.get(i);
                         String type = obj.getClass().getSimpleName();
                         if (type.equals("V1ClusterRole")) {
+                                V1PolicyRule v1PolicyRule = new V1PolicyRule();
+                                v1PolicyRule.addApiGroupsItem("*");
+                                v1PolicyRule.addResourcesItem("*");
+                                v1PolicyRule.addVerbsItem("*");
                                 V1ClusterRole clusterRole = (V1ClusterRole) obj;
                                 rbacAuthorizationV1Api.createClusterRole(clusterRole, null, null, null, null);
                         }
                         if (type.equals("V1ClusterRoleBinding")) {
                                 V1ClusterRoleBinding clusterRoleBinding = (V1ClusterRoleBinding) obj;
-                                System.out.println("Username: " + username);
-                                clusterRoleBinding.getSubjects().get(0).setName(username);
+                                System.out.println("CRB Username: " + username);
+                                V1Subject v1Subject = new V1Subject();
+                                v1Subject.setKind("User");
+                                v1Subject.setName(username);
+                                v1Subject.setApiGroup("rbac.authorization.k8s.io");
+                                clusterRoleBinding.addSubjectsItem(v1Subject);
                                 rbacAuthorizationV1Api.createClusterRoleBinding(clusterRoleBinding, null, null, null,
                                                 null);
                         }
