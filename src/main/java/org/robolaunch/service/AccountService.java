@@ -491,7 +491,6 @@ public class AccountService {
     public Response doesEmailExist(User user) {
         try {
             Boolean doesItExist = userAdminRepository.doesEmailExist(user.getEmail());
-            System.out.println("Email: " + user.getEmail() + " exists: " + doesItExist);
             if (doesItExist) {
                 return new Response(false, "Email already exists.");
             } else {

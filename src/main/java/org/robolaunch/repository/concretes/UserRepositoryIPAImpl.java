@@ -86,7 +86,6 @@ public class UserRepositoryIPAImpl implements UserRepository {
 
     @Override
     public Number makeRequestWithMail(String body) throws IOException, InternalError {
-        System.out.println("Definitely enters...");
         URL url = new URL(this.freeIpaURL + "/ipa/session/json");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
@@ -105,7 +104,6 @@ public class UserRepositoryIPAImpl implements UserRepository {
         while ((line = bufferedReader.readLine()) != null) {
             result += line;
         }
-        System.out.println("Saf result: " + result);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode actualObj = mapper.readTree(result);
         wr.close();

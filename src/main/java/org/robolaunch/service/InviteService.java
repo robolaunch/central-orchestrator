@@ -353,9 +353,7 @@ public class InviteService {
       throws ApplicationException {
     try {
       String email = user.getEmail();
-      System.out.println("The email: " + email);
       User invitedUserRecord = userRepository.getUserByFirstName(email);
-      System.out.println("The invited user record: " + invitedUserRecord.getLastName());
       String[] lastNameParts = invitedUserRecord.getLastName().split(",");
       for (int i = 0; i < lastNameParts.length; i++) {
         String[] tokenParts = lastNameParts[i].split("&");
@@ -386,9 +384,7 @@ public class InviteService {
       throws ApplicationException {
     try {
       String email = user.getEmail();
-      System.out.println("The email: " + email);
       User invitedUserRecord = userRepository.getUserByFirstName(email);
-      System.out.println("The invited user record: " + invitedUserRecord.getLastName());
       String[] lastNameParts = invitedUserRecord.getLastName().split(",");
       for (int i = 0; i < lastNameParts.length; i++) {
         String[] tokenParts = lastNameParts[i].split("&");
