@@ -51,7 +51,6 @@ import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.apis.RbacAuthorizationV1Api;
 import io.kubernetes.client.openapi.models.V1ClusterRole;
 import io.kubernetes.client.openapi.models.V1ClusterRoleBinding;
-import io.kubernetes.client.openapi.models.V1ConfigMap;
 import io.kubernetes.client.openapi.models.V1Deployment;
 import io.kubernetes.client.openapi.models.V1DeploymentList;
 import io.kubernetes.client.openapi.models.V1Namespace;
@@ -67,7 +66,6 @@ import io.kubernetes.client.util.Config;
 import io.kubernetes.client.util.ModelMapper;
 import io.kubernetes.client.util.Yaml;
 import io.kubernetes.client.util.credentials.AccessTokenAuthentication;
-import io.kubernetes.client.util.credentials.Authentication;
 import io.kubernetes.client.util.credentials.ClientCertificateAuthentication;
 import io.kubernetes.client.util.generic.KubernetesApiResponse;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi;
@@ -888,9 +886,9 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     System.out.println("Just got the userClient!");
     CoreV1Api vcCoreV1Api = new CoreV1Api(userClient);
 
-    var podList = vcCoreV1Api.listConfigMapForAllNamespaces(null, null, null, null, null, null, null, null, null, null);
-    for (V1ConfigMap ns : podList.getItems()) {
-      System.out.println("Node name: " + ns.getMetadata().getName());
+    var nsList = vcCoreV1Api.listNamespace(null, null, null, null, null, null, null, null, null, null);
+    for (V1Namespace ns : nsList.getItems()) {
+      System.out.println("ns name: " + ns.getMetadata().getName());
     }
   }
 

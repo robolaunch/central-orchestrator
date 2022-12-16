@@ -85,16 +85,7 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
                         })
                 .onSuccess(
                         httpResponse -> {
-                            System.out.println("Got the things: " + httpResponse.bodyAsJsonObject());
-                            /*
-                             * if
-                             * (httpResponse.bodyAsJsonObject().getString("error").equals("invalid_grant"))
-                             * {
-                             * System.out.println("Clearly not authorized.");
-                             * response.completeExceptionally(new InternalError("Login failed"));
-                             * throw new ApplicationException("Login failed.");
-                             * }
-                             */
+                            // System.out.println("Got the things: " + httpResponse.bodyAsJsonObject());
                             if (httpResponse.statusCode() == 200) {
                                 LoginResponse loginResponse = new LoginResponse();
                                 loginResponse
