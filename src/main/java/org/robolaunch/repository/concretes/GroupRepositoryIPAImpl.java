@@ -295,18 +295,20 @@ public class GroupRepositoryIPAImpl implements GroupRepository {
             try {
                 User usr = new User();
                 usr.setUsername(user.get("uid").get(0).asText());
-                GroupMember groupMember = new GroupMember();
-                groupMember.setUsername(user.get("uid").get(0).asText());
-                groupMember.setFirstName(user.get("givenname").get(0).asText());
-                groupMember.setLastName(user.get("sn").get(0).asText());
-                groupMember.setEmail(user.get("mail").get(0).asText());
-                groupMember.setAdmin(isGroupManager(usr, group));
-                if (user.get("uid").get(0).asText().startsWith("invited")) {
-                    if (getGroupDescription(group).equals("invitedUsers")) {
+                if (!usr.getUsername().equals("bigboss")) {
+                    GroupMember groupMember = new GroupMember();
+                    groupMember.setUsername(user.get("uid").get(0).asText());
+                    groupMember.setFirstName(user.get("givenname").get(0).asText());
+                    groupMember.setLastName(user.get("sn").get(0).asText());
+                    groupMember.setEmail(user.get("mail").get(0).asText());
+                    groupMember.setAdmin(isGroupManager(usr, group));
+                    if (user.get("uid").get(0).asText().startsWith("invited")) {
+                        if (getGroupDescription(group).equals("invitedUsers")) {
+                            groupMembers.add(groupMember);
+                        }
+                    } else {
                         groupMembers.add(groupMember);
                     }
-                } else {
-                    groupMembers.add(groupMember);
                 }
             } catch (InternalError e) {
                 e.printStackTrace();
