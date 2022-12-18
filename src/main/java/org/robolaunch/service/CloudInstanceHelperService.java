@@ -74,8 +74,8 @@ public class CloudInstanceHelperService {
   }
 
   public String getBufferName(Organization organization, String departmentName, String cloudInstanceName)
-      throws IOException {
-    ApiClient apiClient = ClientBuilder.standard().build();
+      throws IOException, ApiException, InterruptedException {
+    ApiClient apiClient = cloudInstanceHelperRepository.adminApiClient();
 
     DynamicKubernetesApi vcApi = new DynamicKubernetesApi("tenancy.x-k8s.io", "v1alpha1",
         "virtualclusters", apiClient);
@@ -514,16 +514,21 @@ public class CloudInstanceHelperService {
 
   public void userApiClient(String bufferName) throws IOException, InterruptedException {
     try {
-      System.out.println("User api client in.");
       String token = jwt.getRawToken();
-      System.out.println("Token: " + token);
       cloudInstanceHelperRepository.testingUserApiClient(bufferName, token);
       cloudInstanceHelperLogger.info("User ApiClient tested!");
-      System.out.println("User api client out.");
     } catch (ApiException e) {
       cloudInstanceHelperLogger.error("Error while testing user ApiClient: " + e.getMessage());
       System.out.println(e.getResponseBody());
       System.out.println(e.getCode());
+    }
+  }
+
+  public void adminApiClient() {
+    try {
+      cloudInstanceHelperRepository.testingAdminApiClient();
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
     }
   }
 

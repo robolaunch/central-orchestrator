@@ -49,7 +49,7 @@ public interface CloudInstanceRepository {
         public void labelVirtualCluster(String bufferName, Organization organization, String departmentName,
                         String superClusterName,
                         String cloudInstanceName, Boolean connectionHub)
-                        throws IOException, KubectlException, InterruptedException;
+                        throws IOException, KubectlException, InterruptedException, ApiException;
 
         public void addOrganizationLabelsToNode(Organization organization, String nodeName, String cloudInstanceName,
                         String departmentName,
@@ -143,7 +143,8 @@ public interface CloudInstanceRepository {
         public void createDNSRecord(Organization organization, String nodeName)
                         throws ApiException, InternalError, ApplicationException, IOException;
 
-        public void addBufferedLabelToVC(String bufferName, String instanceType) throws KubectlException, IOException;
+        public void addBufferedLabelToVC(String bufferName, String instanceType)
+                        throws KubectlException, IOException, ApiException, InterruptedException;
 
         public void scaleVCWorkloadsDown(String bufferName)
                         throws IOException, ApiException, InterruptedException, KubectlException;
@@ -151,13 +152,16 @@ public interface CloudInstanceRepository {
         public void scaleVCWorkloadsUp(String bufferName)
                         throws IOException, ApiException, InterruptedException, KubectlException;
 
-        public void scaleOAuth2ProxyDown(String bufferName) throws ApiException, IOException, KubectlException;
+        public void scaleOAuth2ProxyDown(String bufferName)
+                        throws ApiException, IOException, KubectlException, InterruptedException;
 
-        public void scaleOAuth2ProxyUp(String bufferName) throws ApiException, IOException, KubectlException;
+        public void scaleOAuth2ProxyUp(String bufferName)
+                        throws ApiException, IOException, KubectlException, InterruptedException;
 
         public void scaleCoreDNSUp(String bufferName) throws ApiException, IOException, InterruptedException;
 
-        public void unlabelSuperClusterNode(String nodeName) throws IOException, KubectlException;
+        public void unlabelSuperClusterNode(String nodeName)
+                        throws IOException, KubectlException, ApiException, InterruptedException;
 
         public void createClusterAdminRole(Organization organization, String bufferName, String username)
                         throws InvalidKeyException, ErrorResponseException, InsufficientDataException,

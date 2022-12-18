@@ -81,15 +81,19 @@ public interface CloudInstanceHelperRepository {
                         InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
                         XmlParserException, IllegalArgumentException, IOException, InterruptedException;
 
-        public void deleteVirtualCluster(String bufferName) throws KubectlException, IOException;
+        public void deleteVirtualCluster(String bufferName)
+                        throws KubectlException, IOException, ApiException, InterruptedException;
 
         public void deleteSubnet(String bufferName) throws InternalError, IOException, ApiException;
 
-        public void deleteMachineDeployment(String bufferName) throws IOException, KubectlException;
+        public void deleteMachineDeployment(String bufferName)
+                        throws IOException, KubectlException, ApiException, InterruptedException;
 
-        public void deleteOrganizationLabelsFromSuperCluster(String nodeName) throws IOException, KubectlException;
+        public void deleteOrganizationLabelsFromSuperCluster(String nodeName)
+                        throws IOException, KubectlException, ApiException, InterruptedException;
 
-        public void deleteWorkerLabelFromNode(String nodeName) throws IOException, KubectlException;
+        public void deleteWorkerLabelFromNode(String nodeName)
+                        throws IOException, KubectlException, ApiException, InterruptedException;
 
         public void deleteVirtualClusterNodes(String bufferName)
                         throws IOException, ApiException, InterruptedException, KubectlException;
@@ -117,4 +121,9 @@ public interface CloudInstanceHelperRepository {
 
         public void testingUserApiClient(String bufferName, String token)
                         throws IOException, ApiException, InterruptedException;
+
+        public void testingAdminApiClient()
+                        throws IOException, ApiException, InterruptedException;
+
+        public ApiClient adminApiClient() throws IOException, ApiException, InterruptedException;
 }
