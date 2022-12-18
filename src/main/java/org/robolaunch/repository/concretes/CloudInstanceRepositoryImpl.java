@@ -97,6 +97,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         private DynamicKubernetesApi virtualClustersApi;
         private DynamicKubernetesApi subnetsApi;
         private AppsV1Api appsApi;
+        private ApiClient adminApiClient;
 
         @ConfigProperty(name = "quarkus.oidc.client.id")
         String clientId;
@@ -131,19 +132,19 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         JsonWebToken jwt;
 
         @PostConstruct
-        public void initializeApis() throws IOException {
-                ApiClient apiClient = ClientBuilder.standard().build();
+        public void initializeApis() throws IOException, ApiException, InterruptedException {
+                this.adminApiClient = cloudInstanceHelperRepository.adminApiClient();
                 this.machineDeploymentApi = new DynamicKubernetesApi("cluster.k8s.io", "v1alpha1",
                                 "machinedeployments",
-                                apiClient);
-                this.coreV1Api = new CoreV1Api(apiClient);
+                                adminApiClient);
+                this.coreV1Api = new CoreV1Api(adminApiClient);
                 this.clusterVersionApi = new DynamicKubernetesApi("tenancy.x-k8s.io", "v1alpha1",
-                                "clusterversions", apiClient);
+                                "clusterversions", adminApiClient);
                 this.virtualClustersApi = new DynamicKubernetesApi("tenancy.x-k8s.io", "v1alpha1",
-                                "virtualclusters", apiClient);
+                                "virtualclusters", adminApiClient);
                 this.subnetsApi = new DynamicKubernetesApi("kubeovn.io", "v1",
-                                "subnets", apiClient);
-                this.appsApi = new AppsV1Api(apiClient);
+                                "subnets", adminApiClient);
+                this.appsApi = new AppsV1Api(adminApiClient);
         }
 
         @Override
@@ -185,13 +186,13 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         @Override
         public void claimTheSuperClusterNode(String nodeName, String bufferName)
                         throws IOException, KubectlException, ApiException {
-                ApiClient apiClient = ClientBuilder.standard().build();
-                Kubectl.label(V1Node.class).apiClient(apiClient)
+
+                Kubectl.label(V1Node.class).apiClient(adminApiClient)
                                 .name(
                                                 nodeName)
                                 .addLabel("robolaunch.io/buffer-instance", bufferName)
                                 .execute();
-                Kubectl.label(V1Node.class).apiClient(apiClient)
+                Kubectl.label(V1Node.class).apiClient(adminApiClient)
                                 .name(
                                                 nodeName)
                                 .addLabel("node-role.kubernetes.io/worker", "worker")
@@ -259,13 +260,13 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         @Override
         public void scaleStatefulSetsDown(String bufferName) throws ApiException, KubectlException, IOException {
                 String namespaceName = cloudInstanceHelperRepository.getNamespaceNameWithBufferName(bufferName);
-                ApiClient apiClient = ClientBuilder.standard().build();
-                Kubectl.scale(V1StatefulSet.class).apiClient(apiClient).namespace(namespaceName).name("etcd")
+
+                Kubectl.scale(V1StatefulSet.class).apiClient(adminApiClient).namespace(namespaceName).name("etcd")
                                 .replicas(0).execute();
-                Kubectl.scale(V1StatefulSet.class).apiClient(apiClient).namespace(namespaceName)
+                Kubectl.scale(V1StatefulSet.class).apiClient(adminApiClient).namespace(namespaceName)
                                 .name("controller-manager")
                                 .replicas(0).execute();
-                Kubectl.scale(V1StatefulSet.class).apiClient(apiClient).namespace(namespaceName).name("apiserver")
+                Kubectl.scale(V1StatefulSet.class).apiClient(adminApiClient).namespace(namespaceName).name("apiserver")
                                 .replicas(0).execute();
         }
 
@@ -273,8 +274,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         public void drainNode(String nodeName) throws IOException, KubectlException {
 
                 try {
-                        ApiClient apiClient = ClientBuilder.standard().build();
-                        Kubectl.drain().ignoreDaemonSets().gracePeriod(60).name(nodeName).apiClient(apiClient)
+
+                        Kubectl.drain().ignoreDaemonSets().gracePeriod(60).name(nodeName).apiClient(adminApiClient)
                                         .execute();
                 } catch (KubectlException e) {
                         // TODO: handle exception
@@ -284,18 +285,18 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
 
         @Override
         public void uncordonNode(String nodeName) throws IOException, KubectlException {
-                ApiClient apiClient = ClientBuilder.standard().build();
-                Kubectl.uncordon().name(nodeName).apiClient(apiClient).execute();
+
+                Kubectl.uncordon().name(nodeName).apiClient(adminApiClient).execute();
         }
 
         @Override
         public void labelVirtualCluster(String bufferName, Organization organization, String departmentName,
                         String superClusterName, String cloudInstanceName, Boolean connectionHub)
-                        throws IOException, KubectlException, InterruptedException {
+                        throws IOException, KubectlException, InterruptedException, ApiException {
                 ModelMapper.addModelMap("tenancy.x-k8s.io", "v1alpha1", "VirtualCluster",
                                 "virtualclusters", true,
                                 V1VirtualCluster.class);
-                ApiClient client = Config.defaultClient();
+                ApiClient client = cloudInstanceHelperRepository.adminApiClient();
 
                 if (!connectionHub) {
                         Kubectl.label(V1VirtualCluster.class).apiClient(client)
@@ -329,9 +330,9 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         String departmentName, String superClusterName, Boolean connectionHub)
                         throws KubectlException, IOException {
                 try {
-                        ApiClient apiClient = ClientBuilder.standard().build();
+
                         if (!connectionHub) {
-                                Kubectl.label(V1Node.class).apiClient(apiClient)
+                                Kubectl.label(V1Node.class).apiClient(adminApiClient)
                                                 .name(nodeName)
                                                 .addLabel("robolaunch.io/organization", organization.getName())
                                                 .addLabel("robolaunch.io/cloud-instance", cloudInstanceName)
@@ -339,7 +340,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                                 .addLabel("robolaunch.io/super-cluster", superClusterName)
                                                 .execute();
                         } else {
-                                Kubectl.label(V1Node.class).apiClient(apiClient)
+                                Kubectl.label(V1Node.class).apiClient(adminApiClient)
                                                 .name(nodeName)
                                                 .addLabel("robolaunch.io/organization", organization.getName())
                                                 .addLabel("robolaunch.io/cloud-instance", cloudInstanceName)
@@ -414,13 +415,13 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         @Override
         public void scaleStatefulSetsUp(String bufferName) throws ApiException, IOException, KubectlException {
                 String namespaceName = cloudInstanceHelperRepository.getNamespaceNameWithBufferName(bufferName);
-                ApiClient apiClient = ClientBuilder.standard().build();
-                Kubectl.scale(V1StatefulSet.class).apiClient(apiClient).namespace(namespaceName).name("etcd")
+
+                Kubectl.scale(V1StatefulSet.class).apiClient(adminApiClient).namespace(namespaceName).name("etcd")
                                 .replicas(1).execute();
-                Kubectl.scale(V1StatefulSet.class).apiClient(apiClient).namespace(namespaceName)
+                Kubectl.scale(V1StatefulSet.class).apiClient(adminApiClient).namespace(namespaceName)
                                 .name("controller-manager")
                                 .replicas(1).execute();
-                Kubectl.scale(V1StatefulSet.class).apiClient(apiClient).namespace(namespaceName).name("apiserver")
+                Kubectl.scale(V1StatefulSet.class).apiClient(adminApiClient).namespace(namespaceName).name("apiserver")
                                 .replicas(1).execute();
         }
 
@@ -1517,8 +1518,9 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void addBufferedLabelToVC(String bufferName, String instanceType) throws KubectlException, IOException {
-                ApiClient apiClient = Config.defaultClient();
+        public void addBufferedLabelToVC(String bufferName, String instanceType)
+                        throws KubectlException, IOException, ApiException, InterruptedException {
+                ApiClient apiClient = cloudInstanceHelperRepository.adminApiClient();
                 ModelMapper.addModelMap("tenancy.x-k8s.io", "v1alpha1", "VirtualCluster",
                                 "virtualclusters", true,
                                 V1VirtualCluster.class);
@@ -1600,10 +1602,11 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void scaleOAuth2ProxyDown(String bufferName) throws ApiException, IOException, KubectlException {
+        public void scaleOAuth2ProxyDown(String bufferName)
+                        throws ApiException, IOException, KubectlException, InterruptedException {
                 try {
                         String namespaceName = cloudInstanceHelperRepository.getNamespaceNameWithBufferName(bufferName);
-                        ApiClient apiClient = Config.defaultClient();
+                        ApiClient apiClient = cloudInstanceHelperRepository.adminApiClient();
                         Kubectl.scale(V1Deployment.class).apiClient(apiClient)
                                         .namespace(namespaceName + "-oauth2-proxy")
                                         .name("oauth2-proxy").replicas(0).execute();
@@ -1615,9 +1618,10 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void scaleOAuth2ProxyUp(String bufferName) throws ApiException, IOException, KubectlException {
+        public void scaleOAuth2ProxyUp(String bufferName)
+                        throws ApiException, IOException, KubectlException, InterruptedException {
                 String namespaceName = cloudInstanceHelperRepository.getNamespaceNameWithBufferName(bufferName);
-                ApiClient apiClient = Config.defaultClient();
+                ApiClient apiClient = cloudInstanceHelperRepository.adminApiClient();
                 Kubectl.scale(V1Deployment.class).apiClient(apiClient).namespace(namespaceName + "-oauth2-proxy")
                                 .name("oauth2-proxy").replicas(1).execute();
         }
@@ -1634,8 +1638,9 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void unlabelSuperClusterNode(String nodeName) throws IOException, KubectlException {
-                ApiClient apiClient = Config.defaultClient();
+        public void unlabelSuperClusterNode(String nodeName)
+                        throws IOException, KubectlException, ApiException, InterruptedException {
+                ApiClient apiClient = cloudInstanceHelperRepository.adminApiClient();
                 String patchString = "[{ \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1buffer-instance\" }]";
                 V1Patch patch = new V1Patch(patchString);
                 Kubectl.patch(V1Node.class).apiClient(apiClient).name(nodeName).patchContent(patch).execute();
@@ -1672,8 +1677,15 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 System.out.println("CRB Username: " + username);
                                 V1Subject v1Subject = new V1Subject();
                                 v1Subject.setKind("User");
-                                v1Subject.setName(username);
+                                v1Subject.setName(keycloakURL + "/realms/" + organization.getName() + "#" + username);
                                 v1Subject.setApiGroup("rbac.authorization.k8s.io");
+                                clusterRoleBinding.addSubjectsItem(v1Subject);
+
+                                V1Subject v1SubjectAdmin = new V1Subject();
+                                v1SubjectAdmin.setKind("User");
+                                v1SubjectAdmin.setName(
+                                                keycloakURL + "/realms/" + organization.getName() + "#" + "bigboss");
+                                v1SubjectAdmin.setApiGroup("rbac.authorization.k8s.io");
                                 clusterRoleBinding.addSubjectsItem(v1Subject);
                                 rbacAuthorizationV1Api.createClusterRoleBinding(clusterRoleBinding, null, null, null,
                                                 null);

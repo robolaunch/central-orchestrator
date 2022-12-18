@@ -98,6 +98,14 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   String dnsZoneName;
   @ConfigProperty(name = "kogito.dataindex.http.url")
   String kogitoDataIndexUrl;
+  @ConfigProperty(name = "kubernetes.server")
+  String kubernetesServerUrl;
+  @ConfigProperty(name = "kubernetes.server.caData")
+  String kubernetesServerCaData;
+  @ConfigProperty(name = "kubernetes.server.csData")
+  String kubernetesServerCsData;
+  @ConfigProperty(name = "kubernetes.server.ckData")
+  String kubernetesServerCkData;
 
   @Inject
   KubernetesRepository kubernetesRepository;
@@ -113,8 +121,8 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   JsonWebToken jwt;
 
   @PostConstruct
-  public void initializeApis() throws IOException {
-    ApiClient apiClient = ClientBuilder.standard().build();
+  public void initializeApis() throws IOException, ApiException, InterruptedException {
+    ApiClient apiClient = adminApiClient();
 
     this.machinesApi = new DynamicKubernetesApi("cluster.k8s.io",
         "v1alpha1", "machines",
@@ -440,7 +448,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   @Override
   public String selectNode(String bufferName)
       throws ApiException, KubectlException, IOException, InterruptedException {
-    ApiClient apiClient = Config.defaultClient();
+    ApiClient apiClient = adminApiClient();
 
     while (true) {
       V1NodeList nodeList = coreV1Api.listNode(null, null, null, null,
@@ -604,11 +612,12 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
-  public void deleteVirtualCluster(String bufferName) throws KubectlException, IOException {
+  public void deleteVirtualCluster(String bufferName)
+      throws KubectlException, IOException, ApiException, InterruptedException {
     ModelMapper.addModelMap("tenancy.x-k8s.io", "v1alpha1", "VirtualCluster",
         "virtualclusters", true,
         V1VirtualCluster.class);
-    ApiClient apiClient = Config.defaultClient();
+    ApiClient apiClient = adminApiClient();
     Kubectl.delete(V1VirtualCluster.class).apiClient(apiClient).namespace("default")
         .name("vc-" + bufferName).execute();
 
@@ -623,26 +632,29 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
-  public void deleteMachineDeployment(String bufferName) throws IOException, KubectlException {
+  public void deleteMachineDeployment(String bufferName)
+      throws IOException, KubectlException, ApiException, InterruptedException {
     ModelMapper.addModelMap("cluster.k8s.io", "v1alpha1", "MachineDeployment",
         "machinedeployments", true,
         V1MachineDeployment.class);
-    ApiClient apiClient = Config.defaultClient();
+    ApiClient apiClient = adminApiClient();
     Kubectl.delete(V1MachineDeployment.class).apiClient(apiClient).namespace("kube-system")
         .name("md-" + bufferName).execute();
   }
 
   @Override
-  public void deleteOrganizationLabelsFromSuperCluster(String nodeName) throws IOException, KubectlException {
-    ApiClient apiClient = Config.defaultClient();
+  public void deleteOrganizationLabelsFromSuperCluster(String nodeName)
+      throws IOException, KubectlException, ApiException, InterruptedException {
+    ApiClient apiClient = adminApiClient();
     String patchString = "[{ \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1buffer-instance\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1organization\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1department\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1cloud-instance\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1super-cluster\" }]";
     V1Patch patch = new V1Patch(patchString);
     Kubectl.patch(V1Node.class).apiClient(apiClient).name(nodeName).patchContent(patch).execute();
   }
 
   @Override
-  public void deleteWorkerLabelFromNode(String nodeName) throws IOException, KubectlException {
-    ApiClient apiClient = Config.defaultClient();
+  public void deleteWorkerLabelFromNode(String nodeName)
+      throws IOException, KubectlException, ApiException, InterruptedException {
+    ApiClient apiClient = adminApiClient();
     String patchString = "[{ \"op\": \"remove\", \"path\": \"/metadata/labels/node-role.kubernetes.io~1worker\"}]";
     V1Patch patch = new V1Patch(patchString);
     Kubectl.patch(V1Node.class).apiClient(apiClient).name(nodeName).patchContent(patch).execute();
@@ -820,6 +832,28 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
+  public ApiClient adminApiClient()
+      throws IOException, ApiException, InterruptedException {
+
+    String certificateAuthorityData = kubernetesServerCaData;
+    byte[] byteCertificateAuthData = Base64.getDecoder().decode(certificateAuthorityData.getBytes("UTF-8"));
+
+    String clientCertificateData = kubernetesServerCsData;
+    byte[] byteClientCertData = Base64.getDecoder().decode(clientCertificateData.getBytes("UTF-8"));
+
+    String clientKeyData = kubernetesServerCkData;
+    byte[] byteClientKeyData = Base64.getDecoder().decode(clientKeyData.getBytes("UTF-8"));
+
+    /* Virtual Cluster Client */
+    ApiClient newClient = new ClientBuilder().setBasePath(kubernetesServerUrl)
+        .setAuthentication(new ClientCertificateAuthentication(byteClientCertData, byteClientKeyData))
+        .setCertificateAuthority(byteCertificateAuthData)
+        .setVerifyingSsl(true)
+        .build();
+    return newClient;
+  }
+
+  @Override
   public ApiClient userApiClient(String bufferName, String token)
       throws IOException, ApiException, InterruptedException {
     String namespaceName = getNamespaceNameWithBufferName(bufferName);
@@ -881,10 +915,19 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
   public void testingUserApiClient(String bufferName, String token)
       throws IOException, ApiException, InterruptedException {
-    System.out.println("At least enters.");
     ApiClient userClient = userApiClient(bufferName, token);
-    System.out.println("Just got the userClient!");
     CoreV1Api vcCoreV1Api = new CoreV1Api(userClient);
+
+    var nsList = vcCoreV1Api.listNamespace(null, null, null, null, null, null, null, null, null, null);
+    for (V1Namespace ns : nsList.getItems()) {
+      System.out.println("ns name: " + ns.getMetadata().getName());
+    }
+  }
+
+  public void testingAdminApiClient()
+      throws IOException, ApiException, InterruptedException {
+    ApiClient adminClient = adminApiClient();
+    CoreV1Api vcCoreV1Api = new CoreV1Api(adminClient);
 
     var nsList = vcCoreV1Api.listNamespace(null, null, null, null, null, null, null, null, null, null);
     for (V1Namespace ns : nsList.getItems()) {
