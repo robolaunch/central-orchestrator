@@ -151,18 +151,4 @@ public class GroupService {
       return null;
     }
   }
-
-  public void jwtTest() {
-    try {
-      System.out.println("username: " + jwt.getClaim("preferred_username"));
-      System.out.println("issuer: " + jwt.getIssuer());
-      System.out.println("Username?: " + jwt.containsClaim("preferred_username"));
-      System.out.println("Token: " + jwt.getRawToken());
-      System.out.println("Name: " + jwt.getName());
-      System.out.println("claim names: " + jwt.getClaimNames());
-    } catch (Exception e) {
-      // TODO: handle exception
-    }
-  }
-
 }
