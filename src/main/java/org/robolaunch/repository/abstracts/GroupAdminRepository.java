@@ -3,11 +3,13 @@ package org.robolaunch.repository.abstracts;
 import java.io.IOException;
 import java.net.HttpCookie;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import org.robolaunch.exception.ApplicationException;
 import org.robolaunch.models.DepartmentBasic;
+import org.robolaunch.models.GroupMember;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.User;
 
@@ -61,7 +63,16 @@ public interface GroupAdminRepository {
         Boolean isGroupManager(User user, Organization group)
                         throws InternalError, IOException;
 
+        Boolean isGroupMember(User user, Organization group)
+                        throws InternalError, IOException;
+
         Set<User> getUsers(Organization group, String fieldName)
+                        throws InternalError, IOException;
+
+        ArrayList<GroupMember> getGroupMembers(Organization group)
+                        throws InternalError, IOException;
+
+        String getGroupDescription(Organization group)
                         throws InternalError, IOException;
 
 }

@@ -75,8 +75,6 @@ import io.kubernetes.client.openapi.models.V1StatefulSet;
 import io.kubernetes.client.openapi.models.V1StatefulSetList;
 import io.kubernetes.client.openapi.models.V1Subject;
 import io.kubernetes.client.openapi.models.V1ValidatingWebhookConfiguration;
-import io.kubernetes.client.util.ClientBuilder;
-import io.kubernetes.client.util.Config;
 import io.kubernetes.client.util.ModelMapper;
 import io.kubernetes.client.util.Yaml;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi;
@@ -305,8 +303,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                         .name("vc-" + bufferName)
                                         .addLabel("robolaunch.io/buffer-instance", bufferName)
                                         .addLabel("robolaunch.io/organization", organization.getName())
-                                        .addLabel("robolaunch.io/department", departmentName)
-                                        .addLabel("robolaunch.io/super-cluster", superClusterName)
+                                        .addLabel("robolaunch.io/team", departmentName)
+                                        .addLabel("robolaunch.io/region", superClusterName)
                                         .addLabel("robolaunch.io/cloud-instance", cloudInstanceName)
                                         .execute();
                 } else {
@@ -316,8 +314,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                         .name("vc-" + bufferName)
                                         .addLabel("robolaunch.io/buffer-instance", bufferName)
                                         .addLabel("robolaunch.io/organization", organization.getName())
-                                        .addLabel("robolaunch.io/department", departmentName)
-                                        .addLabel("robolaunch.io/super-cluster", superClusterName)
+                                        .addLabel("robolaunch.io/team", departmentName)
+                                        .addLabel("robolaunch.io/region", superClusterName)
                                         .addLabel("robolaunch.io/cloud-instance", cloudInstanceName)
                                         .addLabel("submariner.io/gateway", "4490")
                                         .execute();
@@ -336,16 +334,16 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                                 .name(nodeName)
                                                 .addLabel("robolaunch.io/organization", organization.getName())
                                                 .addLabel("robolaunch.io/cloud-instance", cloudInstanceName)
-                                                .addLabel("robolaunch.io/department", departmentName)
-                                                .addLabel("robolaunch.io/super-cluster", superClusterName)
+                                                .addLabel("robolaunch.io/team", departmentName)
+                                                .addLabel("robolaunch.io/region", superClusterName)
                                                 .execute();
                         } else {
                                 Kubectl.label(V1Node.class).apiClient(adminApiClient)
                                                 .name(nodeName)
                                                 .addLabel("robolaunch.io/organization", organization.getName())
                                                 .addLabel("robolaunch.io/cloud-instance", cloudInstanceName)
-                                                .addLabel("robolaunch.io/department", departmentName)
-                                                .addLabel("robolaunch.io/super-cluster", superClusterName)
+                                                .addLabel("robolaunch.io/team", departmentName)
+                                                .addLabel("robolaunch.io/region", superClusterName)
                                                 .addLabel("submariner.io/gateway", "4490")
                                                 .execute();
                         }
@@ -367,11 +365,11 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         for (V1StatefulSet statefulset : statefulsets.getItems()) {
                                 String patchString = "[{\"op\":\"add\",\"path\":\"/spec/template/spec/nodeSelector/robolaunch.io~1organization\",\"value\": \""
                                                 + organization.getName()
-                                                + "\"}, {\"op\":\"add\",\"path\":\"/spec/template/spec/nodeSelector/robolaunch.io~1department\",\"value\": \""
+                                                + "\"}, {\"op\":\"add\",\"path\":\"/spec/template/spec/nodeSelector/robolaunch.io~1team\",\"value\": \""
                                                 + departmentName
                                                 + "\"}, {\"op\":\"add\",\"path\":\"/spec/template/spec/nodeSelector/robolaunch.io~1cloud-instance\",\"value\": \""
                                                 + cloudInstanceName
-                                                + "\"}, {\"op\":\"add\",\"path\":\"/spec/template/spec/nodeSelector/robolaunch.io~1super-cluster\",\"value\": \""
+                                                + "\"}, {\"op\":\"add\",\"path\":\"/spec/template/spec/nodeSelector/robolaunch.io~1region\",\"value\": \""
                                                 + superClusterName
                                                 + "\"}, {\"op\":\"add\",\"path\":\"/spec/template/spec/nodeSelector/robolaunch.io~1buffer-instance\",\"value\": \""
                                                 + bufferName + "\"}]";
@@ -461,13 +459,13 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 "robolaunch.io/cloud-instance",
                                 cloudInstanceName);
                 object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
-                                "robolaunch.io/department",
+                                "robolaunch.io/team",
                                 departmentName);
                 object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
                                 "robolaunch.io/organization",
                                 organization.getName());
                 object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
-                                "robolaunch.io/super-cluster",
+                                "robolaunch.io/region",
                                 superClusterName);
                 var subnets = subnetsApi.list();
                 int counter = 1;
@@ -531,8 +529,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 Map<String, String> nodeSelectors = new HashMap<>();
                 nodeSelectors.put("robolaunch.io/organization", organization.getName());
                 nodeSelectors.put("robolaunch.io/cloud-instance", cloudInstanceName);
-                nodeSelectors.put("robolaunch.io/department", departmentName);
-                nodeSelectors.put("robolaunch.io/super-cluster", superClusterName);
+                nodeSelectors.put("robolaunch.io/team", departmentName);
+                nodeSelectors.put("robolaunch.io/region", superClusterName);
                 job.getSpec().getTemplate().getSpec().setNodeSelector(nodeSelectors);
                 var subnet = subnetsApi.get("subnet-" + namespaceName);
                 var machineDeployment = machineDeploymentApi.get("kube-system", "md-" + bufferName);
@@ -696,8 +694,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 Map<String, String> nodeSelectors = new HashMap<>();
                                 nodeSelectors.put("robolaunch.io/organization", organization.getName());
                                 nodeSelectors.put("robolaunch.io/cloud-instance", cloudInstanceName);
-                                nodeSelectors.put("robolaunch.io/department", departmentName);
-                                nodeSelectors.put("robolaunch.io/super-cluster", superClusterName);
+                                nodeSelectors.put("robolaunch.io/team", departmentName);
+                                nodeSelectors.put("robolaunch.io/region", superClusterName);
                                 nodeSelectors.put("robolaunch.io/buffer-instance", bufferName);
                                 deployment.getSpec().getTemplate().getSpec().setNodeSelector(nodeSelectors);
 
@@ -854,10 +852,10 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         if (type.equals("V1Deployment")) {
                                 Map<String, String> nodeSelectors = new HashMap<>();
                                 nodeSelectors.put("robolaunch.io/organization", organization.getName());
-                                nodeSelectors.put("robolaunch.io/department", departmentName);
+                                nodeSelectors.put("robolaunch.io/team", departmentName);
                                 nodeSelectors.put("robolaunch.io/cloud-instance", cloudInstanceName);
                                 nodeSelectors.put("robolaunch.io/buffer-instance", bufferName);
-                                nodeSelectors.put("robolaunch.io/super-cluster", superClusterName);
+                                nodeSelectors.put("robolaunch.io/region", superClusterName);
 
                                 V1Deployment deployment = (V1Deployment) obj;
                                 deployment.getSpec().getTemplate().getSpec().setNodeSelector(nodeSelectors);
@@ -889,8 +887,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                         .addLabel("robolaunch.io/organization", organization.getName())
                                         .addLabel("robolaunch.io/buffer-instance", bufferName)
                                         .addLabel("robolaunch.io/cloud-instance", cloudInstanceName)
-                                        .addLabel("robolaunch.io/department", departmentName)
-                                        .addLabel("robolaunch.io/super-cluster",
+                                        .addLabel("robolaunch.io/team", departmentName)
+                                        .addLabel("robolaunch.io/region",
                                                         superClusterName)
                                         .execute();
                 } else {
@@ -900,8 +898,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                         .addLabel("robolaunch.io/organization", organization.getName())
                                         .addLabel("robolaunch.io/buffer-instance", bufferName)
                                         .addLabel("robolaunch.io/cloud-instance", cloudInstanceName)
-                                        .addLabel("robolaunch.io/department", departmentName)
-                                        .addLabel("robolaunch.io/super-cluster",
+                                        .addLabel("robolaunch.io/team", departmentName)
+                                        .addLabel("robolaunch.io/region",
                                                         superClusterName)
                                         .addLabel("submariner.io/gateway", "4490")
                                         .execute();
@@ -1025,8 +1023,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 Map<String, String> nodeSelectors = new HashMap<>();
                                 nodeSelectors.put("robolaunch.io/organization", organization.getName());
                                 nodeSelectors.put("robolaunch.io/cloud-instance", cloudInstanceName);
-                                nodeSelectors.put("robolaunch.io/department", departmentName);
-                                nodeSelectors.put("robolaunch.io/super-cluster", superClusterName);
+                                nodeSelectors.put("robolaunch.io/team", departmentName);
+                                nodeSelectors.put("robolaunch.io/region", superClusterName);
                                 nodeSelectors.put("robolaunch.io/buffer-instance", bufferName);
 
                                 deployment.getSpec().getTemplate().getSpec().setNodeSelector(nodeSelectors);
@@ -1192,7 +1190,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 Map<String, String> nodeSelectors = new HashMap<>();
                                 nodeSelectors.put("robolaunch.io/organization", organization.getName());
                                 nodeSelectors.put("robolaunch.io/cloud-instance", cloudInstanceName);
-                                nodeSelectors.put("robolaunch.io/department", departmentName);
+                                nodeSelectors.put("robolaunch.io/team", departmentName);
 
                                 deployment.getSpec().getTemplate().getSpec().setNodeSelector(nodeSelectors);
                                 appsApi.createNamespacedDeployment(
@@ -1428,11 +1426,11 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                                                         cloudInstanceName);
                                         deployment.getSpec().getTemplate().getSpec().getNodeSelector()
                                                         .put(
-                                                                        "robolaunch.io/department",
+                                                                        "robolaunch.io/team",
                                                                         departmentName);
                                         deployment.getSpec().getTemplate().getSpec().getNodeSelector()
                                                         .put(
-                                                                        "robolaunch.io/super-cluster",
+                                                                        "robolaunch.io/region",
                                                                         superClusterName);
                                         appsApi.createNamespacedDeployment("robot-system", deployment,
                                                         null, null,

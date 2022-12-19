@@ -62,7 +62,6 @@ import io.kubernetes.client.openapi.models.V1Secret;
 import io.kubernetes.client.openapi.models.V1Service;
 import io.kubernetes.client.openapi.models.V1ServiceAccount;
 import io.kubernetes.client.util.ClientBuilder;
-import io.kubernetes.client.util.Config;
 import io.kubernetes.client.util.ModelMapper;
 import io.kubernetes.client.util.Yaml;
 import io.kubernetes.client.util.credentials.AccessTokenAuthentication;
@@ -510,7 +509,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
       String cloudInstanceName) throws ApiException {
     V1NodeList nodeList = coreV1Api.listNode(null, null, null, null,
         "!node-role.kubernetes.io/master, robolaunch.io/organization=" + organization.getName()
-            + ", robolaunch.io/department=" + departmentName
+            + ", robolaunch.io/team=" + departmentName
             + ", robolaunch.io/cloud-instance=" + cloudInstanceName,
         null, null, null, null, null);
     return nodeList.getItems().get(0).getMetadata().getName();
@@ -646,7 +645,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   public void deleteOrganizationLabelsFromSuperCluster(String nodeName)
       throws IOException, KubectlException, ApiException, InterruptedException {
     ApiClient apiClient = adminApiClient();
-    String patchString = "[{ \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1buffer-instance\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1organization\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1department\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1cloud-instance\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1super-cluster\" }]";
+    String patchString = "[{ \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1buffer-instance\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1organization\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1department\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1cloud-instance\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1region\" }]";
     V1Patch patch = new V1Patch(patchString);
     Kubectl.patch(V1Node.class).apiClient(apiClient).name(nodeName).patchContent(patch).execute();
   }

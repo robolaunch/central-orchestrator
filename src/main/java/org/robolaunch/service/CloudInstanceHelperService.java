@@ -15,7 +15,6 @@ import org.robolaunch.repository.abstracts.CloudInstanceHelperRepository;
 
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
-import io.kubernetes.client.util.ClientBuilder;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi;
 import io.kubernetes.client.util.generic.options.ListOptions;
 import io.quarkus.arc.log.LoggerName;
@@ -80,7 +79,7 @@ public class CloudInstanceHelperService {
     DynamicKubernetesApi vcApi = new DynamicKubernetesApi("tenancy.x-k8s.io", "v1alpha1",
         "virtualclusters", apiClient);
     ListOptions listOptions = new ListOptions();
-    listOptions.setLabelSelector("robolaunch.io/organization=" + organization.getName() + ",robolaunch.io/department="
+    listOptions.setLabelSelector("robolaunch.io/organization=" + organization.getName() + ",robolaunch.io/team="
         + departmentName + ",robolaunch.io/cloud-instance=" + cloudInstanceName);
 
     return vcApi.list("default", listOptions).getObject().getItems().get(0).getMetadata().getName()

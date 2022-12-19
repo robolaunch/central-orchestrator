@@ -104,9 +104,6 @@ public class InviteService {
       DepartmentBasic department = new DepartmentBasic();
       department.setName("invitedUsers");
       ArrayList<GroupMember> members = departmentService.getDepartmentUsers(organization, department);
-      System.out.println("Members: " + members.size());
-      System.out.println("Token: " + token);
-      System.out.println("Organization: " + organization.getName());
       Iterator<GroupMember> it = members.iterator();
       while (it.hasNext()) {
         GroupMember member = it.next();

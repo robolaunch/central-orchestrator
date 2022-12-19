@@ -24,6 +24,7 @@ import org.robolaunch.models.Result;
 import org.robolaunch.models.User;
 import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.models.response.ResponseOrganizationMembers;
+import org.robolaunch.models.response.ResponseTeams;
 import org.robolaunch.models.response.ResponseUserOrganizations;
 import org.robolaunch.repository.abstracts.GroupAdminRepository;
 import org.robolaunch.repository.abstracts.GroupRepository;
@@ -197,10 +198,18 @@ public class OrganizationService {
   public ResponseOrganizationMembers getOrganizationUsers(Organization organization) throws ApplicationException {
     ResponseOrganizationMembers responseOrganizationMembers = new ResponseOrganizationMembers();
     try {
-      ArrayList<GroupMember> members = groupRepository.getGroupMembers(organization);
-      responseOrganizationMembers.setSuccess(true);
-      responseOrganizationMembers.setMessage("Organization users sent.");
-      responseOrganizationMembers.setData(members);
+      User user = new User();
+      user.setUsername(jwt.getClaim("preferred_username"));
+      if (groupAdminRepository.isGroupMember(user, organization)) {
+        ArrayList<GroupMember> members = groupRepository.getGroupMembers(organization);
+        responseOrganizationMembers.setSuccess(true);
+        responseOrganizationMembers.setMessage("Organization users sent.");
+        responseOrganizationMembers.setData(members);
+      } else {
+        responseOrganizationMembers.setSuccess(false);
+        responseOrganizationMembers.setMessage("You are not authorized.");
+      }
+
       organizationLogger.info("Members sent.");
     } catch (Exception e) {
       organizationLogger.error("Error sending members: " + e.getMessage());
@@ -293,16 +302,22 @@ public class OrganizationService {
   }
 
   /* Get all departments of the given organization. */
-  public ArrayList<Department> getDepartments(Organization organization) throws ApplicationException {
+  public ResponseTeams getDepartments(Organization organization) throws ApplicationException {
+    ResponseTeams responseTeams = new ResponseTeams();
     try {
-      ArrayList<Department> departments = groupRepository.getTeams(organization, "member_group");
-      organizationLogger.info("Departments sent.");
-      return departments;
+      User user = new User();
+      user.setUsername(jwt.getClaim("preferred_username"));
+      if (groupAdminRepository.isGroupMember(user, organization)) {
+        ArrayList<Department> departments = groupRepository.getTeams(organization, "member_group");
+        responseTeams.setMessage("Teams sent successfully.");
+        responseTeams.setSuccess(true);
+        responseTeams.setData(departments);
+      }
     } catch (Exception e) {
-      organizationLogger.error("Error sending departments: " + e.getMessage());
-      throw new ApplicationException("Cannot get departments.");
-
+      responseTeams.setMessage("Teams cannot be sent.");
+      responseTeams.setSuccess(false);
     }
+    return responseTeams;
   }
 
   /* Adding the given user to given organization as manager */

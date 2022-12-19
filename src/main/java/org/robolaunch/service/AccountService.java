@@ -3,7 +3,6 @@ package org.robolaunch.service;
 import java.io.IOException;
 import java.net.HttpCookie;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
@@ -33,7 +32,6 @@ import org.robolaunch.models.LoginResponseWithIPA;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.RegisteredDepartment;
 import org.robolaunch.models.Response;
-import org.robolaunch.models.ResponseEntity;
 import org.robolaunch.models.Result;
 import org.robolaunch.models.User;
 import org.robolaunch.models.response.PlainResponse;
@@ -47,15 +45,9 @@ import org.robolaunch.repository.abstracts.KeycloakRepository;
 import org.robolaunch.repository.abstracts.UserAdminRepository;
 import org.robolaunch.repository.abstracts.UserRepository;
 
-import com.google.gson.Gson;
-
 import io.quarkus.arc.log.LoggerName;
-import io.quarkus.oidc.OidcTenantConfig;
-import io.quarkus.oidc.TenantConfigResolver;
 
 import org.jboss.logging.Logger;
-import org.json.JSONObject;
-import org.keycloak.util.TokenUtil;
 
 @ApplicationScoped
 public class AccountService {

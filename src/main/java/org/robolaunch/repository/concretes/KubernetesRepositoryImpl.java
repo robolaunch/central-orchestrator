@@ -12,8 +12,6 @@ import org.robolaunch.models.CloudInstance;
 import org.robolaunch.models.Organization;
 import org.robolaunch.repository.abstracts.KubernetesRepository;
 
-import io.kubernetes.client.openapi.ApiClient;
-import io.kubernetes.client.openapi.models.V1Secret;
 import io.smallrye.graphql.client.Response;
 import io.smallrye.graphql.client.dynamic.api.DynamicGraphQLClient;
 import io.smallrye.graphql.client.dynamic.api.DynamicGraphQLClientBuilder;

@@ -5,8 +5,6 @@ import java.net.HttpCookie;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 import org.robolaunch.exception.ApplicationException;
 import org.robolaunch.models.Organization;

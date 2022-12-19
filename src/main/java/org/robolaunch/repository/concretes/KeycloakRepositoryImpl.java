@@ -97,6 +97,8 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
                                 loginResponse
                                         .setRefreshToken(
                                                 httpResponse.bodyAsJsonObject().getString("refresh_token"));
+                                loginResponse.setOrganization(loginRequestOrganization.getOrganization());
+
                                 response.complete(loginResponse);
                             } else {
                                 response.completeExceptionally(new InternalError("Login failed"));
@@ -234,10 +236,8 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
 
     @Override
     public CompletableFuture<LoginResponse> refreshLogin(LoginRefreshToken loginRefreshToken) throws InternalError {
-        System.out.println("TOken: " + loginRefreshToken.getRefreshToken());
         CompletableFuture<LoginResponse> response = new CompletableFuture<>();
         MultiMap loginFormData = convertRefreshToken(loginRefreshToken);
-        System.out.println("login data: " + loginFormData.get("refresh_token"));
         this.client.post("/auth/realms/kogito/protocol/openid-connect/token").sendForm(loginFormData)
                 .onFailure(er -> {
                     System.out.println(er.getMessage());
@@ -266,10 +266,8 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
     public CompletableFuture<LoginResponse> refreshLoginOrganization(
             LoginRefreshTokenOrganization loginRefreshTokenOrganization)
             throws InternalError {
-        System.out.println("TOken: " + loginRefreshTokenOrganization.getRefreshToken());
         CompletableFuture<LoginResponse> response = new CompletableFuture<>();
         MultiMap loginFormData = convertRefreshTokenOrganization(loginRefreshTokenOrganization);
-        System.out.println("login data: " + loginFormData.get("refresh_token"));
         this.client
                 .post("/auth/realms/" + loginRefreshTokenOrganization.getOrganization()
                         + "/protocol/openid-connect/token")
