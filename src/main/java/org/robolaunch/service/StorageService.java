@@ -102,4 +102,12 @@ public class StorageService {
         }
     }
 
+    public void infinispanConnect() {
+        try {
+            storageRepository.infinispanConnect();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
 }

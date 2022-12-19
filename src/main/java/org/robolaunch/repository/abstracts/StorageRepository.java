@@ -62,13 +62,16 @@ public interface StorageRepository {
                         InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
                         XmlParserException, IllegalArgumentException;
 
-        public void addPricingStart(Organization organization, String teamId, String cloudInstanceName, String type)
+        void addPricingStart(Organization organization, String teamId, String cloudInstanceName, String type)
                         throws InvalidKeyException, ErrorResponseException, InsufficientDataException,
                         InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
                         XmlParserException, IllegalArgumentException, IOException;
 
-        public void addPricingStop(Organization organization, String teamId, String cloudInstanceName, String type)
+        void addPricingStop(Organization organization, String teamId, String cloudInstanceName, String type)
                         throws InvalidKeyException, ErrorResponseException, InsufficientDataException,
                         InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
                         XmlParserException, IllegalArgumentException, IOException;
+
+        void infinispanConnect();
+
 }

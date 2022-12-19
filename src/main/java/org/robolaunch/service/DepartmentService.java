@@ -21,6 +21,7 @@ import org.robolaunch.models.Response;
 import org.robolaunch.models.Result;
 import org.robolaunch.models.User;
 import org.robolaunch.models.response.PlainResponse;
+import org.robolaunch.models.response.ResponseTeamMembers;
 import org.robolaunch.repository.abstracts.GroupAdminRepository;
 import org.robolaunch.repository.abstracts.GroupRepository;
 import org.robolaunch.repository.abstracts.KeycloakAdminRepository;
@@ -492,8 +493,9 @@ public class DepartmentService {
   }
 
   /* Get users of the given department. */
-  public ArrayList<GroupMember> getDepartmentUsers(Organization organization, DepartmentBasic department)
+  public ResponseTeamMembers getDepartmentUsers(Organization organization, DepartmentBasic department)
       throws ApplicationException {
+    ResponseTeamMembers responseTeamMembers = new ResponseTeamMembers();
     try {
       List<Department> departments = groupRepository.getTeams(organization, "member_group");
       Iterator<Department> it = departments.iterator();
@@ -509,12 +511,16 @@ public class DepartmentService {
       }
       ArrayList<GroupMember> members = groupRepository.getGroupMembers(dept);
       departmentLogger.info("Department" + department.getName() + " members sent.");
-      return members;
+      responseTeamMembers.setMessage("Team members sent.");
+      responseTeamMembers.setSuccess(true);
+      responseTeamMembers.setData(members);
     } catch (Exception e) {
       departmentLogger.error("Error sending members of " + department.getName() + ". Error:" + e.getMessage());
-      throw new ApplicationException(
-          "Cannot get department users. Make sure that department with this name exists.");
+      responseTeamMembers.setMessage("Error sending team members.");
+      responseTeamMembers.setSuccess(false);
     }
+    return responseTeamMembers;
+
   }
 
   /* Get managers of the given department. */

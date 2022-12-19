@@ -19,6 +19,7 @@ import org.robolaunch.models.Organization;
 import org.robolaunch.models.Response;
 import org.robolaunch.models.Result;
 import org.robolaunch.models.User;
+import org.robolaunch.models.response.ResponseTeamMembers;
 import org.robolaunch.repository.abstracts.GroupAdminRepository;
 import org.robolaunch.repository.abstracts.GroupRepository;
 import org.robolaunch.repository.abstracts.UserAdminRepository;
@@ -103,8 +104,8 @@ public class InviteService {
       Boolean isTokenValid = false;
       DepartmentBasic department = new DepartmentBasic();
       department.setName("invitedUsers");
-      ArrayList<GroupMember> members = departmentService.getDepartmentUsers(organization, department);
-      Iterator<GroupMember> it = members.iterator();
+      ResponseTeamMembers members = departmentService.getDepartmentUsers(organization, department);
+      Iterator<GroupMember> it = members.getData().iterator();
       while (it.hasNext()) {
         GroupMember member = it.next();
         String[] lastNameParts = member.getLastName().split(",");
@@ -141,8 +142,8 @@ public class InviteService {
       }
       DepartmentBasic department = new DepartmentBasic();
       department.setName("invitedUsers");
-      ArrayList<GroupMember> members = departmentService.getDepartmentUsers(organization, department);
-      Iterator<GroupMember> it = members.iterator();
+      ResponseTeamMembers members = departmentService.getDepartmentUsers(organization, department);
+      Iterator<GroupMember> it = members.getData().iterator();
       while (it.hasNext()) {
         GroupMember member = it.next();
         String[] lastNameParts = member.getLastName().split(",");
@@ -324,9 +325,8 @@ public class InviteService {
     try {
       DepartmentBasic department = new DepartmentBasic();
       department.setName("invitedUsers");
-      ArrayList<GroupMember> members = departmentService.getDepartmentUsers(organization, department);
-      System.out.println("Members: " + members.size());
-      Iterator<GroupMember> it = members.iterator();
+      ResponseTeamMembers members = departmentService.getDepartmentUsers(organization, department);
+      Iterator<GroupMember> it = members.getData().iterator();
       while (it.hasNext()) {
         GroupMember member = it.next();
         String[] lastNameParts = member.getLastName().split(",");
