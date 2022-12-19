@@ -302,7 +302,7 @@ public class OrganizationService {
   }
 
   /* Get all departments of the given organization. */
-  public ResponseTeams getDepartments(Organization organization) throws ApplicationException {
+  public ResponseTeams getTeams(Organization organization) throws ApplicationException {
     ResponseTeams responseTeams = new ResponseTeams();
     try {
       User user = new User();

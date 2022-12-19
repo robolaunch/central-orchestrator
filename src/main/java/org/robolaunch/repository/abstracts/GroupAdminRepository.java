@@ -42,7 +42,7 @@ public interface GroupAdminRepository {
         void createGroup(Organization organization)
                         throws InternalError, IOException, ApplicationException;
 
-        String createSubgroup(Organization organization, DepartmentBasic department)
+        String createSubgroup(Organization organization, String teamName)
                         throws InternalError, IOException, ApplicationException;
 
         void deleteGroup(Organization group)
@@ -51,7 +51,7 @@ public interface GroupAdminRepository {
         void removeUserManagerFromGroup(User user, Organization organization)
                         throws InternalError, IOException, ApplicationException;
 
-        void changeDepartmentName(Organization organization, Organization department, String newName)
+        void changeTeamName(Organization organization, String oldTeamName, String newTeamName)
                         throws InternalError, IOException, ApplicationException;
 
         String getGroupNameFromDescription(Organization organization, String description)

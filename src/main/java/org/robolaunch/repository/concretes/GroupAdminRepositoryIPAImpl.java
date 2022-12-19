@@ -208,9 +208,11 @@ public class GroupAdminRepositoryIPAImpl implements GroupAdminRepository {
   }
 
   @Override
-  public String createSubgroup(Organization organization, DepartmentBasic department)
+  public String createSubgroup(Organization organization, String teamName)
       throws InternalError, IOException, ApplicationException {
-    ArrayList<String> array = groupAdapter.toCreateSubgroup(organization, department);
+    DepartmentBasic depBasic = new DepartmentBasic();
+    depBasic.setName(teamName);
+    ArrayList<String> array = groupAdapter.toCreateSubgroup(organization, depBasic);
     String requestData = array.get(0);
     String createRequest = String.format("{\"id\": 0, \"method\": \"group_add/1\", \"params\": %s} ", requestData);
     makeRequest(createRequest);
@@ -253,9 +255,11 @@ public class GroupAdminRepositoryIPAImpl implements GroupAdminRepository {
   }
 
   @Override
-  public void changeDepartmentName(Organization organization, Organization department, String newName)
+  public void changeTeamName(Organization organization, String oldTeamName, String newTeamName)
       throws InternalError, IOException, ApplicationException {
-    String requestChange = groupAdapter.toChangeGroup(department, newName);
+    Organization org = new Organization();
+    org.setName(oldTeamName);
+    String requestChange = groupAdapter.toChangeGroup(org, newTeamName);
     String changeRequest = String.format("{\"id\": 0, \"method\": \"group_mod/1\", \"params\": %s} ",
         requestChange);
     makeRequest(changeRequest);
