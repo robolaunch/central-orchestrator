@@ -39,4 +39,8 @@ public class ErrorService {
     return new Result("Resource not found.", false);
   }
 
+  public Integer test(Integer count) {
+    return count + 1;
+  }
+
 }

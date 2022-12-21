@@ -122,6 +122,7 @@ public class DepartmentService {
       Organization dept = new Organization();
       dept.setName(teamId);
 
+      // Get Team Member managers, check if user is admin.
       Set<User> teamMemberManagers = groupRepository.getUsers(dept, "membermanager_user");
       Iterator<User> ite = teamMemberManagers.iterator();
       while (ite.hasNext()) {
@@ -133,7 +134,7 @@ public class DepartmentService {
       return false;
 
     } catch (Exception e) {
-      throw new ApplicationException("Error checking if current user is manager of department.");
+      return null;
     }
   }
 
@@ -161,6 +162,24 @@ public class DepartmentService {
       departmentLogger.error("Error checking department existence: " + e.getMessage());
       throw new ApplicationException("Error checking department existence.");
 
+    }
+  }
+
+  public Boolean doesTeamExistsById(Organization organization, String teamId)
+      throws ApplicationException {
+    try {
+      List<Department> departments = groupRepository.getTeams(organization, "member_group");
+      Iterator<Department> it = departments.iterator();
+      while (it.hasNext()) {
+        Department d = it.next();
+        if (d.getId().equals(teamId))
+          return true;
+      }
+      departmentLogger.info("Department does not exist.");
+      return false;
+    } catch (Exception e) {
+      departmentLogger.error("Error checking department existence: " + e.getMessage());
+      return null;
     }
   }
 

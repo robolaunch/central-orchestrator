@@ -186,6 +186,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     while ((line = bufferedReader.readLine()) != null) {
       result += line;
     }
+    System.out.println("Buffer call result: " + result);
     wr.close();
   }
 
@@ -277,8 +278,10 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
     ListOptions listOptions = new ListOptions();
     listOptions.setLabelSelector("robolaunch.io/buffer-instance=" + bufferName);
-    var vcs = virtualClustersApi.list("default", listOptions);
+    var vcs = virtualClustersApi.list(listOptions);
+    System.out.println("vcs count: " + vcs.getObject().getItems().size());
     for (var vc : vcs.getObject().getItems()) {
+      System.out.println("vc: " + vc.getMetadata().getName());
       if (vc.getMetadata().getName().equals(cloudInstanceName)) {
         if (vc.getRaw().get("status").getAsJsonObject().get("phase").getAsString()
             .equals("Running")) {

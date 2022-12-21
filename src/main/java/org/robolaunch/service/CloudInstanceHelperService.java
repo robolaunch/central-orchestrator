@@ -163,6 +163,7 @@ public class CloudInstanceHelperService {
 
   public Boolean isVirtualClusterReady(String bufferName) {
     try {
+      System.out.println("buffer name: " + bufferName);
       Boolean isReady = cloudInstanceHelperRepository.isVirtualClusterReady(bufferName);
       cloudInstanceHelperLogger.info("Is vc ready: " + isReady);
       return isReady;

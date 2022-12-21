@@ -1065,6 +1065,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 artifact2.setClusterName(cloudInstanceName);
                 artifact2.setName("certManager.yaml");
                 storageRepository.push(yamlString.getBytes(StandardCharsets.UTF_8), artifact2, organization.getName());
+                Thread.sleep(2000);
         }
 
         @Override

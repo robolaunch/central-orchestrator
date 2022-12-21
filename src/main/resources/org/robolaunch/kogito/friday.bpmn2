@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_Xl9W0GG1EDu_VqWYD7mGjw" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_fu134GLFEDuMeuWzL2GxyA" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_organizationItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="_finalOrganizationItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:interface id="_231FCBE9-D274-4AB4-80BD-008E150C0CFE_ServiceInterface" name="org.robolaunch.service.StorageService" implementationRef="org.robolaunch.service.StorageService">
     <bpmn2:operation id="_231FCBE9-D274-4AB4-80BD-008E150C0CFE_ServiceOperation" name="infinispanConnect" implementationRef="infinispanConnect"/>
   </bpmn2:interface>
-  <bpmn2:collaboration id="_E9294225-C6DE-46A6-838A-708169032AAF" name="Default Collaboration">
-    <bpmn2:participant id="_C70C8421-7F80-4F1F-BF32-2D62ED04F630" name="Pool Participant" processRef="friday"/>
+  <bpmn2:collaboration id="_598DFF9E-9097-4B56-ABDB-5A6977C2D0EC" name="Default Collaboration">
+    <bpmn2:participant id="_83295CA0-E943-44D8-8FDD-7B1129517BFE" name="Pool Participant" processRef="friday"/>
   </bpmn2:collaboration>
   <bpmn2:process id="friday" drools:packageName="com.example" drools:version="1.0" drools:adHoc="false" name="friday" isExecutable="true" processType="Public">
     <bpmn2:property id="organization" itemSubjectRef="_organizationItem" name="organization">
@@ -109,7 +109,7 @@
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_Xl9W0GG1EDu_VqWYD7mGjw</bpmn2:source>
-    <bpmn2:target>_Xl9W0GG1EDu_VqWYD7mGjw</bpmn2:target>
+    <bpmn2:source>_fu134GLFEDuMeuWzL2GxyA</bpmn2:source>
+    <bpmn2:target>_fu134GLFEDuMeuWzL2GxyA</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>
