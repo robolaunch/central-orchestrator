@@ -1,6 +1,8 @@
 package org.robolaunch.models.request;
 
-public class RobotDevSuiteVDITemplate {
+import java.io.Serializable;
+
+public class RobotDevSuiteVDITemplate implements Serializable {
    private String serviceType;
    private Boolean ingress;
    private Boolean privileged;

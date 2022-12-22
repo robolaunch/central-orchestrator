@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_EMWboGQXEDuUM4djyZkOlw" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_Y927sGQXEDuUM4djyZkOlw" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_robotDevSuiteItem" structureRef="org.robolaunch.models.request.RobotDevSuite"/>
   <bpmn2:itemDefinition id="_bufferNameItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_plainResponseItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
@@ -9,8 +9,8 @@
   <bpmn2:interface id="_48D91075-7283-4FF3-A84A-98C41DFD4E67_ServiceInterface" name="org.robolaunch.service.RobotService" implementationRef="org.robolaunch.service.RobotService">
     <bpmn2:operation id="_48D91075-7283-4FF3-A84A-98C41DFD4E67_ServiceOperation" name="createRobotDevSuite" implementationRef="createRobotDevSuite"/>
   </bpmn2:interface>
-  <bpmn2:collaboration id="_B7DAC054-1EA3-437E-9490-1897988C995C" name="Default Collaboration">
-    <bpmn2:participant id="_D298510D-5AF2-42F3-B6B3-C5AAAEAEA629" name="Pool Participant" processRef="devSuite"/>
+  <bpmn2:collaboration id="_4F2BA76F-DD08-4D69-AAD1-1FA047853C52" name="Default Collaboration">
+    <bpmn2:participant id="_2384C84C-3E5C-4031-9437-53F357062856" name="Pool Participant" processRef="devSuite"/>
   </bpmn2:collaboration>
   <bpmn2:process id="devSuite" drools:packageName="org.robolaunch.kogito.robot" drools:version="1.0" drools:adHoc="false" name="devSuite" isExecutable="true" processType="Public">
     <bpmn2:property id="robotDevSuite" itemSubjectRef="_robotDevSuiteItem" name="robotDevSuite">
@@ -138,7 +138,7 @@
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_EMWboGQXEDuUM4djyZkOlw</bpmn2:source>
-    <bpmn2:target>_EMWboGQXEDuUM4djyZkOlw</bpmn2:target>
+    <bpmn2:source>_Y927sGQXEDuUM4djyZkOlw</bpmn2:source>
+    <bpmn2:target>_Y927sGQXEDuUM4djyZkOlw</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>

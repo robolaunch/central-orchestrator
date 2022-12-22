@@ -3,44 +3,38 @@ package org.robolaunch.repository.concretes;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.robolaunch.models.Artifact;
 import org.robolaunch.models.Organization;
+import org.robolaunch.models.Repository;
+import org.robolaunch.models.Workspace;
+import org.robolaunch.models.request.Robot;
 import org.robolaunch.models.request.RobotBuildManager;
 import org.robolaunch.models.request.RobotBuildManagerStep;
 import org.robolaunch.models.request.RobotDevSuite;
 import org.robolaunch.models.request.RobotLaunchManager;
 import org.robolaunch.models.request.RobotLaunchManagerLaunchItem;
 import org.robolaunch.repository.abstracts.CloudInstanceHelperRepository;
+import org.robolaunch.repository.abstracts.RobotHelperRepository;
 import org.robolaunch.repository.abstracts.RobotRepository;
 import org.robolaunch.repository.abstracts.StorageRepository;
 
-import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import io.kubernetes.client.custom.V1Patch;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
-import io.kubernetes.client.openapi.apis.CoreV1Api;
-import io.kubernetes.client.openapi.models.V1Service;
-import io.kubernetes.client.openapi.models.V1ServicePort;
-import io.kubernetes.client.openapi.models.V1ServiceSpec;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesObject;
 import io.minio.errors.MinioException;
 
 @ApplicationScoped
 public class RobotRepositoryImpl implements RobotRepository {
-        private ApiClient adminApiClient;
-        private CoreV1Api coreV1Api;
         @Inject
         CloudInstanceHelperRepository cloudInstanceHelperRepository;
 
@@ -50,11 +44,8 @@ public class RobotRepositoryImpl implements RobotRepository {
         @Inject
         JsonWebToken jwt;
 
-        @PostConstruct
-        public void initializeApis() throws IOException, ApiException, InterruptedException {
-                this.adminApiClient = cloudInstanceHelperRepository.adminApiClient();
-                this.coreV1Api = new CoreV1Api(adminApiClient);
-        }
+        @Inject
+        RobotHelperRepository robotHelperRepository;
 
         @Override
         public void makeRobotsPassive(String bufferName)
@@ -175,25 +166,6 @@ public class RobotRepositoryImpl implements RobotRepository {
                 DynamicKubernetesApi robotBuildManagerApi = new DynamicKubernetesApi("robot.roboscale.io", "v1alpha1",
                                 "robotdevsuites", robotsApi);
 
-                List<V1Service> services = coreV1Api.listServiceForAllNamespaces(null, null, null, null, null, null,
-                                null, null, null, null).getItems();
-                List<Integer> ports = new ArrayList<Integer>();
-
-                for (V1Service service : services) {
-                        Optional<String> type = Optional.ofNullable(service).map(V1Service::getSpec)
-                                        .map(V1ServiceSpec::getType);
-                        Optional<List<V1ServicePort>> servicePorts = Optional.ofNullable(service)
-                                        .map(V1Service::getSpec)
-                                        .map(V1ServiceSpec::getPorts);
-                        // Check the spec -> type -> NodePort
-                        if (type.get().equals("NodePort")) {
-                                ports.add(servicePorts.get().get(0).getNodePort());
-                        }
-                }
-                Gson gson = new Gson();
-
-                System.out.println("Ports: " + gson.toJson(ports));
-
                 // Get template RobotDevelopmentSuite YAML from MINIO.
                 Artifact artifact = new Artifact();
                 artifact.setName("robotDevelopmentSuite.yaml");
@@ -213,8 +185,9 @@ public class RobotRepositoryImpl implements RobotRepository {
                         vdiObject.addProperty("serviceType", robotDevSuite.getVdiTemplate().getServiceType());
                         vdiObject.addProperty("ingress", robotDevSuite.getVdiTemplate().getIngress());
                         vdiObject.addProperty("privileged", robotDevSuite.getVdiTemplate().getPrivileged());
-                        // Calculate the port range.
-                        vdiObject.addProperty("webrtcPortRange", "2132-21321");
+
+                        String webRTCPorts = robotHelperRepository.getAvailablePortRange(3);
+                        vdiObject.addProperty("webrtcPortRange", webRTCPorts);
                 }
 
                 if (robotDevSuite.getIdeEnabled()) {
@@ -224,18 +197,133 @@ public class RobotRepositoryImpl implements RobotRepository {
                         ideObject.addProperty("privileged", robotDevSuite.getIdeTemplate().getPrivileged());
                 }
 
-                // robotBuildManagerApi.create(new DynamicKubernetesObject(object));
+                robotBuildManagerApi.create(new DynamicKubernetesObject(object));
 
         }
 
-        public void createRobot(Organization organization, String teamId, String region, String cloudInstance)
+        public void createRobot(Organization organization, String teamId, String region, String cloudInstance,
+                        Robot robot, String bufferName, String token)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
-                        IOException {
+                        IOException, ApiException, InterruptedException {
+                ApiClient robotsApi = cloudInstanceHelperRepository.userApiClient(bufferName, token);
+                DynamicKubernetesApi robotBuildManagerApi = new DynamicKubernetesApi("robot.roboscale.io", "v1alpha1",
+                                "robots", robotsApi);
                 // Get template Robot YAML from MINIO.
                 Artifact artifact = new Artifact();
                 artifact.setName("robot.yaml");
                 String bucket = "template-artifacts";
                 JsonObject object = storageRepository.getYamlTemplate(artifact, bucket);
+
+                object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
+                                "robolaunch.io/organization", organization.getName());
+
+                object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
+                                "robolaunch.io/team", teamId);
+                object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
+                                "robolaunch.io/region", region);
+                object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
+                                "robolaunch.io/cloud-instance", cloudInstance);
+
+                object.get("spec").getAsJsonObject().addProperty("distro", robot.getDistro());
+
+                object.get("spec").getAsJsonObject().get("storage").getAsJsonObject().addProperty("amount",
+                                robot.getStorage());
+
+                if (robot.getIsROSBridgeEnabled()) {
+                        JsonObject rosBridgeObject = new JsonObject();
+                        JsonObject rosBridgeObjectROS = new JsonObject();
+                        JsonObject rosBridgeObjectROS2 = new JsonObject();
+                        rosBridgeObjectROS.addProperty("enabled", false);
+                        rosBridgeObjectROS.addProperty("distro", "noetic");
+                        rosBridgeObject.add("ros", rosBridgeObjectROS);
+
+                        rosBridgeObjectROS2.addProperty("enabled", true);
+                        rosBridgeObjectROS2.addProperty("distro", robot.getDistro());
+                        rosBridgeObject.add("ros2", rosBridgeObjectROS2);
+
+                        rosBridgeObject.addProperty("image", "robolaunchio/foxy-noetic-bridge:v0.0.3");
+
+                        object.get("spec").getAsJsonObject().add("rosBridgeTemplate", rosBridgeObject);
+                }
+
+                object.get("spec").getAsJsonObject().get("robotDevSuiteTemplate").getAsJsonObject()
+                                .addProperty("vdiEnabled", robot.getIsVDIEnabled());
+
+                object.get("spec").getAsJsonObject().get("robotDevSuiteTemplate").getAsJsonObject()
+                                .addProperty("ideEnabled", robot.getIsIDEEnabled());
+
+                if (robot.getIsVDIEnabled()) {
+                        JsonObject vdiObject = new JsonObject();
+                        vdiObject.addProperty("serviceType", "NodePort");
+                        vdiObject.addProperty("ingress", false);
+                        vdiObject.addProperty("privileged", false);
+                        String webRTCPortRange = robotHelperRepository.getAvailablePortRange(3);
+                        vdiObject.addProperty("webrtcPortRange", webRTCPortRange);
+
+                        object.get("spec").getAsJsonObject().get("robotDevSuiteTemplate").getAsJsonObject()
+                                        .add("robotVDITemplate", vdiObject);
+                }
+
+                if (robot.getIsIDEEnabled()) {
+                        JsonObject ideObject = new JsonObject();
+                        ideObject.addProperty("serviceType", "NodePort");
+                        ideObject.addProperty("ingress", false);
+                        ideObject.addProperty("privileged", false);
+                        object.get("spec").getAsJsonObject().get("robotDevSuiteTemplate").getAsJsonObject()
+                                        .add("robotIDETemplate", ideObject);
+                }
+
+                JsonArray buildManagerObject = new JsonArray();
+                for (var step : robot.getBuildManagerSteps()) {
+                        JsonObject stepObject = new JsonObject();
+                        stepObject.addProperty("name", step.getName());
+                        stepObject.addProperty("workspace", step.getWorkspace());
+                        stepObject.addProperty("command", step.getCommand());
+                        stepObject.addProperty("script", step.getScript());
+                        buildManagerObject.add(stepObject);
+                }
+
+                object.get("spec").getAsJsonObject().get("buildManagerTemplate").getAsJsonObject().add("steps",
+                                buildManagerObject);
+
+                for (RobotLaunchManagerLaunchItem item : robot.getLaunchManagerLaunchItems()) {
+                        JsonObject itemObject = new JsonObject();
+                        JsonObject selectors = new JsonObject();
+                        if (item.getCluster().equals("cloud")) {
+                                selectors.addProperty("robolaunch.io/cloud-instance", item.getClusterName());
+                        } else if (item.getCluster().equals("physical")) {
+                                selectors.addProperty("robolaunch.io/physical-instance", item.getClusterName());
+                        }
+                        itemObject.add("selector", selectors);
+                        itemObject.addProperty("workspace", item.getWorkspace());
+                        itemObject.addProperty("repository", item.getRepository());
+                        itemObject.addProperty("namespacing", item.isNamespacing());
+                        itemObject.addProperty("launchFilePath", item.getLaunchFilePath());
+
+                        object.get("spec").getAsJsonObject().get("launchManagerTemplates").getAsJsonArray().get(0)
+                                        .getAsJsonObject().add(item.getName(),
+                                                        itemObject);
+                }
+
+                object.get("spec").getAsJsonObject().addProperty("workspacesPath", robot.getWorkspacesPath());
+                JsonObject workspaceObject = new JsonObject();
+                for (Workspace workspace : robot.getWorkspaces()) {
+                        JsonObject repositories = new JsonObject();
+                        for (Repository repository : workspace.getRepositories()) {
+                                JsonObject repositoryObject = new JsonObject();
+                                repositoryObject.addProperty("name", repository.getName());
+                                repositoryObject.addProperty("url", repository.getUrl());
+                                repositoryObject.addProperty("branch", repository.getBranch());
+                                repositoryObject.addProperty("path", repository.getPath());
+
+                                repositories.add(repository.getName(), repositoryObject);
+                        }
+                        workspaceObject.addProperty("name", workspace.getName());
+                        workspaceObject.add("repositories", repositories);
+                }
+                object.get("spec").getAsJsonObject().add("workspaces", workspaceObject);
+                robotBuildManagerApi.create(new DynamicKubernetesObject(object));
+
         }
 
 }

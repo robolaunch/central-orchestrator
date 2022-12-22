@@ -1,6 +1,8 @@
 package org.robolaunch.models.request;
 
-public class RobotBuildManagerStep {
+import java.io.Serializable;
+
+public class RobotBuildManagerStep implements Serializable {
    private String name;
    private String workspace;
    private String command;

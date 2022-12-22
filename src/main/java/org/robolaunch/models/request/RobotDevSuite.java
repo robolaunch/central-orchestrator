@@ -1,6 +1,8 @@
 package org.robolaunch.models.request;
 
-public class RobotDevSuite {
+import java.io.Serializable;
+
+public class RobotDevSuite implements Serializable {
    private String name;
    private String targetRobot;
    private Boolean vdiEnabled;

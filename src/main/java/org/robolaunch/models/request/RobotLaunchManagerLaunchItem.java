@@ -1,6 +1,8 @@
 package org.robolaunch.models.request;
 
-public class RobotLaunchManagerLaunchItem {
+import java.io.Serializable;
+
+public class RobotLaunchManagerLaunchItem implements Serializable {
    private String name;
    private String cluster;
    private String clusterName;
@@ -8,6 +10,7 @@ public class RobotLaunchManagerLaunchItem {
    private String repository;
    private boolean namespacing;
    private String launchFilePath;
+   private String workspacesPath;
 
    public RobotLaunchManagerLaunchItem() {
    }
@@ -66,6 +69,14 @@ public class RobotLaunchManagerLaunchItem {
 
    public void setClusterName(String clusterName) {
       this.clusterName = clusterName;
+   }
+
+   public String getWorkspacesPath() {
+      return workspacesPath;
+   }
+
+   public void setWorkspacesPath(String workspacesPath) {
+      this.workspacesPath = workspacesPath;
    }
 
 }
