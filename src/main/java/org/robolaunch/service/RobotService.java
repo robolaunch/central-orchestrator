@@ -7,6 +7,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
 import org.robolaunch.models.Response;
 import org.robolaunch.models.request.RobotBuildManager;
+import org.robolaunch.models.request.RobotLaunchManager;
 import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.repository.abstracts.RobotRepository;
 
@@ -60,6 +61,21 @@ public class RobotService {
     } catch (Exception e) {
       plainResponse.setSuccess(false);
       plainResponse.setMessage("Error occured while creating robot build manager.");
+    }
+    return plainResponse;
+  }
+
+  public PlainResponse createRobotLaunchManager(RobotLaunchManager robotLaunchManager, String bufferName) {
+    PlainResponse plainResponse = new PlainResponse();
+    try {
+      String token = jwt.getRawToken();
+      robotRepository.createRobotLaunchManager(robotLaunchManager, bufferName, token);
+      robotLogger.info("Robot launch manager created");
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Robot launch manager created.");
+    } catch (Exception e) {
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error occured while creating robot launch manager.");
     }
     return plainResponse;
   }

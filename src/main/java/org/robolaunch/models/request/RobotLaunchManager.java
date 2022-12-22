@@ -1,8 +1,9 @@
 package org.robolaunch.models.request;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class RobotLaunchManager {
+public class RobotLaunchManager implements Serializable {
    private String targetRobot;
    private String targetVDI;
    private List<RobotLaunchManagerLaunchItem> launchItems;
