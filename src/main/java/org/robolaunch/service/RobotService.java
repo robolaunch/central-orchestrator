@@ -5,7 +5,9 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
+import org.robolaunch.models.Organization;
 import org.robolaunch.models.Response;
+import org.robolaunch.models.request.Robot;
 import org.robolaunch.models.request.RobotBuildManager;
 import org.robolaunch.models.request.RobotDevSuite;
 import org.robolaunch.models.request.RobotLaunchManager;
@@ -92,6 +94,23 @@ public class RobotService {
     } catch (Exception e) {
       plainResponse.setSuccess(false);
       plainResponse.setMessage("Error occured while creating robot development suite.");
+    }
+    return plainResponse;
+  }
+
+  public PlainResponse createRobot(Organization organization, String teamId, String region, String cloudInstance,
+      Robot robot, String bufferName) {
+    PlainResponse plainResponse = new PlainResponse();
+    try {
+      String token = jwt.getRawToken();
+      robotRepository.createRobot(organization, teamId, region, cloudInstance, robot, bufferName, token);
+      robotLogger.info("Robot created");
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Robot created.");
+    } catch (Exception e) {
+      robotLogger.error("Error occured while creating robot", e);
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error occured while creating robot.");
     }
     return plainResponse;
   }

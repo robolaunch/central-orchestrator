@@ -1,10 +1,11 @@
 package org.robolaunch.models.request;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.robolaunch.models.Workspace;
 
-public class Robot {
+public class Robot implements Serializable {
    private String name;
    private String distro;
    private Integer storage;
