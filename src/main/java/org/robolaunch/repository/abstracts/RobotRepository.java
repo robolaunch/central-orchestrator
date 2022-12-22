@@ -5,6 +5,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 import org.robolaunch.models.Organization;
+import org.robolaunch.models.request.RobotBuildManager;
 
 import io.kubernetes.client.openapi.ApiException;
 import io.minio.errors.MinioException;
@@ -20,10 +21,9 @@ public interface RobotRepository {
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException;
 
-        public void createRobotBuildManager(Organization organization, String teamId, String region,
-                        String cloudInstance)
+        public void createRobotBuildManager(RobotBuildManager robotBuildManager, String bufferName, String token)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
-                        IOException;
+                        IOException, ApiException, InterruptedException;
 
         public void createRobotDevelopmentSuite(Organization organization, String teamId, String region,
                         String cloudInstance)
