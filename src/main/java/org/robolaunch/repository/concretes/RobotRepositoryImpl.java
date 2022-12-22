@@ -13,6 +13,8 @@ import org.robolaunch.models.Artifact;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.request.RobotBuildManager;
 import org.robolaunch.models.request.RobotBuildManagerStep;
+import org.robolaunch.models.request.RobotLaunchManager;
+import org.robolaunch.models.request.RobotLaunchManagerLaunchItem;
 import org.robolaunch.repository.abstracts.CloudInstanceHelperRepository;
 import org.robolaunch.repository.abstracts.RobotRepository;
 import org.robolaunch.repository.abstracts.StorageRepository;
@@ -78,26 +80,7 @@ public class RobotRepositoryImpl implements RobotRepository {
 
         }
 
-        public void createRobot(Organization organization, String teamId, String region, String cloudInstance)
-                        throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
-                        IOException {
-                // Get template Robot YAML from MINIO.
-                Artifact artifact = new Artifact();
-                artifact.setName("robot.yaml");
-                String bucket = "template-artifacts";
-                JsonObject object = storageRepository.getYamlTemplate(artifact, bucket);
-        }
-
-        public void createRobotLaunchManager(Organization organization, String teamId, String region,
-                        String cloudInstance) throws InvalidKeyException, NoSuchAlgorithmException,
-                        IllegalArgumentException, MinioException, IOException {
-                // Get template RobotLaunchManager YAML from MINIO.
-                Artifact artifact = new Artifact();
-                artifact.setName("robot.yaml");
-                String bucket = "template-artifacts";
-                JsonObject object = storageRepository.getYamlTemplate(artifact, bucket);
-        }
-
+        @Override
         public void createRobotBuildManager(RobotBuildManager robotBuildManager, String bufferName, String token)
                         throws InvalidKeyException, NoSuchAlgorithmException,
                         IllegalArgumentException, MinioException, IOException, ApiException, InterruptedException {
@@ -128,6 +111,60 @@ public class RobotRepositoryImpl implements RobotRepository {
 
         }
 
+        @Override
+        public void createRobotLaunchManager(RobotLaunchManager robotLaunchManager, String bufferName, String token)
+                        throws InvalidKeyException, NoSuchAlgorithmException,
+                        IllegalArgumentException, MinioException, IOException, ApiException, InterruptedException {
+                ApiClient robotsApi = cloudInstanceHelperRepository.userApiClient(bufferName, token);
+                DynamicKubernetesApi robotBuildManagerApi = new DynamicKubernetesApi("robot.roboscale.io", "v1alpha1",
+                                "launchmanagers", robotsApi);
+                // Get template RobotLaunchManager YAML from MINIO.
+                Artifact artifact = new Artifact();
+                artifact.setName("robotLaunchManager.yaml");
+                String bucket = "template-artifacts";
+                JsonObject object = storageRepository.getYamlTemplate(artifact, bucket);
+
+                object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
+                                "robolaunch.io/target-robot",
+                                robotLaunchManager.getTargetRobot());
+
+                object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
+                                "robolaunch.io/target-vdi",
+                                robotLaunchManager.getTargetVDI());
+
+                for (RobotLaunchManagerLaunchItem item : robotLaunchManager.getLaunchItems()) {
+                        JsonObject itemObject = new JsonObject();
+                        JsonObject selectors = new JsonObject();
+                        if (item.getCluster().equals("cloud")) {
+                                selectors.addProperty("robolaunch.io/cloud-instance", item.getClusterName());
+                        } else if (item.getCluster().equals("physical")) {
+                                selectors.addProperty("robolaunch.io/physical-instance", item.getClusterName());
+                        }
+                        itemObject.add("selector", selectors);
+                        itemObject.addProperty("workspace", item.getWorkspace());
+                        itemObject.addProperty("repository", item.getRepository());
+                        itemObject.addProperty("namespacing", item.isNamespacing());
+                        itemObject.addProperty("launchFilePath", item.getLaunchFilePath());
+
+                        object.get("spec").getAsJsonObject().get("launch").getAsJsonObject().add(item.getName(),
+                                        itemObject);
+                }
+
+                robotBuildManagerApi.create(new DynamicKubernetesObject(object));
+
+        }
+
+        public void createRobot(Organization organization, String teamId, String region, String cloudInstance)
+                        throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
+                        IOException {
+                // Get template Robot YAML from MINIO.
+                Artifact artifact = new Artifact();
+                artifact.setName("robot.yaml");
+                String bucket = "template-artifacts";
+                JsonObject object = storageRepository.getYamlTemplate(artifact, bucket);
+        }
+
+        @Override
         public void createRobotDevelopmentSuite(Organization organization, String teamId, String region,
                         String cloudInstance) throws InvalidKeyException, NoSuchAlgorithmException,
                         IllegalArgumentException, MinioException, IOException {

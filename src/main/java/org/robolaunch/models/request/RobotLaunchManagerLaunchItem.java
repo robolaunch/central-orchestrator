@@ -3,6 +3,7 @@ package org.robolaunch.models.request;
 public class RobotLaunchManagerLaunchItem {
    private String name;
    private String cluster;
+   private String clusterName;
    private String workspace;
    private String repository;
    private boolean namespacing;
@@ -57,6 +58,14 @@ public class RobotLaunchManagerLaunchItem {
 
    public void setLaunchFilePath(String launchFilePath) {
       this.launchFilePath = launchFilePath;
+   }
+
+   public String getClusterName() {
+      return clusterName;
+   }
+
+   public void setClusterName(String clusterName) {
+      this.clusterName = clusterName;
    }
 
 }
