@@ -115,7 +115,6 @@ public class AmazonRepositoryImpl implements AmazonRepository {
       for (var instance : reservation.instances()) {
         if (instance.privateDnsName().equals(nodeName)) {
           if (instance.state().name().toString().equals("running")) {
-            System.out.println("Healthy.");
             return true;
           }
         }

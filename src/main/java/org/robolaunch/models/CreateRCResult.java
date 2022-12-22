@@ -1,6 +1,8 @@
 package org.robolaunch.models;
 
-public class CreateRCResult {
+import java.io.Serializable;
+
+public class CreateRCResult implements Serializable {
   private boolean canCreate;
   private String reason;
 

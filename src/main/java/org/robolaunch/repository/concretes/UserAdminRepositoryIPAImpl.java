@@ -108,7 +108,6 @@ public class UserAdminRepositoryIPAImpl implements UserAdminRepository {
     if (!result.contains("\"error\": null")) {
       throw new InternalError("Error happened when making request for given body:" + body);
     }
-    System.out.println(actualObj.get("result").get("result"));
     return actualObj.get("result").get("result").size();
 
   }
@@ -116,7 +115,6 @@ public class UserAdminRepositoryIPAImpl implements UserAdminRepository {
   @Override
   public Boolean doesEmailExist(String email) throws InternalError, IOException {
     String getRequest = userAdapter.findByEmail(email);
-    System.out.println("Get request: " + getRequest);
     String body = String.format("{\"id\": 0, \"method\": \"user_find/1\", \"params\": %s}", getRequest);
     if (makeRequestWithMail(body).intValue() > 0) {
       return true;
@@ -243,9 +241,7 @@ public class UserAdminRepositoryIPAImpl implements UserAdminRepository {
     String getRequest = userAdapter.findByEmail(email);
     String body = String.format("{\"id\": 0, \"method\": \"user_find/1\", \"params\": %s}", getRequest);
     JsonNode userJson = makeRequestForUser(body);
-    System.out.println("User json: " + userJson);
     if (userJson.get("uid") == null) {
-      System.out.println("Enters");
       return null;
     }
     User user = new User();

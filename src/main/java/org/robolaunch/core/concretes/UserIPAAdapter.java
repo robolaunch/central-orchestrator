@@ -203,7 +203,6 @@ public class UserIPAAdapter implements UserAdapter {
         };
         ObjectMapper objectMapper = new ObjectMapper();
         var result = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(request);
-        System.out.println("result: " + result);
         return result;
     }
 

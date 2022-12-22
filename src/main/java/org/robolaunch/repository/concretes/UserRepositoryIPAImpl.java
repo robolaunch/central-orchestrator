@@ -110,7 +110,6 @@ public class UserRepositoryIPAImpl implements UserRepository {
         if (!result.contains("\"error\": null")) {
             throw new InternalError("Error happened when making request for given body:" + body);
         }
-        System.out.println(actualObj.get("result").get("result"));
         return actualObj.get("result").get("result").size();
 
     }
@@ -243,7 +242,6 @@ public class UserRepositoryIPAImpl implements UserRepository {
     @Override
     public Boolean doesEmailExist(String email) throws InternalError, IOException {
         String getRequest = userAdapter.findByEmail(email);
-        System.out.println("Get request: " + getRequest);
         String body = String.format("{\"id\": 0, \"method\": \"user_find/1\", \"params\": %s}", getRequest);
         if (makeRequestWithMail(body).intValue() > 0) {
             return true;

@@ -72,7 +72,7 @@ public class CloudInstanceHelperService {
     return new Result("Error starting cloud instance", false);
   }
 
-  public String getBufferName(Organization organization, String departmentName, String cloudInstanceName)
+  public String getBufferName(Organization organization, String teamId, String cloudInstanceName)
       throws IOException, ApiException, InterruptedException {
     ApiClient apiClient = cloudInstanceHelperRepository.adminApiClient();
 
@@ -80,15 +80,14 @@ public class CloudInstanceHelperService {
         "virtualclusters", apiClient);
     ListOptions listOptions = new ListOptions();
     listOptions.setLabelSelector("robolaunch.io/organization=" + organization.getName() + ",robolaunch.io/team="
-        + departmentName + ",robolaunch.io/cloud-instance=" + cloudInstanceName);
+        + teamId + ",robolaunch.io/cloud-instance=" + cloudInstanceName);
 
-    return vcApi.list("default", listOptions).getObject().getItems().get(0).getMetadata().getName()
+    return vcApi.list(listOptions).getObject().getItems().get(0).getMetadata().getName()
         .split("-")[1];
   }
 
   public void bufferCall(String instanceType) {
     try {
-      System.out.println("Buffer call: " + instanceType);
       cloudInstanceHelperRepository.bufferCall(instanceType);
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Buffer call failed");
@@ -103,9 +102,9 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public String getProcessId(Organization organization, String departmentName) {
+  public String getProcessId(Organization organization, String teamId) {
     try {
-      return kogitoService.getProcessId(organization, departmentName);
+      return kogitoService.getProcessId(organization, teamId);
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while getting process id from kubernetes buffer", e);
       return null;
@@ -125,8 +124,6 @@ public class CloudInstanceHelperService {
     try {
       return cloudInstanceHelperRepository.generateBufferName();
     } catch (Exception e) {
-      System.out.println(e.getMessage());
-      System.out.println(e.getCause());
       return null;
     }
   }
@@ -135,8 +132,6 @@ public class CloudInstanceHelperService {
     try {
       return cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName);
     } catch (Exception e) {
-      System.out.println(e.getMessage());
-      System.out.println(e.getCause());
       return null;
     }
   }
@@ -154,7 +149,6 @@ public class CloudInstanceHelperService {
   public Boolean nodeRefChecker(String bufferName, String machineName) {
     try {
       Boolean isReady = cloudInstanceHelperRepository.nodeRefChecker(bufferName, machineName);
-      System.out.println("Is ready: " + isReady);
       return isReady;
     } catch (Exception e) {
       return null;
@@ -163,9 +157,7 @@ public class CloudInstanceHelperService {
 
   public Boolean isVirtualClusterReady(String bufferName) {
     try {
-      System.out.println("buffer name: " + bufferName);
       Boolean isReady = cloudInstanceHelperRepository.isVirtualClusterReady(bufferName);
-      cloudInstanceHelperLogger.info("Is vc ready: " + isReady);
       return isReady;
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while creating virtual cluster.", e);
@@ -257,7 +249,6 @@ public class CloudInstanceHelperService {
   public Boolean isCoreDNSDeploymentUp(String bufferName) {
     try {
       Boolean isCoreDNSDeploymentUp = cloudInstanceHelperRepository.isCoreDNSDeploymentUp(bufferName);
-      cloudInstanceHelperLogger.info("CoreDNS deployment status: " + isCoreDNSDeploymentUp);
       return isCoreDNSDeploymentUp;
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while checking CoreDNS deployment status.", e);
@@ -265,9 +256,9 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Boolean isCertManagerReady(String namespaceName) {
+  public Boolean isCertManagerReady(String bufferName) {
     try {
-      return cloudInstanceHelperRepository.isCertManagerReady(namespaceName);
+      return cloudInstanceHelperRepository.isCertManagerReady(bufferName);
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while checking if cert manager is ready.", e);
       return false;
@@ -277,7 +268,6 @@ public class CloudInstanceHelperService {
   public Boolean isStatefulSetsUp(String namespaceName) {
     try {
       Boolean isResourcesUp = cloudInstanceHelperRepository.isStatefulSetsUp(namespaceName);
-      System.out.println("is resources up?: " + isResourcesUp);
       return isResourcesUp;
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while checking resources up.", e);
@@ -288,7 +278,6 @@ public class CloudInstanceHelperService {
   public Boolean isStatefulSetsDown(String namespaceName) {
     try {
       Boolean isResourcesDown = cloudInstanceHelperRepository.isStatefulSetsDown(namespaceName);
-      System.out.println("is resources down?: " + isResourcesDown);
       return isResourcesDown;
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while checking resources up.", e);
@@ -320,7 +309,6 @@ public class CloudInstanceHelperService {
   public Boolean isNodeReady(String nodeName) {
     try {
       Boolean isNodeReady = cloudInstanceHelperRepository.isNodeReady(nodeName);
-      cloudInstanceHelperLogger.info("Node ready checked");
       return isNodeReady;
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while checking node ready.", e);
@@ -365,7 +353,6 @@ public class CloudInstanceHelperService {
     try {
       Boolean isSubnetUsed = cloudInstanceHelperRepository.isSubnetUsed(bufferName);
       cloudInstanceHelperLogger.info("Subnet used checked");
-      System.out.println("isSubnetUsed: " + isSubnetUsed);
       return isSubnetUsed;
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while checking subnet used.", e);
@@ -427,10 +414,10 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public String findNode(String bufferName, Organization organization, String departmentName,
+  public String findNode(String bufferName, Organization organization, String teamId,
       String cloudInstanceName) {
     try {
-      String nodeName = cloudInstanceHelperRepository.findNode(bufferName, organization, departmentName,
+      String nodeName = cloudInstanceHelperRepository.findNode(bufferName, organization, teamId,
           cloudInstanceName);
       cloudInstanceHelperLogger.info("Node found");
       return nodeName;
@@ -451,10 +438,10 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Boolean healthCheck(Organization organization, String departmentName, String cloudInstanceName,
+  public Boolean healthCheck(Organization organization, String teamId, String cloudInstanceName,
       String nodeName) {
     try {
-      Boolean healthCheck = cloudInstanceHelperRepository.healthCheck(organization, departmentName, cloudInstanceName,
+      Boolean healthCheck = cloudInstanceHelperRepository.healthCheck(organization, teamId, cloudInstanceName,
           nodeName);
       return healthCheck;
     } catch (Exception e) {
@@ -483,9 +470,7 @@ public class CloudInstanceHelperService {
 
   public String getTeamIdFromProcessId(String processId) {
     try {
-      System.out.println("processId: " + processId);
       String teamId = cloudInstanceHelperRepository.getTeamIdFromProcessId(processId);
-      System.out.println("teamId: " + teamId);
       return teamId;
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while calling getTeamIdFromProcessId: " + e.getMessage());
@@ -503,33 +488,4 @@ public class CloudInstanceHelperService {
       return null;
     }
   }
-
-  public void createCRB(String bufferName) {
-    try {
-      cloudInstanceHelperRepository.createCRB(bufferName);
-    } catch (Exception e) {
-      cloudInstanceHelperLogger.error("Error while calling createCRB: " + e.getMessage());
-    }
-  }
-
-  public void userApiClient(String bufferName) throws IOException, InterruptedException {
-    try {
-      String token = jwt.getRawToken();
-      cloudInstanceHelperRepository.testingUserApiClient(bufferName, token);
-      cloudInstanceHelperLogger.info("User ApiClient tested!");
-    } catch (ApiException e) {
-      cloudInstanceHelperLogger.error("Error while testing user ApiClient: " + e.getMessage());
-      System.out.println(e.getResponseBody());
-      System.out.println(e.getCode());
-    }
-  }
-
-  public void adminApiClient() {
-    try {
-      cloudInstanceHelperRepository.testingAdminApiClient();
-    } catch (Exception e) {
-      System.out.println(e.getMessage());
-    }
-  }
-
 }

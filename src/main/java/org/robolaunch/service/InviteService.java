@@ -111,7 +111,6 @@ public class InviteService {
           String[] tokenParts = lastNameParts[i].split("&");
           if (tokenParts[0].equals(organization.getName()) && tokenParts[2].equals(token)
               && tokenParts[3].equals("pending")) {
-            System.out.println("Enters");
             isInvited = true;
             isTokenValid = true;
             break;
@@ -147,7 +146,6 @@ public class InviteService {
           String[] tokenParts = lastNameParts[i].split("&");
           if (tokenParts[0].equals(organization.getName()) && tokenParts[2].equals(token)
               && tokenParts[3].equals("pending")) {
-            System.out.println("Enters");
             isInvited = true;
             isTokenValid = true;
             break;
@@ -457,7 +455,6 @@ public class InviteService {
     try {
       DepartmentBasic dept = new DepartmentBasic();
       dept.setName(invitedUsersGroupName);
-      System.out.println("The invited users group name: " + invitedUsersGroupName);
       groupAdminRepository.setInitialManagersForDepartment(organization, dept);
       inviteLogger.info("Founder added to managers group.");
       return new Response(true, UUID.randomUUID().toString());

@@ -64,7 +64,6 @@ public class MailService {
             sendMail(mail);
             mailLogger.info("Password mail sent to " + user.getEmail());
         } catch (Exception e) {
-            System.out.println("Failed: " + e.getMessage());
             mailLogger.error("Failed to send password mail to " + user.getEmail());
         }
     }
@@ -82,7 +81,6 @@ public class MailService {
             sendMail(mail);
             mailLogger.info("Invited informative mail sent to " + user.getEmail());
         } catch (Exception e) {
-            System.out.println("Failed: " + e.getMessage());
             mailLogger.error("Failed to send invited informative mail to " + user.getEmail());
         }
     }
@@ -112,9 +110,6 @@ public class MailService {
 
     public void sendMailToManagersOperation(Organization organization, String teamId, String cloudInstanceName,
             String operation) {
-        System.out.println("TeamId: " + teamId);
-        System.out.println("Organization: " + organization.getName());
-        System.out.println("CloudInstanceName: " + cloudInstanceName);
         try {
             MailModel mail = new MailModel();
             ArrayList<User> teamManagers = departmentService.getTeamManagers(organization, teamId);
@@ -155,7 +150,6 @@ public class MailService {
             mailLogger.info("Invited user acceptance mail sent to " + email);
             return new Response(true, UUID.randomUUID().toString());
         } catch (Exception e) {
-            System.out.println("Failed: " + e.getMessage());
             mailLogger.error("Failed to send invited user acceptance mail to " + email);
             return new Response(false, UUID.randomUUID().toString());
 
@@ -164,8 +158,6 @@ public class MailService {
 
     public void sendAcceptedOrganizationMail(CurrentUser currentUser) {
         try {
-            System.out.println("User. " + currentUser.getUsername());
-            System.out.println("Sending accepted organization mail to " + currentUser.getEmail());
             MailModel mail = new MailModel();
             mail.setTo(currentUser.getEmail());
             mail.setSubject("Robolaunch Enterprise Organization Application");
@@ -185,8 +177,6 @@ public class MailService {
 
     public void sendRejectedOrganizationMail(CurrentUser currentUser) {
         try {
-            System.out.println("User. " + currentUser.getUsername());
-            System.out.println("Sending rejection mail to " + currentUser.getEmail());
             MailModel mail = new MailModel();
             mail.setTo(currentUser.getEmail());
             mail.setSubject("Robolaunch Enterprise Organization Application");

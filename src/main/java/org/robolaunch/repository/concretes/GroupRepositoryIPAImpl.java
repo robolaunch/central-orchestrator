@@ -280,7 +280,6 @@ public class GroupRepositoryIPAImpl implements GroupRepository {
         String getRequest = String.format("{\"id\": 0, \"method\": \"group_show/1\", \"params\": %s}",
                 requestGroup);
         JsonNode organizationNode = makeRequestForGroup(getRequest);
-        System.out.println("Organization: " + organizationNode);
         return organizationNode;
     }
 

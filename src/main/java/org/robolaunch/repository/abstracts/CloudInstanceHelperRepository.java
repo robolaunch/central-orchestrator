@@ -55,7 +55,8 @@ public interface CloudInstanceHelperRepository {
 
         public Boolean isCoreDNSDeploymentUp(String bufferName) throws IOException, ApiException, InterruptedException;
 
-        public Boolean isCertManagerReady(String namespaceName) throws ApiException, IOException;
+        public Boolean isCertManagerReady(String bufferName)
+                        throws ApiException, IOException, InterruptedException;
 
         public Boolean isNodeUnschedulable(String nodeName) throws ApiException;
 
@@ -63,12 +64,12 @@ public interface CloudInstanceHelperRepository {
 
         public Boolean isSubnetUsed(String bufferName) throws InternalError, IOException, ApiException;
 
-        public String findNode(String bufferName, Organization organization, String departmentName,
+        public String findNode(String bufferName, Organization organization, String teamId,
                         String cloudInstanceName) throws ApiException;
 
         public Boolean isMachineCreated(String bufferName);
 
-        public Boolean healthCheck(Organization organization, String departmentName, String cloudInstanceName,
+        public Boolean healthCheck(Organization organization, String teamId, String cloudInstanceName,
                         String nodeName);
 
         public void deleteDNSRecord(Organization organization, String nodeName)
@@ -111,18 +112,7 @@ public interface CloudInstanceHelperRepository {
         public Boolean doesCloudInstanceExist(Organization organization, String teamId,
                         String cloudInstanceName) throws java.util.concurrent.ExecutionException, InterruptedException;
 
-        public void createCRB(String bufferName)
-                        throws IOException, ApiException, InterruptedException, InvalidKeyException,
-                        ErrorResponseException, InsufficientDataException, InternalException, InvalidResponseException,
-                        NoSuchAlgorithmException, ServerException, XmlParserException, IllegalArgumentException;
-
         public ApiClient userApiClient(String bufferName, String token)
-                        throws IOException, ApiException, InterruptedException;
-
-        public void testingUserApiClient(String bufferName, String token)
-                        throws IOException, ApiException, InterruptedException;
-
-        public void testingAdminApiClient()
                         throws IOException, ApiException, InterruptedException;
 
         public ApiClient adminApiClient() throws IOException, ApiException, InterruptedException;

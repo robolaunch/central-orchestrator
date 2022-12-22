@@ -115,10 +115,8 @@ public class StorageRepositoryImpl implements StorageRepository {
         Iterable<Object> mData = yaml.loadAll(inputStream);
         for (Object data : mData) {
             String response = new Gson().toJson(data);
-            System.out.println("Response: " + response);
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
             String json = ow.writeValueAsString(data);
-            System.out.println("JSON: " + json);
         }
 
         return null;
@@ -162,7 +160,6 @@ public class StorageRepositoryImpl implements StorageRepository {
         List<Artifact> artifacts = new ArrayList<Artifact>();
         buckets = minioClient.listBuckets();
         for (Bucket bucket : buckets) {
-            System.out.println("Bucket: " + bucket.name());
             artifacts.add(new Artifact(bucket.name(), ""));
         }
         return artifacts;
@@ -224,7 +221,6 @@ public class StorageRepositoryImpl implements StorageRepository {
 
         Path tempFile = Files.createTempFile("pricing", ".txt");
         t += "\nstart_" + new Date() + "_" + teamId + "_" + cloudInstanceName + "_" + type;
-        System.out.println("t: " + t);
 
         Files.write(tempFile, t.getBytes());
         UploadObjectArgs.Builder builder = UploadObjectArgs.builder().bucket(organization.getName())
@@ -243,7 +239,6 @@ public class StorageRepositoryImpl implements StorageRepository {
 
         Path tempFile = Files.createTempFile("pricing", ".txt");
         t += "\nstop_" + new Date() + "_" + teamId + "_" + cloudInstanceName + "_" + type;
-        System.out.println("t: " + t);
 
         Files.write(tempFile, t.getBytes());
         UploadObjectArgs.Builder builder = UploadObjectArgs.builder().bucket(organization.getName())

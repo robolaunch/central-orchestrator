@@ -85,7 +85,6 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
                         })
                 .onSuccess(
                         httpResponse -> {
-                            // System.out.println("Got the things: " + httpResponse.bodyAsJsonObject());
                             if (httpResponse.statusCode() == 200) {
                                 LoginResponse loginResponse = new LoginResponse();
                                 loginResponse
@@ -240,8 +239,6 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
         MultiMap loginFormData = convertRefreshToken(loginRefreshToken);
         this.client.post("/auth/realms/kogito/protocol/openid-connect/token").sendForm(loginFormData)
                 .onFailure(er -> {
-                    System.out.println(er.getMessage());
-                    System.out.println(er.getCause());
 
                 })
                 .toCompletionStage().toCompletableFuture()
@@ -273,8 +270,6 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
                         + "/protocol/openid-connect/token")
                 .sendForm(loginFormData)
                 .onFailure(er -> {
-                    System.out.println(er.getMessage());
-                    System.out.println(er.getCause());
 
                 })
                 .toCompletionStage().toCompletableFuture()

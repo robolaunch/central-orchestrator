@@ -85,7 +85,6 @@ public class AccountService {
     Logger accountLogger;
 
     public void timer() {
-        System.out.println("timer");
         accountLogger.info("Timer is working");
     }
 
@@ -195,7 +194,6 @@ public class AccountService {
     public LoginResponse login(LoginRequest loginRequest) throws ApplicationException {
         try {
             CompletableFuture<LoginResponse> response = keycloakRepository.login(loginRequest).getLoginResponse();
-            System.out.println("rrrrresponse: " + response.get());
             LoginResponse finalResp = response.get();
             accountLogger.info("Login successful");
             return finalResp;
@@ -382,7 +380,6 @@ public class AccountService {
             return new Response(true,
                     UUID.randomUUID().toString());
         } catch (ApplicationException e) {
-            System.out.println("Message: " + e.getMessage());
             return new Response(false,
                     e.getMessage());
         }
@@ -400,7 +397,6 @@ public class AccountService {
     public Boolean doesEmailExistWithEmail(String email) throws ApplicationException {
         try {
             Boolean doesEmailExists = userRepository.doesEmailExist(email);
-            System.out.println("Email exists: " + doesEmailExists);
             return doesEmailExists;
         } catch (Exception e) {
             throw new ApplicationException("Error while checking if the email exists.");
@@ -489,9 +485,6 @@ public class AccountService {
                 return new Response(true, "Email does not exists");
             }
         } catch (Exception e) {
-            System.out.println("Error while checking if the email exists.");
-            System.out.println(e.getMessage());
-            System.out.println(e.getCause());
             return null;
         }
     }

@@ -29,6 +29,7 @@ import org.robolaunch.repository.abstracts.UserAdminRepository;
 import org.robolaunch.repository.abstracts.UserRepository;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.gson.Gson;
 
 import io.quarkus.arc.log.LoggerName;
 
@@ -103,7 +104,39 @@ public class DepartmentService {
       return false;
 
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      return null;
+    }
+  }
+
+  /*
+   * Checks if the current user(taken from jwt) is the manager of given
+   * department.
+   * HELPER FUNCTION
+   */
+  public Boolean isCurrentUserManagerTeamId(Organization organization, String teamId)
+      throws ApplicationException {
+    try {
+      User user = new User();
+      user.setUsername(jwt.getClaim("preferred_username"));
+
+      Organization dept = new Organization();
+      dept.setName(teamId);
+
+      // Get Managers of the team, if you find the user, return true. Else, return
+      // false.
+      Set<User> departmentMemberManagers = groupRepository.getUsers(dept, "membermanager_user");
+      Iterator<User> ite = departmentMemberManagers.iterator();
+      while (ite.hasNext()) {
+        User manager = ite.next();
+        if (manager.getUsername().equals(user.getUsername())) {
+          departmentLogger.info("User managership checked.");
+          return true;
+        }
+      }
+      departmentLogger.info("User managership checked.");
+      return false;
+    } catch (Exception e) {
+      departmentLogger.error("Error checking if the user manager.");
       return null;
     }
   }
@@ -187,9 +220,9 @@ public class DepartmentService {
   public String createIPAGroupForTeam(Organization organization,
       String teamName) throws ApplicationException {
     try {
-      String departmentName = groupAdminRepository.createSubgroup(organization, teamName);
+      String teamId = groupAdminRepository.createSubgroup(organization, teamName);
       departmentLogger.info("IPA Group for department created.");
-      return departmentName;
+      return teamId;
     } catch (Exception e) {
       departmentLogger.error("Error happened when creating IPA Department group: " + e.getMessage());
     }
@@ -421,7 +454,7 @@ public class DepartmentService {
 
   public Response deleteManagersDepartment(Organization organization) {
     try {
-      String departmentName = "managers";
+      String teamId = "managers";
       List<Department> departments = groupRepository.getTeams(organization, "member_group");
       Iterator<Department> it = departments.iterator();
 
@@ -430,7 +463,7 @@ public class DepartmentService {
         Department d = it.next();
         Organization org = new Organization();
         org.setName(d.getId());
-        if (groupRepository.getGroupDescription(org).equals(departmentName)) {
+        if (groupRepository.getGroupDescription(org).equals(teamId)) {
           dept.setName(d.getId());
           break;
         }
@@ -446,7 +479,7 @@ public class DepartmentService {
 
   public Response deleteInvitedUsersDepartment(Organization organization) {
     try {
-      String departmentName = "invitedUsers";
+      String teamId = "invitedUsers";
       List<Department> departments = groupRepository.getTeams(organization, "member_group");
       Iterator<Department> it = departments.iterator();
 
@@ -455,7 +488,7 @@ public class DepartmentService {
         Department d = it.next();
         Organization org = new Organization();
         org.setName(d.getId());
-        if (groupRepository.getGroupDescription(org).equals(departmentName)) {
+        if (groupRepository.getGroupDescription(org).equals(teamId)) {
           dept.setName(d.getId());
           break;
         }
@@ -508,8 +541,9 @@ public class DepartmentService {
       Organization team = new Organization();
       team.setName(teamId);
       JsonNode members = groupAdminRepository.getGroupField(team, "membermanager_user");
+      Gson gson = new Gson();
+      System.out.println("members: " + gson.toJson(members));
       for (int i = 0; i < members.size(); i++) {
-        System.out.println("User: " + userAdminRepository.getUserByUsername(members.get(i).asText()));
         teamManagers.add(userAdminRepository.getUserByUsername(members.get(i).asText()));
       }
       departmentLogger.info("Team managers sent");
@@ -548,10 +582,9 @@ public class DepartmentService {
   public String createManagersTeam(Organization organization) throws ApplicationException {
     try {
 
-      System.out.println("Organization - department will be created: " + organization.getName());
-      String departmentName = groupAdminRepository.createSubgroup(organization, "managers");
+      String teamId = groupAdminRepository.createSubgroup(organization, "managers");
       departmentLogger.info("Managers group created.");
-      return departmentName;
+      return teamId;
     } catch (Exception e) {
       departmentLogger.error("Error happened when creating IPA Group for organization " + e.getMessage());
       return null;

@@ -229,7 +229,6 @@ public class OrganizationService {
     try {
       Boolean isMemberOrganization = groupRepository.isGroupMember(user, organization);
 
-      System.out.println("Is member of upper org: " + isMemberOrganization);
       User currentUser = new User();
       currentUser.setUsername(jwt.getClaim("preferred_username"));
 
@@ -455,15 +454,15 @@ public class OrganizationService {
     return responseUserOrganizations;
   }
 
-  public Integer getRoboticsCloudCount(Organization organization, String departmentName) {
+  public Integer getRoboticsCloudCount(Organization organization, String teamId) {
 
     /*
      * try {
      * String queryStr =
      * "{InitializeRoboticsCloud(where: {and: [{organization: {name: {equal:\""
      * + organization.getName()
-     * + "\"}}},{departmentName: {equal:\""
-     * + departmentName
+     * + "\"}}},{teamId: {equal:\""
+     * + teamId
      * + "\"}}]}) {id}}";
      * 
      * io.smallrye.graphql.client.Response response =
@@ -476,7 +475,6 @@ public class OrganizationService {
      * return 0;
      * }
      * } catch (Exception e) {
-     * System.out.println("Error getting robotics cloud count: " + e);
      * return null;
      * }
      */

@@ -6,7 +6,7 @@ import io.smallrye.graphql.execution.ExecutionException;
 
 public interface KogitoRepository {
 
-  public String getProcessId(Organization organization, String departmentName)
+  public String getProcessId(Organization organization, String teamId)
       throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException;
 
 }

@@ -1,28 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_godpEFISEDu_r7KFHZoRUQ" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_SCCeUGNBEDu5APZKg3BxpQ" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_userStageItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_countItem" structureRef="Integer"/>
   <bpmn2:itemDefinition id="_organizationItem" structureRef="org.robolaunch.models.Organization"/>
-  <bpmn2:itemDefinition id="_departmentNameItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_teamIdItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_cloudInstanceNameItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_isHealthyItem" structureRef="Boolean"/>
   <bpmn2:itemDefinition id="_nodeNameItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__EED04E12-18D3-4469-8C96-B12695E14DF1_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
-  <bpmn2:itemDefinition id="__EED04E12-18D3-4469-8C96-B12695E14DF1_departmentNameInputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__EED04E12-18D3-4469-8C96-B12695E14DF1_teamIdInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__EED04E12-18D3-4469-8C96-B12695E14DF1_cloudInstanceNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__EED04E12-18D3-4469-8C96-B12695E14DF1_nodeNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__EED04E12-18D3-4469-8C96-B12695E14DF1_isHealthyOutputXItem" structureRef="Boolean"/>
   <bpmn2:interface id="_EED04E12-18D3-4469-8C96-B12695E14DF1_ServiceInterface" name="org.robolaunch.service.CloudInstanceHelperService" implementationRef="org.robolaunch.service.CloudInstanceHelperService">
     <bpmn2:operation id="_EED04E12-18D3-4469-8C96-B12695E14DF1_ServiceOperation" name="healthCheck" implementationRef="healthCheck"/>
   </bpmn2:interface>
-  <bpmn2:collaboration id="_F808E4BE-5ED8-43A3-A370-B1BFC5B3E0A0" name="Default Collaboration">
-    <bpmn2:participant id="_6DAFBD3E-E03E-4696-BBB6-F757080D2BDA" name="Pool Participant" processRef="healthCheck"/>
+  <bpmn2:collaboration id="_78D64B72-1C59-4383-B5E5-2EBA53EDB47D" name="Default Collaboration">
+    <bpmn2:participant id="_AB69BA01-9C4B-46E3-9AD0-AD4CC8F4808C" name="Pool Participant" processRef="healthCheck"/>
   </bpmn2:collaboration>
   <bpmn2:process id="healthCheck" drools:packageName="org.robolaunch.kogito.cloudInstance" drools:version="1.0" drools:adHoc="false" name="healthCheck" isExecutable="true" processType="Public">
     <bpmn2:property id="userStage" itemSubjectRef="_userStageItem" name="userStage"/>
     <bpmn2:property id="count" itemSubjectRef="_countItem" name="count"/>
     <bpmn2:property id="organization" itemSubjectRef="_organizationItem" name="organization"/>
-    <bpmn2:property id="departmentName" itemSubjectRef="_departmentNameItem" name="departmentName"/>
+    <bpmn2:property id="teamId" itemSubjectRef="_teamIdItem" name="teamId"/>
     <bpmn2:property id="cloudInstanceName" itemSubjectRef="_cloudInstanceNameItem" name="cloudInstanceName"/>
     <bpmn2:property id="isHealthy" itemSubjectRef="_isHealthyItem" name="isHealthy"/>
     <bpmn2:property id="nodeName" itemSubjectRef="_nodeNameItem" name="nodeName"/>
@@ -34,17 +34,6 @@
         </drools:metaData>
       </bpmn2:extensionElements>
     </bpmn2:sequenceFlow>
-    <bpmn2:sequenceFlow id="_11454873-2B55-4107-B702-84BE22BA4883" name="Healthy" sourceRef="_257EC593-EF67-4DC7-85EF-7DEAE84A39C1" targetRef="_9982F58E-C08B-404E-89A5-0D26DD7631FA">
-      <bpmn2:extensionElements>
-        <drools:metaData name="isAutoConnection.target">
-          <drools:metaValue><![CDATA[true]]></drools:metaValue>
-        </drools:metaData>
-        <drools:metaData name="elementname">
-          <drools:metaValue><![CDATA[Healthy]]></drools:metaValue>
-        </drools:metaData>
-      </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return isHealthy == true;]]></bpmn2:conditionExpression>
-    </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_14A86071-2525-4F49-B296-06D0EBC9D21B" name="UnHealthy" sourceRef="_257EC593-EF67-4DC7-85EF-7DEAE84A39C1" targetRef="_7ECE5941-447D-4895-9B7F-D5DB4D709725">
       <bpmn2:extensionElements>
         <drools:metaData name="isAutoConnection.target">
@@ -55,6 +44,17 @@
         </drools:metaData>
       </bpmn2:extensionElements>
       <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !isHealthy == true;]]></bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="_11454873-2B55-4107-B702-84BE22BA4883" name="Healthy" sourceRef="_257EC593-EF67-4DC7-85EF-7DEAE84A39C1" targetRef="_9982F58E-C08B-404E-89A5-0D26DD7631FA">
+      <bpmn2:extensionElements>
+        <drools:metaData name="isAutoConnection.target">
+          <drools:metaValue><![CDATA[true]]></drools:metaValue>
+        </drools:metaData>
+        <drools:metaData name="elementname">
+          <drools:metaValue><![CDATA[Healthy]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return isHealthy == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_E9750210-18E3-42BB-9BD9-17D2AEA8DD8C" sourceRef="_EED04E12-18D3-4469-8C96-B12695E14DF1" targetRef="_257EC593-EF67-4DC7-85EF-7DEAE84A39C1">
       <bpmn2:extensionElements>
@@ -119,13 +119,13 @@
       <bpmn2:outgoing>_E9750210-18E3-42BB-9BD9-17D2AEA8DD8C</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_EED04E12-18D3-4469-8C96-B12695E14DF1_organizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__EED04E12-18D3-4469-8C96-B12695E14DF1_organizationInputXItem" name="organization"/>
-        <bpmn2:dataInput id="_EED04E12-18D3-4469-8C96-B12695E14DF1_departmentNameInputX" drools:dtype="String" itemSubjectRef="__EED04E12-18D3-4469-8C96-B12695E14DF1_departmentNameInputXItem" name="departmentName"/>
+        <bpmn2:dataInput id="_EED04E12-18D3-4469-8C96-B12695E14DF1_teamIdInputX" drools:dtype="String" itemSubjectRef="__EED04E12-18D3-4469-8C96-B12695E14DF1_teamIdInputXItem" name="teamId"/>
         <bpmn2:dataInput id="_EED04E12-18D3-4469-8C96-B12695E14DF1_cloudInstanceNameInputX" drools:dtype="String" itemSubjectRef="__EED04E12-18D3-4469-8C96-B12695E14DF1_cloudInstanceNameInputXItem" name="cloudInstanceName"/>
         <bpmn2:dataInput id="_EED04E12-18D3-4469-8C96-B12695E14DF1_nodeNameInputX" drools:dtype="String" itemSubjectRef="__EED04E12-18D3-4469-8C96-B12695E14DF1_nodeNameInputXItem" name="nodeName"/>
         <bpmn2:dataOutput id="_EED04E12-18D3-4469-8C96-B12695E14DF1_isHealthyOutputX" drools:dtype="Boolean" itemSubjectRef="__EED04E12-18D3-4469-8C96-B12695E14DF1_isHealthyOutputXItem" name="isHealthy"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_EED04E12-18D3-4469-8C96-B12695E14DF1_organizationInputX</bpmn2:dataInputRefs>
-          <bpmn2:dataInputRefs>_EED04E12-18D3-4469-8C96-B12695E14DF1_departmentNameInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_EED04E12-18D3-4469-8C96-B12695E14DF1_teamIdInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_EED04E12-18D3-4469-8C96-B12695E14DF1_cloudInstanceNameInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_EED04E12-18D3-4469-8C96-B12695E14DF1_nodeNameInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
@@ -138,8 +138,8 @@
         <bpmn2:targetRef>_EED04E12-18D3-4469-8C96-B12695E14DF1_organizationInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataInputAssociation>
-        <bpmn2:sourceRef>departmentName</bpmn2:sourceRef>
-        <bpmn2:targetRef>_EED04E12-18D3-4469-8C96-B12695E14DF1_departmentNameInputX</bpmn2:targetRef>
+        <bpmn2:sourceRef>teamId</bpmn2:sourceRef>
+        <bpmn2:targetRef>_EED04E12-18D3-4469-8C96-B12695E14DF1_teamIdInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataInputAssociation>
         <bpmn2:sourceRef>cloudInstanceName</bpmn2:sourceRef>
@@ -171,8 +171,8 @@
     </bpmn2:endEvent>
     <bpmn2:exclusiveGateway id="_257EC593-EF67-4DC7-85EF-7DEAE84A39C1" gatewayDirection="Diverging">
       <bpmn2:incoming>_E9750210-18E3-42BB-9BD9-17D2AEA8DD8C</bpmn2:incoming>
-      <bpmn2:outgoing>_14A86071-2525-4F49-B296-06D0EBC9D21B</bpmn2:outgoing>
       <bpmn2:outgoing>_11454873-2B55-4107-B702-84BE22BA4883</bpmn2:outgoing>
+      <bpmn2:outgoing>_14A86071-2525-4F49-B296-06D0EBC9D21B</bpmn2:outgoing>
     </bpmn2:exclusiveGateway>
     <bpmn2:inclusiveGateway id="_03C3679D-8F13-467B-8C0D-BF575347A39E" gatewayDirection="Converging">
       <bpmn2:incoming>_4EA26394-98FD-4137-8E76-CB368D049964</bpmn2:incoming>
@@ -225,14 +225,14 @@
         <di:waypoint x="648" y="275"/>
         <di:waypoint x="755.5444186454016" y="320"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__257EC593-EF67-4DC7-85EF-7DEAE84A39C1_to_shape__7ECE5941-447D-4895-9B7F-D5DB4D709725" bpmnElement="_14A86071-2525-4F49-B296-06D0EBC9D21B">
-        <di:waypoint x="783.5444186454016" y="320"/>
-        <di:waypoint x="942" y="287"/>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__257EC593-EF67-4DC7-85EF-7DEAE84A39C1_to_shape__9982F58E-C08B-404E-89A5-0D26DD7631FA" bpmnElement="_11454873-2B55-4107-B702-84BE22BA4883">
         <di:waypoint x="783.5444186454016" y="320"/>
         <di:waypoint x="783.5089783053245" y="219"/>
         <di:waypoint x="514" y="248"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_shape__257EC593-EF67-4DC7-85EF-7DEAE84A39C1_to_shape__7ECE5941-447D-4895-9B7F-D5DB4D709725" bpmnElement="_14A86071-2525-4F49-B296-06D0EBC9D21B">
+        <di:waypoint x="783.5444186454016" y="320"/>
+        <di:waypoint x="942" y="287"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__414D4DE3-B5B6-4050-B4E7-05F568C755C8_to_shape__BDEDF817-0CEA-4B6C-BFF0-9EEB975D62BC" bpmnElement="_97431626-D402-4B6E-A4C9-07FC23031C8C">
         <di:waypoint x="1064" y="320"/>
@@ -299,7 +299,7 @@
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_godpEFISEDu_r7KFHZoRUQ</bpmn2:source>
-    <bpmn2:target>_godpEFISEDu_r7KFHZoRUQ</bpmn2:target>
+    <bpmn2:source>_SCCeUGNBEDu5APZKg3BxpQ</bpmn2:source>
+    <bpmn2:target>_SCCeUGNBEDu5APZKg3BxpQ</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>
