@@ -224,7 +224,7 @@ public class RobotRepositoryImpl implements RobotRepository {
                         ideObject.addProperty("privileged", robotDevSuite.getIdeTemplate().getPrivileged());
                 }
 
-                robotBuildManagerApi.create(new DynamicKubernetesObject(object));
+                // robotBuildManagerApi.create(new DynamicKubernetesObject(object));
 
         }
 

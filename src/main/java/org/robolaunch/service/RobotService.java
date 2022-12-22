@@ -7,6 +7,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
 import org.robolaunch.models.Response;
 import org.robolaunch.models.request.RobotBuildManager;
+import org.robolaunch.models.request.RobotDevSuite;
 import org.robolaunch.models.request.RobotLaunchManager;
 import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.repository.abstracts.RobotRepository;
@@ -76,6 +77,21 @@ public class RobotService {
     } catch (Exception e) {
       plainResponse.setSuccess(false);
       plainResponse.setMessage("Error occured while creating robot launch manager.");
+    }
+    return plainResponse;
+  }
+
+  public PlainResponse createRobotDevSuite(RobotDevSuite robotDevSuite, String bufferName) {
+    PlainResponse plainResponse = new PlainResponse();
+    try {
+      String token = jwt.getRawToken();
+      robotRepository.createRobotDevelopmentSuite(robotDevSuite, bufferName, token);
+      robotLogger.info("Robot development suite created");
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Robot development suite created.");
+    } catch (Exception e) {
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error occured while creating robot development suite.");
     }
     return plainResponse;
   }
