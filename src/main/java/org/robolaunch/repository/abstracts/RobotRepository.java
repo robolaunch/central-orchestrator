@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.request.RobotBuildManager;
+import org.robolaunch.models.request.RobotDevSuite;
 import org.robolaunch.models.request.RobotLaunchManager;
 
 import io.kubernetes.client.openapi.ApiException;
@@ -25,10 +26,9 @@ public interface RobotRepository {
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException;
 
-        public void createRobotDevelopmentSuite(Organization organization, String teamId, String region,
-                        String cloudInstance)
+        public void createRobotDevelopmentSuite(RobotDevSuite robotDevSuite, String bufferName, String token)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
-                        IOException;
+                        IOException, ApiException, InterruptedException;
 
         public void makeRobotsPassive(String bufferName) throws IOException, ApiException, InterruptedException;
 
