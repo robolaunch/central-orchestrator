@@ -1076,7 +1076,6 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 artifact2.setClusterName(cloudInstanceName);
                 artifact2.setName("certManager.yaml");
                 storageRepository.push(yamlString.getBytes(StandardCharsets.UTF_8), artifact2, organization.getName());
-                Thread.sleep(8000);
         }
 
         @Override
@@ -1294,11 +1293,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         String teamId, String region, String bufferName)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
                         MinioException, ApiException, KubectlException, InterruptedException {
-                System.out.println("wait 5sec");
-                Thread.sleep(5000);
                 ApiClient vcClient = cloudInstanceHelperRepository
                                 .getVirtualClusterClientWithBufferName(bufferName);
-                System.out.println("got vc for robot operator");
                 String yamlString = "";
                 Artifact artifact = new Artifact();
                 artifact.setName("robotOperator.yaml");
@@ -1459,6 +1455,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         }
                         if (type.equals("V1alpha2Certificate")) {
                                 System.out.println("alpha2certificate will be created.");
+                                Thread.sleep(5000);
                                 customObjectsApi.createNamespacedCustomObject("cert-manager.io",
                                                 "v1",
                                                 "robot-system", "certificates", object,

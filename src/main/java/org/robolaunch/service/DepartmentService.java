@@ -113,6 +113,27 @@ public class DepartmentService {
    * department.
    * HELPER FUNCTION
    */
+  public Boolean isCurrentUserMemberTeamId(Organization organization, String teamId)
+      throws ApplicationException {
+    try {
+      User user = new User();
+      user.setUsername(jwt.getClaim("preferred_username"));
+      Organization org = new Organization();
+      org.setName(teamId);
+      departmentLogger.info("User managership checked.");
+      Boolean isGroupMember = groupAdminRepository.isGroupMember(user, org);
+      return isGroupMember;
+    } catch (Exception e) {
+      departmentLogger.error("Error checking if the user manager.");
+      return null;
+    }
+  }
+
+  /*
+   * Checks if the current user(taken from jwt) is the manager of given
+   * department.
+   * HELPER FUNCTION
+   */
   public Boolean isCurrentUserManagerTeamId(Organization organization, String teamId)
       throws ApplicationException {
     try {
@@ -124,7 +145,7 @@ public class DepartmentService {
 
       // Get Managers of the team, if you find the user, return true. Else, return
       // false.
-      Set<User> departmentMemberManagers = groupRepository.getUsers(dept, "membermanager_user");
+      Set<User> departmentMemberManagers = groupAdminRepository.getUsers(dept, "membermanager_user");
       Iterator<User> ite = departmentMemberManagers.iterator();
       while (ite.hasNext()) {
         User manager = ite.next();
@@ -549,6 +570,8 @@ public class DepartmentService {
       departmentLogger.info("Team managers sent");
       return teamManagers;
     } catch (Exception e) {
+      System.out.println(e.getMessage());
+      System.out.println(e.getCause());
       departmentLogger.error("Error sending managers.");
       return null;
     }

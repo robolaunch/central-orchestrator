@@ -29,7 +29,7 @@ public class RobotDevSuite implements Serializable {
       this.targetRobot = targetRobot;
    }
 
-   public Boolean getVdiEnabled() {
+   public Boolean isVdiEnabled() {
       return vdiEnabled;
    }
 
@@ -37,7 +37,7 @@ public class RobotDevSuite implements Serializable {
       this.vdiEnabled = vdiEnabled;
    }
 
-   public Boolean getIdeEnabled() {
+   public Boolean isIdeEnabled() {
       return ideEnabled;
    }
 

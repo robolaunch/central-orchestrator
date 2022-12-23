@@ -6,77 +6,36 @@ import java.util.List;
 import org.robolaunch.models.Workspace;
 
 public class Robot implements Serializable {
-   private String name;
-   private String distro;
-   private Integer storage;
-   private Boolean isROSBridgeEnabled;
-
-   private Boolean isVDIEnabled;
-   private Boolean isIDEEnabled;
-
-   private List<RobotBuildManagerStep> buildManagerSteps;
+   private RobotInfo robotInfo;
+   private List<Workspace> robotWorkspaces;
+   private List<RobotBuildManagerStep> robotBuildSteps;
    private List<RobotLaunchManagerLaunchItem> launchManagerLaunchItems;
-
-   private String workspacesPath;
-   private List<Workspace> workspaces;
 
    public Robot() {
    }
 
-   public String getName() {
-      return name;
+   public RobotInfo getRobotInfo() {
+      return robotInfo;
    }
 
-   public void setName(String name) {
-      this.name = name;
+   public void setRobotInfo(RobotInfo robotInfo) {
+      this.robotInfo = robotInfo;
    }
 
-   public String getDistro() {
-      return distro;
+   public List<Workspace> getRobotWorkspaces() {
+      return robotWorkspaces;
    }
 
-   public void setDistro(String distro) {
-      this.distro = distro;
+   public void setRobotWorkspaces(List<Workspace> robotWorkspaces) {
+      this.robotWorkspaces = robotWorkspaces;
    }
 
-   public Integer getStorage() {
-      return storage;
+   public List<RobotBuildManagerStep> getRobotBuildSteps() {
+      return robotBuildSteps;
    }
 
-   public void setStorage(Integer storage) {
-      this.storage = storage;
-   }
-
-   public Boolean getIsROSBridgeEnabled() {
-      return isROSBridgeEnabled;
-   }
-
-   public void setIsROSBridgeEnabled(Boolean isROSBridgeEnabled) {
-      this.isROSBridgeEnabled = isROSBridgeEnabled;
-   }
-
-   public Boolean getIsVDIEnabled() {
-      return isVDIEnabled;
-   }
-
-   public void setIsVDIEnabled(Boolean isVDIEnabled) {
-      this.isVDIEnabled = isVDIEnabled;
-   }
-
-   public Boolean getIsIDEEnabled() {
-      return isIDEEnabled;
-   }
-
-   public void setIsIDEEnabled(Boolean isIDEEnabled) {
-      this.isIDEEnabled = isIDEEnabled;
-   }
-
-   public List<RobotBuildManagerStep> getBuildManagerSteps() {
-      return buildManagerSteps;
-   }
-
-   public void setBuildManagerSteps(List<RobotBuildManagerStep> buildManagerSteps) {
-      this.buildManagerSteps = buildManagerSteps;
+   public void setRobotBuildSteps(List<RobotBuildManagerStep> robotBuildSteps) {
+      this.robotBuildSteps = robotBuildSteps;
    }
 
    public List<RobotLaunchManagerLaunchItem> getLaunchManagerLaunchItems() {
@@ -85,22 +44,6 @@ public class Robot implements Serializable {
 
    public void setLaunchManagerLaunchItems(List<RobotLaunchManagerLaunchItem> launchManagerLaunchItems) {
       this.launchManagerLaunchItems = launchManagerLaunchItems;
-   }
-
-   public String getWorkspacesPath() {
-      return workspacesPath;
-   }
-
-   public void setWorkspacesPath(String workspacesPath) {
-      this.workspacesPath = workspacesPath;
-   }
-
-   public List<Workspace> getWorkspaces() {
-      return workspaces;
-   }
-
-   public void setWorkspaces(List<Workspace> workspaces) {
-      this.workspaces = workspaces;
    }
 
 }

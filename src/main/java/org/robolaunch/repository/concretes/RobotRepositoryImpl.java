@@ -105,8 +105,12 @@ public class RobotRepositoryImpl implements RobotRepository {
                         JsonObject stepObject = new JsonObject();
                         stepObject.addProperty("name", step.getName());
                         stepObject.addProperty("workspace", step.getWorkspace());
-                        stepObject.addProperty("command", step.getCommand());
-                        stepObject.addProperty("script", step.getScript());
+                        if (step.getCodeType().equals("command")) {
+                                stepObject.addProperty("command", step.getCode());
+                        }
+                        if (step.getCodeType().equals("script")) {
+                                stepObject.addProperty("script", step.getCode());
+                        }
 
                         object.get("spec").getAsJsonObject().get("steps").getAsJsonArray().add(stepObject);
                 }
@@ -177,24 +181,24 @@ public class RobotRepositoryImpl implements RobotRepository {
                                 robotDevSuite.getTargetRobot());
                 object.get("metadata").getAsJsonObject().addProperty("name", robotDevSuite.getName());
 
-                object.get("spec").getAsJsonObject().addProperty("vdiEnabled", robotDevSuite.getVdiEnabled());
-                object.get("spec").getAsJsonObject().addProperty("ideEnabled", robotDevSuite.getIdeEnabled());
+                object.get("spec").getAsJsonObject().addProperty("vdiEnabled", robotDevSuite.isVdiEnabled());
+                object.get("spec").getAsJsonObject().addProperty("ideEnabled", robotDevSuite.isIdeEnabled());
 
-                if (robotDevSuite.getVdiEnabled()) {
+                if (robotDevSuite.isVdiEnabled()) {
                         JsonObject vdiObject = new JsonObject();
                         vdiObject.addProperty("serviceType", robotDevSuite.getVdiTemplate().getServiceType());
-                        vdiObject.addProperty("ingress", robotDevSuite.getVdiTemplate().getIngress());
-                        vdiObject.addProperty("privileged", robotDevSuite.getVdiTemplate().getPrivileged());
+                        vdiObject.addProperty("ingress", robotDevSuite.getVdiTemplate().isIngress());
+                        vdiObject.addProperty("privileged", robotDevSuite.getVdiTemplate().isPrivileged());
 
                         String webRTCPorts = robotHelperRepository.getAvailablePortRange(3);
                         vdiObject.addProperty("webrtcPortRange", webRTCPorts);
                 }
 
-                if (robotDevSuite.getIdeEnabled()) {
+                if (robotDevSuite.isIdeEnabled()) {
                         JsonObject ideObject = new JsonObject();
                         ideObject.addProperty("serviceType", robotDevSuite.getIdeTemplate().getServiceType());
-                        ideObject.addProperty("ingress", robotDevSuite.getIdeTemplate().getIngress());
-                        ideObject.addProperty("privileged", robotDevSuite.getIdeTemplate().getPrivileged());
+                        ideObject.addProperty("ingress", robotDevSuite.getIdeTemplate().isIngress());
+                        ideObject.addProperty("privileged", robotDevSuite.getIdeTemplate().isPrivileged());
                 }
 
                 robotBuildManagerApi.create(new DynamicKubernetesObject(object));
@@ -205,6 +209,7 @@ public class RobotRepositoryImpl implements RobotRepository {
                         Robot robot, String bufferName, String token)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException {
+                System.out.println("entered creating robot.");
                 ApiClient robotsApi = cloudInstanceHelperRepository.userApiClient(bufferName, token);
                 DynamicKubernetesApi robotBuildManagerApi = new DynamicKubernetesApi("robot.roboscale.io", "v1alpha1",
                                 "robots", robotsApi);
@@ -224,12 +229,16 @@ public class RobotRepositoryImpl implements RobotRepository {
                 object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
                                 "robolaunch.io/cloud-instance", cloudInstance);
 
-                object.get("spec").getAsJsonObject().addProperty("distro", robot.getDistro());
+                //// NEED FIX - DISTRO
+                object.get("spec").getAsJsonObject().addProperty("distro",
+                                robot.getRobotWorkspaces().get(0).getDistro());
 
+                // Converting GB to MB
                 object.get("spec").getAsJsonObject().get("storage").getAsJsonObject().addProperty("amount",
-                                robot.getStorage());
+                                robot.getRobotInfo().getRobotStorage() * 1000);
 
-                if (robot.getIsROSBridgeEnabled()) {
+                //// NEED FIX - ROS BRIDGE
+                if (robot.getRobotInfo().isRobotRos1Bridge()) {
                         JsonObject rosBridgeObject = new JsonObject();
                         JsonObject rosBridgeObjectROS = new JsonObject();
                         JsonObject rosBridgeObjectROS2 = new JsonObject();
@@ -238,7 +247,8 @@ public class RobotRepositoryImpl implements RobotRepository {
                         rosBridgeObject.add("ros", rosBridgeObjectROS);
 
                         rosBridgeObjectROS2.addProperty("enabled", true);
-                        rosBridgeObjectROS2.addProperty("distro", robot.getDistro());
+                        //// FIX DISTRO
+                        rosBridgeObjectROS2.addProperty("distro", robot.getRobotWorkspaces().get(0).getDistro());
                         rosBridgeObject.add("ros2", rosBridgeObjectROS2);
 
                         rosBridgeObject.addProperty("image", "robolaunchio/foxy-noetic-bridge:v0.0.3");
@@ -247,12 +257,12 @@ public class RobotRepositoryImpl implements RobotRepository {
                 }
 
                 object.get("spec").getAsJsonObject().get("robotDevSuiteTemplate").getAsJsonObject()
-                                .addProperty("vdiEnabled", robot.getIsVDIEnabled());
+                                .addProperty("vdiEnabled", robot.getRobotInfo().isRobotVDI());
 
                 object.get("spec").getAsJsonObject().get("robotDevSuiteTemplate").getAsJsonObject()
-                                .addProperty("ideEnabled", robot.getIsIDEEnabled());
+                                .addProperty("ideEnabled", robot.getRobotInfo().isRobotIDE());
 
-                if (robot.getIsVDIEnabled()) {
+                if (robot.getRobotInfo().isRobotVDI()) {
                         JsonObject vdiObject = new JsonObject();
                         vdiObject.addProperty("serviceType", "NodePort");
                         vdiObject.addProperty("ingress", false);
@@ -264,7 +274,7 @@ public class RobotRepositoryImpl implements RobotRepository {
                                         .add("robotVDITemplate", vdiObject);
                 }
 
-                if (robot.getIsIDEEnabled()) {
+                if (robot.getRobotInfo().isRobotIDE()) {
                         JsonObject ideObject = new JsonObject();
                         ideObject.addProperty("serviceType", "NodePort");
                         ideObject.addProperty("ingress", false);
@@ -274,12 +284,16 @@ public class RobotRepositoryImpl implements RobotRepository {
                 }
 
                 JsonArray buildManagerObject = new JsonArray();
-                for (var step : robot.getBuildManagerSteps()) {
+                for (var step : robot.getRobotBuildSteps()) {
                         JsonObject stepObject = new JsonObject();
                         stepObject.addProperty("name", step.getName());
                         stepObject.addProperty("workspace", step.getWorkspace());
-                        stepObject.addProperty("command", step.getCommand());
-                        stepObject.addProperty("script", step.getScript());
+                        if (step.getCodeType().equals("command")) {
+                                stepObject.addProperty("command", step.getCode());
+
+                        } else {
+                                stepObject.addProperty("script", step.getCode());
+                        }
                         buildManagerObject.add(stepObject);
                 }
 
@@ -305,17 +319,17 @@ public class RobotRepositoryImpl implements RobotRepository {
                                                         itemObject);
                 }
 
-                object.get("spec").getAsJsonObject().addProperty("workspacesPath", robot.getWorkspacesPath());
+                //// FIX - workspace path - gokhan does not give me.
+                object.get("spec").getAsJsonObject().addProperty("workspacesPath", "workspacePath");
                 JsonObject workspaceObject = new JsonObject();
-                for (Workspace workspace : robot.getWorkspaces()) {
+                for (Workspace workspace : robot.getRobotWorkspaces()) {
                         JsonObject repositories = new JsonObject();
                         for (Repository repository : workspace.getRepositories()) {
                                 JsonObject repositoryObject = new JsonObject();
-                                repositoryObject.addProperty("name", repository.getName());
                                 repositoryObject.addProperty("url", repository.getUrl());
                                 repositoryObject.addProperty("branch", repository.getBranch());
-                                repositoryObject.addProperty("path", repository.getPath());
 
+                                //// FIX - repository name.
                                 repositories.add(repository.getName(), repositoryObject);
                         }
                         workspaceObject.addProperty("name", workspace.getName());

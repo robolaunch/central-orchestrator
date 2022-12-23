@@ -183,6 +183,7 @@ public class CloudInstanceHelperService {
   public Integer getBufferedVirtualClusterCount(String instanceType) {
     try {
       Integer count = cloudInstanceHelperRepository.getBufferedVirtualClusterCount(instanceType);
+      System.out.println("Buffered count: " + count);
       cloudInstanceHelperLogger.info("Buffered -" + instanceType + "- virtual cluster count: " + count);
       return count;
     } catch (Exception e) {

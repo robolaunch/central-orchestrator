@@ -19,7 +19,7 @@ public class RobotDevSuiteVDITemplate implements Serializable {
       this.serviceType = serviceType;
    }
 
-   public Boolean getIngress() {
+   public Boolean isIngress() {
       return ingress;
    }
 
@@ -27,7 +27,7 @@ public class RobotDevSuiteVDITemplate implements Serializable {
       this.ingress = ingress;
    }
 
-   public Boolean getPrivileged() {
+   public Boolean isPrivileged() {
       return privileged;
    }
 

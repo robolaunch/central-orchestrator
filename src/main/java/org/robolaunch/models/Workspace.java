@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Workspace implements Serializable {
   private String name;
+  private String distro;
   private List<Repository> repositories;
 
   public String getName() {
@@ -21,6 +22,14 @@ public class Workspace implements Serializable {
 
   public void setRepositories(List<Repository> repositories) {
     this.repositories = repositories;
+  }
+
+  public String getDistro() {
+    return distro;
+  }
+
+  public void setDistro(String distro) {
+    this.distro = distro;
   }
 
 }

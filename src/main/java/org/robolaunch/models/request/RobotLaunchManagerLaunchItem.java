@@ -8,7 +8,7 @@ public class RobotLaunchManagerLaunchItem implements Serializable {
    private String clusterName;
    private String workspace;
    private String repository;
-   private boolean namespacing;
+   private Boolean namespacing;
    private String launchFilePath;
    private String workspacesPath;
 

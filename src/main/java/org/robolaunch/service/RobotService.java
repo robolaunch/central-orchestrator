@@ -7,6 +7,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.Response;
+import org.robolaunch.models.request.RequestCreateRobot;
 import org.robolaunch.models.request.Robot;
 import org.robolaunch.models.request.RobotBuildManager;
 import org.robolaunch.models.request.RobotDevSuite;
@@ -98,12 +99,13 @@ public class RobotService {
     return plainResponse;
   }
 
-  public PlainResponse createRobot(Organization organization, String teamId, String region, String cloudInstance,
-      Robot robot, String bufferName) {
+  public PlainResponse createRobot(RequestCreateRobot requestCreateRobot) {
     PlainResponse plainResponse = new PlainResponse();
     try {
       String token = jwt.getRawToken();
-      robotRepository.createRobot(organization, teamId, region, cloudInstance, robot, bufferName, token);
+      robotRepository.createRobot(requestCreateRobot.getOrganization(), requestCreateRobot.getTeamId(),
+          requestCreateRobot.getRegion(), requestCreateRobot.getCloudInstance(), requestCreateRobot.getRobot(),
+          requestCreateRobot.getBufferName(), token);
       robotLogger.info("Robot created");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Robot created.");
