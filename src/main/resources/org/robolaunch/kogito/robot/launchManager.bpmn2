@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_EooUgGQCEDuWSMuAaNEFvg" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+  <bpmn2:itemDefinition id="_robotLaunchManagerItem" structureRef="org.robolaunch.models.request.RobotLaunchManager"/>
+  <bpmn2:itemDefinition id="_bufferNameItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_plainResponseItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
+  <bpmn2:itemDefinition id="__2A3B01B3-5E17-4D09-9FA9-8D2F872112AF_robotLaunchManagerInputXItem" structureRef="org.robolaunch.models.request.RobotLaunchManager"/>
+  <bpmn2:itemDefinition id="__2A3B01B3-5E17-4D09-9FA9-8D2F872112AF_bufferNameInputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__2A3B01B3-5E17-4D09-9FA9-8D2F872112AF_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
+  <bpmn2:interface id="_2A3B01B3-5E17-4D09-9FA9-8D2F872112AF_ServiceInterface" name="org.robolaunch.service.RobotService" implementationRef="org.robolaunch.service.RobotService">
+    <bpmn2:operation id="_2A3B01B3-5E17-4D09-9FA9-8D2F872112AF_ServiceOperation" name="createRobotLaunchManager" implementationRef="createRobotLaunchManager"/>
+  </bpmn2:interface>
+  <bpmn2:collaboration id="_6197C986-2C0A-4115-BCD0-DE256CD8BA9D" name="Default Collaboration">
+    <bpmn2:participant id="_9C094865-417E-446A-BAD4-607999EBC758" name="Pool Participant" processRef="launchManager"/>
+  </bpmn2:collaboration>
+  <bpmn2:process id="launchManager" drools:packageName="org.robolaunch.kogito.robot" drools:version="1.0" drools:adHoc="false" name="launchManager" isExecutable="true" processType="Public">
+    <bpmn2:property id="robotLaunchManager" itemSubjectRef="_robotLaunchManagerItem" name="robotLaunchManager">
+      <bpmn2:extensionElements>
+        <drools:metaData name="customTags">
+          <drools:metaValue><![CDATA[input]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+    </bpmn2:property>
+    <bpmn2:property id="bufferName" itemSubjectRef="_bufferNameItem" name="bufferName">
+      <bpmn2:extensionElements>
+        <drools:metaData name="customTags">
+          <drools:metaValue><![CDATA[input]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+    </bpmn2:property>
+    <bpmn2:property id="plainResponse" itemSubjectRef="_plainResponseItem" name="plainResponse">
+      <bpmn2:extensionElements>
+        <drools:metaData name="customTags">
+          <drools:metaValue><![CDATA[output]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+    </bpmn2:property>
+    <bpmn2:sequenceFlow id="_2997A1E4-5712-4B2D-BFE2-548D4677244C" sourceRef="_2A3B01B3-5E17-4D09-9FA9-8D2F872112AF" targetRef="_C96762F6-B64D-4C62-9E68-C7A206BE5706">
+      <bpmn2:extensionElements>
+        <drools:metaData name="isAutoConnection.target">
+          <drools:metaValue><![CDATA[true]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="_75E5C268-70F2-4116-934B-45F1F5DEDD9E" sourceRef="_4A00DDD5-A910-45E8-A67F-CAF72A6C8648" targetRef="_2A3B01B3-5E17-4D09-9FA9-8D2F872112AF">
+      <bpmn2:extensionElements>
+        <drools:metaData name="isAutoConnection.target">
+          <drools:metaValue><![CDATA[true]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+    </bpmn2:sequenceFlow>
+    <bpmn2:endEvent id="_C96762F6-B64D-4C62-9E68-C7A206BE5706">
+      <bpmn2:incoming>_2997A1E4-5712-4B2D-BFE2-548D4677244C</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:serviceTask id="_2A3B01B3-5E17-4D09-9FA9-8D2F872112AF" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.RobotService" drools:serviceoperation="createRobotLaunchManager" name="Create Robot Launch Manager" implementation="Java" operationRef="_2A3B01B3-5E17-4D09-9FA9-8D2F872112AF_ServiceOperation">
+      <bpmn2:extensionElements>
+        <drools:metaData name="elementname">
+          <drools:metaValue><![CDATA[Create Robot Launch Manager]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+      <bpmn2:incoming>_75E5C268-70F2-4116-934B-45F1F5DEDD9E</bpmn2:incoming>
+      <bpmn2:outgoing>_2997A1E4-5712-4B2D-BFE2-548D4677244C</bpmn2:outgoing>
+      <bpmn2:ioSpecification>
+        <bpmn2:dataInput id="_2A3B01B3-5E17-4D09-9FA9-8D2F872112AF_robotLaunchManagerInputX" drools:dtype="org.robolaunch.models.request.RobotLaunchManager" itemSubjectRef="__2A3B01B3-5E17-4D09-9FA9-8D2F872112AF_robotLaunchManagerInputXItem" name="robotLaunchManager"/>
+        <bpmn2:dataInput id="_2A3B01B3-5E17-4D09-9FA9-8D2F872112AF_bufferNameInputX" drools:dtype="String" itemSubjectRef="__2A3B01B3-5E17-4D09-9FA9-8D2F872112AF_bufferNameInputXItem" name="bufferName"/>
+        <bpmn2:dataOutput id="_2A3B01B3-5E17-4D09-9FA9-8D2F872112AF_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__2A3B01B3-5E17-4D09-9FA9-8D2F872112AF_plainResponseOutputXItem" name="plainResponse"/>
+        <bpmn2:inputSet>
+          <bpmn2:dataInputRefs>_2A3B01B3-5E17-4D09-9FA9-8D2F872112AF_robotLaunchManagerInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_2A3B01B3-5E17-4D09-9FA9-8D2F872112AF_bufferNameInputX</bpmn2:dataInputRefs>
+        </bpmn2:inputSet>
+        <bpmn2:outputSet>
+          <bpmn2:dataOutputRefs>_2A3B01B3-5E17-4D09-9FA9-8D2F872112AF_plainResponseOutputX</bpmn2:dataOutputRefs>
+        </bpmn2:outputSet>
+      </bpmn2:ioSpecification>
+      <bpmn2:dataInputAssociation>
+        <bpmn2:sourceRef>robotLaunchManager</bpmn2:sourceRef>
+        <bpmn2:targetRef>_2A3B01B3-5E17-4D09-9FA9-8D2F872112AF_robotLaunchManagerInputX</bpmn2:targetRef>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation>
+        <bpmn2:sourceRef>bufferName</bpmn2:sourceRef>
+        <bpmn2:targetRef>_2A3B01B3-5E17-4D09-9FA9-8D2F872112AF_bufferNameInputX</bpmn2:targetRef>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataOutputAssociation>
+        <bpmn2:sourceRef>_2A3B01B3-5E17-4D09-9FA9-8D2F872112AF_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
+      </bpmn2:dataOutputAssociation>
+    </bpmn2:serviceTask>
+    <bpmn2:startEvent id="_4A00DDD5-A910-45E8-A67F-CAF72A6C8648">
+      <bpmn2:outgoing>_75E5C268-70F2-4116-934B-45F1F5DEDD9E</bpmn2:outgoing>
+    </bpmn2:startEvent>
+  </bpmn2:process>
+  <bpmndi:BPMNDiagram>
+    <bpmndi:BPMNPlane bpmnElement="launchManager">
+      <bpmndi:BPMNShape id="shape__4A00DDD5-A910-45E8-A67F-CAF72A6C8648" bpmnElement="_4A00DDD5-A910-45E8-A67F-CAF72A6C8648">
+        <dc:Bounds height="56" width="56" x="184" y="342"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape__2A3B01B3-5E17-4D09-9FA9-8D2F872112AF" bpmnElement="_2A3B01B3-5E17-4D09-9FA9-8D2F872112AF">
+        <dc:Bounds height="102" width="154" x="289" y="319"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape__C96762F6-B64D-4C62-9E68-C7A206BE5706" bpmnElement="_C96762F6-B64D-4C62-9E68-C7A206BE5706">
+        <dc:Bounds height="56" width="56" x="492" y="342"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="edge_shape__4A00DDD5-A910-45E8-A67F-CAF72A6C8648_to_shape__2A3B01B3-5E17-4D09-9FA9-8D2F872112AF" bpmnElement="_75E5C268-70F2-4116-934B-45F1F5DEDD9E">
+        <di:waypoint x="212" y="370"/>
+        <di:waypoint x="289" y="370"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_shape__2A3B01B3-5E17-4D09-9FA9-8D2F872112AF_to_shape__C96762F6-B64D-4C62-9E68-C7A206BE5706" bpmnElement="_2997A1E4-5712-4B2D-BFE2-548D4677244C">
+        <di:waypoint x="366" y="370"/>
+        <di:waypoint x="492" y="370"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+  <bpmn2:relationship type="BPSimData">
+    <bpmn2:extensionElements>
+      <bpsim:BPSimData>
+        <bpsim:Scenario id="default" name="Simulationscenario">
+          <bpsim:ScenarioParameters/>
+          <bpsim:ElementParameters elementRef="_4A00DDD5-A910-45E8-A67F-CAF72A6C8648">
+            <bpsim:TimeParameters>
+              <bpsim:ProcessingTime>
+                <bpsim:NormalDistribution mean="0" standardDeviation="0"/>
+              </bpsim:ProcessingTime>
+            </bpsim:TimeParameters>
+          </bpsim:ElementParameters>
+          <bpsim:ElementParameters elementRef="_2A3B01B3-5E17-4D09-9FA9-8D2F872112AF">
+            <bpsim:TimeParameters>
+              <bpsim:ProcessingTime>
+                <bpsim:NormalDistribution mean="0" standardDeviation="0"/>
+              </bpsim:ProcessingTime>
+            </bpsim:TimeParameters>
+            <bpsim:ResourceParameters>
+              <bpsim:Availability>
+                <bpsim:FloatingParameter value="0"/>
+              </bpsim:Availability>
+              <bpsim:Quantity>
+                <bpsim:FloatingParameter value="0"/>
+              </bpsim:Quantity>
+            </bpsim:ResourceParameters>
+            <bpsim:CostParameters>
+              <bpsim:UnitCost>
+                <bpsim:FloatingParameter value="0"/>
+              </bpsim:UnitCost>
+            </bpsim:CostParameters>
+          </bpsim:ElementParameters>
+        </bpsim:Scenario>
+      </bpsim:BPSimData>
+    </bpmn2:extensionElements>
+    <bpmn2:source>_EooUgGQCEDuWSMuAaNEFvg</bpmn2:source>
+    <bpmn2:target>_EooUgGQCEDuWSMuAaNEFvg</bpmn2:target>
+  </bpmn2:relationship>
+</bpmn2:definitions>

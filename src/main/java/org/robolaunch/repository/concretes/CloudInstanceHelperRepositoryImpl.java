@@ -458,10 +458,8 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
       throws ApiException, IOException, InterruptedException {
     Boolean podsReady = false;
     Boolean svcReady = false;
-    Boolean svcaReady = false;
 
     ApiClient apiClient = getVirtualClusterClientWithBufferName(bufferName);
-    System.out.println("got vc for cert manager");
     CoreV1Api vcCoreApi = new CoreV1Api(apiClient);
 
     V1PodList podList = vcCoreApi.listNamespacedPod("cert-manager", null, null, null, null, null, null, null, null,
@@ -469,23 +467,18 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
     V1ServiceList serviceList = vcCoreApi.listNamespacedService("cert-manager", null, null, null, null,
         null, null, null, null, null, null);
-    V1ServiceAccountList serviceAccounts = vcCoreApi.listNamespacedServiceAccount("cert-manager", null, null, null,
-        null, null,
-        null, null, null, null, null);
-
-    for (V1ServiceAccount svca : serviceAccounts.getItems()) {
-      Optional<String> svcaName = Optional.ofNullable(svca).map(V1ServiceAccount::getMetadata)
-          .map(m -> m.getName());
-      if (svcaName.get().equals("cert-manager-webhook")) {
-        svcaReady = true;
-      }
-    }
 
     for (V1Pod pod : podList.getItems()) {
       Optional<String> podName = Optional.ofNullable(pod).map(V1Pod::getMetadata)
           .map(m -> m.getName());
-      if (podName.get().startsWith("cert-manager-webhook")) {
-        podsReady = true;
+      podsReady = true;
+      if (podName.get().startsWith("cert-manager")) {
+        Optional<String> phase = Optional.ofNullable(pod).map(V1Pod::getStatus)
+            .map(m -> m.getPhase());
+        System.out.println("phase: " + phase.get());
+        if (!phase.get().equals("Running")) {
+          podsReady = false;
+        }
       }
     }
 
@@ -493,16 +486,13 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
       Optional<String> svcName = Optional.ofNullable(svc).map(V1Service::getMetadata)
           .map(m -> m.getName());
       if (svcName.isPresent()) {
-        if (svcName.get().equals("cert-manager-webhook")) {
+        if (svcName.get().equals("cert-manager")) {
           svcReady = true;
         }
       }
 
     }
-    System.out.println("podsReady: " + podsReady);
-    System.out.println("svcReady: " + svcReady);
-    System.out.println("svcaReady: " + svcaReady);
-    return podsReady && svcReady && svcaReady;
+    return podsReady && svcReady;
   }
 
   @Override

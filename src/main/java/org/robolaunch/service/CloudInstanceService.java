@@ -280,11 +280,15 @@ public class CloudInstanceService {
       cloudInstanceLogger.info("Robot operator created");
       return new Response(true, "Robot operator created.");
     } catch (ApiException e) {
+      System.out.println("Catch api exception");
       System.out.println(e.getCode());
       System.out.println(e.getResponseBody());
       cloudInstanceLogger.error("Error while creating robot operator.", e);
       return new Response(false, "Error creating robot operator.");
     } catch (Exception e) {
+      System.out.println("Catch Normal Exception");
+      System.out.println(e.getCause());
+      System.out.println(e.getMessage());
       cloudInstanceLogger.error("Error while creating robot operator.", e);
       return new Response(false, "Error creating robot operator.");
     }
