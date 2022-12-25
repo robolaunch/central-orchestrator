@@ -9,10 +9,9 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.robolaunch.models.Artifact;
-import org.robolaunch.models.Organization;
 import org.robolaunch.models.Repository;
 import org.robolaunch.models.Workspace;
-import org.robolaunch.models.request.Robot;
+import org.robolaunch.models.request.RequestCreateRobot;
 import org.robolaunch.models.request.RobotBuildManager;
 import org.robolaunch.models.request.RobotBuildManagerStep;
 import org.robolaunch.models.request.RobotDevSuite;
@@ -23,12 +22,14 @@ import org.robolaunch.repository.abstracts.RobotHelperRepository;
 import org.robolaunch.repository.abstracts.RobotRepository;
 import org.robolaunch.repository.abstracts.StorageRepository;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import io.kubernetes.client.custom.V1Patch;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.openapi.apis.CustomObjectsApi;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesObject;
 import io.minio.errors.MinioException;
@@ -205,14 +206,22 @@ public class RobotRepositoryImpl implements RobotRepository {
 
         }
 
-        public void createRobot(Organization organization, String teamId, String region, String cloudInstance,
-                        Robot robot, String bufferName, String token)
+        public void createRobot(RequestCreateRobot requestCreateRobot, String token)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException {
-                System.out.println("entered creating robot.");
+                Gson gson = new Gson();
+
+                String bufferName = requestCreateRobot.getBufferName();
+                System.out.println("Buffername: " + bufferName);
+
                 ApiClient robotsApi = cloudInstanceHelperRepository.userApiClient(bufferName, token);
-                DynamicKubernetesApi robotBuildManagerApi = new DynamicKubernetesApi("robot.roboscale.io", "v1alpha1",
-                                "robots", robotsApi);
+                // ApiClient roApi =
+                // cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName);
+                // DynamicKubernetesApi robotBuildManagerApi = new
+                // DynamicKubernetesApi("robot.roboscale.io", "v1alpha1",
+                // "robots", robotsApi);
+
+                CustomObjectsApi customObjectsApi = new CustomObjectsApi(robotsApi);
                 // Get template Robot YAML from MINIO.
                 Artifact artifact = new Artifact();
                 artifact.setName("robot.yaml");
@@ -220,25 +229,30 @@ public class RobotRepositoryImpl implements RobotRepository {
                 JsonObject object = storageRepository.getYamlTemplate(artifact, bucket);
 
                 object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
-                                "robolaunch.io/organization", organization.getName());
+                                "robolaunch.io/organization",
+                                requestCreateRobot.getOrganization().getName());
 
                 object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
-                                "robolaunch.io/team", teamId);
+                                "robolaunch.io/team", requestCreateRobot.getTeamId());
                 object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
-                                "robolaunch.io/region", region);
+                                "robolaunch.io/region", requestCreateRobot.getRegion());
                 object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
-                                "robolaunch.io/cloud-instance", cloudInstance);
+                                "robolaunch.io/cloud-instance", requestCreateRobot.getCloudInstance());
 
                 //// NEED FIX - DISTRO
                 object.get("spec").getAsJsonObject().addProperty("distro",
-                                robot.getRobotWorkspaces().get(0).getDistro());
+                                requestCreateRobot.getRobotWorkspaces().get(0).getDistro());
 
                 // Converting GB to MB
                 object.get("spec").getAsJsonObject().get("storage").getAsJsonObject().addProperty("amount",
-                                robot.getRobotInfo().getRobotStorage() * 1000);
+                                requestCreateRobot.getRobotInfo().getRobotStorage() * 1000);
+
+                object.get("spec").getAsJsonObject().get("discoveryServerTemplate").getAsJsonObject().addProperty(
+                                "cluster",
+                                "vc-" + requestCreateRobot.getBufferName());
 
                 //// NEED FIX - ROS BRIDGE
-                if (robot.getRobotInfo().isRobotRos1Bridge()) {
+                if (requestCreateRobot.getRobotInfo().isRobotRos1Bridge()) {
                         JsonObject rosBridgeObject = new JsonObject();
                         JsonObject rosBridgeObjectROS = new JsonObject();
                         JsonObject rosBridgeObjectROS2 = new JsonObject();
@@ -248,33 +262,36 @@ public class RobotRepositoryImpl implements RobotRepository {
 
                         rosBridgeObjectROS2.addProperty("enabled", true);
                         //// FIX DISTRO
-                        rosBridgeObjectROS2.addProperty("distro", robot.getRobotWorkspaces().get(0).getDistro());
+                        rosBridgeObjectROS2.addProperty("distro",
+                                        requestCreateRobot.getRobotWorkspaces().get(0).getDistro());
                         rosBridgeObject.add("ros2", rosBridgeObjectROS2);
 
-                        rosBridgeObject.addProperty("image", "robolaunchio/foxy-noetic-bridge:v0.0.3");
+                        rosBridgeObject.addProperty("image",
+                                        "robolaunchio/foxy-noetic-bridge:v0.0.3");
 
-                        object.get("spec").getAsJsonObject().add("rosBridgeTemplate", rosBridgeObject);
+                        object.get("spec").getAsJsonObject().add("rosBridgeTemplate",
+                                        rosBridgeObject);
                 }
 
                 object.get("spec").getAsJsonObject().get("robotDevSuiteTemplate").getAsJsonObject()
-                                .addProperty("vdiEnabled", robot.getRobotInfo().isRobotVDI());
+                                .addProperty("vdiEnabled", requestCreateRobot.getRobotInfo().isRobotVDI());
 
                 object.get("spec").getAsJsonObject().get("robotDevSuiteTemplate").getAsJsonObject()
-                                .addProperty("ideEnabled", robot.getRobotInfo().isRobotIDE());
+                                .addProperty("ideEnabled", requestCreateRobot.getRobotInfo().isRobotIDE());
 
-                if (robot.getRobotInfo().isRobotVDI()) {
+                if (requestCreateRobot.getRobotInfo().isRobotVDI()) {
                         JsonObject vdiObject = new JsonObject();
                         vdiObject.addProperty("serviceType", "NodePort");
                         vdiObject.addProperty("ingress", false);
                         vdiObject.addProperty("privileged", false);
-                        String webRTCPortRange = robotHelperRepository.getAvailablePortRange(3);
+                        String webRTCPortRange = robotHelperRepository.getAvailablePortRange(2);
                         vdiObject.addProperty("webrtcPortRange", webRTCPortRange);
 
                         object.get("spec").getAsJsonObject().get("robotDevSuiteTemplate").getAsJsonObject()
                                         .add("robotVDITemplate", vdiObject);
                 }
 
-                if (robot.getRobotInfo().isRobotIDE()) {
+                if (requestCreateRobot.getRobotInfo().isRobotIDE()) {
                         JsonObject ideObject = new JsonObject();
                         ideObject.addProperty("serviceType", "NodePort");
                         ideObject.addProperty("ingress", false);
@@ -283,46 +300,50 @@ public class RobotRepositoryImpl implements RobotRepository {
                                         .add("robotIDETemplate", ideObject);
                 }
 
-                JsonArray buildManagerObject = new JsonArray();
-                for (var step : robot.getRobotBuildSteps()) {
-                        JsonObject stepObject = new JsonObject();
-                        stepObject.addProperty("name", step.getName());
-                        stepObject.addProperty("workspace", step.getWorkspace());
-                        if (step.getCodeType().equals("command")) {
-                                stepObject.addProperty("command", step.getCode());
+                // JsonArray buildManagerObject = new JsonArray();
+                // for (var step : requestCreateRobot.getRobotBuildSteps()) {
+                // JsonObject stepObject = new JsonObject();
+                // stepObject.addProperty("name", step.getName());
+                // stepObject.addProperty("workspace", step.getWorkspace());
+                // if (step.getCodeType().equals("command")) {
+                // stepObject.addProperty("command", step.getCode());
 
-                        } else {
-                                stepObject.addProperty("script", step.getCode());
-                        }
-                        buildManagerObject.add(stepObject);
-                }
+                // } else {
+                // stepObject.addProperty("script", step.getCode());
+                // }
+                // buildManagerObject.add(stepObject);
+                // }
 
-                object.get("spec").getAsJsonObject().get("buildManagerTemplate").getAsJsonObject().add("steps",
-                                buildManagerObject);
+                // object.get("spec").getAsJsonObject().get("buildManagerTemplate").getAsJsonObject().add("steps",
+                // buildManagerObject);
 
-                for (RobotLaunchManagerLaunchItem item : robot.getLaunchManagerLaunchItems()) {
-                        JsonObject itemObject = new JsonObject();
-                        JsonObject selectors = new JsonObject();
-                        if (item.getCluster().equals("cloud")) {
-                                selectors.addProperty("robolaunch.io/cloud-instance", item.getClusterName());
-                        } else if (item.getCluster().equals("physical")) {
-                                selectors.addProperty("robolaunch.io/physical-instance", item.getClusterName());
-                        }
-                        itemObject.add("selector", selectors);
-                        itemObject.addProperty("workspace", item.getWorkspace());
-                        itemObject.addProperty("repository", item.getRepository());
-                        itemObject.addProperty("namespacing", item.isNamespacing());
-                        itemObject.addProperty("launchFilePath", item.getLaunchFilePath());
+                // for (RobotLaunchManagerLaunchItem item :
+                // requestCreateRobot.getLaunchManagerLaunchItems()) {
+                // JsonObject itemObject = new JsonObject();
+                // JsonObject selectors = new JsonObject();
+                // if (item.getCluster().equals("cloud")) {
+                // selectors.addProperty("robolaunch.io/cloud-instance", item.getClusterName());
+                // } else if (item.getCluster().equals("physical")) {
+                // selectors.addProperty("robolaunch.io/physical-instance",
+                // item.getClusterName());
+                // }
+                // itemObject.add("selector", selectors);
+                // itemObject.addProperty("workspace", item.getWorkspace());
+                // itemObject.addProperty("repository", item.getRepository());
+                // itemObject.addProperty("namespacing", item.isNamespacing());
+                // itemObject.addProperty("launchFilePath", item.getLaunchFilePath());
 
-                        object.get("spec").getAsJsonObject().get("launchManagerTemplates").getAsJsonArray().get(0)
-                                        .getAsJsonObject().add(item.getName(),
-                                                        itemObject);
-                }
+                // object.get("spec").getAsJsonObject().get("launchManagerTemplates").getAsJsonArray().get(0)
+                // .getAsJsonObject().add(item.getName(),
+                // itemObject);
+                // }
 
-                //// FIX - workspace path - gokhan does not give me.
-                object.get("spec").getAsJsonObject().addProperty("workspacesPath", "workspacePath");
-                JsonObject workspaceObject = new JsonObject();
-                for (Workspace workspace : robot.getRobotWorkspaces()) {
+                // FIX - workspace path - gokhan does not give me.
+                object.get("spec").getAsJsonObject().addProperty("workspacesPath",
+                                "/root/workspaces");
+                JsonArray workspacesArray = new JsonArray();
+                for (Workspace workspace : requestCreateRobot.getRobotWorkspaces()) {
+                        JsonObject workspaceObject = new JsonObject();
                         JsonObject repositories = new JsonObject();
                         for (Repository repository : workspace.getRepositories()) {
                                 JsonObject repositoryObject = new JsonObject();
@@ -334,9 +355,13 @@ public class RobotRepositoryImpl implements RobotRepository {
                         }
                         workspaceObject.addProperty("name", workspace.getName());
                         workspaceObject.add("repositories", repositories);
+                        workspacesArray.add(workspaceObject);
                 }
-                object.get("spec").getAsJsonObject().add("workspaces", workspaceObject);
-                robotBuildManagerApi.create(new DynamicKubernetesObject(object));
+                object.get("spec").getAsJsonObject().add("workspaces", workspacesArray);
+
+                System.out.println("Our object: " + gson.toJson(object));
+                customObjectsApi.createNamespacedCustomObject("robot.roboscale.io", "v1alpha1", "robot-system",
+                                "robots", object, null, null, null);
 
         }
 

@@ -5,16 +5,17 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
-import org.robolaunch.models.Organization;
 import org.robolaunch.models.Response;
 import org.robolaunch.models.request.RequestCreateRobot;
-import org.robolaunch.models.request.Robot;
 import org.robolaunch.models.request.RobotBuildManager;
 import org.robolaunch.models.request.RobotDevSuite;
 import org.robolaunch.models.request.RobotLaunchManager;
 import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.repository.abstracts.RobotRepository;
 
+import com.google.gson.Gson;
+
+import io.kubernetes.client.openapi.ApiException;
 import io.quarkus.arc.log.LoggerName;
 
 @ApplicationScoped
@@ -102,19 +103,33 @@ public class RobotService {
   public PlainResponse createRobot(RequestCreateRobot requestCreateRobot) {
     PlainResponse plainResponse = new PlainResponse();
     try {
+      Gson gson = new Gson();
+      System.out.println("GOSN: " + gson.toJson(requestCreateRobot));
       String token = jwt.getRawToken();
-      robotRepository.createRobot(requestCreateRobot.getOrganization(), requestCreateRobot.getTeamId(),
-          requestCreateRobot.getRegion(), requestCreateRobot.getCloudInstance(), requestCreateRobot.getRobot(),
-          requestCreateRobot.getBufferName(), token);
+      robotRepository.createRobot(requestCreateRobot, token);
       robotLogger.info("Robot created");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Robot created.");
+    } catch (ApiException e) {
+      System.out.println("got apiexc");
+      System.out.println(e.getResponseBody());
+      System.out.println(e.getCode());
+      System.out.println(e.getCause());
     } catch (Exception e) {
       robotLogger.error("Error occured while creating robot", e);
       plainResponse.setSuccess(false);
       plainResponse.setMessage("Error occured while creating robot.");
     }
     return plainResponse;
+  }
+
+  public void takes(RequestCreateRobot requestCreateRobot) {
+    try {
+      Gson gson = new Gson();
+      System.out.println("GOSN: " + gson.toJson(requestCreateRobot));
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
   }
 
 }
