@@ -65,7 +65,6 @@ import io.kubernetes.client.openapi.models.V1PodList;
 import io.kubernetes.client.openapi.models.V1Secret;
 import io.kubernetes.client.openapi.models.V1Service;
 import io.kubernetes.client.openapi.models.V1ServiceAccount;
-import io.kubernetes.client.openapi.models.V1ServiceAccountList;
 import io.kubernetes.client.openapi.models.V1ServiceList;
 import io.kubernetes.client.util.ClientBuilder;
 import io.kubernetes.client.util.ModelMapper;
@@ -897,6 +896,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   public ApiClient userApiClient(String bufferName, String token)
       throws IOException, ApiException, InterruptedException {
     String namespaceName = getNamespaceNameWithBufferName(bufferName);
+    System.out.println("Namespace Name: " + namespaceName);
     V1Secret sc = coreV1Api.readNamespacedSecret("admin-kubeconfig", namespaceName, null);
     Optional<Map<String, byte[]>> optionalData = Optional.ofNullable(sc.getData());
     var certData = optionalData.get().get("admin-kubeconfig");
