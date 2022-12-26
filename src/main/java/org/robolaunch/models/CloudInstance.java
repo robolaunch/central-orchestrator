@@ -6,6 +6,8 @@ public class CloudInstance implements Serializable {
 
   private String processId;
 
+  private String bufferName;
+
   private String name;
 
   private String status;

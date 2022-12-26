@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_3EUMQGNDEDuE4uQnvqrEXA" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_ba8xgGc-EDuSWp39N6Q1sA" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_organizationItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="_teamIdItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_cloudInstanceNameItem" structureRef="String"/>
@@ -16,26 +16,36 @@
   <bpmn2:itemDefinition id="_userStageItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_statusItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_deleteWorkerLabelResponseItem" structureRef="org.robolaunch.models.Response"/>
+  <bpmn2:itemDefinition id="_regionItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__0A2A85C8-4781-473A-953C-D07731E74C99_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="__0A2A85C8-4781-473A-953C-D07731E74C99_teamIdInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__0A2A85C8-4781-473A-953C-D07731E74C99_cloudInstanceNameInputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__0A2A85C8-4781-473A-953C-D07731E74C99_regionInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__0A2A85C8-4781-473A-953C-D07731E74C99_bufferNameOutputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__9487137E-3491-409D-A8EE-91BCA93D0FE1_bufferNameInputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__9487137E-3491-409D-A8EE-91BCA93D0FE1_regionInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__9487137E-3491-409D-A8EE-91BCA93D0FE1_deleteCVResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
   <bpmn2:itemDefinition id="__E8E2D6E6-041A-46BF-B8D5-1D6825E88367_bufferNameInputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__E8E2D6E6-041A-46BF-B8D5-1D6825E88367_regionInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__E8E2D6E6-041A-46BF-B8D5-1D6825E88367_deleteOAuthResourcesResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
   <bpmn2:itemDefinition id="__EF902276-0C5D-4E4A-AC1D-E8124AB71D26_bufferNameInputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__EF902276-0C5D-4E4A-AC1D-E8124AB71D26_regionInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__EF902276-0C5D-4E4A-AC1D-E8124AB71D26_deleteVCResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
   <bpmn2:itemDefinition id="__98FF5684-8E92-4848-8D48-69F20088C768_bufferNameInputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__98FF5684-8E92-4848-8D48-69F20088C768_regionInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__98FF5684-8E92-4848-8D48-69F20088C768_isSubnetUsedOutputXItem" structureRef="Boolean"/>
   <bpmn2:itemDefinition id="__E51704BF-4F2F-4093-BE5F-782D5303F04C_bufferNameInputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__E51704BF-4F2F-4093-BE5F-782D5303F04C_regionInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__E51704BF-4F2F-4093-BE5F-782D5303F04C_deleteSubnetResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
   <bpmn2:itemDefinition id="__8A0A823D-EC9F-4A4D-B913-A2C804AF12ED_bufferNameInputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__8A0A823D-EC9F-4A4D-B913-A2C804AF12ED_regionInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__8A0A823D-EC9F-4A4D-B913-A2C804AF12ED_deleteMDResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
   <bpmn2:itemDefinition id="__A7DF5FD2-08C8-413C-9A7E-93D6DF947D4B_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="__A7DF5FD2-08C8-413C-9A7E-93D6DF947D4B_nodeNameInputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__A7DF5FD2-08C8-413C-9A7E-93D6DF947D4B_regionInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__A7DF5FD2-08C8-413C-9A7E-93D6DF947D4B_deleteDNSRecordResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
   <bpmn2:itemDefinition id="__FBD091B2-1F39-47F3-913B-ED61793C76C1_nodeNameInputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__FBD091B2-1F39-47F3-913B-ED61793C76C1_regionInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__FBD091B2-1F39-47F3-913B-ED61793C76C1_deleteWorkerLabelResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
   <bpmn2:interface id="_0A2A85C8-4781-473A-953C-D07731E74C99_ServiceInterface" name="org.robolaunch.service.CloudInstanceHelperService" implementationRef="org.robolaunch.service.CloudInstanceHelperService">
     <bpmn2:operation id="_0A2A85C8-4781-473A-953C-D07731E74C99_ServiceOperation" name="getBufferName" implementationRef="getBufferName"/>
@@ -67,8 +77,8 @@
   <bpmn2:interface id="_FBD091B2-1F39-47F3-913B-ED61793C76C1_ServiceInterface" name="org.robolaunch.service.CloudInstanceHelperService" implementationRef="org.robolaunch.service.CloudInstanceHelperService">
     <bpmn2:operation id="_FBD091B2-1F39-47F3-913B-ED61793C76C1_ServiceOperation" name="deleteWorkerLabelFromNode" implementationRef="deleteWorkerLabelFromNode"/>
   </bpmn2:interface>
-  <bpmn2:collaboration id="_3D37B069-D005-4DB3-861F-A67C42BB5CFB" name="Default Collaboration">
-    <bpmn2:participant id="_D2DCB893-AB1C-461D-9F60-D002859EF181" name="Pool Participant" processRef="terminateCloudInstance"/>
+  <bpmn2:collaboration id="_E9365397-F5F2-43FD-B766-342818E98CB7" name="Default Collaboration">
+    <bpmn2:participant id="_07FCA7FC-5031-425F-96D2-2831C03DD94B" name="Pool Participant" processRef="terminateCloudInstance"/>
   </bpmn2:collaboration>
   <bpmn2:process id="terminateCloudInstance" drools:packageName="org.robolaunch.kogito.cloudInstance" drools:version="1.0" drools:adHoc="false" name="terminateCloudInstance" isExecutable="true" processType="Public">
     <bpmn2:property id="organization" itemSubjectRef="_organizationItem" name="organization"/>
@@ -87,6 +97,7 @@
     <bpmn2:property id="userStage" itemSubjectRef="_userStageItem" name="userStage"/>
     <bpmn2:property id="status" itemSubjectRef="_statusItem" name="status"/>
     <bpmn2:property id="deleteWorkerLabelResponse" itemSubjectRef="_deleteWorkerLabelResponseItem" name="deleteWorkerLabelResponse"/>
+    <bpmn2:property id="region" itemSubjectRef="_regionItem" name="region"/>
     <bpmn2:sequenceFlow id="_2D17BD20-5B76-444B-A4FF-36FF585D1BB7" sourceRef="_77930896-1DCF-4542-A60F-A5405D5F7DCC" targetRef="_341BD043-58CA-4201-A5EF-00C85825F70B">
       <bpmn2:extensionElements>
         <drools:metaData name="isAutoConnection.target">
@@ -410,9 +421,11 @@
       <bpmn2:outgoing>_05D369A7-41EB-4311-A546-4024F90CB7E1</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_FBD091B2-1F39-47F3-913B-ED61793C76C1_nodeNameInputX" drools:dtype="String" itemSubjectRef="__FBD091B2-1F39-47F3-913B-ED61793C76C1_nodeNameInputXItem" name="nodeName"/>
+        <bpmn2:dataInput id="_FBD091B2-1F39-47F3-913B-ED61793C76C1_regionInputX" drools:dtype="String" itemSubjectRef="__FBD091B2-1F39-47F3-913B-ED61793C76C1_regionInputXItem" name="region"/>
         <bpmn2:dataOutput id="_FBD091B2-1F39-47F3-913B-ED61793C76C1_deleteWorkerLabelResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__FBD091B2-1F39-47F3-913B-ED61793C76C1_deleteWorkerLabelResponseOutputXItem" name="deleteWorkerLabelResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_FBD091B2-1F39-47F3-913B-ED61793C76C1_nodeNameInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_FBD091B2-1F39-47F3-913B-ED61793C76C1_regionInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
           <bpmn2:dataOutputRefs>_FBD091B2-1F39-47F3-913B-ED61793C76C1_deleteWorkerLabelResponseOutputX</bpmn2:dataOutputRefs>
@@ -421,6 +434,10 @@
       <bpmn2:dataInputAssociation>
         <bpmn2:sourceRef>nodeName</bpmn2:sourceRef>
         <bpmn2:targetRef>_FBD091B2-1F39-47F3-913B-ED61793C76C1_nodeNameInputX</bpmn2:targetRef>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation>
+        <bpmn2:sourceRef>region</bpmn2:sourceRef>
+        <bpmn2:targetRef>_FBD091B2-1F39-47F3-913B-ED61793C76C1_regionInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
         <bpmn2:sourceRef>_FBD091B2-1F39-47F3-913B-ED61793C76C1_deleteWorkerLabelResponseOutputX</bpmn2:sourceRef>
@@ -579,10 +596,12 @@ kcontext.setVariable("adminStage", "5/5 Deleting Subnet");</bpmn2:script>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_A7DF5FD2-08C8-413C-9A7E-93D6DF947D4B_organizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__A7DF5FD2-08C8-413C-9A7E-93D6DF947D4B_organizationInputXItem" name="organization"/>
         <bpmn2:dataInput id="_A7DF5FD2-08C8-413C-9A7E-93D6DF947D4B_nodeNameInputX" drools:dtype="String" itemSubjectRef="__A7DF5FD2-08C8-413C-9A7E-93D6DF947D4B_nodeNameInputXItem" name="nodeName"/>
+        <bpmn2:dataInput id="_A7DF5FD2-08C8-413C-9A7E-93D6DF947D4B_regionInputX" drools:dtype="String" itemSubjectRef="__A7DF5FD2-08C8-413C-9A7E-93D6DF947D4B_regionInputXItem" name="region"/>
         <bpmn2:dataOutput id="_A7DF5FD2-08C8-413C-9A7E-93D6DF947D4B_deleteDNSRecordResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__A7DF5FD2-08C8-413C-9A7E-93D6DF947D4B_deleteDNSRecordResponseOutputXItem" name="deleteDNSRecordResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_A7DF5FD2-08C8-413C-9A7E-93D6DF947D4B_organizationInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_A7DF5FD2-08C8-413C-9A7E-93D6DF947D4B_nodeNameInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_A7DF5FD2-08C8-413C-9A7E-93D6DF947D4B_regionInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
           <bpmn2:dataOutputRefs>_A7DF5FD2-08C8-413C-9A7E-93D6DF947D4B_deleteDNSRecordResponseOutputX</bpmn2:dataOutputRefs>
@@ -595,6 +614,10 @@ kcontext.setVariable("adminStage", "5/5 Deleting Subnet");</bpmn2:script>
       <bpmn2:dataInputAssociation>
         <bpmn2:sourceRef>nodeName</bpmn2:sourceRef>
         <bpmn2:targetRef>_A7DF5FD2-08C8-413C-9A7E-93D6DF947D4B_nodeNameInputX</bpmn2:targetRef>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation>
+        <bpmn2:sourceRef>region</bpmn2:sourceRef>
+        <bpmn2:targetRef>_A7DF5FD2-08C8-413C-9A7E-93D6DF947D4B_regionInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
         <bpmn2:sourceRef>_A7DF5FD2-08C8-413C-9A7E-93D6DF947D4B_deleteDNSRecordResponseOutputX</bpmn2:sourceRef>
@@ -669,9 +692,11 @@ kcontext.setVariable("userStage", "Terminating Robotics Cloud");</bpmn2:script>
       <bpmn2:outgoing>_E688E63F-0339-4975-AA31-1D702B7B523C</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_8A0A823D-EC9F-4A4D-B913-A2C804AF12ED_bufferNameInputX" drools:dtype="String" itemSubjectRef="__8A0A823D-EC9F-4A4D-B913-A2C804AF12ED_bufferNameInputXItem" name="bufferName"/>
+        <bpmn2:dataInput id="_8A0A823D-EC9F-4A4D-B913-A2C804AF12ED_regionInputX" drools:dtype="String" itemSubjectRef="__8A0A823D-EC9F-4A4D-B913-A2C804AF12ED_regionInputXItem" name="region"/>
         <bpmn2:dataOutput id="_8A0A823D-EC9F-4A4D-B913-A2C804AF12ED_deleteMDResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__8A0A823D-EC9F-4A4D-B913-A2C804AF12ED_deleteMDResponseOutputXItem" name="deleteMDResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_8A0A823D-EC9F-4A4D-B913-A2C804AF12ED_bufferNameInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_8A0A823D-EC9F-4A4D-B913-A2C804AF12ED_regionInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
           <bpmn2:dataOutputRefs>_8A0A823D-EC9F-4A4D-B913-A2C804AF12ED_deleteMDResponseOutputX</bpmn2:dataOutputRefs>
@@ -680,6 +705,10 @@ kcontext.setVariable("userStage", "Terminating Robotics Cloud");</bpmn2:script>
       <bpmn2:dataInputAssociation>
         <bpmn2:sourceRef>bufferName</bpmn2:sourceRef>
         <bpmn2:targetRef>_8A0A823D-EC9F-4A4D-B913-A2C804AF12ED_bufferNameInputX</bpmn2:targetRef>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation>
+        <bpmn2:sourceRef>region</bpmn2:sourceRef>
+        <bpmn2:targetRef>_8A0A823D-EC9F-4A4D-B913-A2C804AF12ED_regionInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
         <bpmn2:sourceRef>_8A0A823D-EC9F-4A4D-B913-A2C804AF12ED_deleteMDResponseOutputX</bpmn2:sourceRef>
@@ -701,9 +730,11 @@ kcontext.setVariable("userStage", "Terminating Robotics Cloud");</bpmn2:script>
       <bpmn2:outgoing>_9071DDDC-BB33-4C41-A643-3C1A8D1D0DD1</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_E51704BF-4F2F-4093-BE5F-782D5303F04C_bufferNameInputX" drools:dtype="String" itemSubjectRef="__E51704BF-4F2F-4093-BE5F-782D5303F04C_bufferNameInputXItem" name="bufferName"/>
+        <bpmn2:dataInput id="_E51704BF-4F2F-4093-BE5F-782D5303F04C_regionInputX" drools:dtype="String" itemSubjectRef="__E51704BF-4F2F-4093-BE5F-782D5303F04C_regionInputXItem" name="region"/>
         <bpmn2:dataOutput id="_E51704BF-4F2F-4093-BE5F-782D5303F04C_deleteSubnetResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__E51704BF-4F2F-4093-BE5F-782D5303F04C_deleteSubnetResponseOutputXItem" name="deleteSubnetResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_E51704BF-4F2F-4093-BE5F-782D5303F04C_bufferNameInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_E51704BF-4F2F-4093-BE5F-782D5303F04C_regionInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
           <bpmn2:dataOutputRefs>_E51704BF-4F2F-4093-BE5F-782D5303F04C_deleteSubnetResponseOutputX</bpmn2:dataOutputRefs>
@@ -712,6 +743,10 @@ kcontext.setVariable("userStage", "Terminating Robotics Cloud");</bpmn2:script>
       <bpmn2:dataInputAssociation>
         <bpmn2:sourceRef>bufferName</bpmn2:sourceRef>
         <bpmn2:targetRef>_E51704BF-4F2F-4093-BE5F-782D5303F04C_bufferNameInputX</bpmn2:targetRef>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation>
+        <bpmn2:sourceRef>region</bpmn2:sourceRef>
+        <bpmn2:targetRef>_E51704BF-4F2F-4093-BE5F-782D5303F04C_regionInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
         <bpmn2:sourceRef>_E51704BF-4F2F-4093-BE5F-782D5303F04C_deleteSubnetResponseOutputX</bpmn2:sourceRef>
@@ -750,9 +785,11 @@ kcontext.setVariable("userStage", "Terminating Robotics Cloud");</bpmn2:script>
       <bpmn2:outgoing>_32FBFCCA-3848-4D5B-8AF1-AC704D285F47</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_98FF5684-8E92-4848-8D48-69F20088C768_bufferNameInputX" drools:dtype="String" itemSubjectRef="__98FF5684-8E92-4848-8D48-69F20088C768_bufferNameInputXItem" name="bufferName"/>
+        <bpmn2:dataInput id="_98FF5684-8E92-4848-8D48-69F20088C768_regionInputX" drools:dtype="String" itemSubjectRef="__98FF5684-8E92-4848-8D48-69F20088C768_regionInputXItem" name="region"/>
         <bpmn2:dataOutput id="_98FF5684-8E92-4848-8D48-69F20088C768_isSubnetUsedOutputX" drools:dtype="Boolean" itemSubjectRef="__98FF5684-8E92-4848-8D48-69F20088C768_isSubnetUsedOutputXItem" name="isSubnetUsed"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_98FF5684-8E92-4848-8D48-69F20088C768_bufferNameInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_98FF5684-8E92-4848-8D48-69F20088C768_regionInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
           <bpmn2:dataOutputRefs>_98FF5684-8E92-4848-8D48-69F20088C768_isSubnetUsedOutputX</bpmn2:dataOutputRefs>
@@ -761,6 +798,10 @@ kcontext.setVariable("userStage", "Terminating Robotics Cloud");</bpmn2:script>
       <bpmn2:dataInputAssociation>
         <bpmn2:sourceRef>bufferName</bpmn2:sourceRef>
         <bpmn2:targetRef>_98FF5684-8E92-4848-8D48-69F20088C768_bufferNameInputX</bpmn2:targetRef>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation>
+        <bpmn2:sourceRef>region</bpmn2:sourceRef>
+        <bpmn2:targetRef>_98FF5684-8E92-4848-8D48-69F20088C768_regionInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
         <bpmn2:sourceRef>_98FF5684-8E92-4848-8D48-69F20088C768_isSubnetUsedOutputX</bpmn2:sourceRef>
@@ -782,9 +823,11 @@ kcontext.setVariable("userStage", "Terminating Robotics Cloud");</bpmn2:script>
       <bpmn2:outgoing>_D22951E2-5E69-4869-BE13-14DCAC910187</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_EF902276-0C5D-4E4A-AC1D-E8124AB71D26_bufferNameInputX" drools:dtype="String" itemSubjectRef="__EF902276-0C5D-4E4A-AC1D-E8124AB71D26_bufferNameInputXItem" name="bufferName"/>
+        <bpmn2:dataInput id="_EF902276-0C5D-4E4A-AC1D-E8124AB71D26_regionInputX" drools:dtype="String" itemSubjectRef="__EF902276-0C5D-4E4A-AC1D-E8124AB71D26_regionInputXItem" name="region"/>
         <bpmn2:dataOutput id="_EF902276-0C5D-4E4A-AC1D-E8124AB71D26_deleteVCResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__EF902276-0C5D-4E4A-AC1D-E8124AB71D26_deleteVCResponseOutputXItem" name="deleteVCResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_EF902276-0C5D-4E4A-AC1D-E8124AB71D26_bufferNameInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_EF902276-0C5D-4E4A-AC1D-E8124AB71D26_regionInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
           <bpmn2:dataOutputRefs>_EF902276-0C5D-4E4A-AC1D-E8124AB71D26_deleteVCResponseOutputX</bpmn2:dataOutputRefs>
@@ -793,6 +836,10 @@ kcontext.setVariable("userStage", "Terminating Robotics Cloud");</bpmn2:script>
       <bpmn2:dataInputAssociation>
         <bpmn2:sourceRef>bufferName</bpmn2:sourceRef>
         <bpmn2:targetRef>_EF902276-0C5D-4E4A-AC1D-E8124AB71D26_bufferNameInputX</bpmn2:targetRef>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation>
+        <bpmn2:sourceRef>region</bpmn2:sourceRef>
+        <bpmn2:targetRef>_EF902276-0C5D-4E4A-AC1D-E8124AB71D26_regionInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
         <bpmn2:sourceRef>_EF902276-0C5D-4E4A-AC1D-E8124AB71D26_deleteVCResponseOutputX</bpmn2:sourceRef>
@@ -814,9 +861,11 @@ kcontext.setVariable("userStage", "Terminating Robotics Cloud");</bpmn2:script>
       <bpmn2:outgoing>_CC14F046-84E5-48C1-969A-1C447ABECA5F</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_E8E2D6E6-041A-46BF-B8D5-1D6825E88367_bufferNameInputX" drools:dtype="String" itemSubjectRef="__E8E2D6E6-041A-46BF-B8D5-1D6825E88367_bufferNameInputXItem" name="bufferName"/>
+        <bpmn2:dataInput id="_E8E2D6E6-041A-46BF-B8D5-1D6825E88367_regionInputX" drools:dtype="String" itemSubjectRef="__E8E2D6E6-041A-46BF-B8D5-1D6825E88367_regionInputXItem" name="region"/>
         <bpmn2:dataOutput id="_E8E2D6E6-041A-46BF-B8D5-1D6825E88367_deleteOAuthResourcesResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__E8E2D6E6-041A-46BF-B8D5-1D6825E88367_deleteOAuthResourcesResponseOutputXItem" name="deleteOAuthResourcesResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_E8E2D6E6-041A-46BF-B8D5-1D6825E88367_bufferNameInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_E8E2D6E6-041A-46BF-B8D5-1D6825E88367_regionInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
           <bpmn2:dataOutputRefs>_E8E2D6E6-041A-46BF-B8D5-1D6825E88367_deleteOAuthResourcesResponseOutputX</bpmn2:dataOutputRefs>
@@ -825,6 +874,10 @@ kcontext.setVariable("userStage", "Terminating Robotics Cloud");</bpmn2:script>
       <bpmn2:dataInputAssociation>
         <bpmn2:sourceRef>bufferName</bpmn2:sourceRef>
         <bpmn2:targetRef>_E8E2D6E6-041A-46BF-B8D5-1D6825E88367_bufferNameInputX</bpmn2:targetRef>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation>
+        <bpmn2:sourceRef>region</bpmn2:sourceRef>
+        <bpmn2:targetRef>_E8E2D6E6-041A-46BF-B8D5-1D6825E88367_regionInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
         <bpmn2:sourceRef>_E8E2D6E6-041A-46BF-B8D5-1D6825E88367_deleteOAuthResourcesResponseOutputX</bpmn2:sourceRef>
@@ -849,9 +902,11 @@ kcontext.setVariable("userStage", "Terminating Robotics Cloud");</bpmn2:script>
       <bpmn2:outgoing>_C638E16E-3A89-4FDF-8AAD-31753006484C</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_9487137E-3491-409D-A8EE-91BCA93D0FE1_bufferNameInputX" drools:dtype="String" itemSubjectRef="__9487137E-3491-409D-A8EE-91BCA93D0FE1_bufferNameInputXItem" name="bufferName"/>
+        <bpmn2:dataInput id="_9487137E-3491-409D-A8EE-91BCA93D0FE1_regionInputX" drools:dtype="String" itemSubjectRef="__9487137E-3491-409D-A8EE-91BCA93D0FE1_regionInputXItem" name="region"/>
         <bpmn2:dataOutput id="_9487137E-3491-409D-A8EE-91BCA93D0FE1_deleteCVResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__9487137E-3491-409D-A8EE-91BCA93D0FE1_deleteCVResponseOutputXItem" name="deleteCVResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_9487137E-3491-409D-A8EE-91BCA93D0FE1_bufferNameInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_9487137E-3491-409D-A8EE-91BCA93D0FE1_regionInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
           <bpmn2:dataOutputRefs>_9487137E-3491-409D-A8EE-91BCA93D0FE1_deleteCVResponseOutputX</bpmn2:dataOutputRefs>
@@ -860,6 +915,10 @@ kcontext.setVariable("userStage", "Terminating Robotics Cloud");</bpmn2:script>
       <bpmn2:dataInputAssociation>
         <bpmn2:sourceRef>bufferName</bpmn2:sourceRef>
         <bpmn2:targetRef>_9487137E-3491-409D-A8EE-91BCA93D0FE1_bufferNameInputX</bpmn2:targetRef>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation>
+        <bpmn2:sourceRef>region</bpmn2:sourceRef>
+        <bpmn2:targetRef>_9487137E-3491-409D-A8EE-91BCA93D0FE1_regionInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
         <bpmn2:sourceRef>_9487137E-3491-409D-A8EE-91BCA93D0FE1_deleteCVResponseOutputX</bpmn2:sourceRef>
@@ -878,11 +937,13 @@ kcontext.setVariable("userStage", "Terminating Robotics Cloud");</bpmn2:script>
         <bpmn2:dataInput id="_0A2A85C8-4781-473A-953C-D07731E74C99_organizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__0A2A85C8-4781-473A-953C-D07731E74C99_organizationInputXItem" name="organization"/>
         <bpmn2:dataInput id="_0A2A85C8-4781-473A-953C-D07731E74C99_teamIdInputX" drools:dtype="String" itemSubjectRef="__0A2A85C8-4781-473A-953C-D07731E74C99_teamIdInputXItem" name="teamId"/>
         <bpmn2:dataInput id="_0A2A85C8-4781-473A-953C-D07731E74C99_cloudInstanceNameInputX" drools:dtype="String" itemSubjectRef="__0A2A85C8-4781-473A-953C-D07731E74C99_cloudInstanceNameInputXItem" name="cloudInstanceName"/>
+        <bpmn2:dataInput id="_0A2A85C8-4781-473A-953C-D07731E74C99_regionInputX" drools:dtype="String" itemSubjectRef="__0A2A85C8-4781-473A-953C-D07731E74C99_regionInputXItem" name="region"/>
         <bpmn2:dataOutput id="_0A2A85C8-4781-473A-953C-D07731E74C99_bufferNameOutputX" drools:dtype="String" itemSubjectRef="__0A2A85C8-4781-473A-953C-D07731E74C99_bufferNameOutputXItem" name="bufferName"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_0A2A85C8-4781-473A-953C-D07731E74C99_organizationInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_0A2A85C8-4781-473A-953C-D07731E74C99_teamIdInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_0A2A85C8-4781-473A-953C-D07731E74C99_cloudInstanceNameInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_0A2A85C8-4781-473A-953C-D07731E74C99_regionInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
           <bpmn2:dataOutputRefs>_0A2A85C8-4781-473A-953C-D07731E74C99_bufferNameOutputX</bpmn2:dataOutputRefs>
@@ -899,6 +960,10 @@ kcontext.setVariable("userStage", "Terminating Robotics Cloud");</bpmn2:script>
       <bpmn2:dataInputAssociation>
         <bpmn2:sourceRef>cloudInstanceName</bpmn2:sourceRef>
         <bpmn2:targetRef>_0A2A85C8-4781-473A-953C-D07731E74C99_cloudInstanceNameInputX</bpmn2:targetRef>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation>
+        <bpmn2:sourceRef>region</bpmn2:sourceRef>
+        <bpmn2:targetRef>_0A2A85C8-4781-473A-953C-D07731E74C99_regionInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
         <bpmn2:sourceRef>_0A2A85C8-4781-473A-953C-D07731E74C99_bufferNameOutputX</bpmn2:sourceRef>
@@ -939,7 +1004,7 @@ kcontext.setVariable("userStage", "Terminating Robotics Cloud");</bpmn2:script>
         <dc:Bounds height="56" width="56" x="1425" y="374"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__98FF5684-8E92-4848-8D48-69F20088C768" bpmnElement="_98FF5684-8E92-4848-8D48-69F20088C768">
-        <dc:Bounds height="50" width="117" x="1987" y="375"/>
+        <dc:Bounds height="50" width="117" x="1987" y="376"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__ED4AB23D-5C1D-44BB-B37A-5586F6646AE3" bpmnElement="_ED4AB23D-5C1D-44BB-B37A-5586F6646AE3">
         <dc:Bounds height="56" width="56" x="2146" y="371"/>
@@ -1098,10 +1163,10 @@ kcontext.setVariable("userStage", "Terminating Robotics Cloud");</bpmn2:script>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__48F3D456-EC33-4F4B-925F-E3A10B38F27B_to_shape__98FF5684-8E92-4848-8D48-69F20088C768" bpmnElement="_D9244958-3A12-4584-AD3D-0CB3B003202B">
         <di:waypoint x="1928" y="400"/>
-        <di:waypoint x="1987" y="400"/>
+        <di:waypoint x="1987" y="401"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__98FF5684-8E92-4848-8D48-69F20088C768_to_shape__ED4AB23D-5C1D-44BB-B37A-5586F6646AE3" bpmnElement="_32FBFCCA-3848-4D5B-8AF1-AC704D285F47">
-        <di:waypoint x="2045.5" y="400"/>
+        <di:waypoint x="2045.5" y="401"/>
         <di:waypoint x="2174" y="399"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__ED4AB23D-5C1D-44BB-B37A-5586F6646AE3_to_shape__7BFDCA05-5363-4761-9701-5B6E06B8DB9F" bpmnElement="_883FC351-9D8F-4543-9AA3-29B8781EF15A">
@@ -1581,7 +1646,7 @@ kcontext.setVariable("userStage", "Terminating Robotics Cloud");</bpmn2:script>
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_3EUMQGNDEDuE4uQnvqrEXA</bpmn2:source>
-    <bpmn2:target>_3EUMQGNDEDuE4uQnvqrEXA</bpmn2:target>
+    <bpmn2:source>_ba8xgGc-EDuSWp39N6Q1sA</bpmn2:source>
+    <bpmn2:target>_ba8xgGc-EDuSWp39N6Q1sA</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>

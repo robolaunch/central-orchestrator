@@ -1,6 +1,8 @@
 package org.robolaunch.repository.concretes;
 
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +22,7 @@ import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.V1Service;
 import io.kubernetes.client.openapi.models.V1ServicePort;
 import io.kubernetes.client.openapi.models.V1ServiceSpec;
+import io.minio.errors.MinioException;
 
 @ApplicationScoped
 public class RobotHelperRepositoryImpl implements RobotHelperRepository {
@@ -30,8 +33,9 @@ public class RobotHelperRepositoryImpl implements RobotHelperRepository {
    CloudInstanceHelperRepository cloudInstanceHelperRepository;
 
    @PostConstruct
-   public void initializeApis() throws IOException, ApiException, InterruptedException {
-      this.adminApiClient = cloudInstanceHelperRepository.adminApiClient();
+   public void initializeApis() throws IOException, ApiException, InterruptedException, InvalidKeyException,
+         NoSuchAlgorithmException, IllegalArgumentException, MinioException {
+      this.adminApiClient = cloudInstanceHelperRepository.adminApiClient("eu-central-1");
       this.coreV1Api = new CoreV1Api(adminApiClient);
    }
 

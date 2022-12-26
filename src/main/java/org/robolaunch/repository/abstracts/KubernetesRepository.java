@@ -9,7 +9,7 @@ import io.smallrye.graphql.execution.ExecutionException;
 
 public interface KubernetesRepository {
 
-        public ArrayList<CloudInstance> getCloudInstances(Organization organization, String teamId)
+        public void getCloudInstances(Organization organization, String teamId)
                         throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException;
 
 }

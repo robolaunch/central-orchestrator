@@ -19,12 +19,14 @@ import software.amazon.awssdk.services.ec2.model.StopInstancesRequest;
 public class AmazonRepositoryImpl implements AmazonRepository {
   private Ec2Client ec2Client;
 
+  /// STORE THEM IN MINIO
   @ConfigProperty(name = "quarkus.aws.access.key.id")
   String accessKeyId;
 
   @ConfigProperty(name = "quarkus.aws.secret.access.key")
   String secretAccessKey;
 
+  //// MAKE DYNAMIC REGION
   @PostConstruct
   public void ec2Client() {
     Region region = Region.EU_CENTRAL_1;
@@ -37,7 +39,7 @@ public class AmazonRepositoryImpl implements AmazonRepository {
   }
 
   @Override
-  public void stopInstance(String nodeName) {
+  public void stopInstance(String nodeName, String region) {
     DescribeInstancesRequest describeInstancesRequest = DescribeInstancesRequest.builder().build();
     DescribeInstancesResponse describeInstancesResponse = ec2Client.describeInstances(describeInstancesRequest);
 
@@ -55,7 +57,7 @@ public class AmazonRepositoryImpl implements AmazonRepository {
   }
 
   @Override
-  public void startInstance(String nodeName) {
+  public void startInstance(String nodeName, String region) {
     DescribeInstancesRequest describeInstancesRequest = DescribeInstancesRequest.builder().build();
     DescribeInstancesResponse describeInstancesResponse = ec2Client.describeInstances(describeInstancesRequest);
 
@@ -75,7 +77,7 @@ public class AmazonRepositoryImpl implements AmazonRepository {
   }
 
   @Override
-  public String getInstanceState(String nodeName) {
+  public String getInstanceState(String nodeName, String region) {
     DescribeInstancesRequest describeInstancesRequest = DescribeInstancesRequest.builder().build();
     DescribeInstancesResponse describeInstancesResponse = ec2Client.describeInstances(describeInstancesRequest);
 
@@ -91,7 +93,7 @@ public class AmazonRepositoryImpl implements AmazonRepository {
   }
 
   @Override
-  public Boolean isInstanceStopped(String nodeName) {
+  public Boolean isInstanceStopped(String nodeName, String region) {
     DescribeInstancesRequest describeInstancesRequest = DescribeInstancesRequest.builder().build();
     DescribeInstancesResponse describeInstancesResponse = ec2Client.describeInstances(describeInstancesRequest);
 
@@ -107,7 +109,7 @@ public class AmazonRepositoryImpl implements AmazonRepository {
   }
 
   @Override
-  public Boolean isRunning(String nodeName) {
+  public Boolean isRunning(String nodeName, String region) {
     DescribeInstancesRequest describeInstancesRequest = DescribeInstancesRequest.builder().build();
     DescribeInstancesResponse describeInstancesResponse = ec2Client.describeInstances(describeInstancesRequest);
 
