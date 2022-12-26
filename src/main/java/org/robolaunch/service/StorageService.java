@@ -58,7 +58,6 @@ public class StorageService {
 
     public Response createBucketForOrganization(Organization organization) throws ApplicationException {
         try {
-            System.out.println("Creating bucket for organization: " + organization.getName());
             Organization org = new Organization();
             org.setName(organization.getName().toLowerCase());
             org.setEnterprise(organization.isEnterprise());
@@ -67,8 +66,6 @@ public class StorageService {
             return new Response(true, UUID.randomUUID().toString());
         } catch (Exception e) {
             storageLogger.error("Create bucket operation is failed: " + e);
-            System.out.println(e.getMessage());
-            System.out.println(e.getCause());
             return new Response(false, UUID.randomUUID().toString());
 
         }
@@ -99,6 +96,13 @@ public class StorageService {
             storageLogger.info("Start time is saved: " + organization.getName());
         } catch (Exception e) {
             storageLogger.error("Start time saving failed: " + e);
+        }
+    }
+
+    public void infinispanConnect() {
+        try {
+            storageRepository.infinispanConnect();
+        } catch (Exception e) {
         }
     }
 

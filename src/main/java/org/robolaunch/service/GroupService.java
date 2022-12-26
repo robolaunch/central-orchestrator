@@ -77,6 +77,15 @@ public class GroupService {
     }
   }
 
+  public void deleteAdminCookies() {
+    try {
+      groupAdminRepository.clearCookies();
+      groupLogger.info("Admin cookies deleted.");
+    } catch (Exception e) {
+      groupLogger.error("Error deleting admin cookies.");
+    }
+  }
+
   public void addUserToIPAGroup(User user, Organization organization) throws ApplicationException {
     try {
       groupAdminRepository.addUserToGroup(user, organization);
@@ -93,14 +102,14 @@ public class GroupService {
     try {
       User user = new User();
       user.setUsername(jwt.getClaim("preferred_username"));
-      System.out.println("Keske: " + jwt.claim("preferred_username"));
-      System.out.println("fdss: " + jwt.getIssuer());
-      System.out.println("Token: " + jwt.containsClaim("preferred_username"));
-      System.out.println("Token: " + jwt.getRawToken());
-      System.out.println("Username: " + user.getUsername());
-      System.out.println("bu da başka bir videonun konusu olsun");
       groupAdminRepository.addUserToGroup(user, organization);
       groupAdminRepository.addUserToGroupAsManager(user, organization);
+
+      // Add Also Big Boss to the group. This is needed for managing robotics clouds.
+      User bigBossUser = new User();
+      bigBossUser.setUsername("bigboss");
+      groupAdminRepository.addUserToGroup(bigBossUser, organization);
+
       groupLogger.info("Admin " + user.getUsername() + " added to group as manager");
       return new Response(true, UUID.randomUUID().toString());
     } catch (Exception e) {
@@ -142,18 +151,4 @@ public class GroupService {
       return null;
     }
   }
-
-  public void jwtTest() {
-    try {
-      System.out.println("username: " + jwt.getClaim("preferred_username"));
-      System.out.println("issuer: " + jwt.getIssuer());
-      System.out.println("Username?: " + jwt.containsClaim("preferred_username"));
-      System.out.println("Token: " + jwt.getRawToken());
-      System.out.println("Name: " + jwt.getName());
-      System.out.println("claim names: " + jwt.getClaimNames());
-    } catch (Exception e) {
-      // TODO: handle exception
-    }
-  }
-
 }

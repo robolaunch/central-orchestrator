@@ -27,14 +27,10 @@ public class CloudInstanceService {
 
   public Response createMachineDeployment(String bufferName, String instanceType) {
     try {
-      System.out.println("Buffer name: " + bufferName);
-      System.out.println("Instance type: " + instanceType);
+      cloudInstanceLogger.info("Machine deployment created -> " + bufferName);
       cloudInstanceRepository.createMachineDeployment(bufferName, instanceType);
-      cloudInstanceLogger.info("Machine deployment created");
       return new Response(true, "Machine deployment created successfully");
     } catch (Exception e) {
-      System.out.println(e.getMessage());
-      System.out.println(e.getCause());
       cloudInstanceLogger.error("Error while creating machine deployment", e);
       return new Response(false, "Error while creating machine deployment");
     }
@@ -42,24 +38,13 @@ public class CloudInstanceService {
 
   public Response claimTheSuperClusterNode(String nodeName, String bufferName) {
     try {
-      System.out.println("Node name: " + nodeName);
-      System.out.println("Buffer name: " + bufferName);
       cloudInstanceRepository.claimTheSuperClusterNode(nodeName, bufferName);
       cloudInstanceLogger.info("Label added to node");
       return new Response(true, "Label added to node successfully");
     } catch (KubectlException e) {
-      System.out.println(((ApiException) e.getCause()).getResponseBody());
-      System.out.println(((ApiException) e.getCause()).getCause());
-      System.out.println(((ApiException) e.getCause()).getMessage());
-
-      System.out.println(e.getMessage());
-      System.out.println(e.getCause());
-      System.out.println(e.getLocalizedMessage());
       cloudInstanceLogger.error("Error while adding label to node - kubectlexception", e);
       return new Response(false, "Error while adding label to node");
     } catch (Exception e) {
-      System.out.println(e.getMessage());
-      System.out.println(e.getCause());
       cloudInstanceLogger.error("Error while adding label to node - exception", e);
       return new Response(false, "Error while adding label to node");
     }
@@ -103,10 +88,10 @@ public class CloudInstanceService {
     return true;
   }
 
-  public Response labelVirtualCluster(String bufferName, Organization organization, String departmentName,
+  public Response labelVirtualCluster(String bufferName, Organization organization, String teamId,
       String superClusterName, String cloudInstanceName, Boolean connectionHub) {
     try {
-      cloudInstanceRepository.labelVirtualCluster(bufferName, organization, departmentName,
+      cloudInstanceRepository.labelVirtualCluster(bufferName, organization, teamId,
           superClusterName, cloudInstanceName, connectionHub);
       cloudInstanceLogger.info("VC labeled");
       return new Response(true, "VC labeled.");
@@ -118,11 +103,10 @@ public class CloudInstanceService {
   }
 
   public Response addOrganizationLabelsToNode(Organization organization, String nodeName, String cloudInstanceName,
-      String departmentName, String superClusterName, Boolean connectionHub) {
+      String teamId, String region, Boolean connectionHub) {
     try {
-      System.out.println("Node name: " + nodeName);
-      cloudInstanceRepository.addOrganizationLabelsToNode(organization, nodeName, cloudInstanceName, departmentName,
-          superClusterName, connectionHub);
+      cloudInstanceRepository.addOrganizationLabelsToNode(organization, nodeName, cloudInstanceName, teamId,
+          region, connectionHub);
       cloudInstanceLogger.info("SC Node labeled");
       return new Response(true, "SC Node labeled.");
     } catch (Exception e) {
@@ -133,12 +117,12 @@ public class CloudInstanceService {
   }
 
   public Response addNodeSelectorsToStatefulSets(String namespaceName, Organization organization,
-      String departmentName,
-      String cloudInstanceName, String superClusterName, String bufferName) {
+      String teamId,
+      String cloudInstanceName, String region, String bufferName) {
     try {
       cloudInstanceRepository.addNodeSelectorsToStatefulSets(namespaceName, organization,
-          departmentName,
-          cloudInstanceName, superClusterName, bufferName);
+          teamId,
+          cloudInstanceName, region, bufferName);
       cloudInstanceLogger.info("Node selectors added to statefulsets");
       return new Response(true, "Node selectors added to statefulsets.");
     } catch (Exception e) {
@@ -160,10 +144,10 @@ public class CloudInstanceService {
   }
 
   public Response createSubnet(String bufferName, String namespaceName, String cloudInstanceName,
-      String departmentName, Organization organization, String superClusterName) {
+      String teamId, Organization organization, String region) {
     try {
       cloudInstanceRepository.createSubnet(bufferName, namespaceName, cloudInstanceName,
-          departmentName, organization, superClusterName);
+          teamId, organization, region);
       cloudInstanceLogger.info("Subnet created");
       return new Response(true, "Subnet created.");
     } catch (Exception e) {
@@ -197,18 +181,15 @@ public class CloudInstanceService {
     }
   }
 
-  public Response createOAuth2ProxyResources(Organization organization, String departmentName,
-      String cloudInstanceName, String superClusterName, String namespaceName, String bufferName) {
+  public Response createOAuth2ProxyResources(Organization organization, String teamId,
+      String cloudInstanceName, String region, String namespaceName, String bufferName) {
     try {
-      cloudInstanceRepository.createOAuth2ProxyResources(organization, departmentName, cloudInstanceName,
-          superClusterName, namespaceName, bufferName);
+      cloudInstanceRepository.createOAuth2ProxyResources(organization, teamId, cloudInstanceName,
+          region, namespaceName, bufferName);
       cloudInstanceLogger.info("OAuth2 proxy resources created");
       return new Response(true, "OAuth2 proxy resources created.");
     } catch (ApiException e) {
       cloudInstanceLogger.error("Error while creating OAuth2 proxy resources.", e);
-      System.out.println(e.getResponseBody());
-      System.out.println(e.getCause());
-      System.out.println(e.getMessage());
       return new Response(false, "Error creating OAuth2 proxy resources.");
     } catch (Exception e) {
       cloudInstanceLogger.error("Error while creating OAuth2 proxy resources.", e);
@@ -251,11 +232,11 @@ public class CloudInstanceService {
     }
   }
 
-  public Response createCoreDNS(Organization organization, String departmentName,
-      String cloudInstanceName, String nodeName, String bufferName, String superClusterName) {
+  public Response createCoreDNS(Organization organization, String teamId,
+      String cloudInstanceName, String nodeName, String bufferName, String region) {
     try {
-      cloudInstanceRepository.createCoreDNS(organization, departmentName,
-          cloudInstanceName, nodeName, bufferName, superClusterName);
+      cloudInstanceRepository.createCoreDNS(organization, teamId,
+          cloudInstanceName, nodeName, bufferName, region);
       cloudInstanceLogger.info("CoreDNS created");
       return new Response(true, "CoreDNS created.");
     } catch (Exception e) {
@@ -265,10 +246,10 @@ public class CloudInstanceService {
   }
 
   public Response addLabelsToVirtualClusterNode(Organization organization, String nodeName, String cloudInstanceName,
-      String departmentName, String bufferName, String superClusterName, Boolean connectionHub) {
+      String teamId, String bufferName, String region, Boolean connectionHub) {
     try {
       cloudInstanceRepository.addLabelsToVirtualClusterNode(organization, nodeName, cloudInstanceName,
-          departmentName, bufferName, superClusterName, connectionHub);
+          teamId, bufferName, region, connectionHub);
       cloudInstanceLogger.info("Label added to virtual cluster node");
       return new Response(true, "Label added to virtual cluster node.");
     } catch (Exception e) {
@@ -277,11 +258,11 @@ public class CloudInstanceService {
     }
   }
 
-  public Response createCertManager(Organization organization, String departmentName,
-      String cloudInstanceName, String bufferName, String superClusterName) {
+  public Response createCertManager(Organization organization, String teamId,
+      String cloudInstanceName, String bufferName, String region) {
     try {
-      cloudInstanceRepository.createCertManager(organization, departmentName,
-          cloudInstanceName, bufferName, superClusterName);
+      cloudInstanceRepository.createCertManager(organization, teamId,
+          cloudInstanceName, bufferName, region);
       cloudInstanceLogger.info("Cert manager created");
       return new Response(true, "Cert manager created.");
     } catch (Exception e) {
@@ -291,14 +272,23 @@ public class CloudInstanceService {
   }
 
   public Response createRobotOperator(Organization organization, String cloudInstanceName,
-      String departmentName, String superClusterName, String bufferName) {
+      String teamId, String region, String bufferName) {
     try {
       cloudInstanceRepository.createRobotOperator(organization, cloudInstanceName,
-          departmentName, superClusterName, bufferName);
+          teamId, region, bufferName);
       Thread.sleep(5000);
       cloudInstanceLogger.info("Robot operator created");
       return new Response(true, "Robot operator created.");
+    } catch (ApiException e) {
+      System.out.println("Catch api exception");
+      System.out.println(e.getCode());
+      System.out.println(e.getResponseBody());
+      cloudInstanceLogger.error("Error while creating robot operator.", e);
+      return new Response(false, "Error creating robot operator.");
     } catch (Exception e) {
+      System.out.println("Catch Normal Exception");
+      System.out.println(e.getCause());
+      System.out.println(e.getMessage());
       cloudInstanceLogger.error("Error while creating robot operator.", e);
       return new Response(false, "Error creating robot operator.");
     }
@@ -390,10 +380,10 @@ public class CloudInstanceService {
   }
 
   public Response createVirtualLink(String namespaceName, String cloudInstanceName,
-      String departmentName, Organization organization, String superClusterName, String bufferName) {
+      String teamId, Organization organization, String region, String bufferName) {
     try {
       cloudInstanceRepository.createVirtualLink(namespaceName, cloudInstanceName,
-          departmentName, organization, superClusterName, bufferName);
+          teamId, organization, region, bufferName);
       cloudInstanceLogger.info("Virtual link created");
       return new Response(true, "Virtual link created.");
     } catch (Exception e) {
@@ -403,10 +393,10 @@ public class CloudInstanceService {
   }
 
   public Response createConnectionHubOperator(String namespaceName, String cloudInstanceName,
-      String departmentName, Organization organization, String superClusterName, String bufferName) {
+      String teamId, Organization organization, String region, String bufferName) {
     try {
       cloudInstanceRepository.createConnectionHubOperator(namespaceName, cloudInstanceName,
-          departmentName, organization, superClusterName, bufferName);
+          teamId, organization, region, bufferName);
       cloudInstanceLogger.info("Connection hub operator created");
       return new Response(true, "Connection hub operator created.");
     } catch (Exception e) {
@@ -415,11 +405,11 @@ public class CloudInstanceService {
     }
   }
 
-  public Response createConnectionHub(String bufferName, Organization organization, String departmentName,
+  public Response createConnectionHub(String bufferName, Organization organization, String teamId,
       String cloudInstanceName, String namespaceName) {
     try {
       String serverIP = cloudInstanceHelperService.getCloudInstanceIP(bufferName);
-      cloudInstanceRepository.createConnectionHub(bufferName, organization, departmentName,
+      cloudInstanceRepository.createConnectionHub(bufferName, organization, teamId,
           cloudInstanceName, serverIP, namespaceName);
       cloudInstanceLogger.info("Connection hub created");
       return new Response(true, "Connection hub created.");
@@ -435,9 +425,6 @@ public class CloudInstanceService {
       cloudInstanceLogger.info("Cluster admin role created");
       return new Response(true, "Cluster admin role created.");
     } catch (ApiException e) {
-      System.out.println(e.getMessage());
-      System.out.println(e.getResponseBody());
-      System.out.println(e.getCause());
       return new Response(false, "Cluster admin role cannot be created.");
     } catch (Exception e) {
       cloudInstanceLogger.error("Error while creating cluster admin role.", e);

@@ -9,6 +9,7 @@ public class LoginResponse implements Serializable {
     private String refreshExpiresIn;
     private String refreshToken;
     private String idToken;
+    private String organization;
 
     public LoginResponse() {
     }
@@ -51,6 +52,14 @@ public class LoginResponse implements Serializable {
 
     public void setIdToken(String idToken) {
         this.idToken = idToken;
+    }
+
+    public String getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(String organization) {
+        this.organization = organization;
     }
 
 }

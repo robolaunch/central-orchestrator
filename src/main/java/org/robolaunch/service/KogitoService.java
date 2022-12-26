@@ -23,9 +23,9 @@ public class KogitoService {
   @LoggerName("kogitoService")
   Logger kogitoLogger;
 
-  public String getProcessId(Organization organization, String departmentName) {
+  public String getProcessId(Organization organization, String teamId) {
     try {
-      return kogitoRepository.getProcessId(organization, departmentName);
+      return kogitoRepository.getProcessId(organization, teamId);
     } catch (Exception e) {
       // TODO: handle exception
       return null;

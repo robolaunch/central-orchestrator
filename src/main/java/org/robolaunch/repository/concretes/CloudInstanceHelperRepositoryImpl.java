@@ -12,6 +12,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
@@ -48,20 +50,23 @@ import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.AppsV1Api;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
-import io.kubernetes.client.openapi.apis.RbacAuthorizationV1Api;
-import io.kubernetes.client.openapi.models.V1ClusterRole;
-import io.kubernetes.client.openapi.models.V1ClusterRoleBinding;
+import io.kubernetes.client.openapi.models.V1ContainerStatus;
 import io.kubernetes.client.openapi.models.V1Deployment;
 import io.kubernetes.client.openapi.models.V1DeploymentList;
+import io.kubernetes.client.openapi.models.V1DeploymentStatus;
 import io.kubernetes.client.openapi.models.V1Node;
+import io.kubernetes.client.openapi.models.V1NodeAddress;
+import io.kubernetes.client.openapi.models.V1NodeCondition;
 import io.kubernetes.client.openapi.models.V1NodeList;
+import io.kubernetes.client.openapi.models.V1NodeSpec;
+import io.kubernetes.client.openapi.models.V1ObjectMeta;
 import io.kubernetes.client.openapi.models.V1Pod;
 import io.kubernetes.client.openapi.models.V1PodList;
 import io.kubernetes.client.openapi.models.V1Secret;
 import io.kubernetes.client.openapi.models.V1Service;
 import io.kubernetes.client.openapi.models.V1ServiceAccount;
+import io.kubernetes.client.openapi.models.V1ServiceList;
 import io.kubernetes.client.util.ClientBuilder;
-import io.kubernetes.client.util.Config;
 import io.kubernetes.client.util.ModelMapper;
 import io.kubernetes.client.util.Yaml;
 import io.kubernetes.client.util.credentials.AccessTokenAuthentication;
@@ -97,6 +102,16 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   String dnsZoneName;
   @ConfigProperty(name = "kogito.dataindex.http.url")
   String kogitoDataIndexUrl;
+  @ConfigProperty(name = "kubernetes.server")
+  String kubernetesServerUrl;
+  @ConfigProperty(name = "kubernetes.server.caData")
+  String kubernetesServerCaData;
+  @ConfigProperty(name = "kubernetes.server.csData")
+  String kubernetesServerCsData;
+  @ConfigProperty(name = "kubernetes.server.ckData")
+  String kubernetesServerCkData;
+  @ConfigProperty(name = "master.node.name")
+  String masterNodeName;
 
   @Inject
   KubernetesRepository kubernetesRepository;
@@ -112,8 +127,9 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   JsonWebToken jwt;
 
   @PostConstruct
-  public void initializeApis() throws IOException {
-    ApiClient apiClient = ClientBuilder.standard().build();
+  public void initializeApis() throws IOException, ApiException, InterruptedException {
+    ApiClient apiClient = adminApiClient();
+
     this.machinesApi = new DynamicKubernetesApi("cluster.k8s.io",
         "v1alpha1", "machines",
         apiClient);
@@ -139,15 +155,23 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
         .listNamespacedService(namespaceName, null, null, null, null, null, null, null,
             null, null, null)
         .getItems()) {
-      if (service.getMetadata().getName().equals("apiserver-svc")) {
-        nodePort = service.getSpec().getPorts().get(0).getNodePort().toString();
+      Optional<String> svcName = Optional.ofNullable(service).map(V1Service::getMetadata)
+          .map(m -> m.getName());
+
+      if (svcName.get().equals("apiserver-svc")) {
+        Optional<String> svcPort = Optional.ofNullable(service).map(V1Service::getSpec).map(m -> m.getPorts())
+            .map(m -> m.get(0)).map(m -> m.getNodePort()).map(m -> m.toString());
+        nodePort = svcPort.get();
         break;
       }
     }
     String masterIP = "";
     V1NodeList nodes = coreV1Api.listNode(null, null, null, null, "node-role.kubernetes.io/master", null,
         null, null, null, null);
-    for (var address : nodes.getItems().get(0).getStatus().getAddresses()) {
+    Optional<List<V1NodeAddress>> addresses = Optional.ofNullable(nodes).map(V1NodeList::getItems)
+        .map(m -> m.get(0)).map(m -> m.getStatus()).map(m -> m.getAddresses());
+
+    for (var address : addresses.get()) {
       if (address.getType().equals("ExternalIP")) {
         masterIP = address.getAddress();
         break;
@@ -163,8 +187,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod("POST");
     connection.setRequestProperty("Content-Type", "application/json");
-    // connection.setRequestProperty("Content-Type",
-    // "application/x-www-form-urlencoded; charset=utf-8");
     connection.setDoOutput(true);
     String input = "{\"instanceType\": \"" + instanceType + "\"}";
 
@@ -193,8 +215,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod("POST");
     connection.setRequestProperty("Content-Type", "application/json");
-    // connection.setRequestProperty("Content-Type",
-    // "application/x-www-form-urlencoded; charset=utf-8");
     connection.setDoOutput(true);
 
     DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
@@ -207,7 +227,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     while ((line = bufferedReader.readLine()) != null) {
       result += line;
     }
-    System.out.println("Result: " + result);
     wr.close();
   }
 
@@ -218,7 +237,9 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     Iterator<DynamicKubernetesObject> iterator = list.iterator();
     while (iterator.hasNext()) {
       DynamicKubernetesObject obj = iterator.next();
-      if (obj.getMetadata().getName()
+      Optional<String> name = Optional.ofNullable(obj).map(DynamicKubernetesObject::getMetadata)
+          .map(m -> m.getName());
+      if (name.get()
           .contains(bufferName)) {
         machineName = obj.getMetadata().getName();
         break;
@@ -239,15 +260,14 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
           .getAsString();
 
       V1Node node = coreV1Api.readNode(nodeName, null);
-
-      if (node.getStatus().getConditions().get(
-          node.getStatus()
-              .getConditions().size()
+      Optional<List<V1NodeCondition>> conditions = Optional.ofNullable(node).map(V1Node::getStatus)
+          .map(m -> m.getConditions());
+      if (conditions.get().get(
+          conditions.get().size()
               - 1)
           .getType().equals("Ready")
-          && node.getStatus().getConditions().get(
-              node.getStatus()
-                  .getConditions()
+          && conditions.get().get(
+              conditions.get()
                   .size()
                   - 1)
               .getStatus().equals("True")) {
@@ -268,9 +288,11 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
     ListOptions listOptions = new ListOptions();
     listOptions.setLabelSelector("robolaunch.io/buffer-instance=" + bufferName);
-    var vcs = virtualClustersApi.list("default", listOptions);
+    var vcs = virtualClustersApi.list(listOptions);
     for (var vc : vcs.getObject().getItems()) {
-      if (vc.getMetadata().getName().equals(cloudInstanceName)) {
+      Optional<String> vcName = Optional.ofNullable(vc).map(DynamicKubernetesObject::getMetadata)
+          .map(m -> m.getName());
+      if (vcName.get().equals(cloudInstanceName)) {
         if (vc.getRaw().get("status").getAsJsonObject().get("phase").getAsString()
             .equals("Running")) {
           return true;
@@ -326,7 +348,10 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     listOptions.setLabelSelector("buffered=true, !robolaunch.io/organization");
     var vcs = virtualClustersApi.list(listOptions);
     int randomInteger = (int) Math.floor(Math.random() * (vcCount));
-    String bufferName = vcs.getObject().getItems().get(randomInteger).getMetadata().getLabels()
+    Optional<Map<String, String>> labels = Optional.ofNullable(vcs.getObject().getItems().get(randomInteger))
+        .map(DynamicKubernetesObject::getMetadata)
+        .map(m -> m.getLabels());
+    String bufferName = labels.get()
         .get("robolaunch.io/buffer-instance");
     return bufferName;
 
@@ -356,24 +381,30 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     Boolean controllerManagerReady = false;
 
     for (V1Pod pod : pods.getItems()) {
-      if (pod.getMetadata().getName().equals("etcd-0")) {
-        if (pod.getStatus().getPhase().equals("Running")) {
-          if (pod.getStatus().getContainerStatuses().get(0).getReady()) {
+      Optional<String> podName = Optional.ofNullable(pod).map(V1Pod::getMetadata)
+          .map(m -> m.getName());
+      Optional<String> phase = Optional.ofNullable(pod).map(V1Pod::getStatus)
+          .map(m -> m.getPhase());
+      Optional<List<V1ContainerStatus>> containerStatus = Optional.ofNullable(pod).map(V1Pod::getStatus)
+          .map(m -> m.getContainerStatuses());
+      if (podName.get().equals("etcd-0")) {
+        if (phase.get().equals("Running")) {
+          if (containerStatus.get().get(0).getReady()) {
             etcdReady = true;
           }
         }
       }
-      if (pod.getMetadata().getName().equals("apiserver-0")) {
-        if (pod.getStatus().getPhase().equals("Running")) {
-          if (pod.getStatus().getContainerStatuses().get(0).getReady()) {
+      if (podName.get().equals("apiserver-0")) {
+        if (phase.get().equals("Running")) {
+          if (containerStatus.get().get(0).getReady()) {
             apiServerReady = true;
           }
         }
 
       }
-      if (pod.getMetadata().getName().equals("controller-manager-0")) {
-        if (pod.getStatus().getPhase().equals("Running")) {
-          if (pod.getStatus().getContainerStatuses().get(0).getReady()) {
+      if (podName.get().equals("controller-manager-0")) {
+        if (phase.get().equals("Running")) {
+          if (containerStatus.get().get(0).getReady()) {
             controllerManagerReady = true;
           }
         }
@@ -388,9 +419,11 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     V1PodList pods = coreV1Api.listNamespacedPod(namespaceName, null, null, null, null, null, null, null, null,
         null, null);
     for (V1Pod pod : pods.getItems()) {
-      if (pod.getMetadata().getName().equals("etcd-0") || pod.getMetadata().getName()
+      Optional<String> podName = Optional.ofNullable(pod).map(V1Pod::getMetadata)
+          .map(m -> m.getName());
+      if (podName.get().equals("etcd-0") || podName.get()
           .equals("controller-manager-0")
-          || pod.getMetadata().getName()
+          || podName.get()
               .equals("apiserver-0")) {
         return false;
       }
@@ -406,61 +439,86 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     V1DeploymentList deployments = appsV1Api.listNamespacedDeployment("kube-system", null, null, null, null,
         null, null, null, null, null, null);
     for (V1Deployment deployment : deployments.getItems()) {
-      if (deployment.getMetadata().getName().equals("coredns")) {
-        if (deployment.getStatus().getReadyReplicas() != null) {
-          System.out.println(
-              "Ready replicas: " + deployment.getStatus().getReadyReplicas());
-          if (deployment.getStatus().getReadyReplicas() >= 1) {
-            return true;
-          }
-        } else {
-          System.out.println("Ready replicas is null");
-        }
-
+      Optional<String> deploymentName = Optional.ofNullable(deployment).map(V1Deployment::getMetadata)
+          .map(m -> m.getName());
+      Optional<V1DeploymentStatus> deploymentStatus = Optional.ofNullable(deployment).map(V1Deployment::getStatus);
+      Optional<Integer> replicas = Optional.ofNullable(deployment).map(V1Deployment::getStatus)
+          .map(m -> m.getReadyReplicas());
+      if (deploymentName.get().equals("coredns") && deploymentStatus.get().getReadyReplicas() != null
+          && replicas.get() >= 1) {
+        return true;
       }
     }
     return false;
   }
 
   @Override
-  public Boolean isCertManagerReady(String namespaceName) throws ApiException, IOException {
-    V1PodList podList = coreV1Api.listNamespacedPod(namespaceName + "-cert-manager", null, null, null, null,
+  public Boolean isCertManagerReady(String bufferName)
+      throws ApiException, IOException, InterruptedException {
+    Boolean podsReady = false;
+    Boolean svcReady = false;
+
+    ApiClient apiClient = getVirtualClusterClientWithBufferName(bufferName);
+    CoreV1Api vcCoreApi = new CoreV1Api(apiClient);
+
+    V1PodList podList = vcCoreApi.listNamespacedPod("cert-manager", null, null, null, null, null, null, null, null,
+        null, null);
+
+    V1ServiceList serviceList = vcCoreApi.listNamespacedService("cert-manager", null, null, null, null,
         null, null, null, null, null, null);
+
     for (V1Pod pod : podList.getItems()) {
-      if (!pod.getStatus().getPhase().equals("Running")) {
-        return false;
+      Optional<String> podName = Optional.ofNullable(pod).map(V1Pod::getMetadata)
+          .map(m -> m.getName());
+      podsReady = true;
+      if (podName.get().startsWith("cert-manager")) {
+        Optional<String> phase = Optional.ofNullable(pod).map(V1Pod::getStatus)
+            .map(m -> m.getPhase());
+        System.out.println("phase: " + phase.get());
+        if (!phase.get().equals("Running")) {
+          podsReady = false;
+        }
       }
     }
-    return true;
+
+    for (V1Service svc : serviceList.getItems()) {
+      Optional<String> svcName = Optional.ofNullable(svc).map(V1Service::getMetadata)
+          .map(m -> m.getName());
+      if (svcName.isPresent()) {
+        if (svcName.get().equals("cert-manager")) {
+          svcReady = true;
+        }
+      }
+
+    }
+    return podsReady && svcReady;
   }
 
   @Override
   public String selectNode(String bufferName)
       throws ApiException, KubectlException, IOException, InterruptedException {
-    ApiClient apiClient = Config.defaultClient();
+    ApiClient apiClient = adminApiClient();
 
     while (true) {
       V1NodeList nodeList = coreV1Api.listNode(null, null, null, null,
           "!node-role.kubernetes.io/master, !robolaunch.io/buffer-instance, node-role.kubernetes.io/worker=worker",
           null, null, null, null, null);
       for (V1Node node : nodeList.getItems()) {
-
-        if (!isNodeReady(node.getMetadata().getName())
-            && isNodeUnschedulable(node.getMetadata().getName())) {
-          if (amazonRepository.getInstanceState(node.getMetadata().getName())
+        Optional<V1ObjectMeta> nodeMetadata = Optional.ofNullable(node).map(V1Node::getMetadata);
+        if (!isNodeReady(nodeMetadata.get().getName())
+            && isNodeUnschedulable(nodeMetadata.get().getName())) {
+          if (amazonRepository.getInstanceState(nodeMetadata.get().getName())
               .equals("stopped")) {
 
-            Kubectl.label(V1Node.class).name(node.getMetadata().getName())
+            Kubectl.label(V1Node.class).name(nodeMetadata.get().getName())
                 .apiClient(apiClient)
                 .addLabel("robolaunch.io/buffer-instance", bufferName)
                 .execute();
-            System.out.println("Node " + node.getMetadata().getName() + " is labeled");
-            return node.getMetadata().getName();
+            return nodeMetadata.get().getName();
           }
         }
 
       }
-      System.out.println("No available node found.");
       Thread.sleep(4000);
     }
 
@@ -469,10 +527,11 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   @Override
   public Boolean isNodeUnschedulable(String nodeName) throws ApiException {
     var node = coreV1Api.readNode(nodeName, null);
-    if (node.getSpec().getUnschedulable() == null) {
+    Optional<V1NodeSpec> nodeSpec = Optional.ofNullable(node).map(V1Node::getSpec);
+    if (nodeSpec.get().getUnschedulable() == null) {
       return false;
     }
-    var unschedulable = node.getSpec().getUnschedulable();
+    var unschedulable = nodeSpec.get().getUnschedulable();
 
     return unschedulable;
   }
@@ -480,8 +539,10 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   @Override
   public Boolean isNodeReady(String nodeName) throws ApiException {
     var node = coreV1Api.readNode(nodeName, null);
-    var lastCondition = node.getStatus().getConditions()
-        .get(node.getStatus().getConditions().size() - 1);
+    Optional<List<V1NodeCondition>> nodeConditions = Optional.ofNullable(node).map(V1Node::getStatus)
+        .map(m -> m.getConditions());
+    var lastCondition = nodeConditions.get()
+        .get(nodeConditions.get().size() - 1);
     return lastCondition.getType().equals("Ready") && lastCondition
         .getStatus().equals("True");
   }
@@ -495,21 +556,24 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
-  public String findNode(String bufferName, Organization organization, String departmentName,
+  public String findNode(String bufferName, Organization organization, String teamId,
       String cloudInstanceName) throws ApiException {
     V1NodeList nodeList = coreV1Api.listNode(null, null, null, null,
         "!node-role.kubernetes.io/master, robolaunch.io/organization=" + organization.getName()
-            + ", robolaunch.io/department=" + departmentName
+            + ", robolaunch.io/team=" + teamId
             + ", robolaunch.io/cloud-instance=" + cloudInstanceName,
         null, null, null, null, null);
-    return nodeList.getItems().get(0).getMetadata().getName();
+    Optional<V1ObjectMeta> nodeMetadata = Optional.ofNullable(nodeList.getItems().get(0)).map(V1Node::getMetadata);
+    return nodeMetadata.get().getName();
   }
 
   @Override
   public Boolean isMachineCreated(String bufferName) {
     var machines = machinesApi.list();
     for (var machine : machines.getObject().getItems()) {
-      if (machine.getMetadata().getName().contains(bufferName)) {
+      Optional<String> machineName = Optional.ofNullable(machine).map(DynamicKubernetesObject::getMetadata)
+          .map(m -> m.getName());
+      if (machineName.get().contains(bufferName)) {
         return true;
       }
     }
@@ -517,7 +581,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
-  public Boolean healthCheck(Organization organization, String departmentName, String cloudInstanceName,
+  public Boolean healthCheck(Organization organization, String teamId, String cloudInstanceName,
       String nodeName) {
     Boolean isInstanceHealthy = amazonRepository.isRunning(nodeName);
     return isInstanceHealthy;
@@ -528,11 +592,12 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
       throws ApiException, InternalError, ApplicationException, IOException {
     String externalIP = "";
     var node = coreV1Api.readNode(nodeName, null);
-    var addresses = node.getStatus().getAddresses();
-    for (int i = 0; i < addresses.size(); i++) {
-      if (addresses.get(i).getType().equals(
+    Optional<List<V1NodeAddress>> nodeAddresses = Optional.ofNullable(node).map(V1Node::getStatus)
+        .map(m -> m.getAddresses());
+    for (int i = 0; i < nodeAddresses.get().size(); i++) {
+      if (nodeAddresses.get().get(i).getType().equals(
           "ExternalIP")) {
-        externalIP = addresses.get(i).getAddress().toString();
+        externalIP = nodeAddresses.get().get(i).getAddress().toString();
       }
     }
     String requestData = groupAdapter.toDeleteDNSRecord(organization, externalIP, dnsZoneName);
@@ -566,14 +631,17 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
       if (type.equals("V1ServiceAccount")) {
         V1ServiceAccount serviceAccount = (V1ServiceAccount) obj;
-        coreV1Api.deleteNamespacedServiceAccount(serviceAccount.getMetadata().getName(),
+        Optional<V1ObjectMeta> serviceAccountMetadata = Optional.ofNullable(serviceAccount)
+            .map(V1ServiceAccount::getMetadata);
+        coreV1Api.deleteNamespacedServiceAccount(serviceAccountMetadata.get().getName(),
             newNamespace, null, null, null, null,
             null, null);
 
       }
       if (type.equals("V1Secret")) {
         V1Secret secret = (V1Secret) obj;
-        coreV1Api.deleteNamespacedSecret(secret.getMetadata().getName(),
+        Optional<V1ObjectMeta> secretMetadata = Optional.ofNullable(secret).map(V1Secret::getMetadata);
+        coreV1Api.deleteNamespacedSecret(secretMetadata.get().getName(),
             newNamespace, null, null, null, null, null,
             null);
 
@@ -585,13 +653,16 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
       }
       if (type.equals("V1Service")) {
         V1Service service = (V1Service) obj;
-        coreV1Api.deleteNamespacedService(service.getMetadata().getName(), newNamespace, null,
+        Optional<V1ObjectMeta> serviceMetadata = Optional.ofNullable(service).map(V1Service::getMetadata);
+        coreV1Api.deleteNamespacedService(serviceMetadata.get().getName(), newNamespace, null,
             null, null, null, null, null);
 
       }
       if (type.equals("V1Deployment")) {
         V1Deployment deployment = (V1Deployment) obj;
-        appsApi.deleteNamespacedDeployment(deployment.getMetadata().getName(), newNamespace,
+        Optional<V1ObjectMeta> deploymentMetadata = Optional.ofNullable(deployment)
+            .map(V1Deployment::getMetadata);
+        appsApi.deleteNamespacedDeployment(deploymentMetadata.get().getName(), newNamespace,
             null, null, null, null, null, null);
 
       }
@@ -601,11 +672,12 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
-  public void deleteVirtualCluster(String bufferName) throws KubectlException, IOException {
+  public void deleteVirtualCluster(String bufferName)
+      throws KubectlException, IOException, ApiException, InterruptedException {
     ModelMapper.addModelMap("tenancy.x-k8s.io", "v1alpha1", "VirtualCluster",
         "virtualclusters", true,
         V1VirtualCluster.class);
-    ApiClient apiClient = Config.defaultClient();
+    ApiClient apiClient = adminApiClient();
     Kubectl.delete(V1VirtualCluster.class).apiClient(apiClient).namespace("default")
         .name("vc-" + bufferName).execute();
 
@@ -620,26 +692,29 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
-  public void deleteMachineDeployment(String bufferName) throws IOException, KubectlException {
+  public void deleteMachineDeployment(String bufferName)
+      throws IOException, KubectlException, ApiException, InterruptedException {
     ModelMapper.addModelMap("cluster.k8s.io", "v1alpha1", "MachineDeployment",
         "machinedeployments", true,
         V1MachineDeployment.class);
-    ApiClient apiClient = Config.defaultClient();
+    ApiClient apiClient = adminApiClient();
     Kubectl.delete(V1MachineDeployment.class).apiClient(apiClient).namespace("kube-system")
         .name("md-" + bufferName).execute();
   }
 
   @Override
-  public void deleteOrganizationLabelsFromSuperCluster(String nodeName) throws IOException, KubectlException {
-    ApiClient apiClient = Config.defaultClient();
-    String patchString = "[{ \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1buffer-instance\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1organization\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1department\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1cloud-instance\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1super-cluster\" }]";
+  public void deleteOrganizationLabelsFromSuperCluster(String nodeName)
+      throws IOException, KubectlException, ApiException, InterruptedException {
+    ApiClient apiClient = adminApiClient();
+    String patchString = "[{ \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1buffer-instance\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1organization\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1department\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1cloud-instance\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1region\" }]";
     V1Patch patch = new V1Patch(patchString);
     Kubectl.patch(V1Node.class).apiClient(apiClient).name(nodeName).patchContent(patch).execute();
   }
 
   @Override
-  public void deleteWorkerLabelFromNode(String nodeName) throws IOException, KubectlException {
-    ApiClient apiClient = Config.defaultClient();
+  public void deleteWorkerLabelFromNode(String nodeName)
+      throws IOException, KubectlException, ApiException, InterruptedException {
+    ApiClient apiClient = adminApiClient();
     String patchString = "[{ \"op\": \"remove\", \"path\": \"/metadata/labels/node-role.kubernetes.io~1worker\"}]";
     V1Patch patch = new V1Patch(patchString);
     Kubectl.patch(V1Node.class).apiClient(apiClient).name(nodeName).patchContent(patch).execute();
@@ -653,10 +728,11 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     var nodeList = vcCoreV1Api.listNode(null, null, null, null, null, null, null, null, null, null);
 
     for (V1Node node : nodeList.getItems()) {
-      if (!node.getMetadata().getName().equals("ip-172-31-180-150.eu-central-1.compute.internal")) {
-        Kubectl.delete(V1Node.class).apiClient(vcClient).name(node.getMetadata().getName())
+      Optional<String> nodeName = Optional.ofNullable(node).map(V1Node::getMetadata)
+          .map(V1ObjectMeta::getName);
+      if (!nodeName.get().equals(masterNodeName)) {
+        Kubectl.delete(V1Node.class).apiClient(vcClient).name(nodeName.get())
             .execute();
-        System.out.println("Node deleted: " + node.getMetadata().getName());
       }
     }
   }
@@ -664,13 +740,11 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   @Override
   public String getTeamIdFromProcessId(String processId)
       throws java.util.concurrent.ExecutionException, InterruptedException {
-    String queryStr = "{InitializeRoboticsCloud(where: {id: {equal: \"" + processId + "\"}}){departmentName}}";
-    System.out.println("Query: " + queryStr);
+    String queryStr = "{InitializeRoboticsCloud(where: {id: {equal: \"" + processId + "\"}}){teamId}}";
     Response response = graphqlClient.executeSync(queryStr);
 
     JsonObject data = response.getData();
-    String teamId = data.getJsonArray("InitializeRoboticsCloud").getJsonObject(0).getString("departmentName");
-    System.out.println("TeamId: " + teamId);
+    String teamId = data.getJsonArray("InitializeRoboticsCloud").getJsonObject(0).getString("teamId");
     return teamId;
   }
 
@@ -689,8 +763,10 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
     var namespaces = coreV1Api.listNamespace(null, null, null, null, null, null, null, null, null, null);
     for (int i = 0; i < namespaces.getItems().size(); i++) {
-      if (namespaces.getItems().get(i).getMetadata().getName().endsWith(bufferName)) {
-        namespaceName = namespaces.getItems().get(i).getMetadata().getName();
+      Optional<String> nsName = Optional.ofNullable(namespaces.getItems().get(i).getMetadata())
+          .map(V1ObjectMeta::getName);
+      if (nsName.get().endsWith(bufferName)) {
+        namespaceName = nsName.get();
         break;
       }
     }
@@ -703,7 +779,8 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
       throws IOException, ApiException, InterruptedException {
     String namespaceName = getNamespaceNameWithBufferName(bufferName);
     V1Secret sc = coreV1Api.readNamespacedSecret("admin-kubeconfig", namespaceName, null);
-    var certData = sc.getData().get("admin-kubeconfig");
+    Optional<Map<String, byte[]>> data = Optional.ofNullable(sc).map(V1Secret::getData);
+    var certData = data.get().get("admin-kubeconfig");
     String cert = new String(certData, StandardCharsets.UTF_8);
 
     String nodePort = "";
@@ -711,15 +788,22 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
         .listNamespacedService(namespaceName, null, null, null, null, null, null, null,
             null, null, null)
         .getItems()) {
-      if (service.getMetadata().getName().equals("apiserver-svc")) {
-        nodePort = service.getSpec().getPorts().get(0).getNodePort().toString();
+      Optional<String> svcName = Optional.ofNullable(service).map(V1Service::getMetadata)
+          .map(V1ObjectMeta::getName);
+      Optional<Integer> optionalNodePort = Optional.ofNullable(service).map(m -> m.getSpec()).map(m -> m.getPorts())
+          .map(m -> m.get(0))
+          .map(m -> m.getNodePort());
+      if (svcName.get().equals("apiserver-svc")) {
+        nodePort = optionalNodePort.get().toString();
         break;
       }
     }
     String masterIP = "";
     V1NodeList nodes = coreV1Api.listNode(null, null, null, null, "node-role.kubernetes.io/master", null,
         null, null, null, null);
-    for (var address : nodes.getItems().get(0).getStatus().getAddresses()) {
+    Optional<List<V1NodeAddress>> optionalAddresses = Optional.ofNullable(nodes.getItems().get(0).getStatus())
+        .map(m -> m.getAddresses());
+    for (var address : optionalAddresses.get()) {
       if (address.getType().equals("ExternalIP")) {
         masterIP = address.getAddress();
         break;
@@ -773,7 +857,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   public Boolean doesCloudInstanceExist(Organization organization, String teamId,
       String cloudInstanceName) throws ExecutionException, InterruptedException {
     String queryStr = "{InitializeRoboticsCloud(where: {and: [{organization: {name: {equal: \"" + organization.getName()
-        + "\"}}},{departmentName: {equal:\"" + teamId + "\"}}, {cloudInstanceName: {equal: \"" + cloudInstanceName
+        + "\"}}},{teamId: {equal:\"" + teamId + "\"}}, {cloudInstanceName: {equal: \"" + cloudInstanceName
         + "\"}}]}) {id}}";
 
     Response response = graphqlClient.executeSync(queryStr);
@@ -786,66 +870,72 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
   }
 
-  public void createCRB(String bufferName) throws IOException, ApiException, InterruptedException, InvalidKeyException,
-      ErrorResponseException, InsufficientDataException, InternalException, InvalidResponseException,
-      NoSuchAlgorithmException, ServerException, XmlParserException, IllegalArgumentException {
-    ApiClient vcClient = getVirtualClusterClientWithBufferName(bufferName);
-    RbacAuthorizationV1Api rbacApi = new RbacAuthorizationV1Api(vcClient);
+  @Override
+  public ApiClient adminApiClient()
+      throws IOException, ApiException, InterruptedException {
 
-    Artifact artifact = new Artifact();
-    artifact.setName("clusterAdminRole.yaml");
-    String bucket = "template-artifacts";
-    String yaml = storageRepository.getContent(artifact, bucket);
-    List<Object> list = Yaml.loadAll(yaml);
+    String certificateAuthorityData = kubernetesServerCaData;
+    byte[] byteCertificateAuthData = Base64.getDecoder().decode(certificateAuthorityData.getBytes("UTF-8"));
 
-    for (int i = 0; i < list.size(); i++) {
-      Object obj = list.get(i);
-      String type = obj.getClass().getSimpleName();
-      if (type.equals("V1ClusterRole")) {
-        V1ClusterRole clusterRole = (V1ClusterRole) obj;
-        rbacApi.createClusterRole(clusterRole, null, null, null, null);
-      }
-      if (type.equals("V1ClusterRoleBinding")) {
-        V1ClusterRoleBinding clusterRoleBinding = (V1ClusterRoleBinding) obj;
-        String username = jwt.getClaim("preferred_username");
-        System.out.println("Username: " + username);
-        clusterRoleBinding.getSubjects().get(0).setName("org-whilst-dep-syrs9ovd");
-        rbacApi.createClusterRoleBinding(clusterRoleBinding, null, null, null,
-            null);
-      }
-    }
+    String clientCertificateData = kubernetesServerCsData;
+    byte[] byteClientCertData = Base64.getDecoder().decode(clientCertificateData.getBytes("UTF-8"));
+
+    String clientKeyData = kubernetesServerCkData;
+    byte[] byteClientKeyData = Base64.getDecoder().decode(clientKeyData.getBytes("UTF-8"));
+
+    /* Virtual Cluster Client */
+    ApiClient newClient = new ClientBuilder().setBasePath(kubernetesServerUrl)
+        .setAuthentication(new ClientCertificateAuthentication(byteClientCertData, byteClientKeyData))
+        .setCertificateAuthority(byteCertificateAuthData)
+        .setVerifyingSsl(true)
+        .build();
+    return newClient;
   }
 
   @Override
-  public ApiClient customApiClient(String bufferName)
+  public ApiClient userApiClient(String bufferName, String token)
       throws IOException, ApiException, InterruptedException {
     String namespaceName = getNamespaceNameWithBufferName(bufferName);
+    System.out.println("Namespace Name: " + namespaceName);
+    V1Secret sc = coreV1Api.readNamespacedSecret("admin-kubeconfig", namespaceName, null);
+    Optional<Map<String, byte[]>> optionalData = Optional.ofNullable(sc.getData());
+    var certData = optionalData.get().get("admin-kubeconfig");
+    String cert = new String(certData, StandardCharsets.UTF_8);
 
     String nodePort = "";
     for (V1Service service : coreV1Api
         .listNamespacedService(namespaceName, null, null, null, null, null, null, null,
             null, null, null)
         .getItems()) {
-      if (service.getMetadata().getName().equals("apiserver-svc")) {
-        nodePort = service.getSpec().getPorts().get(0).getNodePort().toString();
+      Optional<String> svcName = Optional.ofNullable(service.getMetadata()).map(m -> m.getName());
+      Optional<Integer> svcPort = Optional.ofNullable(service).map(V1Service::getSpec).map(m -> m.getPorts())
+          .map(m -> m.get(0)).map(m -> m.getNodePort());
+      if (svcName.get().equals("apiserver-svc")) {
+        nodePort = svcPort.get().toString();
         break;
       }
     }
     String masterIP = "";
     V1NodeList nodes = coreV1Api.listNode(null, null, null, null, "node-role.kubernetes.io/master", null,
         null, null, null, null);
-    for (var address : nodes.getItems().get(0).getStatus().getAddresses()) {
+    Optional<List<V1NodeAddress>> optionalAddresses = Optional.ofNullable(nodes.getItems().get(0).getStatus())
+        .map(m -> m.getAddresses());
+    for (var address : optionalAddresses.get()) {
       if (address.getType().equals("ExternalIP")) {
         masterIP = address.getAddress();
         break;
       }
     }
-    String url = "https://" + masterIP + ":" + nodePort;
 
-    V1Secret sc = coreV1Api.readNamespacedSecret("admin-kubeconfig", namespaceName, null);
-    var certData = sc.getData().get("admin-kubeconfig");
-    String cert = new String(certData, StandardCharsets.UTF_8);
+    System.out.println("ExternalIP: " + "https://" + masterIP + ":" + nodePort);
 
+    String generatedcloudInstanceName = "vc-" + bufferName;
+
+    while (!virtualClustersApi.get("default", generatedcloudInstanceName).getObject().getRaw().get("status")
+        .getAsJsonObject()
+        .get("phase").getAsString().equals("Running")) {
+      Thread.sleep(3000);
+    }
     org.yaml.snakeyaml.Yaml yaml = new org.yaml.snakeyaml.Yaml();
     var yml = yaml.load(cert);
     ObjectMapper mapper = new ObjectMapper();
@@ -859,17 +949,13 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
     byte[] byteCertificateAuthData = Base64.getDecoder().decode(certificateAuthorityData.getBytes("UTF-8"));
 
-    System.out.println("Token: " + jwt.getRawToken());
-    ApiClient client = new ClientBuilder().setBasePath(url)
-        .setAuthentication(new AccessTokenAuthentication(jwt.getRawToken()))
-        .setVerifyingSsl(false)
-        .setCertificateAuthority(byteCertificateAuthData).build();
-    CoreV1Api coreApi = new CoreV1Api(client);
-
-    System.out.println("ExternalIP: " + "https://" + masterIP + ":" + nodePort);
-
-    System.out.println("hehey: " + coreApi.listNamespace(null, null, null, null, null, null, null, null, null, null));
-    return null;
+    String basePath = "https://" + masterIP + ":" + nodePort;
+    /* Virtual Cluster Client */
+    ApiClient newClient = new ClientBuilder().setBasePath(basePath)
+        .setAuthentication(new AccessTokenAuthentication(token))
+        .setCertificateAuthority(byteCertificateAuthData)
+        .setVerifyingSsl(true)
+        .build();
+    return newClient;
   }
-
 }

@@ -61,9 +61,7 @@ public class KeycloakService {
 
   public Response createClientScope(Organization organization) {
     try {
-      System.out.println("Enters");
       keycloakAdminRepository.createClientScope(organization);
-      System.out.println("Outs");
       keycloakLogger.info("Client scope created for organization: " + organization.getName());
       return new Response(true, "Client scope created successfully");
     } catch (Exception e) {
@@ -76,9 +74,7 @@ public class KeycloakService {
 
   public Response createGatekeeperClient(Organization organization) {
     try {
-      System.out.println("Enters gatekeepr");
       keycloakAdminRepository.createGatekeeperClient(organization);
-      System.out.println("Outs gatekeepr");
       keycloakLogger.info("Gatekeeper client created for organization: " + organization.getName());
       return new Response(true, "Gatekeeper client created successfully.");
     } catch (Exception e) {
@@ -89,9 +85,7 @@ public class KeycloakService {
 
   public Response createOAuthProxyClient(Organization organization) {
     try {
-      System.out.println("Enters oauth");
       keycloakAdminRepository.createOAuthProxyClient(organization);
-      System.out.println("Outs oauth");
       keycloakLogger.info("OAuth proxy client created for organization: " + organization.getName());
       return new Response(true, UUID.randomUUID().toString());
     } catch (Exception e) {
@@ -156,9 +150,6 @@ public class KeycloakService {
       return new Response(true,
           UUID.randomUUID().toString());
     } catch (Exception e) {
-      System.out.println("Whyiiee firstttt");
-      System.out.println(e.getMessage());
-      System.out.println(e.getCause());
       return new Response(false,
           UUID.randomUUID().toString());
     }
@@ -175,9 +166,6 @@ public class KeycloakService {
       return new Response(true,
           UUID.randomUUID().toString());
     } catch (Exception e) {
-      System.out.println("Whyiiee");
-      System.out.println(e.getMessage());
-      System.out.println(e.getCause());
       return new Response(false,
           UUID.randomUUID().toString());
     }
@@ -186,11 +174,8 @@ public class KeycloakService {
   /* Adding group mappers on keycloak */
   public Response addGroupMapper(Organization organization) throws ApplicationException, InternalError, IOException {
     try {
-      System.out.println("Enters group mapper");
       keycloakAdminRepository.addGroupMapper(organization);
-      System.out.println("Mediate group mapper");
       keycloakAdminRepository.syncFederationMainRealm();
-      System.out.println("Outs group mapper");
       keycloakLogger.info("Group Mapper added for organization: " + organization.getName() + "");
       return new Response(true, UUID.randomUUID().toString());
     } catch (Exception e) {

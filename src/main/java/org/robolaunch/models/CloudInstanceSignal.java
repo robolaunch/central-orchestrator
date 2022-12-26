@@ -1,6 +1,8 @@
 package org.robolaunch.models;
 
-public class CloudInstanceSignal {
+import java.io.Serializable;
+
+public class CloudInstanceSignal implements Serializable {
   private String operation;
 
   public CloudInstanceSignal() {

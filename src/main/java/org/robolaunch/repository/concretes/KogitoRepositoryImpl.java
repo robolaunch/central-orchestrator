@@ -29,12 +29,12 @@ public class KogitoRepositoryImpl implements KogitoRepository {
   }
 
   @Override
-  public String getProcessId(Organization organization, String departmentName)
+  public String getProcessId(Organization organization, String teamId)
       throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException {
     String queryStr = "{InitializeRoboticsCloud(where: {and: [{organization: {name: {equal:\""
         + organization.getName()
-        + "\"}}},{departmentName: {equal:\""
-        + departmentName
+        + "\"}}},{teamId: {equal:\""
+        + teamId
         + "\"}}]}) {id}}";
 
     Response response = graphqlClient.executeSync(queryStr);

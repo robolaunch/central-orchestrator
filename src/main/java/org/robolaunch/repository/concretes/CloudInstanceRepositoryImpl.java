@@ -1,8 +1,6 @@
 package org.robolaunch.repository.concretes;
 
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.InvalidKeyException;
@@ -12,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -60,13 +59,22 @@ import io.kubernetes.client.openapi.models.V1ConfigMapBuilder;
 import io.kubernetes.client.openapi.models.V1CustomResourceDefinition;
 import io.kubernetes.client.openapi.models.V1Deployment;
 import io.kubernetes.client.openapi.models.V1DeploymentList;
+import io.kubernetes.client.openapi.models.V1DeploymentSpec;
 import io.kubernetes.client.openapi.models.V1Ingress;
+import io.kubernetes.client.openapi.models.V1IngressRule;
+import io.kubernetes.client.openapi.models.V1IngressSpec;
+import io.kubernetes.client.openapi.models.V1IngressTLS;
 import io.kubernetes.client.openapi.models.V1Job;
 import io.kubernetes.client.openapi.models.V1MutatingWebhookConfiguration;
 import io.kubernetes.client.openapi.models.V1Namespace;
 import io.kubernetes.client.openapi.models.V1Node;
+import io.kubernetes.client.openapi.models.V1NodeAddress;
+import io.kubernetes.client.openapi.models.V1NodeStatus;
 import io.kubernetes.client.openapi.models.V1ObjectMeta;
 import io.kubernetes.client.openapi.models.V1ObjectMetaBuilder;
+import io.kubernetes.client.openapi.models.V1PodSpec;
+import io.kubernetes.client.openapi.models.V1PodTemplateSpec;
+import io.kubernetes.client.openapi.models.V1PolicyRule;
 import io.kubernetes.client.openapi.models.V1Role;
 import io.kubernetes.client.openapi.models.V1RoleBinding;
 import io.kubernetes.client.openapi.models.V1Secret;
@@ -74,9 +82,8 @@ import io.kubernetes.client.openapi.models.V1Service;
 import io.kubernetes.client.openapi.models.V1ServiceAccount;
 import io.kubernetes.client.openapi.models.V1StatefulSet;
 import io.kubernetes.client.openapi.models.V1StatefulSetList;
+import io.kubernetes.client.openapi.models.V1Subject;
 import io.kubernetes.client.openapi.models.V1ValidatingWebhookConfiguration;
-import io.kubernetes.client.util.ClientBuilder;
-import io.kubernetes.client.util.Config;
 import io.kubernetes.client.util.ModelMapper;
 import io.kubernetes.client.util.Yaml;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi;
@@ -97,6 +104,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         private DynamicKubernetesApi virtualClustersApi;
         private DynamicKubernetesApi subnetsApi;
         private AppsV1Api appsApi;
+        private ApiClient adminApiClient;
 
         @ConfigProperty(name = "quarkus.oidc.client.id")
         String clientId;
@@ -131,19 +139,19 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         JsonWebToken jwt;
 
         @PostConstruct
-        public void initializeApis() throws IOException {
-                ApiClient apiClient = ClientBuilder.standard().build();
+        public void initializeApis() throws IOException, ApiException, InterruptedException {
+                this.adminApiClient = cloudInstanceHelperRepository.adminApiClient();
                 this.machineDeploymentApi = new DynamicKubernetesApi("cluster.k8s.io", "v1alpha1",
                                 "machinedeployments",
-                                apiClient);
-                this.coreV1Api = new CoreV1Api(apiClient);
+                                adminApiClient);
+                this.coreV1Api = new CoreV1Api(adminApiClient);
                 this.clusterVersionApi = new DynamicKubernetesApi("tenancy.x-k8s.io", "v1alpha1",
-                                "clusterversions", apiClient);
+                                "clusterversions", adminApiClient);
                 this.virtualClustersApi = new DynamicKubernetesApi("tenancy.x-k8s.io", "v1alpha1",
-                                "virtualclusters", apiClient);
+                                "virtualclusters", adminApiClient);
                 this.subnetsApi = new DynamicKubernetesApi("kubeovn.io", "v1",
-                                "subnets", apiClient);
-                this.appsApi = new AppsV1Api(apiClient);
+                                "subnets", adminApiClient);
+                this.appsApi = new AppsV1Api(adminApiClient);
         }
 
         @Override
@@ -185,13 +193,13 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         @Override
         public void claimTheSuperClusterNode(String nodeName, String bufferName)
                         throws IOException, KubectlException, ApiException {
-                ApiClient apiClient = ClientBuilder.standard().build();
-                Kubectl.label(V1Node.class).apiClient(apiClient)
+
+                Kubectl.label(V1Node.class).apiClient(adminApiClient)
                                 .name(
                                                 nodeName)
                                 .addLabel("robolaunch.io/buffer-instance", bufferName)
                                 .execute();
-                Kubectl.label(V1Node.class).apiClient(apiClient)
+                Kubectl.label(V1Node.class).apiClient(adminApiClient)
                                 .name(
                                                 nodeName)
                                 .addLabel("node-role.kubernetes.io/worker", "worker")
@@ -259,13 +267,13 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         @Override
         public void scaleStatefulSetsDown(String bufferName) throws ApiException, KubectlException, IOException {
                 String namespaceName = cloudInstanceHelperRepository.getNamespaceNameWithBufferName(bufferName);
-                ApiClient apiClient = ClientBuilder.standard().build();
-                Kubectl.scale(V1StatefulSet.class).apiClient(apiClient).namespace(namespaceName).name("etcd")
+
+                Kubectl.scale(V1StatefulSet.class).apiClient(adminApiClient).namespace(namespaceName).name("etcd")
                                 .replicas(0).execute();
-                Kubectl.scale(V1StatefulSet.class).apiClient(apiClient).namespace(namespaceName)
+                Kubectl.scale(V1StatefulSet.class).apiClient(adminApiClient).namespace(namespaceName)
                                 .name("controller-manager")
                                 .replicas(0).execute();
-                Kubectl.scale(V1StatefulSet.class).apiClient(apiClient).namespace(namespaceName).name("apiserver")
+                Kubectl.scale(V1StatefulSet.class).apiClient(adminApiClient).namespace(namespaceName).name("apiserver")
                                 .replicas(0).execute();
         }
 
@@ -273,8 +281,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         public void drainNode(String nodeName) throws IOException, KubectlException {
 
                 try {
-                        ApiClient apiClient = ClientBuilder.standard().build();
-                        Kubectl.drain().ignoreDaemonSets().gracePeriod(60).name(nodeName).apiClient(apiClient)
+
+                        Kubectl.drain().ignoreDaemonSets().gracePeriod(60).name(nodeName).apiClient(adminApiClient)
                                         .execute();
                 } catch (KubectlException e) {
                         // TODO: handle exception
@@ -284,18 +292,18 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
 
         @Override
         public void uncordonNode(String nodeName) throws IOException, KubectlException {
-                ApiClient apiClient = ClientBuilder.standard().build();
-                Kubectl.uncordon().name(nodeName).apiClient(apiClient).execute();
+
+                Kubectl.uncordon().name(nodeName).apiClient(adminApiClient).execute();
         }
 
         @Override
-        public void labelVirtualCluster(String bufferName, Organization organization, String departmentName,
-                        String superClusterName, String cloudInstanceName, Boolean connectionHub)
-                        throws IOException, KubectlException, InterruptedException {
+        public void labelVirtualCluster(String bufferName, Organization organization, String teamId,
+                        String region, String cloudInstanceName, Boolean connectionHub)
+                        throws IOException, KubectlException, InterruptedException, ApiException {
                 ModelMapper.addModelMap("tenancy.x-k8s.io", "v1alpha1", "VirtualCluster",
                                 "virtualclusters", true,
                                 V1VirtualCluster.class);
-                ApiClient client = Config.defaultClient();
+                ApiClient client = cloudInstanceHelperRepository.adminApiClient();
 
                 if (!connectionHub) {
                         Kubectl.label(V1VirtualCluster.class).apiClient(client)
@@ -304,8 +312,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                         .name("vc-" + bufferName)
                                         .addLabel("robolaunch.io/buffer-instance", bufferName)
                                         .addLabel("robolaunch.io/organization", organization.getName())
-                                        .addLabel("robolaunch.io/department", departmentName)
-                                        .addLabel("robolaunch.io/super-cluster", superClusterName)
+                                        .addLabel("robolaunch.io/team", teamId)
+                                        .addLabel("robolaunch.io/region", region)
                                         .addLabel("robolaunch.io/cloud-instance", cloudInstanceName)
                                         .execute();
                 } else {
@@ -315,8 +323,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                         .name("vc-" + bufferName)
                                         .addLabel("robolaunch.io/buffer-instance", bufferName)
                                         .addLabel("robolaunch.io/organization", organization.getName())
-                                        .addLabel("robolaunch.io/department", departmentName)
-                                        .addLabel("robolaunch.io/super-cluster", superClusterName)
+                                        .addLabel("robolaunch.io/team", teamId)
+                                        .addLabel("robolaunch.io/region", region)
                                         .addLabel("robolaunch.io/cloud-instance", cloudInstanceName)
                                         .addLabel("submariner.io/gateway", "4490")
                                         .execute();
@@ -326,87 +334,77 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
 
         @Override
         public void addOrganizationLabelsToNode(Organization organization, String nodeName, String cloudInstanceName,
-                        String departmentName, String superClusterName, Boolean connectionHub)
+                        String teamId, String region, Boolean connectionHub)
                         throws KubectlException, IOException {
-                try {
-                        ApiClient apiClient = ClientBuilder.standard().build();
-                        if (!connectionHub) {
-                                Kubectl.label(V1Node.class).apiClient(apiClient)
-                                                .name(nodeName)
-                                                .addLabel("robolaunch.io/organization", organization.getName())
-                                                .addLabel("robolaunch.io/cloud-instance", cloudInstanceName)
-                                                .addLabel("robolaunch.io/department", departmentName)
-                                                .addLabel("robolaunch.io/super-cluster", superClusterName)
-                                                .execute();
-                        } else {
-                                Kubectl.label(V1Node.class).apiClient(apiClient)
-                                                .name(nodeName)
-                                                .addLabel("robolaunch.io/organization", organization.getName())
-                                                .addLabel("robolaunch.io/cloud-instance", cloudInstanceName)
-                                                .addLabel("robolaunch.io/department", departmentName)
-                                                .addLabel("robolaunch.io/super-cluster", superClusterName)
-                                                .addLabel("submariner.io/gateway", "4490")
-                                                .execute();
-                        }
-
-                } catch (KubectlException e) {
+                if (!connectionHub) {
+                        Kubectl.label(V1Node.class).apiClient(adminApiClient)
+                                        .name(nodeName)
+                                        .addLabel("robolaunch.io/organization", organization.getName())
+                                        .addLabel("robolaunch.io/cloud-instance", cloudInstanceName)
+                                        .addLabel("robolaunch.io/team", teamId)
+                                        .addLabel("robolaunch.io/region", region)
+                                        .execute();
+                } else {
+                        Kubectl.label(V1Node.class).apiClient(adminApiClient)
+                                        .name(nodeName)
+                                        .addLabel("robolaunch.io/organization", organization.getName())
+                                        .addLabel("robolaunch.io/cloud-instance", cloudInstanceName)
+                                        .addLabel("robolaunch.io/team", teamId)
+                                        .addLabel("robolaunch.io/region", region)
+                                        .addLabel("submariner.io/gateway", "4490")
+                                        .execute();
                 }
-
         }
 
         @Override
         public void addNodeSelectorsToStatefulSets(String namespaceName, Organization organization,
-                        String departmentName,
-                        String cloudInstanceName, String superClusterName, String bufferName) throws ApiException {
-                try {
-                        V1StatefulSetList statefulsets = appsApi.listNamespacedStatefulSet(
-                                        namespaceName, null, null, null,
-                                        null, null, null, null, null, null,
-                                        null);
-                        for (V1StatefulSet statefulset : statefulsets.getItems()) {
-                                String patchString = "[{\"op\":\"add\",\"path\":\"/spec/template/spec/nodeSelector/robolaunch.io~1organization\",\"value\": \""
+                        String teamId,
+                        String cloudInstanceName, String region, String bufferName) throws ApiException {
+                V1StatefulSetList statefulsets = appsApi.listNamespacedStatefulSet(
+                                namespaceName, null, null, null,
+                                null, null, null, null, null, null,
+                                null);
+                for (V1StatefulSet statefulset : statefulsets.getItems()) {
+                        String patchString = "[{\"op\":\"add\",\"path\":\"/spec/template/spec/nodeSelector/robolaunch.io~1organization\",\"value\": \""
+                                        + organization.getName()
+                                        + "\"}, {\"op\":\"add\",\"path\":\"/spec/template/spec/nodeSelector/robolaunch.io~1team\",\"value\": \""
+                                        + teamId
+                                        + "\"}, {\"op\":\"add\",\"path\":\"/spec/template/spec/nodeSelector/robolaunch.io~1cloud-instance\",\"value\": \""
+                                        + cloudInstanceName
+                                        + "\"}, {\"op\":\"add\",\"path\":\"/spec/template/spec/nodeSelector/robolaunch.io~1region\",\"value\": \""
+                                        + region
+                                        + "\"}, {\"op\":\"add\",\"path\":\"/spec/template/spec/nodeSelector/robolaunch.io~1buffer-instance\",\"value\": \""
+                                        + bufferName + "\"}]";
+                        Optional<String> statefulSetName = Optional.ofNullable(statefulset)
+                                        .map(V1StatefulSet::getMetadata)
+                                        .map(V1ObjectMeta::getName);
+                        if (statefulSetName.get().equals("apiserver")) {
+                                String replacePatch = "[{\"op\":\"replace\",\"path\":\"/spec/template/spec/containers/0/args/37\",\"value\": \""
+                                                + "--oidc-issuer-url=" + keycloakURL + "/realms/"
                                                 + organization.getName()
-                                                + "\"}, {\"op\":\"add\",\"path\":\"/spec/template/spec/nodeSelector/robolaunch.io~1department\",\"value\": \""
-                                                + departmentName
-                                                + "\"}, {\"op\":\"add\",\"path\":\"/spec/template/spec/nodeSelector/robolaunch.io~1cloud-instance\",\"value\": \""
-                                                + cloudInstanceName
-                                                + "\"}, {\"op\":\"add\",\"path\":\"/spec/template/spec/nodeSelector/robolaunch.io~1super-cluster\",\"value\": \""
-                                                + superClusterName
-                                                + "\"}, {\"op\":\"add\",\"path\":\"/spec/template/spec/nodeSelector/robolaunch.io~1buffer-instance\",\"value\": \""
-                                                + bufferName + "\"}]";
+                                                + "\"}]";
 
-                                if (statefulset.getMetadata().getName().equals("apiserver")) {
-                                        String replacePatch = "[{\"op\":\"replace\",\"path\":\"/spec/template/spec/containers/0/args/37\",\"value\": \""
-                                                        + "--oidc-issuer-url=" + keycloakURL + "/realms/"
-                                                        + organization.getName()
-                                                        + "\"}]";
-
-                                        appsApi.patchNamespacedStatefulSet(statefulset.getMetadata().getName(),
-                                                        namespaceName,
-                                                        new V1Patch(replacePatch),
-                                                        null, null,
-                                                        null, null, null);
-                                }
-
-                                appsApi.patchNamespacedStatefulSet(statefulset.getMetadata().getName(), namespaceName,
-                                                new V1Patch(patchString),
-                                                null, null,
-                                                null, null, null);
-
-                                appsApi.patchNamespacedStatefulSet(statefulset.getMetadata().getName(), namespaceName,
-                                                new V1Patch(patchString),
-                                                null, null,
-                                                null, null, null);
-
-                                appsApi.patchNamespacedStatefulSet(statefulset.getMetadata().getName(), namespaceName,
-                                                new V1Patch(patchString),
+                                appsApi.patchNamespacedStatefulSet(statefulSetName.get(),
+                                                namespaceName,
+                                                new V1Patch(replacePatch),
                                                 null, null,
                                                 null, null, null);
                         }
 
-                } catch (ApiException e) {
-                        System.out.println(e.getCode());
-                        System.out.println(e.getResponseBody());
+                        appsApi.patchNamespacedStatefulSet(statefulSetName.get(), namespaceName,
+                                        new V1Patch(patchString),
+                                        null, null,
+                                        null, null, null);
+
+                        appsApi.patchNamespacedStatefulSet(statefulSetName.get(), namespaceName,
+                                        new V1Patch(patchString),
+                                        null, null,
+                                        null, null, null);
+
+                        appsApi.patchNamespacedStatefulSet(statefulSetName.get(), namespaceName,
+                                        new V1Patch(patchString),
+                                        null, null,
+                                        null, null, null);
                 }
 
         }
@@ -414,20 +412,20 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         @Override
         public void scaleStatefulSetsUp(String bufferName) throws ApiException, IOException, KubectlException {
                 String namespaceName = cloudInstanceHelperRepository.getNamespaceNameWithBufferName(bufferName);
-                ApiClient apiClient = ClientBuilder.standard().build();
-                Kubectl.scale(V1StatefulSet.class).apiClient(apiClient).namespace(namespaceName).name("etcd")
+
+                Kubectl.scale(V1StatefulSet.class).apiClient(adminApiClient).namespace(namespaceName).name("etcd")
                                 .replicas(1).execute();
-                Kubectl.scale(V1StatefulSet.class).apiClient(apiClient).namespace(namespaceName)
+                Kubectl.scale(V1StatefulSet.class).apiClient(adminApiClient).namespace(namespaceName)
                                 .name("controller-manager")
                                 .replicas(1).execute();
-                Kubectl.scale(V1StatefulSet.class).apiClient(apiClient).namespace(namespaceName).name("apiserver")
+                Kubectl.scale(V1StatefulSet.class).apiClient(adminApiClient).namespace(namespaceName).name("apiserver")
                                 .replicas(1).execute();
         }
 
         /* Create subnet for namespace */
         @Override
         public void createSubnet(String bufferName, String namespaceName, String cloudInstanceName,
-                        String departmentName, Organization organization, String superClusterName)
+                        String teamId, Organization organization, String region)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException {
                 Artifact artifact = new Artifact();
@@ -460,14 +458,14 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 "robolaunch.io/cloud-instance",
                                 cloudInstanceName);
                 object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
-                                "robolaunch.io/department",
-                                departmentName);
+                                "robolaunch.io/team",
+                                teamId);
                 object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
                                 "robolaunch.io/organization",
                                 organization.getName());
                 object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
-                                "robolaunch.io/super-cluster",
-                                superClusterName);
+                                "robolaunch.io/region",
+                                region);
                 var subnets = subnetsApi.list();
                 int counter = 1;
                 while (true) {
@@ -514,11 +512,10 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
 
         @Override
         public void createVirtualLink(String namespaceName, String cloudInstanceName,
-                        String departmentName, Organization organization, String superClusterName, String bufferName)
+                        String teamId, Organization organization, String region, String bufferName)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName);
-                System.out.println("Created the client");
                 Artifact artifact = new Artifact();
                 artifact.setName("virtualLink.yaml");
                 String bucket = "template-artifacts";
@@ -526,13 +523,16 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 Object obj = Yaml.load(yaml);
                 V1Job job = (V1Job) obj;
                 BatchV1Api batchV1Api = new BatchV1Api(vcClient);
-                job.getMetadata().setNamespace("default");
+                Optional<V1ObjectMeta> metadata = Optional.ofNullable(job.getMetadata());
+                metadata.get().setNamespace("default");
                 Map<String, String> nodeSelectors = new HashMap<>();
                 nodeSelectors.put("robolaunch.io/organization", organization.getName());
                 nodeSelectors.put("robolaunch.io/cloud-instance", cloudInstanceName);
-                nodeSelectors.put("robolaunch.io/department", departmentName);
-                nodeSelectors.put("robolaunch.io/super-cluster", superClusterName);
-                job.getSpec().getTemplate().getSpec().setNodeSelector(nodeSelectors);
+                nodeSelectors.put("robolaunch.io/team", teamId);
+                nodeSelectors.put("robolaunch.io/region", region);
+                Optional<V1PodSpec> podSpec = Optional.ofNullable(job).map(V1Job::getSpec).map(m -> m.getTemplate())
+                                .map(m -> m.getSpec());
+                podSpec.get().setNodeSelector(nodeSelectors);
                 var subnet = subnetsApi.get("subnet-" + namespaceName);
                 var machineDeployment = machineDeploymentApi.get("kube-system", "md-" + bufferName);
                 String subnetId = machineDeployment.getObject().getRaw().getAsJsonObject().get("spec").getAsJsonObject()
@@ -540,8 +540,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 .get("providerSpec").getAsJsonObject().get("value")
                                 .getAsJsonObject().get("cloudProviderSpec").getAsJsonObject().get("subnetId")
                                 .getAsString().substring(0, 9);
-                System.out.println("got subnetid");
-                List<String> args = new ArrayList();
+                List<String> args = new ArrayList<String>();
                 args.add("ip link add "
                                 + subnetId
                                 + " type dummy; ip addr add "
@@ -549,9 +548,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                                 .get("cidrBlock").getAsString()
                                 + "/32 brd + dev " + subnetId
                                 + " label " + subnetId + ":0; ip link set dev " + subnetId + " up;");
-                job.getSpec().getTemplate().getSpec().getContainers().get(0).setArgs(args);
+                podSpec.get().getContainers().get(0).setArgs(args);
 
-                System.out.println("creating job");
                 batchV1Api.createNamespacedJob("default", job, null, null, null, null);
         }
 
@@ -597,8 +595,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void createOAuth2ProxyResources(Organization organization, String departmentName,
-                        String cloudInstanceName, String superClusterName, String namespaceName, String bufferName)
+        public void createOAuth2ProxyResources(Organization organization, String teamId,
+                        String cloudInstanceName, String region, String namespaceName, String bufferName)
                         throws IllegalArgumentException, IOException, ApiException, JSONException,
                         GeneralSecurityException, MinioException, InterruptedException {
                 String yamlString = "";
@@ -624,12 +622,12 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         }
                         if (type.equals("V1Secret")) {
                                 V1Secret secret = (V1Secret) obj;
-
-                                secret.getData().put("cookie-secret",
+                                Optional<Map<String, byte[]>> secretData = Optional.ofNullable(secret.getData());
+                                secretData.get().put("cookie-secret",
                                                 openSSLString.getBytes(StandardCharsets.UTF_8));
-                                secret.getData().put("client-id",
+                                secretData.get().put("client-id",
                                                 oauthClientId.getBytes(StandardCharsets.UTF_8));
-                                secret.getData().put("client-secret",
+                                secretData.get().put("client-secret",
                                                 keycloakAdminRepository
                                                                 .getClientSecret(organization.getName(), oauthClientId)
                                                                 .getBytes(StandardCharsets.UTF_8));
@@ -695,10 +693,13 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 Map<String, String> nodeSelectors = new HashMap<>();
                                 nodeSelectors.put("robolaunch.io/organization", organization.getName());
                                 nodeSelectors.put("robolaunch.io/cloud-instance", cloudInstanceName);
-                                nodeSelectors.put("robolaunch.io/department", departmentName);
-                                nodeSelectors.put("robolaunch.io/super-cluster", superClusterName);
+                                nodeSelectors.put("robolaunch.io/team", teamId);
+                                nodeSelectors.put("robolaunch.io/region", region);
                                 nodeSelectors.put("robolaunch.io/buffer-instance", bufferName);
-                                deployment.getSpec().getTemplate().getSpec().setNodeSelector(nodeSelectors);
+                                Optional<V1PodSpec> podSpec = Optional.ofNullable(deployment.getSpec())
+                                                .map(V1DeploymentSpec::getTemplate)
+                                                .map(V1PodTemplateSpec::getSpec);
+                                podSpec.get().setNodeSelector(nodeSelectors);
 
                                 appsApi.createNamespacedDeployment(newNamespace, deployment, null, null, null,
                                                 null);
@@ -732,12 +733,17 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 NetworkingV1Api networkingV1Api = new NetworkingV1Api(vcClient);
                 Object obj = Yaml.load(yaml);
                 V1Ingress ingress = (V1Ingress) obj;
-                ingress.getMetadata().setName(bufferName + "-oauth2-proxy");
-                ingress.getMetadata().setNamespace("oauth2-proxy");
-                ingress.getSpec().getTls().get(0)
+                Optional<V1ObjectMeta> metadata = Optional.ofNullable(ingress.getMetadata());
+                Optional<List<V1IngressTLS>> tls = Optional.ofNullable(ingress).map(V1Ingress::getSpec)
+                                .map(V1IngressSpec::getTls);
+                Optional<List<V1IngressRule>> rules = Optional.ofNullable(ingress).map(V1Ingress::getSpec)
+                                .map(m -> m.getRules());
+                metadata.get().setName(bufferName + "-oauth2-proxy");
+                metadata.get().setNamespace("oauth2-proxy");
+                tls.get().get(0)
                                 .setHosts(Arrays.asList(organization.getName() + ".robolaunch.dev"));
-                ingress.getSpec().getTls().get(0).setSecretName("tls");
-                ingress.getSpec().getRules().get(0)
+                tls.get().get(0).setSecretName("tls");
+                rules.get().get(0)
                                 .setHost(organization.getName() + ".robolaunch.dev");
                 String jsonInString = new Gson().toJson(obj);
                 JSONObject mJSONObject = new JSONObject(jsonInString);
@@ -751,8 +757,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void createCoreDNS(Organization organization, String departmentName,
-                        String cloudInstanceName, String nodeName, String bufferName, String superClusterName)
+        public void createCoreDNS(Organization organization, String teamId,
+                        String cloudInstanceName, String nodeName, String bufferName, String region)
                         throws IOException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, ApiException, MinioException,
                         InterruptedException {
@@ -853,13 +859,15 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         if (type.equals("V1Deployment")) {
                                 Map<String, String> nodeSelectors = new HashMap<>();
                                 nodeSelectors.put("robolaunch.io/organization", organization.getName());
-                                nodeSelectors.put("robolaunch.io/department", departmentName);
+                                nodeSelectors.put("robolaunch.io/team", teamId);
                                 nodeSelectors.put("robolaunch.io/cloud-instance", cloudInstanceName);
                                 nodeSelectors.put("robolaunch.io/buffer-instance", bufferName);
-                                nodeSelectors.put("robolaunch.io/super-cluster", superClusterName);
+                                nodeSelectors.put("robolaunch.io/region", region);
 
                                 V1Deployment deployment = (V1Deployment) obj;
-                                deployment.getSpec().getTemplate().getSpec().setNodeSelector(nodeSelectors);
+                                Optional<V1PodSpec> podSpec = Optional.ofNullable(deployment).map(V1Deployment::getSpec)
+                                                .map(V1DeploymentSpec::getTemplate).map(V1PodTemplateSpec::getSpec);
+                                podSpec.get().setNodeSelector(nodeSelectors);
                                 appsV1Api.createNamespacedDeployment("kube-system", deployment, null, null, null,
                                                 null);
                                 String jsonInString = new Gson().toJson(obj);
@@ -877,9 +885,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
 
         @Override
         public void addLabelsToVirtualClusterNode(Organization organization, String nodeName, String cloudInstanceName,
-                        String departmentName, String bufferName, String superClusterName, Boolean connectionHub)
+                        String teamId, String bufferName, String region, Boolean connectionHub)
                         throws KubectlException, IOException, ApiException, InterruptedException {
-                System.out.println("Node name: " + nodeName);
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName);
                 if (!connectionHub) {
                         Kubectl.label(V1Node.class).apiClient(vcClient)
@@ -888,9 +895,9 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                         .addLabel("robolaunch.io/organization", organization.getName())
                                         .addLabel("robolaunch.io/buffer-instance", bufferName)
                                         .addLabel("robolaunch.io/cloud-instance", cloudInstanceName)
-                                        .addLabel("robolaunch.io/department", departmentName)
-                                        .addLabel("robolaunch.io/super-cluster",
-                                                        superClusterName)
+                                        .addLabel("robolaunch.io/team", teamId)
+                                        .addLabel("robolaunch.io/region",
+                                                        region)
                                         .execute();
                 } else {
                         Kubectl.label(V1Node.class).apiClient(vcClient)
@@ -899,9 +906,9 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                         .addLabel("robolaunch.io/organization", organization.getName())
                                         .addLabel("robolaunch.io/buffer-instance", bufferName)
                                         .addLabel("robolaunch.io/cloud-instance", cloudInstanceName)
-                                        .addLabel("robolaunch.io/department", departmentName)
-                                        .addLabel("robolaunch.io/super-cluster",
-                                                        superClusterName)
+                                        .addLabel("robolaunch.io/team", teamId)
+                                        .addLabel("robolaunch.io/region",
+                                                        region)
                                         .addLabel("submariner.io/gateway", "4490")
                                         .execute();
                 }
@@ -909,8 +916,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void createCertManager(Organization organization, String departmentName,
-                        String cloudInstanceName, String bufferName, String superClusterName)
+        public void createCertManager(Organization organization, String teamId,
+                        String cloudInstanceName, String bufferName, String region)
                         throws KubectlException, IOException, ApiException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException, InterruptedException {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName);
@@ -987,7 +994,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
 
                         if (type.equals("V1Role")) {
                                 V1Role role = (V1Role) obj;
-                                rbacApi.createNamespacedRole(role.getMetadata().getNamespace(), role, null, null, null,
+                                Optional<V1ObjectMeta> metadata = Optional.ofNullable(role.getMetadata());
+                                rbacApi.createNamespacedRole(metadata.get().getNamespace(), role, null, null, null,
                                                 null);
 
                                 String jsonInString = new Gson().toJson(obj);
@@ -999,7 +1007,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
 
                         if (type.equals("V1RoleBinding")) {
                                 V1RoleBinding roleBinding = (V1RoleBinding) obj;
-                                rbacApi.createNamespacedRoleBinding(roleBinding.getMetadata().getNamespace(),
+                                Optional<V1ObjectMeta> metadata = Optional.ofNullable(roleBinding.getMetadata());
+                                rbacApi.createNamespacedRoleBinding(metadata.get().getNamespace(),
                                                 roleBinding,
                                                 null, null, null, null);
                                 String jsonInString = new Gson().toJson(obj);
@@ -1024,11 +1033,12 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 Map<String, String> nodeSelectors = new HashMap<>();
                                 nodeSelectors.put("robolaunch.io/organization", organization.getName());
                                 nodeSelectors.put("robolaunch.io/cloud-instance", cloudInstanceName);
-                                nodeSelectors.put("robolaunch.io/department", departmentName);
-                                nodeSelectors.put("robolaunch.io/super-cluster", superClusterName);
+                                nodeSelectors.put("robolaunch.io/team", teamId);
+                                nodeSelectors.put("robolaunch.io/region", region);
                                 nodeSelectors.put("robolaunch.io/buffer-instance", bufferName);
-
-                                deployment.getSpec().getTemplate().getSpec().setNodeSelector(nodeSelectors);
+                                Optional<V1PodSpec> podSpec = Optional.ofNullable(deployment).map(V1Deployment::getSpec)
+                                                .map(V1DeploymentSpec::getTemplate).map(V1PodTemplateSpec::getSpec);
+                                podSpec.get().setNodeSelector(nodeSelectors);
                                 appsApi.createNamespacedDeployment(
                                                 "cert-manager", deployment,
                                                 null, null, null, null);
@@ -1070,7 +1080,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
 
         @Override
         public void createConnectionHubOperator(String namespaceName, String cloudInstanceName,
-                        String departmentName, Organization organization, String superClusterName,
+                        String teamId, Organization organization, String region,
                         String bufferName)
                         throws IOException, ApiException, InterruptedException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException,
@@ -1123,11 +1133,9 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         }
                         if (type.equals("V1ServiceAccount")) {
                                 V1ServiceAccount serviceAccount = (V1ServiceAccount) obj;
-                                System.out.println("creating svca");
                                 coreApi.createNamespacedServiceAccount("connection-hub-system", serviceAccount, null,
                                                 null, null,
                                                 null);
-                                System.out.println("svca created");
                                 String jsonInString = new Gson().toJson(obj);
                                 JSONObject mJSONObject = new JSONObject(jsonInString);
                                 yamlString += cloudInstanceHelperRepository
@@ -1154,7 +1162,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         }
                         if (type.equals("V1Role")) {
                                 V1Role role = (V1Role) obj;
-                                rbacApi.createNamespacedRole(role.getMetadata().getNamespace(), role, null, null, null,
+                                Optional<V1ObjectMeta> metadata = Optional.ofNullable(role.getMetadata());
+                                rbacApi.createNamespacedRole(metadata.get().getNamespace(), role, null, null, null,
                                                 null);
 
                                 String jsonInString = new Gson().toJson(obj);
@@ -1165,7 +1174,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         }
                         if (type.equals("V1RoleBinding")) {
                                 V1RoleBinding roleBinding = (V1RoleBinding) obj;
-                                rbacApi.createNamespacedRoleBinding(roleBinding.getMetadata().getNamespace(),
+                                Optional<V1ObjectMeta> metadata = Optional.ofNullable(roleBinding.getMetadata());
+                                rbacApi.createNamespacedRoleBinding(metadata.get().getNamespace(),
                                                 roleBinding,
                                                 null, null, null, null);
                                 String jsonInString = new Gson().toJson(obj);
@@ -1185,19 +1195,18 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 yamlString += "---";
                         }
                         if (type.equals("V1Deployment")) {
-                                System.out.println("creating dep");
-
+                                System.out.println("inside dep");
                                 V1Deployment deployment = (V1Deployment) obj;
                                 Map<String, String> nodeSelectors = new HashMap<>();
                                 nodeSelectors.put("robolaunch.io/organization", organization.getName());
                                 nodeSelectors.put("robolaunch.io/cloud-instance", cloudInstanceName);
-                                nodeSelectors.put("robolaunch.io/department", departmentName);
-
-                                deployment.getSpec().getTemplate().getSpec().setNodeSelector(nodeSelectors);
+                                nodeSelectors.put("robolaunch.io/team", teamId);
+                                Optional<V1PodSpec> podSpec = Optional.ofNullable(deployment).map(V1Deployment::getSpec)
+                                                .map(V1DeploymentSpec::getTemplate).map(V1PodTemplateSpec::getSpec);
+                                podSpec.get().setNodeSelector(nodeSelectors);
                                 appsApi.createNamespacedDeployment(
                                                 "connection-hub-system", deployment,
                                                 null, null, null, null);
-                                System.out.println("dep created");
                                 String jsonInString = new Gson().toJson(obj);
                                 JSONObject mJSONObject = new JSONObject(jsonInString);
                                 yamlString += cloudInstanceHelperRepository
@@ -1205,7 +1214,6 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 yamlString += "---";
                         }
                         if (type.equals("V1alpha2Certificate")) {
-
                                 customObjectsApi.createNamespacedCustomObject("cert-manager.io",
                                                 "v1",
                                                 "connection-hub-system", "certificates", object,
@@ -1246,12 +1254,11 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void createConnectionHub(String bufferName, Organization organization, String departmentName,
+        public void createConnectionHub(String bufferName, Organization organization, String teamId,
                         String cloudInstanceName, String serverIP, String namespaceName)
                         throws IOException, ApiException, InterruptedException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName);
-                String yamlString = "";
                 Artifact artifact = new Artifact();
                 artifact.setName("connectionHubCloudInstance.yaml");
                 String bucket = "template-artifacts";
@@ -1283,216 +1290,223 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
 
         @Override
         public void createRobotOperator(Organization organization, String cloudInstanceName,
-                        String departmentName, String superClusterName, String bufferName)
+                        String teamId, String region, String bufferName)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
                         MinioException, ApiException, KubectlException, InterruptedException {
-                try {
-                        ApiClient vcClient = cloudInstanceHelperRepository
-                                        .getVirtualClusterClientWithBufferName(bufferName);
-                        String yamlString = "";
-                        Artifact artifact = new Artifact();
-                        artifact.setName("robotOperator.yaml");
-                        String bucket = "template-artifacts";
-                        String yaml = storageRepository.getContent(artifact, bucket);
-                        ModelMapper.addModelMap("cert-manager.io", "v1", "Certificate", "certificates",
-                                        V1alpha2Certificate.class,
-                                        V1alpha2CertificateList.class);
-                        ModelMapper.addModelMap("cert-manager.io", "v1", "Issuer", "issuers",
-                                        V1alpha2Issuer.class,
-                                        V1alpha2IssuerList.class);
+                ApiClient vcClient = cloudInstanceHelperRepository
+                                .getVirtualClusterClientWithBufferName(bufferName);
+                String yamlString = "";
+                Artifact artifact = new Artifact();
+                artifact.setName("robotOperator.yaml");
+                String bucket = "template-artifacts";
+                String yaml = storageRepository.getContent(artifact, bucket);
+                ModelMapper.addModelMap("cert-manager.io", "v1", "Certificate", "certificates",
+                                V1alpha2Certificate.class,
+                                V1alpha2CertificateList.class);
+                ModelMapper.addModelMap("cert-manager.io", "v1", "Issuer", "issuers",
+                                V1alpha2Issuer.class,
+                                V1alpha2IssuerList.class);
+                System.out.println("created the model mappers.");
+                Artifact artifact2 = new Artifact();
+                artifact2.setName("certificate.yaml");
+                JsonObject object = storageRepository.getYamlTemplate(artifact2, bucket);
 
-                        Artifact artifact2 = new Artifact();
-                        artifact2.setName("certificate.yaml");
-                        JsonObject object = storageRepository.getYamlTemplate(artifact2, bucket);
+                Artifact artifact4 = new Artifact();
+                artifact4.setName("issuer.yaml");
+                JsonObject objectIssuer = storageRepository.getYamlTemplate(artifact4, bucket);
+                List<Object> list = Yaml.loadAll(yaml);
+                CoreV1Api coreApi = new CoreV1Api(vcClient);
+                RbacAuthorizationV1Api rbacApi = new RbacAuthorizationV1Api(vcClient);
+                AdmissionregistrationV1Api admissionApi = new AdmissionregistrationV1Api(
+                                vcClient);
 
-                        Artifact artifact4 = new Artifact();
-                        artifact4.setName("issuer.yaml");
-                        JsonObject objectIssuer = storageRepository.getYamlTemplate(artifact4, bucket);
-                        List<Object> list = Yaml.loadAll(yaml);
-                        CoreV1Api coreApi = new CoreV1Api(vcClient);
-                        RbacAuthorizationV1Api rbacApi = new RbacAuthorizationV1Api(vcClient);
-                        AdmissionregistrationV1Api admissionApi = new AdmissionregistrationV1Api(
-                                        vcClient);
+                CustomObjectsApi customObjectsApi = new CustomObjectsApi(vcClient);
+                AppsV1Api appsApi = new AppsV1Api(vcClient);
+                for (int i = 0; i < list.size(); i++) {
+                        Object obj = list.get(i);
+                        String type = obj.getClass().getSimpleName();
 
-                        CustomObjectsApi customObjectsApi = new CustomObjectsApi(vcClient);
-                        AppsV1Api appsApi = new AppsV1Api(vcClient);
-                        for (int i = 0; i < list.size(); i++) {
-                                Object obj = list.get(i);
-                                String type = obj.getClass().getSimpleName();
-
-                                if (type.equals("V1Namespace")) {
-                                        V1Namespace namespace = (V1Namespace) obj;
-                                        coreApi.createNamespace(namespace, null, null, null, null);
-                                        String jsonInString = new Gson().toJson(obj);
-                                        JSONObject mJSONObject = new JSONObject(jsonInString);
-                                        yamlString += cloudInstanceHelperRepository
-                                                        .convertJsonStringToYamlString(mJSONObject.toString());
-                                        yamlString += "---";
-                                }
-
-                                if (type.equals("V1CustomResourceDefinition")) {
-                                        V1CustomResourceDefinition crd = (V1CustomResourceDefinition) obj;
-                                        Kubectl.apply(V1CustomResourceDefinition.class)
-                                                        .forceConflict(true)
-                                                        .resource(crd).apiClient(vcClient).execute();
-                                }
-
-                                if (type.equals("V1ServiceAccount")) {
-                                        V1ServiceAccount serviceAccount = (V1ServiceAccount) obj;
-                                        coreApi.createNamespacedServiceAccount("robot-system",
-                                                        serviceAccount, null,
-                                                        null, null, null);
-                                        String jsonInString = new Gson().toJson(obj);
-                                        JSONObject mJSONObject = new JSONObject(jsonInString);
-                                        yamlString += cloudInstanceHelperRepository
-                                                        .convertJsonStringToYamlString(mJSONObject.toString());
-                                        yamlString += "---";
-                                }
-                                if (type.equals("V1ConfigMap")) {
-                                        V1ConfigMap configMap = (V1ConfigMap) obj;
-                                        coreApi.createNamespacedConfigMap("robot-system", configMap,
-                                                        null, null,
-                                                        null, null);
-                                        String jsonInString = new Gson().toJson(obj);
-                                        JSONObject mJSONObject = new JSONObject(jsonInString);
-                                        yamlString += cloudInstanceHelperRepository
-                                                        .convertJsonStringToYamlString(mJSONObject.toString());
-                                        yamlString += "---";
-                                }
-                                if (type.equals("V1ClusterRole")) {
-                                        V1ClusterRole clusterRole = (V1ClusterRole) obj;
-                                        rbacApi.createClusterRole(clusterRole, null, null, null, null);
-                                        String jsonInString = new Gson().toJson(obj);
-                                        JSONObject mJSONObject = new JSONObject(jsonInString);
-                                        yamlString += cloudInstanceHelperRepository
-                                                        .convertJsonStringToYamlString(mJSONObject.toString());
-                                        yamlString += "---";
-                                }
-
-                                if (type.equals("V1ClusterRoleBinding")) {
-                                        V1ClusterRoleBinding clusterRoleBinding = (V1ClusterRoleBinding) obj;
-                                        rbacApi.createClusterRoleBinding(clusterRoleBinding, null, null,
-                                                        null, null);
-                                        String jsonInString = new Gson().toJson(obj);
-                                        JSONObject mJSONObject = new JSONObject(jsonInString);
-                                        yamlString += cloudInstanceHelperRepository
-                                                        .convertJsonStringToYamlString(mJSONObject.toString());
-                                        yamlString += "---";
-                                }
-                                if (type.equals("V1Role")) {
-                                        V1Role role = (V1Role) obj;
-                                        rbacApi.createNamespacedRole("robot-system", role, null, null,
-                                                        null, null);
-                                        String jsonInString = new Gson().toJson(obj);
-                                        JSONObject mJSONObject = new JSONObject(jsonInString);
-                                        yamlString += cloudInstanceHelperRepository
-                                                        .convertJsonStringToYamlString(mJSONObject.toString());
-                                        yamlString += "---";
-                                }
-
-                                if (type.equals("V1RoleBinding")) {
-                                        V1RoleBinding roleBinding = (V1RoleBinding) obj;
-                                        rbacApi.createNamespacedRoleBinding("robot-system", roleBinding,
-                                                        null, null,
-                                                        null, null);
-
-                                        String jsonInString = new Gson().toJson(obj);
-                                        JSONObject mJSONObject = new JSONObject(jsonInString);
-                                        yamlString += cloudInstanceHelperRepository
-                                                        .convertJsonStringToYamlString(mJSONObject.toString());
-                                        yamlString += "---";
-
-                                }
-
-                                if (type.equals("V1Service")) {
-                                        V1Service service = (V1Service) obj;
-                                        coreApi.createNamespacedService("robot-system", service, null,
-                                                        null, null,
-                                                        null);
-                                        String jsonInString = new Gson().toJson(obj);
-                                        JSONObject mJSONObject = new JSONObject(jsonInString);
-                                        yamlString += cloudInstanceHelperRepository
-                                                        .convertJsonStringToYamlString(mJSONObject.toString());
-                                        yamlString += "---";
-                                }
-                                if (type.equals("V1Deployment")) {
-                                        V1Deployment deployment = (V1Deployment) obj;
-                                        deployment.getSpec().getTemplate().getSpec().getNodeSelector()
-                                                        .put(
-                                                                        "robolaunch.io/organization",
-                                                                        organization.getName());
-                                        deployment.getSpec().getTemplate().getSpec().getNodeSelector()
-                                                        .put(
-                                                                        "robolaunch.io/cloud-instance",
-                                                                        cloudInstanceName);
-                                        deployment.getSpec().getTemplate().getSpec().getNodeSelector()
-                                                        .put(
-                                                                        "robolaunch.io/department",
-                                                                        departmentName);
-                                        deployment.getSpec().getTemplate().getSpec().getNodeSelector()
-                                                        .put(
-                                                                        "robolaunch.io/super-cluster",
-                                                                        superClusterName);
-                                        appsApi.createNamespacedDeployment("robot-system", deployment,
-                                                        null, null,
-                                                        null, null);
-                                        String jsonInString = new Gson().toJson(obj);
-                                        JSONObject mJSONObject = new JSONObject(jsonInString);
-                                        yamlString += cloudInstanceHelperRepository
-                                                        .convertJsonStringToYamlString(mJSONObject.toString());
-                                        yamlString += "---";
-                                }
-                                if (type.equals("V1alpha2Certificate")) {
-                                        customObjectsApi.createNamespacedCustomObject("cert-manager.io",
-                                                        "v1",
-                                                        "robot-system", "certificates", object,
-                                                        null, null, null);
-
-                                }
-
-                                if (type.equals("V1alpha2Issuer")) {
-                                        customObjectsApi.createNamespacedCustomObject("cert-manager.io",
-                                                        "v1",
-                                                        "robot-system", "issuers",
-                                                        objectIssuer,
-                                                        null, null, null);
-
-                                }
-
-                                if (type.equals("V1MutatingWebhookConfiguration")) {
-                                        V1MutatingWebhookConfiguration mutatingWebhookConf = (V1MutatingWebhookConfiguration) obj;
-                                        admissionApi.createMutatingWebhookConfiguration(
-                                                        mutatingWebhookConf, null,
-                                                        null, null, null);
-                                        String jsonInString = new Gson().toJson(obj);
-                                        JSONObject mJSONObject = new JSONObject(jsonInString);
-                                        yamlString += cloudInstanceHelperRepository
-                                                        .convertJsonStringToYamlString(mJSONObject.toString());
-                                        yamlString += "---";
-                                }
-
-                                if (type.equals("V1ValidatingWebhookConfiguration")) {
-                                        V1ValidatingWebhookConfiguration validatingWebhookConf = (V1ValidatingWebhookConfiguration) obj;
-                                        admissionApi.createValidatingWebhookConfiguration(
-                                                        validatingWebhookConf,
-                                                        null, null, null, null);
-                                        String jsonInString = new Gson().toJson(obj);
-                                        JSONObject mJSONObject = new JSONObject(jsonInString);
-                                        yamlString += cloudInstanceHelperRepository
-                                                        .convertJsonStringToYamlString(mJSONObject.toString());
-                                        yamlString += "---";
-                                }
+                        if (type.equals("V1Namespace")) {
+                                V1Namespace namespace = (V1Namespace) obj;
+                                coreApi.createNamespace(namespace, null, null, null, null);
+                                String jsonInString = new Gson().toJson(obj);
+                                JSONObject mJSONObject = new JSONObject(jsonInString);
+                                yamlString += cloudInstanceHelperRepository
+                                                .convertJsonStringToYamlString(mJSONObject.toString());
+                                yamlString += "---";
                         }
 
-                        Artifact artifact3 = new Artifact();
-                        artifact3.setClusterName(cloudInstanceName);
-                        artifact3.setName("robotOperator.yaml");
-                        storageRepository.push(yamlString.getBytes(StandardCharsets.UTF_8), artifact3,
-                                        organization.getName());
-                } catch (ApiException e) {
-                        System.out.println(e.getResponseBody());
-                        System.out.println(e.getCode());
+                        if (type.equals("V1CustomResourceDefinition")) {
+                                System.out.println("crd found");
+                                V1CustomResourceDefinition crd = (V1CustomResourceDefinition) obj;
+                                Kubectl.apply(V1CustomResourceDefinition.class)
+                                                .forceConflict(true)
+                                                .resource(crd).apiClient(vcClient).execute();
+                        }
+
+                        if (type.equals("V1ServiceAccount")) {
+                                V1ServiceAccount serviceAccount = (V1ServiceAccount) obj;
+                                coreApi.createNamespacedServiceAccount("robot-system",
+                                                serviceAccount, null,
+                                                null, null, null);
+                                String jsonInString = new Gson().toJson(obj);
+                                JSONObject mJSONObject = new JSONObject(jsonInString);
+                                yamlString += cloudInstanceHelperRepository
+                                                .convertJsonStringToYamlString(mJSONObject.toString());
+                                yamlString += "---";
+                        }
+                        if (type.equals("V1ConfigMap")) {
+                                V1ConfigMap configMap = (V1ConfigMap) obj;
+                                coreApi.createNamespacedConfigMap("robot-system", configMap,
+                                                null, null,
+                                                null, null);
+                                String jsonInString = new Gson().toJson(obj);
+                                JSONObject mJSONObject = new JSONObject(jsonInString);
+                                yamlString += cloudInstanceHelperRepository
+                                                .convertJsonStringToYamlString(mJSONObject.toString());
+                                yamlString += "---";
+                        }
+                        if (type.equals("V1ClusterRole")) {
+                                V1ClusterRole clusterRole = (V1ClusterRole) obj;
+                                rbacApi.createClusterRole(clusterRole, null, null, null, null);
+                                String jsonInString = new Gson().toJson(obj);
+                                JSONObject mJSONObject = new JSONObject(jsonInString);
+                                yamlString += cloudInstanceHelperRepository
+                                                .convertJsonStringToYamlString(mJSONObject.toString());
+                                yamlString += "---";
+                        }
+
+                        if (type.equals("V1ClusterRoleBinding")) {
+                                V1ClusterRoleBinding clusterRoleBinding = (V1ClusterRoleBinding) obj;
+                                rbacApi.createClusterRoleBinding(clusterRoleBinding, null, null,
+                                                null, null);
+                                String jsonInString = new Gson().toJson(obj);
+                                JSONObject mJSONObject = new JSONObject(jsonInString);
+                                yamlString += cloudInstanceHelperRepository
+                                                .convertJsonStringToYamlString(mJSONObject.toString());
+                                yamlString += "---";
+                        }
+                        if (type.equals("V1Role")) {
+                                V1Role role = (V1Role) obj;
+                                rbacApi.createNamespacedRole("robot-system", role, null, null,
+                                                null, null);
+                                String jsonInString = new Gson().toJson(obj);
+                                JSONObject mJSONObject = new JSONObject(jsonInString);
+                                yamlString += cloudInstanceHelperRepository
+                                                .convertJsonStringToYamlString(mJSONObject.toString());
+                                yamlString += "---";
+                        }
+
+                        if (type.equals("V1RoleBinding")) {
+                                V1RoleBinding roleBinding = (V1RoleBinding) obj;
+                                rbacApi.createNamespacedRoleBinding("robot-system", roleBinding,
+                                                null, null,
+                                                null, null);
+
+                                String jsonInString = new Gson().toJson(obj);
+                                JSONObject mJSONObject = new JSONObject(jsonInString);
+                                yamlString += cloudInstanceHelperRepository
+                                                .convertJsonStringToYamlString(mJSONObject.toString());
+                                yamlString += "---";
+
+                        }
+
+                        if (type.equals("V1Service")) {
+                                V1Service service = (V1Service) obj;
+                                coreApi.createNamespacedService("robot-system", service, null,
+                                                null, null,
+                                                null);
+                                String jsonInString = new Gson().toJson(obj);
+                                JSONObject mJSONObject = new JSONObject(jsonInString);
+                                yamlString += cloudInstanceHelperRepository
+                                                .convertJsonStringToYamlString(mJSONObject.toString());
+                                yamlString += "---";
+                        }
+                        if (type.equals("V1Deployment")) {
+                                V1Deployment deployment = (V1Deployment) obj;
+                                Optional<Map<String, String>> nodeSelectors = Optional
+                                                .ofNullable(deployment).map(V1Deployment::getSpec)
+                                                .map(V1DeploymentSpec::getTemplate)
+                                                .map(V1PodTemplateSpec::getSpec).map(m -> m.getNodeSelector());
+                                nodeSelectors.get()
+                                                .put(
+                                                                "robolaunch.io/organization",
+                                                                organization.getName());
+                                nodeSelectors.get()
+                                                .put(
+                                                                "robolaunch.io/cloud-instance",
+                                                                cloudInstanceName);
+                                nodeSelectors.get()
+                                                .put(
+                                                                "robolaunch.io/team",
+                                                                teamId);
+                                nodeSelectors.get()
+                                                .put(
+                                                                "robolaunch.io/region",
+                                                                region);
+                                appsApi.createNamespacedDeployment("robot-system", deployment,
+                                                null, null,
+                                                null, null);
+                                String jsonInString = new Gson().toJson(obj);
+                                JSONObject mJSONObject = new JSONObject(jsonInString);
+                                yamlString += cloudInstanceHelperRepository
+                                                .convertJsonStringToYamlString(mJSONObject.toString());
+                                yamlString += "---";
+                        }
+                        if (type.equals("V1alpha2Certificate")) {
+                                System.out.println("alpha2certificate will be created.");
+                                Thread.sleep(5000);
+                                customObjectsApi.createNamespacedCustomObject("cert-manager.io",
+                                                "v1",
+                                                "robot-system", "certificates", object,
+                                                null, null, null);
+                                System.out.println("alpha2certificate created.");
+
+                        }
+
+                        if (type.equals("V1alpha2Issuer")) {
+                                System.out.println("alpha2issuer will be created.");
+                                customObjectsApi.createNamespacedCustomObject("cert-manager.io",
+                                                "v1",
+                                                "robot-system", "issuers",
+                                                objectIssuer,
+                                                null, null, null);
+                                System.out.println("alpha2issuer created.");
+
+                        }
+
+                        if (type.equals("V1MutatingWebhookConfiguration")) {
+                                System.out.println("MutatingWebhookConfiguration will be created.");
+                                V1MutatingWebhookConfiguration mutatingWebhookConf = (V1MutatingWebhookConfiguration) obj;
+                                admissionApi.createMutatingWebhookConfiguration(
+                                                mutatingWebhookConf, null,
+                                                null, null, null);
+                                String jsonInString = new Gson().toJson(obj);
+                                JSONObject mJSONObject = new JSONObject(jsonInString);
+                                yamlString += cloudInstanceHelperRepository
+                                                .convertJsonStringToYamlString(mJSONObject.toString());
+                                yamlString += "---";
+                                System.out.println("MutatingWebhookConfiguration created.");
+                        }
+
+                        if (type.equals("V1ValidatingWebhookConfiguration")) {
+                                V1ValidatingWebhookConfiguration validatingWebhookConf = (V1ValidatingWebhookConfiguration) obj;
+                                admissionApi.createValidatingWebhookConfiguration(
+                                                validatingWebhookConf,
+                                                null, null, null, null);
+                                String jsonInString = new Gson().toJson(obj);
+                                JSONObject mJSONObject = new JSONObject(jsonInString);
+                                yamlString += cloudInstanceHelperRepository
+                                                .convertJsonStringToYamlString(mJSONObject.toString());
+                                yamlString += "---";
+                        }
                 }
+
+                Artifact artifact3 = new Artifact();
+                artifact3.setClusterName(cloudInstanceName);
+                artifact3.setName("robotOperator.yaml");
+                storageRepository.push(yamlString.getBytes(StandardCharsets.UTF_8), artifact3,
+                                organization.getName());
 
         }
 
@@ -1502,11 +1516,13 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 /* Get ExternalIP from node */
                 String externalIP = "";
                 var node = coreV1Api.readNode(nodeName, null);
-                var addresses = node.getStatus().getAddresses();
-                for (int i = 0; i < addresses.size(); i++) {
-                        if (addresses.get(i).getType().equals(
+                Optional<List<V1NodeAddress>> nodeAddresses = Optional.ofNullable(node)
+                                .map(V1Node::getStatus).map(V1NodeStatus::getAddresses);
+
+                for (int i = 0; i < nodeAddresses.get().size(); i++) {
+                        if (nodeAddresses.get().get(i).getType().equals(
                                         "ExternalIP")) {
-                                externalIP = addresses.get(i).getAddress().toString();
+                                externalIP = nodeAddresses.get().get(i).getAddress().toString();
                         }
                 }
                 String requestData = groupAdapter.toCreateDNSRecord(organization, externalIP, dnsZoneName);
@@ -1517,8 +1533,9 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void addBufferedLabelToVC(String bufferName, String instanceType) throws KubectlException, IOException {
-                ApiClient apiClient = Config.defaultClient();
+        public void addBufferedLabelToVC(String bufferName, String instanceType)
+                        throws KubectlException, IOException, ApiException, InterruptedException {
+                ApiClient apiClient = cloudInstanceHelperRepository.adminApiClient();
                 ModelMapper.addModelMap("tenancy.x-k8s.io", "v1alpha1", "VirtualCluster",
                                 "virtualclusters", true,
                                 V1VirtualCluster.class);
@@ -1541,27 +1558,30 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 V1DeploymentList deploymentList = appsV1Api.listDeploymentForAllNamespaces(null, null, null, null, null,
                                 null, null, null, null, null);
                 for (V1Deployment deployment : deploymentList.getItems()) {
-                        if (deployment.getMetadata().getNamespace().equals("kube-system")
-                                        && deployment.getMetadata().getName().equals("coredns")) {
+                        Optional<String> deploymentNsName = Optional.ofNullable(deployment)
+                                        .map(V1Deployment::getMetadata)
+                                        .map(V1ObjectMeta::getNamespace);
+                        Optional<String> deploymentName = Optional.ofNullable(deployment).map(V1Deployment::getMetadata)
+                                        .map(V1ObjectMeta::getName);
+                        if (deploymentNsName.get().equals("kube-system")
+                                        && deploymentName.get().equals("coredns")) {
                                 Kubectl.scale(V1Deployment.class).apiClient(vcClient)
-                                                .namespace(deployment.getMetadata().getNamespace())
-                                                .name(deployment.getMetadata().getName()).replicas(0).execute();
+                                                .namespace(deploymentNsName.get())
+                                                .name(deploymentName.get()).replicas(0).execute();
                         }
-                        if (deployment.getMetadata().getNamespace().equals("cert-manager")
-                                        && deployment.getMetadata().getName().equals("cert-manager")
-                                        || deployment
-                                                        .getMetadata().getName().equals("cert-manager-cainjector")
-                                        || deployment
-                                                        .getMetadata().getName().equals("cert-manager-webhook")) {
+                        if (deploymentNsName.get().equals("cert-manager")
+                                        && deploymentName.get().equals("cert-manager")
+                                        || deploymentName.get().equals("cert-manager-cainjector")
+                                        || deploymentName.get().equals("cert-manager-webhook")) {
                                 Kubectl.scale(V1Deployment.class).apiClient(vcClient)
-                                                .namespace(deployment.getMetadata().getNamespace())
-                                                .name(deployment.getMetadata().getName()).replicas(0).execute();
+                                                .namespace(deploymentNsName.get())
+                                                .name(deploymentName.get()).replicas(0).execute();
                         }
-                        if (deployment.getMetadata().getNamespace().equals("robot-system")
-                                        && deployment.getMetadata().getName().equals("robot-controller-manager")) {
+                        if (deploymentNsName.get().equals("robot-system")
+                                        && deploymentName.get().equals("robot-controller-manager")) {
                                 Kubectl.scale(V1Deployment.class).apiClient(vcClient)
                                                 .namespace(deployment.getMetadata().getNamespace())
-                                                .name(deployment.getMetadata().getName()).replicas(0).execute();
+                                                .name(deploymentName.get()).replicas(0).execute();
                         }
                 }
         }
@@ -1574,50 +1594,50 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 V1DeploymentList deploymentList = appsV1Api.listDeploymentForAllNamespaces(null, null, null, null, null,
                                 null, null, null, null, null);
                 for (V1Deployment deployment : deploymentList.getItems()) {
-                        if (deployment.getMetadata().getNamespace().equals("kube-system")
-                                        && deployment.getMetadata().getName().equals("coredns")) {
+                        Optional<String> deploymentNsName = Optional.ofNullable(deployment)
+                                        .map(V1Deployment::getMetadata)
+                                        .map(V1ObjectMeta::getNamespace);
+                        Optional<String> deploymentName = Optional.ofNullable(deployment).map(V1Deployment::getMetadata)
+                                        .map(V1ObjectMeta::getName);
+                        if (deploymentNsName.get().equals("kube-system")
+                                        && deploymentName.get().equals("coredns")) {
                                 Kubectl.scale(V1Deployment.class).apiClient(vcClient)
-                                                .namespace(deployment.getMetadata().getNamespace())
-                                                .name(deployment.getMetadata().getName()).replicas(1).execute();
+                                                .namespace(deploymentNsName.get())
+                                                .name(deploymentName.get()).replicas(1).execute();
                         }
-                        if (deployment.getMetadata().getNamespace().equals("cert-manager")
-                                        && deployment.getMetadata().getName().equals("cert-manager")
-                                        || deployment
-                                                        .getMetadata().getName().equals("cert-manager-cainjector")
-                                        || deployment
-                                                        .getMetadata().getName().equals("cert-manager-webhook")) {
+                        if (deploymentNsName.get().equals("cert-manager")
+                                        && deploymentName.get().equals("cert-manager")
+                                        || deploymentName.get().equals("cert-manager-cainjector")
+                                        || deploymentName.get().equals("cert-manager-webhook")) {
                                 Kubectl.scale(V1Deployment.class).apiClient(vcClient)
-                                                .namespace(deployment.getMetadata().getNamespace())
-                                                .name(deployment.getMetadata().getName()).replicas(1).execute();
+                                                .namespace(deploymentNsName.get())
+                                                .name(deploymentName.get()).replicas(1).execute();
                         }
-                        if (deployment.getMetadata().getNamespace().equals("robot-system")
-                                        && deployment.getMetadata().getName().equals("robot-controller-manager")) {
+                        if (deploymentNsName.get().equals("robot-system")
+                                        && deploymentName.get().equals("robot-controller-manager")) {
                                 Kubectl.scale(V1Deployment.class).apiClient(vcClient)
-                                                .namespace(deployment.getMetadata().getNamespace())
-                                                .name(deployment.getMetadata().getName()).replicas(1).execute();
+                                                .namespace(deploymentNsName.get())
+                                                .name(deploymentName.get()).replicas(1).execute();
                         }
                 }
         }
 
         @Override
-        public void scaleOAuth2ProxyDown(String bufferName) throws ApiException, IOException, KubectlException {
-                try {
-                        String namespaceName = cloudInstanceHelperRepository.getNamespaceNameWithBufferName(bufferName);
-                        ApiClient apiClient = Config.defaultClient();
-                        Kubectl.scale(V1Deployment.class).apiClient(apiClient)
-                                        .namespace(namespaceName + "-oauth2-proxy")
-                                        .name("oauth2-proxy").replicas(0).execute();
-                } catch (KubectlException e) {
-                        System.out.println(e.getCause());
-                        System.out.println(e.getMessage());
-                }
-
-        }
-
-        @Override
-        public void scaleOAuth2ProxyUp(String bufferName) throws ApiException, IOException, KubectlException {
+        public void scaleOAuth2ProxyDown(String bufferName)
+                        throws ApiException, IOException, KubectlException, InterruptedException {
                 String namespaceName = cloudInstanceHelperRepository.getNamespaceNameWithBufferName(bufferName);
-                ApiClient apiClient = Config.defaultClient();
+                ApiClient apiClient = cloudInstanceHelperRepository.adminApiClient();
+                Kubectl.scale(V1Deployment.class).apiClient(apiClient)
+                                .namespace(namespaceName + "-oauth2-proxy")
+                                .name("oauth2-proxy").replicas(0).execute();
+
+        }
+
+        @Override
+        public void scaleOAuth2ProxyUp(String bufferName)
+                        throws ApiException, IOException, KubectlException, InterruptedException {
+                String namespaceName = cloudInstanceHelperRepository.getNamespaceNameWithBufferName(bufferName);
+                ApiClient apiClient = cloudInstanceHelperRepository.adminApiClient();
                 Kubectl.scale(V1Deployment.class).apiClient(apiClient).namespace(namespaceName + "-oauth2-proxy")
                                 .name("oauth2-proxy").replicas(1).execute();
         }
@@ -1634,8 +1654,9 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void unlabelSuperClusterNode(String nodeName) throws IOException, KubectlException {
-                ApiClient apiClient = Config.defaultClient();
+        public void unlabelSuperClusterNode(String nodeName)
+                        throws IOException, KubectlException, ApiException, InterruptedException {
+                ApiClient apiClient = cloudInstanceHelperRepository.adminApiClient();
                 String patchString = "[{ \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1buffer-instance\" }]";
                 V1Patch patch = new V1Patch(patchString);
                 Kubectl.patch(V1Node.class).apiClient(apiClient).name(nodeName).patchContent(patch).execute();
@@ -1660,13 +1681,27 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         Object obj = list.get(i);
                         String type = obj.getClass().getSimpleName();
                         if (type.equals("V1ClusterRole")) {
+                                V1PolicyRule v1PolicyRule = new V1PolicyRule();
+                                v1PolicyRule.addApiGroupsItem("*");
+                                v1PolicyRule.addResourcesItem("*");
+                                v1PolicyRule.addVerbsItem("*");
                                 V1ClusterRole clusterRole = (V1ClusterRole) obj;
                                 rbacAuthorizationV1Api.createClusterRole(clusterRole, null, null, null, null);
                         }
                         if (type.equals("V1ClusterRoleBinding")) {
                                 V1ClusterRoleBinding clusterRoleBinding = (V1ClusterRoleBinding) obj;
-                                System.out.println("Username: " + username);
-                                clusterRoleBinding.getSubjects().get(0).setName(username);
+                                V1Subject v1Subject = new V1Subject();
+                                v1Subject.setKind("User");
+                                v1Subject.setName(keycloakURL + "/realms/" + organization.getName() + "#" + username);
+                                v1Subject.setApiGroup("rbac.authorization.k8s.io");
+                                clusterRoleBinding.addSubjectsItem(v1Subject);
+
+                                V1Subject v1SubjectAdmin = new V1Subject();
+                                v1SubjectAdmin.setKind("User");
+                                v1SubjectAdmin.setName(
+                                                keycloakURL + "/realms/" + organization.getName() + "#" + "bigboss");
+                                v1SubjectAdmin.setApiGroup("rbac.authorization.k8s.io");
+                                clusterRoleBinding.addSubjectsItem(v1Subject);
                                 rbacAuthorizationV1Api.createClusterRoleBinding(clusterRoleBinding, null, null, null,
                                                 null);
                         }

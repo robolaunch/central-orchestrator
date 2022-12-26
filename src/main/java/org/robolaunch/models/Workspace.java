@@ -5,8 +5,8 @@ import java.util.List;
 
 public class Workspace implements Serializable {
   private String name;
+  private String distro;
   private List<Repository> repositories;
-  private String build;
 
   public String getName() {
     return name;
@@ -24,12 +24,12 @@ public class Workspace implements Serializable {
     this.repositories = repositories;
   }
 
-  public String getBuild() {
-    return build;
+  public String getDistro() {
+    return distro;
   }
 
-  public void setBuild(String build) {
-    this.build = build;
+  public void setDistro(String distro) {
+    this.distro = distro;
   }
 
 }

@@ -21,7 +21,7 @@ public interface GroupRepository {
 
         void clearCookies();
 
-        void addSubgroupToGroup(Organization group, DepartmentBasic subgroup)
+        void addSubgroupToGroup(Organization organization, String teamName)
                         throws InternalError, IOException;
 
         void addUserToGroup(User user, Organization organization)

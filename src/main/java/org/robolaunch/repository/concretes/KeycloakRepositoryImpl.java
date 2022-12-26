@@ -15,7 +15,6 @@ import org.robolaunch.core.abstracts.IPALogin;
 import org.robolaunch.core.concretes.IPAUserLogin;
 import org.robolaunch.exception.ApplicationException;
 import org.robolaunch.exception.UserNotFoundException;
-import org.robolaunch.models.KeycloakLoginResponse;
 import org.robolaunch.models.LoginRefreshToken;
 import org.robolaunch.models.LoginRefreshTokenOrganization;
 import org.robolaunch.models.LoginRequest;
@@ -27,8 +26,6 @@ import org.robolaunch.repository.abstracts.GroupAdminRepository;
 import org.robolaunch.repository.abstracts.KeycloakRepository;
 import org.robolaunch.repository.abstracts.UserAdminRepository;
 import org.robolaunch.service.KeycloakService;
-
-import com.google.gson.Gson;
 
 import io.vertx.core.MultiMap;
 import io.vertx.core.Vertx;
@@ -88,10 +85,6 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
                         })
                 .onSuccess(
                         httpResponse -> {
-                            if (httpResponse.bodyAsJsonObject().getString("error").equals("invalid_grant")) {
-                                response.completeExceptionally(new InternalError("Login failed"));
-                                throw new ApplicationException("Login failed.");
-                            }
                             if (httpResponse.statusCode() == 200) {
                                 LoginResponse loginResponse = new LoginResponse();
                                 loginResponse
@@ -103,6 +96,8 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
                                 loginResponse
                                         .setRefreshToken(
                                                 httpResponse.bodyAsJsonObject().getString("refresh_token"));
+                                loginResponse.setOrganization(loginRequestOrganization.getOrganization());
+
                                 response.complete(loginResponse);
                             } else {
                                 response.completeExceptionally(new InternalError("Login failed"));
@@ -240,14 +235,10 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
 
     @Override
     public CompletableFuture<LoginResponse> refreshLogin(LoginRefreshToken loginRefreshToken) throws InternalError {
-        System.out.println("TOken: " + loginRefreshToken.getRefreshToken());
         CompletableFuture<LoginResponse> response = new CompletableFuture<>();
         MultiMap loginFormData = convertRefreshToken(loginRefreshToken);
-        System.out.println("login data: " + loginFormData.get("refresh_token"));
         this.client.post("/auth/realms/kogito/protocol/openid-connect/token").sendForm(loginFormData)
                 .onFailure(er -> {
-                    System.out.println(er.getMessage());
-                    System.out.println(er.getCause());
 
                 })
                 .toCompletionStage().toCompletableFuture()
@@ -272,17 +263,13 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
     public CompletableFuture<LoginResponse> refreshLoginOrganization(
             LoginRefreshTokenOrganization loginRefreshTokenOrganization)
             throws InternalError {
-        System.out.println("TOken: " + loginRefreshTokenOrganization.getRefreshToken());
         CompletableFuture<LoginResponse> response = new CompletableFuture<>();
         MultiMap loginFormData = convertRefreshTokenOrganization(loginRefreshTokenOrganization);
-        System.out.println("login data: " + loginFormData.get("refresh_token"));
         this.client
                 .post("/auth/realms/" + loginRefreshTokenOrganization.getOrganization()
                         + "/protocol/openid-connect/token")
                 .sendForm(loginFormData)
                 .onFailure(er -> {
-                    System.out.println(er.getMessage());
-                    System.out.println(er.getCause());
 
                 })
                 .toCompletionStage().toCompletableFuture()

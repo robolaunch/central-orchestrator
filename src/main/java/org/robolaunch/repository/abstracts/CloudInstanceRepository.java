@@ -46,28 +46,28 @@ public interface CloudInstanceRepository {
 
         public void uncordonNode(String nodeName) throws IOException, KubectlException;
 
-        public void labelVirtualCluster(String bufferName, Organization organization, String departmentName,
-                        String superClusterName,
+        public void labelVirtualCluster(String bufferName, Organization organization, String teamId,
+                        String region,
                         String cloudInstanceName, Boolean connectionHub)
-                        throws IOException, KubectlException, InterruptedException;
+                        throws IOException, KubectlException, InterruptedException, ApiException;
 
         public void addOrganizationLabelsToNode(Organization organization, String nodeName, String cloudInstanceName,
-                        String departmentName,
-                        String superClusterName,
+                        String teamId,
+                        String region,
                         Boolean connectionHub)
                         throws IOException, KubectlException;
 
         public void addNodeSelectorsToStatefulSets(String namespaceName, Organization organization,
-                        String departmentName,
-                        String cloudInstanceName, String superClusterName, String bufferName) throws ApiException;
+                        String teamId,
+                        String cloudInstanceName, String region, String bufferName) throws ApiException;
 
         public void createSubnet(String bufferName, String namespaceName, String cloudInstanceName,
-                        String departmentName, Organization organization, String superClusterName)
+                        String teamId, Organization organization, String region)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException;
 
         public void createVirtualLink(String namespaceName, String cloudInstanceName,
-                        String departmentName, Organization organization, String superClusterName, String bufferName)
+                        String teamId, Organization organization, String region, String bufferName)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException;
 
@@ -79,9 +79,9 @@ public interface CloudInstanceRepository {
                         InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
                         XmlParserException, IllegalArgumentException, IOException, InterruptedException;
 
-        public void createOAuth2ProxyResources(Organization organization, String departmentName,
+        public void createOAuth2ProxyResources(Organization organization, String teamId,
                         String cloudInstanceName,
-                        String superClusterName, String namespaceName, String bufferName)
+                        String region, String namespaceName, String bufferName)
                         throws InvalidKeyException, ErrorResponseException,
                         InsufficientDataException, InternalException, InvalidResponseException,
                         NoSuchAlgorithmException, ServerException, XmlParserException, IllegalArgumentException,
@@ -95,35 +95,35 @@ public interface CloudInstanceRepository {
                         XmlParserException, IllegalArgumentException, IOException, ApiException, MinioException,
                         InterruptedException;
 
-        public void createCoreDNS(Organization organization, String departmentName,
+        public void createCoreDNS(Organization organization, String teamId,
                         String cloudInstanceName, String nodeName,
                         String bufferName,
-                        String superClusterName)
+                        String region)
                         throws IOException, InvalidKeyException, ErrorResponseException, InsufficientDataException,
                         InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
                         XmlParserException, IllegalArgumentException, ApiException, MinioException,
                         InterruptedException;
 
         public void addLabelsToVirtualClusterNode(Organization organization, String nodeName, String cloudInstanceName,
-                        String departmentName, String bufferName, String superClusterName, Boolean connectionHub)
+                        String teamId, String bufferName, String region, Boolean connectionHub)
                         throws KubectlException, IOException, ApiException, InterruptedException;
 
-        public void createCertManager(Organization organization, String departmentName,
+        public void createCertManager(Organization organization, String teamId,
                         String cloudInstanceName, String bufferName,
-                        String superClusterName) throws KubectlException, IOException, ApiException,
+                        String region) throws KubectlException, IOException, ApiException,
                         InvalidKeyException, ErrorResponseException, InsufficientDataException, InternalException,
                         InvalidResponseException, NoSuchAlgorithmException, ServerException, XmlParserException,
                         IllegalArgumentException, MinioException, InterruptedException;
 
         public void createConnectionHubOperator(String namespaceName, String cloudInstanceName,
-                        String departmentName, Organization organization, String superClusterName,
+                        String teamId, Organization organization, String region,
                         String bufferName)
                         throws IOException, ApiException, InterruptedException, InvalidKeyException,
                         ErrorResponseException, InsufficientDataException, InternalException, InvalidResponseException,
                         NoSuchAlgorithmException, ServerException, XmlParserException, IllegalArgumentException,
                         KubectlException, MinioException;
 
-        public void createConnectionHub(String bufferName, Organization organization, String departmentName,
+        public void createConnectionHub(String bufferName, Organization organization, String teamId,
                         String cloudInstanceName,
                         String serverIP,
                         String namespaceName)
@@ -133,8 +133,8 @@ public interface CloudInstanceRepository {
                         MinioException;
 
         public void createRobotOperator(Organization organization, String cloudInstanceName,
-                        String departmentName,
-                        String superClusterName,
+                        String teamId,
+                        String region,
                         String bufferName) throws InvalidKeyException, ErrorResponseException,
                         InsufficientDataException, InternalException, InvalidResponseException,
                         NoSuchAlgorithmException, ServerException, XmlParserException, IllegalArgumentException,
@@ -143,7 +143,8 @@ public interface CloudInstanceRepository {
         public void createDNSRecord(Organization organization, String nodeName)
                         throws ApiException, InternalError, ApplicationException, IOException;
 
-        public void addBufferedLabelToVC(String bufferName, String instanceType) throws KubectlException, IOException;
+        public void addBufferedLabelToVC(String bufferName, String instanceType)
+                        throws KubectlException, IOException, ApiException, InterruptedException;
 
         public void scaleVCWorkloadsDown(String bufferName)
                         throws IOException, ApiException, InterruptedException, KubectlException;
@@ -151,13 +152,16 @@ public interface CloudInstanceRepository {
         public void scaleVCWorkloadsUp(String bufferName)
                         throws IOException, ApiException, InterruptedException, KubectlException;
 
-        public void scaleOAuth2ProxyDown(String bufferName) throws ApiException, IOException, KubectlException;
+        public void scaleOAuth2ProxyDown(String bufferName)
+                        throws ApiException, IOException, KubectlException, InterruptedException;
 
-        public void scaleOAuth2ProxyUp(String bufferName) throws ApiException, IOException, KubectlException;
+        public void scaleOAuth2ProxyUp(String bufferName)
+                        throws ApiException, IOException, KubectlException, InterruptedException;
 
         public void scaleCoreDNSUp(String bufferName) throws ApiException, IOException, InterruptedException;
 
-        public void unlabelSuperClusterNode(String nodeName) throws IOException, KubectlException;
+        public void unlabelSuperClusterNode(String nodeName)
+                        throws IOException, KubectlException, ApiException, InterruptedException;
 
         public void createClusterAdminRole(Organization organization, String bufferName, String username)
                         throws InvalidKeyException, ErrorResponseException, InsufficientDataException,

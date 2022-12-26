@@ -40,8 +40,6 @@ public class AmazonService {
       return new Response(true, "Instance started");
     } catch (Exception e) {
       amazonLogger.error("Instance could not be started");
-      System.out.println(e.getMessage());
-      System.out.println(e.getCause());
       return new Response(false, "Instance could not be started");
     }
   }
@@ -49,12 +47,9 @@ public class AmazonService {
   public Boolean isInstanceStopped(String nodeName) {
     try {
       Boolean isStopped = amazonRepository.isInstanceStopped(nodeName);
-      amazonLogger.info("Is instance stopped?: " + isStopped);
       return isStopped;
     } catch (Exception e) {
       amazonLogger.error("Instance could not be started");
-      System.out.println(e.getMessage());
-      System.out.println(e.getCause());
       return false;
     }
   }

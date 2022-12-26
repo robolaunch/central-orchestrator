@@ -16,6 +16,11 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.infinispan.client.hotrod.DefaultTemplate;
+import org.infinispan.client.hotrod.RemoteCache;
+import org.infinispan.client.hotrod.RemoteCacheManager;
+import org.infinispan.client.hotrod.configuration.Configuration;
+import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
 import org.robolaunch.exception.ApplicationException;
 import org.robolaunch.models.Artifact;
 import org.robolaunch.models.Cluster;
@@ -45,11 +50,18 @@ import io.minio.errors.ServerException;
 import io.minio.errors.XmlParserException;
 import io.minio.messages.Bucket;
 import io.minio.messages.Item;
+import io.quarkus.infinispan.client.Remote;
 
 @ApplicationScoped
 public class StorageRepositoryImpl implements StorageRepository {
     @Inject
     MinioClient minioClient;
+    @Inject
+    RemoteCacheManager remoteCacheManager;
+
+    @Inject
+    @Remote("test_domain")
+    RemoteCache<String, Object> cache;
 
     /* Send objects from local computer */
     @Override
@@ -103,10 +115,8 @@ public class StorageRepositoryImpl implements StorageRepository {
         Iterable<Object> mData = yaml.loadAll(inputStream);
         for (Object data : mData) {
             String response = new Gson().toJson(data);
-            System.out.println("Response: " + response);
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
             String json = ow.writeValueAsString(data);
-            System.out.println("JSON: " + json);
         }
 
         return null;
@@ -150,7 +160,6 @@ public class StorageRepositoryImpl implements StorageRepository {
         List<Artifact> artifacts = new ArrayList<Artifact>();
         buckets = minioClient.listBuckets();
         for (Bucket bucket : buckets) {
-            System.out.println("Bucket: " + bucket.name());
             artifacts.add(new Artifact(bucket.name(), ""));
         }
         return artifacts;
@@ -212,7 +221,6 @@ public class StorageRepositoryImpl implements StorageRepository {
 
         Path tempFile = Files.createTempFile("pricing", ".txt");
         t += "\nstart_" + new Date() + "_" + teamId + "_" + cloudInstanceName + "_" + type;
-        System.out.println("t: " + t);
 
         Files.write(tempFile, t.getBytes());
         UploadObjectArgs.Builder builder = UploadObjectArgs.builder().bucket(organization.getName())
@@ -231,12 +239,16 @@ public class StorageRepositoryImpl implements StorageRepository {
 
         Path tempFile = Files.createTempFile("pricing", ".txt");
         t += "\nstop_" + new Date() + "_" + teamId + "_" + cloudInstanceName + "_" + type;
-        System.out.println("t: " + t);
 
         Files.write(tempFile, t.getBytes());
         UploadObjectArgs.Builder builder = UploadObjectArgs.builder().bucket(organization.getName())
                 .object("pricing.txt").filename(tempFile.toString());
         minioClient.uploadObject(builder.build());
+    }
+
+    public void infinispanConnect() {
+        Gson gson = new Gson();
+        ConfigurationBuilder builder = new ConfigurationBuilder();
     }
 
 }

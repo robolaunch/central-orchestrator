@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.net.CookieManager;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +25,7 @@ import org.robolaunch.core.abstracts.GroupAdapter;
 import org.robolaunch.exception.ApplicationException;
 import org.robolaunch.models.Department;
 import org.robolaunch.models.DepartmentBasic;
+import org.robolaunch.models.GroupMember;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.User;
 import org.robolaunch.repository.abstracts.GroupAdminRepository;
@@ -96,6 +98,36 @@ public class GroupAdminRepositoryIPAImpl implements GroupAdminRepository {
   }
 
   /* Helper function to get member managers request. */
+  private JsonNode makeRequestForGroupMembers(String body)
+      throws IOException, InternalError {
+    URL url = new URL(this.freeIpaURL + "/ipa/session/json");
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setRequestMethod("POST");
+    connection.setRequestProperty("Content-Type", "application/json");
+    connection.setRequestProperty("Referer", this.freeIpaURL + "/ipa");
+    connection.setRequestProperty("Cookie", StringUtils.join(cookieManager.getCookieStore().getCookies(), ";"));
+    connection.setDoOutput(true);
+    DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
+    wr.write(body.getBytes("UTF-8"), 0, body.getBytes("UTF-8").length);
+
+    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+    String line;
+    String result = "";
+    while ((line = bufferedReader.readLine()) != null) {
+      result += line;
+    }
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode actualObj = mapper.readTree(result);
+    JsonNode requestedData = actualObj.get("result").get("result");
+    wr.close();
+    if (!result.contains("\"error\": null")) {
+      JsonNode rootNode = mapper.readTree(result);
+      throw new ApplicationException(rootNode.get("error").get("message").asText());
+    }
+    return requestedData;
+  }
+
+  /* Helper function to get member managers request. */
   private JsonNode makeRequestForGroupField(String body, String fieldName)
       throws IOException, InternalError {
     URL url = new URL(this.freeIpaURL + "/ipa/session/json");
@@ -134,7 +166,7 @@ public class GroupAdminRepositoryIPAImpl implements GroupAdminRepository {
     return cookieManager.getCookieStore().getCookies();
   }
 
-  public void clearCookies() {
+  public void clearCookies() throws URISyntaxException {
     cookieManager.getCookieStore().removeAll();
   }
 
@@ -176,9 +208,11 @@ public class GroupAdminRepositoryIPAImpl implements GroupAdminRepository {
   }
 
   @Override
-  public String createSubgroup(Organization organization, DepartmentBasic department)
+  public String createSubgroup(Organization organization, String teamName)
       throws InternalError, IOException, ApplicationException {
-    ArrayList<String> array = groupAdapter.toCreateSubgroup(organization, department);
+    DepartmentBasic depBasic = new DepartmentBasic();
+    depBasic.setName(teamName);
+    ArrayList<String> array = groupAdapter.toCreateSubgroup(organization, depBasic);
     String requestData = array.get(0);
     String createRequest = String.format("{\"id\": 0, \"method\": \"group_add/1\", \"params\": %s} ", requestData);
     makeRequest(createRequest);
@@ -221,9 +255,11 @@ public class GroupAdminRepositoryIPAImpl implements GroupAdminRepository {
   }
 
   @Override
-  public void changeDepartmentName(Organization organization, Organization department, String newName)
+  public void changeTeamName(Organization organization, String oldTeamName, String newTeamName)
       throws InternalError, IOException, ApplicationException {
-    String requestChange = groupAdapter.toChangeGroup(department, newName);
+    Organization org = new Organization();
+    org.setName(oldTeamName);
+    String requestChange = groupAdapter.toChangeGroup(org, newTeamName);
     String changeRequest = String.format("{\"id\": 0, \"method\": \"group_mod/1\", \"params\": %s} ",
         requestChange);
     makeRequest(changeRequest);
@@ -293,6 +329,13 @@ public class GroupAdminRepositoryIPAImpl implements GroupAdminRepository {
   }
 
   @Override
+  public Boolean isGroupMember(User user, Organization group)
+      throws InternalError, IOException {
+    List<GroupMember> groupMembers = getGroupMembers(group);
+    return groupMembers.stream().anyMatch(member -> member.getUsername().equals(user.getUsername()));
+  }
+
+  @Override
   public Set<User> getUsers(Organization organization, String fieldName)
       throws InternalError, IOException {
     String requestData = groupAdapter.toGetWithAllFlag(organization);
@@ -310,6 +353,56 @@ public class GroupAdminRepositoryIPAImpl implements GroupAdminRepository {
       });
     }
     return users;
+  }
+
+  @Override
+  public ArrayList<GroupMember> getGroupMembers(Organization group)
+      throws InternalError, IOException {
+    String requestData = groupAdapter.toGetUsersWithParams(group);
+    String getAllRequest = String.format("{\"id\": 0, \"method\": \"user_find/1\", \"params\": %s}",
+        requestData);
+    JsonNode requestedField = makeRequestForGroupMembers(getAllRequest);
+    ArrayList<GroupMember> groupMembers = new ArrayList<>();
+
+    requestedField.forEach(user -> {
+      try {
+        User usr = new User();
+        usr.setUsername(user.get("uid").get(0).asText());
+        if (!usr.getUsername().equals("bigboss")) {
+          GroupMember groupMember = new GroupMember();
+          groupMember.setUsername(user.get("uid").get(0).asText());
+          groupMember.setFirstName(user.get("givenname").get(0).asText());
+          groupMember.setLastName(user.get("sn").get(0).asText());
+          groupMember.setEmail(user.get("mail").get(0).asText());
+          groupMember.setAdmin(isGroupManager(usr, group));
+          if (user.get("uid").get(0).asText().startsWith("invited")) {
+            if (getGroupDescription(group).equals("invitedUsers")) {
+              groupMembers.add(groupMember);
+            }
+          } else {
+            groupMembers.add(groupMember);
+          }
+        }
+      } catch (InternalError e) {
+        e.printStackTrace();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+
+    });
+    return groupMembers;
+  }
+
+  @Override
+  public String getGroupDescription(Organization group) throws InternalError, IOException {
+    String requestData = groupAdapter.toGetWithAllFlag(group);
+    String getAllRequest = String.format("{\"id\": 0, \"method\": \"group_show/1\", \"params\": %s}",
+        requestData);
+    JsonNode requestedField = makeRequestForGroupField(getAllRequest, "description");
+    if (requestedField != null) {
+      return requestedField.get(0).asText();
+    }
+    return null;
   }
 
 }

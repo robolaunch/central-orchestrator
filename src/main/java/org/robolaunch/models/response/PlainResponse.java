@@ -1,6 +1,8 @@
 package org.robolaunch.models.response;
 
-public class PlainResponse {
+import java.io.Serializable;
+
+public class PlainResponse implements Serializable {
    private String message;
    private Boolean success;
 

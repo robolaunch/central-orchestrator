@@ -37,9 +37,9 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
       throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException {
     String queryStr = "{InitializeRoboticsCloud(where: {and: [{organization: {name: {equal:\""
         + organization.getName()
-        + "\"}}},{departmentName: {equal:\""
+        + "\"}}},{teamId: {equal:\""
         + teamId
-        + "\"}}]}) {id cloudInstanceName region departmentName diskSize instanceType userStage}}";
+        + "\"}}]}) {id cloudInstanceName region teamId diskSize instanceType userStage}}";
 
     Response response = graphqlClient.executeSync(queryStr);
 

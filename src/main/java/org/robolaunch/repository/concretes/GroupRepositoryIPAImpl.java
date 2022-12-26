@@ -168,9 +168,11 @@ public class GroupRepositoryIPAImpl implements GroupRepository {
     }
 
     @Override
-    public void addSubgroupToGroup(Organization organization, DepartmentBasic department)
+    public void addSubgroupToGroup(Organization organization, String teamName)
             throws InternalError, IOException {
-        String groupRequest = groupAdapter.toAssignSubgroup(organization, department);
+        DepartmentBasic departmentBasic = new DepartmentBasic();
+        departmentBasic.setName(teamName);
+        String groupRequest = groupAdapter.toAssignSubgroup(organization, departmentBasic);
         String addRequest = String.format("{\"id\": 0, \"method\": \"group_add_member/1\", \"params\": %s}",
                 groupRequest);
         makeRequest(addRequest);
@@ -278,7 +280,6 @@ public class GroupRepositoryIPAImpl implements GroupRepository {
         String getRequest = String.format("{\"id\": 0, \"method\": \"group_show/1\", \"params\": %s}",
                 requestGroup);
         JsonNode organizationNode = makeRequestForGroup(getRequest);
-        System.out.println("Organization: " + organizationNode);
         return organizationNode;
     }
 
@@ -295,18 +296,20 @@ public class GroupRepositoryIPAImpl implements GroupRepository {
             try {
                 User usr = new User();
                 usr.setUsername(user.get("uid").get(0).asText());
-                GroupMember groupMember = new GroupMember();
-                groupMember.setUsername(user.get("uid").get(0).asText());
-                groupMember.setFirstName(user.get("givenname").get(0).asText());
-                groupMember.setLastName(user.get("sn").get(0).asText());
-                groupMember.setEmail(user.get("mail").get(0).asText());
-                groupMember.setAdmin(isGroupManager(usr, group));
-                if (user.get("uid").get(0).asText().startsWith("invited")) {
-                    if (getGroupDescription(group).equals("invitedUsers")) {
+                if (!usr.getUsername().equals("bigboss")) {
+                    GroupMember groupMember = new GroupMember();
+                    groupMember.setUsername(user.get("uid").get(0).asText());
+                    groupMember.setFirstName(user.get("givenname").get(0).asText());
+                    groupMember.setLastName(user.get("sn").get(0).asText());
+                    groupMember.setEmail(user.get("mail").get(0).asText());
+                    groupMember.setAdmin(isGroupManager(usr, group));
+                    if (user.get("uid").get(0).asText().startsWith("invited")) {
+                        if (getGroupDescription(group).equals("invitedUsers")) {
+                            groupMembers.add(groupMember);
+                        }
+                    } else {
                         groupMembers.add(groupMember);
                     }
-                } else {
-                    groupMembers.add(groupMember);
                 }
             } catch (InternalError e) {
                 e.printStackTrace();

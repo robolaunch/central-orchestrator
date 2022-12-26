@@ -6,7 +6,6 @@ public class Repository implements Serializable {
   private String name;
   private String url;
   private String branch;
-  private String path;
 
   public Repository() {
   }
@@ -33,14 +32,6 @@ public class Repository implements Serializable {
 
   public void setBranch(String branch) {
     this.branch = branch;
-  }
-
-  public String getPath() {
-    return path;
-  }
-
-  public void setPath(String path) {
-    this.path = path;
   }
 
 }

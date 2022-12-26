@@ -3,22 +3,34 @@ package org.robolaunch.repository.abstracts;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 
-import org.robolaunch.models.Organization;
-import org.robolaunch.models.Workspace;
+import org.robolaunch.models.request.RequestCreateRobot;
+import org.robolaunch.models.request.RobotBuildManager;
+import org.robolaunch.models.request.RobotDevSuite;
+import org.robolaunch.models.request.RobotLaunchManager;
 
 import io.kubernetes.client.openapi.ApiException;
 import io.minio.errors.MinioException;
 
 public interface RobotRepository {
-  public void makeRobotsPassive(String bufferName) throws IOException, ApiException, InterruptedException;
 
-  public void makeRobotsActive(String bufferName) throws IOException, ApiException, InterruptedException;
+        public void createRobot(RequestCreateRobot requestCreateRobot, String token)
+                        throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
+                        IOException, ApiException, InterruptedException;
 
-  public void deployCloudRobot(Organization organization, String cloudInstanceName, String robotName,
-      String distro, Integer storage, String cpu,
-      String memory, List<Workspace> workspaces, String departmentName)
-      throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
-      IOException;
+        public void createRobotBuildManager(RobotBuildManager robotBuildManager, String bufferName, String token)
+                        throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
+                        IOException, ApiException, InterruptedException;
+
+        public void createRobotLaunchManager(RobotLaunchManager robotLaunchManager, String bufferName, String token)
+                        throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
+                        IOException, ApiException, InterruptedException;
+
+        public void createRobotDevelopmentSuite(RobotDevSuite robotDevSuite, String bufferName, String token)
+                        throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
+                        IOException, ApiException, InterruptedException;
+
+        public void makeRobotsPassive(String bufferName) throws IOException, ApiException, InterruptedException;
+
+        public void makeRobotsActive(String bufferName) throws IOException, ApiException, InterruptedException;
 }

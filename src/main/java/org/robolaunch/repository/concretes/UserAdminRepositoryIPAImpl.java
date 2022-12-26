@@ -8,6 +8,7 @@ import java.net.CookieManager;
 import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -18,15 +19,13 @@ import org.robolaunch.core.abstracts.RandomGenerator;
 import org.robolaunch.core.abstracts.UserAdapter;
 import org.robolaunch.core.concretes.RandomGeneratorImpl;
 import org.robolaunch.exception.ApplicationException;
-import org.robolaunch.exception.UserNotFoundException;
 import org.robolaunch.models.InvitedUser;
+import org.robolaunch.models.Organization;
 import org.robolaunch.models.User;
 import org.robolaunch.repository.abstracts.UserAdminRepository;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 
 @ApplicationScoped
 public class UserAdminRepositoryIPAImpl implements UserAdminRepository {
@@ -85,7 +84,6 @@ public class UserAdminRepositoryIPAImpl implements UserAdminRepository {
 
   @Override
   public Number makeRequestWithMail(String body) throws IOException, InternalError {
-    System.out.println("Definitely enters...");
     URL url = new URL(this.freeIpaURL + "/ipa/session/json");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod("POST");
@@ -104,14 +102,12 @@ public class UserAdminRepositoryIPAImpl implements UserAdminRepository {
     while ((line = bufferedReader.readLine()) != null) {
       result += line;
     }
-    System.out.println("Saf result: " + result);
     ObjectMapper mapper = new ObjectMapper();
     JsonNode actualObj = mapper.readTree(result);
     wr.close();
     if (!result.contains("\"error\": null")) {
       throw new InternalError("Error happened when making request for given body:" + body);
     }
-    System.out.println(actualObj.get("result").get("result"));
     return actualObj.get("result").get("result").size();
 
   }
@@ -119,7 +115,6 @@ public class UserAdminRepositoryIPAImpl implements UserAdminRepository {
   @Override
   public Boolean doesEmailExist(String email) throws InternalError, IOException {
     String getRequest = userAdapter.findByEmail(email);
-    System.out.println("Get request: " + getRequest);
     String body = String.format("{\"id\": 0, \"method\": \"user_find/1\", \"params\": %s}", getRequest);
     if (makeRequestWithMail(body).intValue() > 0) {
       return true;
@@ -246,9 +241,7 @@ public class UserAdminRepositoryIPAImpl implements UserAdminRepository {
     String getRequest = userAdapter.findByEmail(email);
     String body = String.format("{\"id\": 0, \"method\": \"user_find/1\", \"params\": %s}", getRequest);
     JsonNode userJson = makeRequestForUser(body);
-    System.out.println("User json: " + userJson);
     if (userJson.get("uid") == null) {
-      System.out.println("Enters");
       return null;
     }
     User user = new User();
@@ -330,6 +323,33 @@ public class UserAdminRepositoryIPAImpl implements UserAdminRepository {
     user.setEmail(userJson.get("mail").get(0).asText());
 
     return user;
+  }
+
+  @Override
+  public ArrayList<Organization> getOrganizations(User user) throws IOException {
+    String getRequest = userAdapter.toGetUserWithAll(user);
+    String body = String.format("{\"id\": 0, \"method\": \"user_find/1\", \"params\": %s}", getRequest);
+    JsonNode requestedField = makeRequestForGroups(body);
+    ArrayList<Organization> organizations = new ArrayList<>();
+
+    requestedField.forEach(organization -> {
+      if (organization.asText().equals("ipausers")
+          || organization.asText().equals("fm_admins")
+          || organization.asText().equals("fm_users")
+          || organization.asText().contains("-dep-")) {
+      } else {
+        Organization org = new Organization();
+        org.setName(organization.asText());
+        if (organization.asText().startsWith("org-")) {
+          org.setEnterprise(false);
+        } else {
+          org.setEnterprise(true);
+        }
+        organizations.add(org);
+      }
+
+    });
+    return organizations;
   }
 
 }

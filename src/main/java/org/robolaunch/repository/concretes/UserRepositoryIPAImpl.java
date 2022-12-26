@@ -86,7 +86,6 @@ public class UserRepositoryIPAImpl implements UserRepository {
 
     @Override
     public Number makeRequestWithMail(String body) throws IOException, InternalError {
-        System.out.println("Definitely enters...");
         URL url = new URL(this.freeIpaURL + "/ipa/session/json");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
@@ -105,14 +104,12 @@ public class UserRepositoryIPAImpl implements UserRepository {
         while ((line = bufferedReader.readLine()) != null) {
             result += line;
         }
-        System.out.println("Saf result: " + result);
         ObjectMapper mapper = new ObjectMapper();
         JsonNode actualObj = mapper.readTree(result);
         wr.close();
         if (!result.contains("\"error\": null")) {
             throw new InternalError("Error happened when making request for given body:" + body);
         }
-        System.out.println(actualObj.get("result").get("result"));
         return actualObj.get("result").get("result").size();
 
     }
@@ -245,7 +242,6 @@ public class UserRepositoryIPAImpl implements UserRepository {
     @Override
     public Boolean doesEmailExist(String email) throws InternalError, IOException {
         String getRequest = userAdapter.findByEmail(email);
-        System.out.println("Get request: " + getRequest);
         String body = String.format("{\"id\": 0, \"method\": \"user_find/1\", \"params\": %s}", getRequest);
         if (makeRequestWithMail(body).intValue() > 0) {
             return true;

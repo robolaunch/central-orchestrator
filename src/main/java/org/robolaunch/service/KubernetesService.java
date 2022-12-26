@@ -25,9 +25,9 @@ public class KubernetesService {
   @LoggerName("kubernetesService")
   Logger kubernetesLogger;
 
-  public void getCloudInstances(Organization organization, String departmentName) {
+  public void getCloudInstances(Organization organization, String teamId) {
     try {
-      kubernetesRepository.getCloudInstances(organization, departmentName);
+      kubernetesRepository.getCloudInstances(organization, teamId);
     } catch (Exception e) {
       kubernetesLogger.error("Error while getting cloud instances from kubernetes buffer", e);
     }

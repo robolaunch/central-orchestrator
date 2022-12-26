@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_v4xScF0rEDuEipdlCjEH4Q" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_WA5QwWGlEDuuXpel35Qpgw" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_organizationItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="_responseOrganizationMembersItem" structureRef="org.robolaunch.models.response.ResponseOrganizationMembers"/>
   <bpmn2:itemDefinition id="__F06C0537-CB12-4099-A99D-87B546264395_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
@@ -10,8 +10,8 @@
   <bpmn2:interface id="_18CC716C-F9AB-4704-B4C3-5EED4DAEF730_ServiceInterface" name="org.robolaunch.service.GroupService" implementationRef="org.robolaunch.service.GroupService">
     <bpmn2:operation id="_18CC716C-F9AB-4704-B4C3-5EED4DAEF730_ServiceOperation" name="grantAdminPrivileges" implementationRef="grantAdminPrivileges"/>
   </bpmn2:interface>
-  <bpmn2:collaboration id="_29248BC4-AE06-42D7-B495-5E92AE1C0C7E" name="Default Collaboration">
-    <bpmn2:participant id="_7BC77E19-96E0-4B0E-85AA-53C837974ACB" name="Pool Participant" processRef="getOrganizationUsers"/>
+  <bpmn2:collaboration id="_559FDC93-87E7-427A-B304-0C89D088F66C" name="Default Collaboration">
+    <bpmn2:participant id="_68B54016-BC94-4190-9F1C-20D61FAFC980" name="Pool Participant" processRef="getOrganizationUsers"/>
   </bpmn2:collaboration>
   <bpmn2:process id="getOrganizationUsers" drools:packageName="org.robolaunch.kogito.organization" drools:version="1.0" drools:adHoc="false" name="getOrganizationUsers" isExecutable="true" processType="Public">
     <bpmn2:property id="organization" itemSubjectRef="_organizationItem" name="organization">
@@ -166,7 +166,7 @@
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_v4xScF0rEDuEipdlCjEH4Q</bpmn2:source>
-    <bpmn2:target>_v4xScF0rEDuEipdlCjEH4Q</bpmn2:target>
+    <bpmn2:source>_WA5QwWGlEDuuXpel35Qpgw</bpmn2:source>
+    <bpmn2:target>_WA5QwWGlEDuuXpel35Qpgw</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>

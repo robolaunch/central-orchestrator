@@ -2,11 +2,14 @@ package org.robolaunch.repository.abstracts;
 
 import java.io.IOException;
 import java.net.HttpCookie;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import org.robolaunch.exception.ApplicationException;
 import org.robolaunch.models.DepartmentBasic;
+import org.robolaunch.models.GroupMember;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.User;
 
@@ -20,7 +23,7 @@ public interface GroupAdminRepository {
 
         List<HttpCookie> getCurrentCookies();
 
-        void clearCookies();
+        void clearCookies() throws URISyntaxException;
 
         void addUserToGroup(User user, Organization group)
                         throws IOException, InternalError, ApplicationException;
@@ -39,7 +42,7 @@ public interface GroupAdminRepository {
         void createGroup(Organization organization)
                         throws InternalError, IOException, ApplicationException;
 
-        String createSubgroup(Organization organization, DepartmentBasic department)
+        String createSubgroup(Organization organization, String teamName)
                         throws InternalError, IOException, ApplicationException;
 
         void deleteGroup(Organization group)
@@ -48,7 +51,7 @@ public interface GroupAdminRepository {
         void removeUserManagerFromGroup(User user, Organization organization)
                         throws InternalError, IOException, ApplicationException;
 
-        void changeDepartmentName(Organization organization, Organization department, String newName)
+        void changeTeamName(Organization organization, String oldTeamName, String newTeamName)
                         throws InternalError, IOException, ApplicationException;
 
         String getGroupNameFromDescription(Organization organization, String description)
@@ -60,7 +63,16 @@ public interface GroupAdminRepository {
         Boolean isGroupManager(User user, Organization group)
                         throws InternalError, IOException;
 
+        Boolean isGroupMember(User user, Organization group)
+                        throws InternalError, IOException;
+
         Set<User> getUsers(Organization group, String fieldName)
+                        throws InternalError, IOException;
+
+        ArrayList<GroupMember> getGroupMembers(Organization group)
+                        throws InternalError, IOException;
+
+        String getGroupDescription(Organization group)
                         throws InternalError, IOException;
 
 }

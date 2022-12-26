@@ -19,6 +19,7 @@ import org.robolaunch.models.Organization;
 import org.robolaunch.models.Response;
 import org.robolaunch.models.Result;
 import org.robolaunch.models.User;
+import org.robolaunch.models.response.ResponseTeamMembers;
 import org.robolaunch.repository.abstracts.GroupAdminRepository;
 import org.robolaunch.repository.abstracts.GroupRepository;
 import org.robolaunch.repository.abstracts.UserAdminRepository;
@@ -101,13 +102,8 @@ public class InviteService {
     try {
       Boolean isInvited = false;
       Boolean isTokenValid = false;
-      DepartmentBasic department = new DepartmentBasic();
-      department.setName("invitedUsers");
-      ArrayList<GroupMember> members = departmentService.getDepartmentUsers(organization, department);
-      System.out.println("Members: " + members.size());
-      System.out.println("Token: " + token);
-      System.out.println("Organization: " + organization.getName());
-      Iterator<GroupMember> it = members.iterator();
+      ResponseTeamMembers members = departmentService.getTeamUsers(organization, "invitedUsers");
+      Iterator<GroupMember> it = members.getData().iterator();
       while (it.hasNext()) {
         GroupMember member = it.next();
         String[] lastNameParts = member.getLastName().split(",");
@@ -115,7 +111,6 @@ public class InviteService {
           String[] tokenParts = lastNameParts[i].split("&");
           if (tokenParts[0].equals(organization.getName()) && tokenParts[2].equals(token)
               && tokenParts[3].equals("pending")) {
-            System.out.println("Enters");
             isInvited = true;
             isTokenValid = true;
             break;
@@ -142,10 +137,8 @@ public class InviteService {
       if (email != user.getEmail()) {
         return new Response(false, UUID.randomUUID().toString());
       }
-      DepartmentBasic department = new DepartmentBasic();
-      department.setName("invitedUsers");
-      ArrayList<GroupMember> members = departmentService.getDepartmentUsers(organization, department);
-      Iterator<GroupMember> it = members.iterator();
+      ResponseTeamMembers members = departmentService.getTeamUsers(organization, "invitedUsers");
+      Iterator<GroupMember> it = members.getData().iterator();
       while (it.hasNext()) {
         GroupMember member = it.next();
         String[] lastNameParts = member.getLastName().split(",");
@@ -153,7 +146,6 @@ public class InviteService {
           String[] tokenParts = lastNameParts[i].split("&");
           if (tokenParts[0].equals(organization.getName()) && tokenParts[2].equals(token)
               && tokenParts[3].equals("pending")) {
-            System.out.println("Enters");
             isInvited = true;
             isTokenValid = true;
             break;
@@ -188,9 +180,7 @@ public class InviteService {
       throws ApplicationException {
     try {
       User theUser = userRepository.getUserByFirstName(email);
-      DepartmentBasic department = new DepartmentBasic();
-      department.setName("invitedUsers");
-      departmentService.deleteUserFromDepartment(theUser, organization, department);
+      departmentService.deleteUserFromTeam(theUser, organization, "invitedUsers");
     } catch (Exception e) {
       throw new ApplicationException("Error deleting user from invited users group.");
     }
@@ -200,9 +190,7 @@ public class InviteService {
       throws ApplicationException {
     try {
       User theUser = userRepository.getUserByFirstName(user.getEmail());
-      DepartmentBasic department = new DepartmentBasic();
-      department.setName("invitedUsers");
-      departmentService.deleteUserFromDepartment(theUser, organization, department);
+      departmentService.deleteUserFromTeam(theUser, organization, "invitedUsers");
       return new Response(true, UUID.randomUUID().toString());
     } catch (Exception e) {
       return new Response(false, UUID.randomUUID().toString());
@@ -249,7 +237,7 @@ public class InviteService {
       DepartmentBasic department = new DepartmentBasic();
       department.setName("invitedUsers");
 
-      departmentService.addUserToDepartment(user, organization, department);
+      departmentService.addUserToTeam(user, organization, department.getName());
       inviteLogger.info("Invited user record added to department.");
       return new Response(true, UUID.randomUUID().toString());
     } catch (Exception e) {
@@ -298,7 +286,7 @@ public class InviteService {
       userAdminRepository.updateUser(user.getUsername(), user);
       DepartmentBasic department = new DepartmentBasic();
       department.setName("invitedUsers");
-      departmentService.addUserToDepartment(user, organization, department);
+      departmentService.addUserToTeam(user, organization, department.getName());
       inviteLogger.info("Invited user record updated.");
     } catch (Exception e) {
       inviteLogger.error("Error updating invited user record: " + e.getMessage());
@@ -314,7 +302,7 @@ public class InviteService {
       userAdminRepository.updateUser(user.getUsername(), user);
       DepartmentBasic department = new DepartmentBasic();
       department.setName("invitedUsers");
-      departmentService.addUserToDepartment(user, organization, department);
+      departmentService.addUserToTeam(user, organization, department.getName());
       inviteLogger.info("Invited user record updated.");
     } catch (Exception e) {
       inviteLogger.error("Error updating invited user record: " + e.getMessage());
@@ -325,11 +313,8 @@ public class InviteService {
       GroupMember groupMember) throws ApplicationException {
     Boolean isDuplicate = false;
     try {
-      DepartmentBasic department = new DepartmentBasic();
-      department.setName("invitedUsers");
-      ArrayList<GroupMember> members = departmentService.getDepartmentUsers(organization, department);
-      System.out.println("Members: " + members.size());
-      Iterator<GroupMember> it = members.iterator();
+      ResponseTeamMembers members = departmentService.getTeamUsers(organization, "invitedUsers");
+      Iterator<GroupMember> it = members.getData().iterator();
       while (it.hasNext()) {
         GroupMember member = it.next();
         String[] lastNameParts = member.getLastName().split(",");
@@ -353,9 +338,7 @@ public class InviteService {
       throws ApplicationException {
     try {
       String email = user.getEmail();
-      System.out.println("The email: " + email);
       User invitedUserRecord = userRepository.getUserByFirstName(email);
-      System.out.println("The invited user record: " + invitedUserRecord.getLastName());
       String[] lastNameParts = invitedUserRecord.getLastName().split(",");
       for (int i = 0; i < lastNameParts.length; i++) {
         String[] tokenParts = lastNameParts[i].split("&");
@@ -386,9 +369,7 @@ public class InviteService {
       throws ApplicationException {
     try {
       String email = user.getEmail();
-      System.out.println("The email: " + email);
       User invitedUserRecord = userRepository.getUserByFirstName(email);
-      System.out.println("The invited user record: " + invitedUserRecord.getLastName());
       String[] lastNameParts = invitedUserRecord.getLastName().split(",");
       for (int i = 0; i < lastNameParts.length; i++) {
         String[] tokenParts = lastNameParts[i].split("&");
@@ -443,11 +424,7 @@ public class InviteService {
 
   public String createInvitedUsersDepartment(Organization organization) throws ApplicationException {
     try {
-      inviteLogger.info("Creating invited users department.");
-      DepartmentBasic managersDepartment = new DepartmentBasic();
-      managersDepartment.setName("invitedUsers");
-
-      String invitedUsersGroupName = groupAdminRepository.createSubgroup(organization, managersDepartment);
+      String invitedUsersGroupName = groupAdminRepository.createSubgroup(organization, "invitedUsers");
 
       inviteLogger.info("invitedUsers group created.");
       return invitedUsersGroupName;
@@ -459,12 +436,10 @@ public class InviteService {
     }
   }
 
-  public Response addInvitedUsersDepartmentAsMember(Organization organization, String invitedUsersGroupName)
+  public Response addInvitedUsersDepartmentAsMember(Organization organization, String teamName)
       throws ApplicationException {
     try {
-      DepartmentBasic dept = new DepartmentBasic();
-      dept.setName(invitedUsersGroupName);
-      groupRepository.addSubgroupToGroup(organization, dept);
+      groupRepository.addSubgroupToGroup(organization, teamName);
 
       inviteLogger.info("Managers group added as member.");
       return new Response(true, UUID.randomUUID().toString());
@@ -475,12 +450,11 @@ public class InviteService {
     }
   }
 
-  public Response addFounderToInvitedUsersDepartment(Organization organization, String invitedUsersGroupName)
+  public Response addFounderToInvitedUsersTeam(Organization organization, String invitedUsersGroupName)
       throws InternalError, IOException, ApplicationException {
     try {
       DepartmentBasic dept = new DepartmentBasic();
       dept.setName(invitedUsersGroupName);
-      System.out.println("The invited users group name: " + invitedUsersGroupName);
       groupAdminRepository.setInitialManagersForDepartment(organization, dept);
       inviteLogger.info("Founder added to managers group.");
       return new Response(true, UUID.randomUUID().toString());
