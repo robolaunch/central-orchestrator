@@ -50,7 +50,8 @@ public class RobotRepositoryImpl implements RobotRepository {
 
         @Override
         public void makeRobotsPassive(String bufferName, String region)
-                        throws IOException, ApiException, InterruptedException {
+                        throws IOException, ApiException, InterruptedException, InvalidKeyException,
+                        NoSuchAlgorithmException, IllegalArgumentException, MinioException {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
                                 region);
                 DynamicKubernetesApi robotsApi = new DynamicKubernetesApi("robot.roboscale.io", "v1alpha1",
@@ -69,7 +70,8 @@ public class RobotRepositoryImpl implements RobotRepository {
         @Override
         public void makeRobotsActive(
                         String bufferName, String region)
-                        throws IOException, ApiException, InterruptedException {
+                        throws IOException, ApiException, InterruptedException, InvalidKeyException,
+                        NoSuchAlgorithmException, IllegalArgumentException, MinioException {
 
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
                                 region);
