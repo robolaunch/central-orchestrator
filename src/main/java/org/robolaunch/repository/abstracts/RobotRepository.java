@@ -14,23 +14,28 @@ import io.minio.errors.MinioException;
 
 public interface RobotRepository {
 
-        public void createRobot(RequestCreateRobot requestCreateRobot, String token)
+        public void createRobot(RequestCreateRobot requestCreateRobot, String token, String region)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException;
 
-        public void createRobotBuildManager(RobotBuildManager robotBuildManager, String bufferName, String token)
+        public void createRobotBuildManager(RobotBuildManager robotBuildManager, String bufferName, String token,
+                        String region)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException;
 
-        public void createRobotLaunchManager(RobotLaunchManager robotLaunchManager, String bufferName, String token)
+        public void createRobotLaunchManager(RobotLaunchManager robotLaunchManager, String bufferName, String token,
+                        String region)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException;
 
-        public void createRobotDevelopmentSuite(RobotDevSuite robotDevSuite, String bufferName, String token)
+        public void createRobotDevelopmentSuite(RobotDevSuite robotDevSuite, String bufferName, String token,
+                        String region)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException;
 
-        public void makeRobotsPassive(String bufferName) throws IOException, ApiException, InterruptedException;
+        public void makeRobotsPassive(String bufferName, String region)
+                        throws IOException, ApiException, InterruptedException;
 
-        public void makeRobotsActive(String bufferName) throws IOException, ApiException, InterruptedException;
+        public void makeRobotsActive(String bufferName, String region)
+                        throws IOException, ApiException, InterruptedException;
 }

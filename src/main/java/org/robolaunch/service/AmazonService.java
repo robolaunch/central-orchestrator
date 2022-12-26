@@ -21,9 +21,9 @@ public class AmazonService {
   @LoggerName("amazonService")
   Logger amazonLogger;
 
-  public Response stopInstance(String nodeName) {
+  public Response stopInstance(String nodeName, String region) {
     try {
-      amazonRepository.stopInstance(nodeName);
+      amazonRepository.stopInstance(nodeName, region);
       amazonLogger.info("Instance stopped");
       return new Response(true, "Instance stop!.");
 
@@ -33,9 +33,9 @@ public class AmazonService {
     }
   }
 
-  public Response startInstance(String nodeName) {
+  public Response startInstance(String nodeName, String region) {
     try {
-      amazonRepository.startInstance(nodeName);
+      amazonRepository.startInstance(nodeName, region);
       amazonLogger.info("Instance started");
       return new Response(true, "Instance started");
     } catch (Exception e) {
@@ -44,9 +44,9 @@ public class AmazonService {
     }
   }
 
-  public Boolean isInstanceStopped(String nodeName) {
+  public Boolean isInstanceStopped(String nodeName, String region) {
     try {
-      Boolean isStopped = amazonRepository.isInstanceStopped(nodeName);
+      Boolean isStopped = amazonRepository.isInstanceStopped(nodeName, region);
       return isStopped;
     } catch (Exception e) {
       amazonLogger.error("Instance could not be started");

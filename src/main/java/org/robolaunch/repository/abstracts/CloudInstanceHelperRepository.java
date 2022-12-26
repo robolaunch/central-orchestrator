@@ -17,103 +17,113 @@ import io.minio.errors.ErrorResponseException;
 import io.minio.errors.InsufficientDataException;
 import io.minio.errors.InternalException;
 import io.minio.errors.InvalidResponseException;
+import io.minio.errors.MinioException;
 import io.minio.errors.ServerException;
 import io.minio.errors.XmlParserException;
 import io.smallrye.graphql.execution.ExecutionException;
 
 public interface CloudInstanceHelperRepository {
-        public String getCloudInstanceIP(String bufferName) throws ApiException;
+        public String getCloudInstanceIP(String bufferName, String region) throws ApiException;
 
         public String generateBufferName();
 
-        public void bufferCall(String instanceType) throws MalformedURLException, IOException;
+        public void bufferCall(String instanceType, String region) throws MalformedURLException, IOException;
 
-        public void CIOperationCall(String processId, String operation) throws IOException;
+        public void CIOperationCall(String processId, String operation, String region) throws IOException;
 
-        public String getGeneratedMachineName(String bufferName);
+        public String getGeneratedMachineName(String bufferName, String region);
 
-        public Boolean nodeRefChecker(String bufferName, String machineName) throws ApiException;
+        public Boolean nodeRefChecker(String bufferName, String machineName, String region) throws ApiException;
 
-        public Boolean isVirtualClusterReady(String bufferName);
+        public Boolean isVirtualClusterReady(String bufferName, String region);
 
-        public Integer getBufferingVirtualClusterCount(String instanceType)
+        public Integer getBufferingVirtualClusterCount(String instanceType, String region)
                         throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException;
 
-        public Integer getBufferedVirtualClusterCount(String instanceType);
+        public Integer getBufferedVirtualClusterCount(String instanceType, String region);
 
-        public String selectBufferedVirtualCluster(Integer vcCount)
+        public String selectBufferedVirtualCluster(Integer vcCount, String region)
                         throws KubectlException, IOException, InterruptedException;
 
-        public String getNodeName(String machineName);
+        public String getNodeName(String machineName, String region);
 
-        public String selectNode(String bufferName)
-                        throws ApiException, KubectlException, IOException, InterruptedException;
+        public String selectNode(String bufferName, String region)
+                        throws ApiException, KubectlException, IOException, InterruptedException, InvalidKeyException,
+                        NoSuchAlgorithmException, IllegalArgumentException, MinioException;
 
-        public Boolean isStatefulSetsUp(String namespaceName) throws ApiException, IOException;
+        public Boolean isStatefulSetsUp(String namespaceName, String region) throws ApiException, IOException;
 
-        public Boolean isStatefulSetsDown(String namespaceName) throws ApiException;
+        public Boolean isStatefulSetsDown(String namespaceName, String region) throws ApiException;
 
-        public Boolean isCoreDNSDeploymentUp(String bufferName) throws IOException, ApiException, InterruptedException;
+        public Boolean isCoreDNSDeploymentUp(String bufferName, String region)
+                        throws IOException, ApiException, InterruptedException;
 
-        public Boolean isCertManagerReady(String bufferName)
+        public Boolean isCertManagerReady(String bufferName, String region)
                         throws ApiException, IOException, InterruptedException;
 
-        public Boolean isNodeUnschedulable(String nodeName) throws ApiException;
+        public Boolean isNodeUnschedulable(String nodeName, String region) throws ApiException;
 
-        public Boolean isNodeReady(String nodeName) throws ApiException;
+        public Boolean isNodeReady(String nodeName, String region) throws ApiException;
 
-        public Boolean isSubnetUsed(String bufferName) throws InternalError, IOException, ApiException;
+        public Boolean isSubnetUsed(String bufferName, String region) throws InternalError, IOException, ApiException;
 
         public String findNode(String bufferName, Organization organization, String teamId,
-                        String cloudInstanceName) throws ApiException;
+                        String cloudInstanceName, String region) throws ApiException;
 
-        public Boolean isMachineCreated(String bufferName);
+        public Boolean isMachineCreated(String bufferName, String region);
 
         public Boolean healthCheck(Organization organization, String teamId, String cloudInstanceName,
-                        String nodeName);
+                        String nodeName, String region);
 
-        public void deleteDNSRecord(Organization organization, String nodeName)
+        public void deleteDNSRecord(Organization organization, String nodeName, String region)
                         throws ApiException, JsonProcessingException, InternalError, ApplicationException, IOException;
 
-        public void deleteClusterVersion(String bufferName);
+        public void deleteClusterVersion(String bufferName, String region);
 
-        public void deleteOAuth2ProxyResources(String bufferName)
+        public void deleteOAuth2ProxyResources(String bufferName, String region)
                         throws ApiException, InvalidKeyException, ErrorResponseException, InsufficientDataException,
                         InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
                         XmlParserException, IllegalArgumentException, IOException, InterruptedException;
 
-        public void deleteVirtualCluster(String bufferName)
-                        throws KubectlException, IOException, ApiException, InterruptedException;
+        public void deleteVirtualCluster(String bufferName, String region)
+                        throws KubectlException, IOException, ApiException, InterruptedException, InvalidKeyException,
+                        NoSuchAlgorithmException, IllegalArgumentException, MinioException;
 
-        public void deleteSubnet(String bufferName) throws InternalError, IOException, ApiException;
+        public void deleteSubnet(String bufferName, String region) throws InternalError, IOException, ApiException;
 
-        public void deleteMachineDeployment(String bufferName)
-                        throws IOException, KubectlException, ApiException, InterruptedException;
+        public void deleteMachineDeployment(String bufferName, String region)
+                        throws IOException, KubectlException, ApiException, InterruptedException, InvalidKeyException,
+                        NoSuchAlgorithmException, IllegalArgumentException, MinioException;
 
-        public void deleteOrganizationLabelsFromSuperCluster(String nodeName)
-                        throws IOException, KubectlException, ApiException, InterruptedException;
+        public void deleteOrganizationLabelsFromSuperCluster(String nodeName, String region)
+                        throws IOException, KubectlException, ApiException, InterruptedException, InvalidKeyException,
+                        NoSuchAlgorithmException, IllegalArgumentException, MinioException;
 
-        public void deleteWorkerLabelFromNode(String nodeName)
-                        throws IOException, KubectlException, ApiException, InterruptedException;
+        public void deleteWorkerLabelFromNode(String nodeName, String region)
+                        throws IOException, KubectlException, ApiException, InterruptedException, InvalidKeyException,
+                        NoSuchAlgorithmException, IllegalArgumentException, MinioException;
 
-        public void deleteVirtualClusterNodes(String bufferName)
+        public void deleteVirtualClusterNodes(String bufferName, String region)
                         throws IOException, ApiException, InterruptedException, KubectlException;
 
-        public String getTeamIdFromProcessId(String processId)
+        public String getTeamIdFromProcessId(String processId, String region)
                         throws java.util.concurrent.ExecutionException, InterruptedException;
 
-        public String convertJsonStringToYamlString(String jsonString) throws JsonProcessingException, IOException;
+        public String convertJsonStringToYamlString(String jsonString)
+                        throws JsonProcessingException, IOException;
 
-        public String getNamespaceNameWithBufferName(String bufferName) throws ApiException;
+        public String getNamespaceNameWithBufferName(String bufferName, String region) throws ApiException;
 
-        public ApiClient getVirtualClusterClientWithBufferName(String bufferName)
+        public ApiClient getVirtualClusterClientWithBufferName(String bufferName, String region)
                         throws IOException, ApiException, InterruptedException;
 
         public Boolean doesCloudInstanceExist(Organization organization, String teamId,
-                        String cloudInstanceName) throws java.util.concurrent.ExecutionException, InterruptedException;
+                        String cloudInstanceName, String region)
+                        throws java.util.concurrent.ExecutionException, InterruptedException;
 
-        public ApiClient userApiClient(String bufferName, String token)
+        public ApiClient userApiClient(String bufferName, String token, String region)
                         throws IOException, ApiException, InterruptedException;
 
-        public ApiClient adminApiClient() throws IOException, ApiException, InterruptedException;
+        public ApiClient adminApiClient(String region) throws IOException, ApiException, InterruptedException,
+                        InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException;
 }

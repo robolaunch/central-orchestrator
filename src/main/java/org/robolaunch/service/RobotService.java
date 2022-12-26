@@ -32,9 +32,9 @@ public class RobotService {
   @LoggerName("robotService")
   Logger robotLogger;
 
-  public Response makeRobotsPassive(String bufferName) {
+  public Response makeRobotsPassive(String bufferName, String region) {
     try {
-      robotRepository.makeRobotsPassive(bufferName);
+      robotRepository.makeRobotsPassive(bufferName, region);
       robotLogger.info("Robots made passive");
       return new Response(true, "Robots are now passive");
     } catch (Exception e) {
@@ -43,9 +43,9 @@ public class RobotService {
     }
   }
 
-  public Response makeRobotsActive(String bufferName) {
+  public Response makeRobotsActive(String bufferName, String region) {
     try {
-      robotRepository.makeRobotsActive(bufferName);
+      robotRepository.makeRobotsActive(bufferName, region);
       robotLogger.info("Robots made active");
 
       return new Response(true, "Robots are now active");
@@ -55,11 +55,11 @@ public class RobotService {
     }
   }
 
-  public PlainResponse createRobotBuildManager(RobotBuildManager robotBuildManager, String bufferName) {
+  public PlainResponse createRobotBuildManager(RobotBuildManager robotBuildManager, String bufferName, String region) {
     PlainResponse plainResponse = new PlainResponse();
     try {
       String token = jwt.getRawToken();
-      robotRepository.createRobotBuildManager(robotBuildManager, bufferName, token);
+      robotRepository.createRobotBuildManager(robotBuildManager, bufferName, token, region);
       robotLogger.info("Robot build manager created");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Robot build manager created.");
@@ -70,11 +70,12 @@ public class RobotService {
     return plainResponse;
   }
 
-  public PlainResponse createRobotLaunchManager(RobotLaunchManager robotLaunchManager, String bufferName) {
+  public PlainResponse createRobotLaunchManager(RobotLaunchManager robotLaunchManager, String bufferName,
+      String region) {
     PlainResponse plainResponse = new PlainResponse();
     try {
       String token = jwt.getRawToken();
-      robotRepository.createRobotLaunchManager(robotLaunchManager, bufferName, token);
+      robotRepository.createRobotLaunchManager(robotLaunchManager, bufferName, token, region);
       robotLogger.info("Robot launch manager created");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Robot launch manager created.");
@@ -85,11 +86,11 @@ public class RobotService {
     return plainResponse;
   }
 
-  public PlainResponse createRobotDevSuite(RobotDevSuite robotDevSuite, String bufferName) {
+  public PlainResponse createRobotDevSuite(RobotDevSuite robotDevSuite, String bufferName, String region) {
     PlainResponse plainResponse = new PlainResponse();
     try {
       String token = jwt.getRawToken();
-      robotRepository.createRobotDevelopmentSuite(robotDevSuite, bufferName, token);
+      robotRepository.createRobotDevelopmentSuite(robotDevSuite, bufferName, token, region);
       robotLogger.info("Robot development suite created");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Robot development suite created.");
@@ -106,7 +107,7 @@ public class RobotService {
       Gson gson = new Gson();
       System.out.println("GOSN: " + gson.toJson(requestCreateRobot));
       String token = jwt.getRawToken();
-      robotRepository.createRobot(requestCreateRobot, token);
+      robotRepository.createRobot(requestCreateRobot, token, requestCreateRobot.getRegion());
       robotLogger.info("Robot created");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Robot created.");
