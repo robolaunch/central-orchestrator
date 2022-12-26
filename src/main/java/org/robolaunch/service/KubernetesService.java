@@ -6,6 +6,7 @@ import javax.inject.Inject;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
 import org.robolaunch.models.Organization;
+import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.repository.abstracts.KubernetesRepository;
 
 import io.quarkus.arc.log.LoggerName;
@@ -25,12 +26,15 @@ public class KubernetesService {
   @LoggerName("kubernetesService")
   Logger kubernetesLogger;
 
-  public void getCloudInstances(Organization organization, String teamId) {
+  public PlainResponse getCloudInstances(Organization organization, String teamId) {
+    PlainResponse response = new PlainResponse();
     try {
       kubernetesRepository.getCloudInstances(organization, teamId);
+      return null;
     } catch (Exception e) {
       kubernetesLogger.error("Error while getting cloud instances from kubernetes buffer", e);
     }
+    return response;
   }
 
 }
