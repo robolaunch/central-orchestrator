@@ -34,8 +34,10 @@ public interface RobotRepository {
                         IOException, ApiException, InterruptedException;
 
         public void makeRobotsPassive(String bufferName, String region)
-                        throws IOException, ApiException, InterruptedException;
+                        throws IOException, ApiException, InterruptedException, InvalidKeyException,
+                        NoSuchAlgorithmException, IllegalArgumentException, MinioException;
 
         public void makeRobotsActive(String bufferName, String region)
-                        throws IOException, ApiException, InterruptedException;
+                        throws IOException, ApiException, InterruptedException, InvalidKeyException,
+                        NoSuchAlgorithmException, IllegalArgumentException, MinioException;
 }
