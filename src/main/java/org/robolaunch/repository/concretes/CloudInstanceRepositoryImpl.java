@@ -1550,6 +1550,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         throws KubectlException, IOException, ApiException, InterruptedException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException {
                 ApiClient apiClient = cloudInstanceHelperRepository.adminApiClient("eu-central-1");
+
                 ModelMapper.addModelMap("tenancy.x-k8s.io", "v1alpha1", "VirtualCluster",
                                 "virtualclusters", true,
                                 V1VirtualCluster.class);
