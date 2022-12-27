@@ -5,7 +5,7 @@ Central Orchestrator collects all other robolaunch components under the same roo
 <div align="center">
   <p align="center">
     <a href="https://github.com/robolaunch/template/releases">
-      <img src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=java&logoColor=white" alt="release">
+      <img src="https://img.shields.io/badge/Java-11-orange" alt="release">
     </a>
     <a href="https://github.com/robolaunch/central-orchestrator/releases">
       <img src="https://img.shields.io/badge/release-v0.0.1-green" alt="release">
