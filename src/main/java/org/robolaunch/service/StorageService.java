@@ -11,6 +11,7 @@ import org.robolaunch.models.Organization;
 import org.robolaunch.models.Response;
 import org.robolaunch.models.request.RequestCreateProvider;
 import org.robolaunch.models.request.RequestCreateRegion;
+import org.robolaunch.models.request.RequestCreateSuperCluster;
 import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.repository.abstracts.GroupRepository;
 import org.robolaunch.repository.abstracts.StorageRepository;
@@ -93,10 +94,12 @@ public class StorageService {
         return plainResponse;
     }
 
-    public PlainResponse createRegion(RequestCreateRegion requestCreateRegion) throws ApplicationException {
+    public PlainResponse createRegion(RequestCreateRegion requestCreateRegion, String provider)
+            throws ApplicationException {
         PlainResponse plainResponse = new PlainResponse();
         try {
-            storageRepository.createRegion(requestCreateRegion);
+            System.out.println("Provider: " + provider);
+            storageRepository.createRegion(requestCreateRegion, provider);
             plainResponse.setSuccess(true);
             plainResponse.setMessage("Region is created");
             storageLogger.info("Region is created: " + requestCreateRegion);
@@ -108,6 +111,29 @@ public class StorageService {
             plainResponse.setSuccess(false);
             plainResponse.setMessage(e.getMessage());
             storageLogger.error("Create region operation is failed: " + e);
+        }
+        return plainResponse;
+    }
+
+    public PlainResponse createSuperCluster(RequestCreateSuperCluster requestCreateSuperCluster, String regionName,
+            String providerName)
+            throws ApplicationException {
+        PlainResponse plainResponse = new PlainResponse();
+        try {
+            System.out.println("Provider: " + providerName);
+            System.out.println("Region: " + regionName);
+            storageRepository.createSuperCluster(requestCreateSuperCluster, regionName, providerName);
+            plainResponse.setSuccess(true);
+            plainResponse.setMessage("Super Cluster is created");
+            storageLogger.info("Super Cluster is created: " + requestCreateSuperCluster);
+        } catch (ApplicationException e) {
+            plainResponse.setSuccess(false);
+            plainResponse.setMessage(e.getMessage());
+            storageLogger.error("Create Super Cluster operation is failed: " + e);
+        } catch (Exception e) {
+            plainResponse.setSuccess(false);
+            plainResponse.setMessage(e.getMessage());
+            storageLogger.error("Create Super Cluster operation is failed: " + e);
         }
         return plainResponse;
     }
