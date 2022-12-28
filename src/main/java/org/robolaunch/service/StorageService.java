@@ -9,6 +9,9 @@ import org.robolaunch.exception.ApplicationException;
 import org.robolaunch.models.Artifact;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.Response;
+import org.robolaunch.models.request.RequestCreateProvider;
+import org.robolaunch.models.request.RequestCreateRegion;
+import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.repository.abstracts.GroupRepository;
 import org.robolaunch.repository.abstracts.StorageRepository;
 
@@ -71,39 +74,42 @@ public class StorageService {
         }
     }
 
-    public Response createPricingFile(Organization organization) {
+    public PlainResponse createProvider(RequestCreateProvider requestCreateProvider) throws ApplicationException {
+        PlainResponse plainResponse = new PlainResponse();
         try {
-            storageRepository.createPricingFile(organization);
-            return new Response(true, UUID.randomUUID().toString());
+            storageRepository.createProvider(requestCreateProvider);
+            plainResponse.setSuccess(true);
+            plainResponse.setMessage("Provider is created");
+            storageLogger.info("Provider is created: " + requestCreateProvider);
+        } catch (ApplicationException e) {
+            plainResponse.setSuccess(false);
+            plainResponse.setMessage(e.getMessage());
+            storageLogger.error("Create provider operation is failed: " + e);
         } catch (Exception e) {
-            storageLogger.error("Start time saving failed: " + e);
-            return new Response(false, UUID.randomUUID().toString());
+            plainResponse.setSuccess(false);
+            plainResponse.setMessage(e.getMessage());
+            storageLogger.error("Create provider operation is failed: " + e);
         }
+        return plainResponse;
     }
 
-    public void addPricingStart(Organization organization, String teamId, String cloudInstanceName, String type) {
+    public PlainResponse createRegion(RequestCreateRegion requestCreateRegion) throws ApplicationException {
+        PlainResponse plainResponse = new PlainResponse();
         try {
-            storageRepository.addPricingStart(organization, teamId, cloudInstanceName, type);
-            storageLogger.info("Start time is saved: " + organization.getName());
+            storageRepository.createRegion(requestCreateRegion);
+            plainResponse.setSuccess(true);
+            plainResponse.setMessage("Region is created");
+            storageLogger.info("Region is created: " + requestCreateRegion);
+        } catch (ApplicationException e) {
+            plainResponse.setSuccess(false);
+            plainResponse.setMessage(e.getMessage());
+            storageLogger.error("Create region operation is failed: " + e);
         } catch (Exception e) {
-            storageLogger.error("Start time saving failed: " + e);
+            plainResponse.setSuccess(false);
+            plainResponse.setMessage(e.getMessage());
+            storageLogger.error("Create region operation is failed: " + e);
         }
-    }
-
-    public void addPricingStop(Organization organization, String teamId, String cloudInstanceName, String type) {
-        try {
-            storageRepository.addPricingStop(organization, teamId, cloudInstanceName, type);
-            storageLogger.info("Start time is saved: " + organization.getName());
-        } catch (Exception e) {
-            storageLogger.error("Start time saving failed: " + e);
-        }
-    }
-
-    public void infinispanConnect() {
-        try {
-            storageRepository.infinispanConnect();
-        } catch (Exception e) {
-        }
+        return plainResponse;
     }
 
 }
