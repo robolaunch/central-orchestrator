@@ -1,6 +1,7 @@
 package org.robolaunch.repository.concretes;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -11,20 +12,21 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.infinispan.client.hotrod.DefaultTemplate;
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
-import org.infinispan.client.hotrod.configuration.Configuration;
 import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
 import org.robolaunch.exception.ApplicationException;
 import org.robolaunch.models.Artifact;
 import org.robolaunch.models.Cluster;
 import org.robolaunch.models.Organization;
+import org.robolaunch.models.request.RequestCreateProvider;
+import org.robolaunch.models.request.RequestCreateRegion;
 import org.robolaunch.repository.abstracts.StorageRepository;
 import org.yaml.snakeyaml.Yaml;
 
@@ -38,6 +40,7 @@ import io.minio.GetObjectArgs;
 import io.minio.ListObjectsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
 import io.minio.Result;
 import io.minio.UploadObjectArgs;
@@ -179,6 +182,7 @@ public class StorageRepositoryImpl implements StorageRepository {
         }
     }
 
+    @Override
     public Boolean doesExist(Cluster cluster, String bucket)
             throws MinioException, InvalidKeyException, IllegalArgumentException,
             NoSuchAlgorithmException, IOException {
@@ -191,64 +195,71 @@ public class StorageRepositoryImpl implements StorageRepository {
         return false;
     }
 
+    @Override
     public void createBucket(String bucket) throws InvalidKeyException, ErrorResponseException,
             InsufficientDataException, InternalException, InvalidResponseException, NoSuchAlgorithmException,
             ServerException, XmlParserException, IllegalArgumentException, IOException, ApplicationException {
         minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
     }
 
-    public void createPricingFile(Organization organization)
-            throws IOException, InvalidKeyException, ErrorResponseException, InsufficientDataException,
-            InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException, XmlParserException,
-            IllegalArgumentException {
-        Path tempFile = Files.createTempFile("pricing", ".txt");
-        String content = "";
-
-        Files.write(tempFile, content.getBytes());
-        UploadObjectArgs.Builder builder = UploadObjectArgs.builder().bucket(organization.getName())
-                .object("pricing.txt").filename(tempFile.toString());
-        minioClient.uploadObject(builder.build());
-    }
-
-    public void addPricingStart(Organization organization, String teamId, String cloudInstanceName, String type)
+    @Override
+    public void createProvider(RequestCreateProvider requestCreateProvider)
             throws InvalidKeyException, ErrorResponseException,
             InsufficientDataException, InternalException, InvalidResponseException, NoSuchAlgorithmException,
             ServerException, XmlParserException, IllegalArgumentException, IOException {
-        Artifact artifact = new Artifact();
-        artifact.setName("pricing.txt");
 
-        String t = getContent(artifact, organization.getName());
+        // Check if the provider already exists
+        ListObjectsArgs listObjectsArgs = ListObjectsArgs.builder().bucket("providers").build();
+        Iterator<Result<Item>> iterator = minioClient.listObjects(listObjectsArgs).iterator();
+        while (iterator.hasNext()) {
+            Result<Item> item = iterator.next();
+            System.out.println("provider: " + item.get().objectName());
+            if (item.get().objectName().equals(requestCreateProvider.getName() + "/")) {
+                throw new ApplicationException("Provider already exists.");
+            }
+        }
 
-        Path tempFile = Files.createTempFile("pricing", ".txt");
-        t += "\nstart_" + new Date() + "_" + teamId + "_" + cloudInstanceName + "_" + type;
+        // Create the provider
+        PutObjectArgs.Builder provider = PutObjectArgs.builder().bucket("providers")
+                .object(requestCreateProvider.getName() + "/").stream(new ByteArrayInputStream("".getBytes()), 0, -1);
 
-        Files.write(tempFile, t.getBytes());
-        UploadObjectArgs.Builder builder = UploadObjectArgs.builder().bucket(organization.getName())
-                .object("pricing.txt").filename(tempFile.toString());
-        minioClient.uploadObject(builder.build());
+        minioClient.putObject(provider.build());
     }
 
-    public void addPricingStop(Organization organization, String teamId, String cloudInstanceName, String type)
+    @Override
+    public void createRegion(RequestCreateRegion requestCreateRegion)
             throws InvalidKeyException, ErrorResponseException,
             InsufficientDataException, InternalException, InvalidResponseException, NoSuchAlgorithmException,
             ServerException, XmlParserException, IllegalArgumentException, IOException {
-        Artifact artifact = new Artifact();
-        artifact.setName("pricing.txt");
 
-        String t = getContent(artifact, organization.getName());
+        // Check if the provider exists.
+        ListObjectsArgs listObjectsArgs = ListObjectsArgs.builder().bucket("providers").build();
+        Iterator<Result<Item>> iterator = minioClient.listObjects(listObjectsArgs).iterator();
+        while (iterator.hasNext()) {
+            Result<Item> item = iterator.next();
+            if (item.get().objectName().equals(requestCreateRegion.getProvider() + "/")) {
+                System.out.println("Provider exists!");
+                break;
+            }
+            if (!iterator.hasNext()) {
+                throw new ApplicationException("Provider does not exist.");
+            }
+        }
+        // Check if the region already exists
+        while (iterator.hasNext()) {
+            Result<Item> item = iterator.next();
+            if (item.get().isDir() && item.get().objectName()
+                    .equals(requestCreateRegion.getProvider() + "/" + requestCreateRegion.getName() + "/")) {
+                throw new ApplicationException("Region already exists.");
+            }
+        }
 
-        Path tempFile = Files.createTempFile("pricing", ".txt");
-        t += "\nstop_" + new Date() + "_" + teamId + "_" + cloudInstanceName + "_" + type;
+        // Create the Region
+        PutObjectArgs.Builder region = PutObjectArgs.builder().bucket("providers")
+                .object(requestCreateRegion.getProvider() + "/" + requestCreateRegion.getName() + "/")
+                .stream(new ByteArrayInputStream("".getBytes()), 0, -1);
 
-        Files.write(tempFile, t.getBytes());
-        UploadObjectArgs.Builder builder = UploadObjectArgs.builder().bucket(organization.getName())
-                .object("pricing.txt").filename(tempFile.toString());
-        minioClient.uploadObject(builder.build());
-    }
-
-    public void infinispanConnect() {
-        Gson gson = new Gson();
-        ConfigurationBuilder builder = new ConfigurationBuilder();
+        minioClient.putObject(region.build());
     }
 
 }
