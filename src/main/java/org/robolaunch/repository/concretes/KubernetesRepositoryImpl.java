@@ -39,7 +39,7 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
       throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException {
     System.out.println("Organization: " + organization.getName());
     System.out.println("TeamId: " + teamId);
-    String queryStr = "query: {InitializeRoboticsCloud(where: {and: [{organization: {name: {equal:\" "
+    String queryStr = "query: {roboticsCloud(where: {and: [{organization: {name: {equal:\" "
         + organization.getName()
         + "\"}}}, {teamId: {equal: \"" + teamId
         + "\"}}]}){id organization { name } teamId region userStage cloudInstanceName bufferName diskSize status username instanceType }}";
@@ -52,7 +52,7 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
     System.out.println("data: " + gson.toJson(data));
     // ArrayList<CloudInstance> cloudInstances = new ArrayList<CloudInstance>();
 
-    // data.getJsonArray("InitializeRoboticsCloud").forEach(instance -> {
+    // data.getJsonArray("roboticsCloud").forEach(instance -> {
     // CloudInstance cloudInstance = new CloudInstance();
     // cloudInstance.setProcessId(instance.asJsonObject().getString("id"));
     // cloudInstance.setDiskSize(instance.asJsonObject().getInt("diskSize"));

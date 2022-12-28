@@ -31,7 +31,7 @@ public class KogitoRepositoryImpl implements KogitoRepository {
   @Override
   public String getProcessId(Organization organization, String teamId)
       throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException {
-    String queryStr = "{InitializeRoboticsCloud(where: {and: [{organization: {name: {equal:\""
+    String queryStr = "{roboticsCloud(where: {and: [{organization: {name: {equal:\""
         + organization.getName()
         + "\"}}},{teamId: {equal:\""
         + teamId
@@ -40,7 +40,7 @@ public class KogitoRepositoryImpl implements KogitoRepository {
     Response response = graphqlClient.executeSync(queryStr);
 
     javax.json.JsonObject data = response.getData();
-    String processId = data.getJsonArray("InitializeRoboticsCloud").getJsonObject(0).getString("id");
+    String processId = data.getJsonArray("roboticsCloud").getJsonObject(0).getString("id");
     return processId;
   }
 

@@ -206,7 +206,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
   @Override
   public void CIOperationCall(String processId, String operation, String region) throws IOException {
-    URL url = new URL(backendUrl + "/initializeRoboticsCloud/" + processId + "/operation");
+    URL url = new URL(backendUrl + "/roboticsCloud/" + processId + "/operation");
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setRequestMethod("POST");
     connection.setRequestProperty("Content-Type", "application/json");
@@ -742,11 +742,11 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   @Override
   public String getTeamIdFromProcessId(String processId, String region)
       throws java.util.concurrent.ExecutionException, InterruptedException {
-    String queryStr = "{InitializeRoboticsCloud(where: {id: {equal: \"" + processId + "\"}}){teamId}}";
+    String queryStr = "{roboticsCloud(where: {id: {equal: \"" + processId + "\"}}){teamId}}";
     Response response = graphqlClient.executeSync(queryStr);
 
     JsonObject data = response.getData();
-    String teamId = data.getJsonArray("InitializeRoboticsCloud").getJsonObject(0).getString("teamId");
+    String teamId = data.getJsonArray("roboticsCloud").getJsonObject(0).getString("teamId");
     return teamId;
   }
 
@@ -859,17 +859,20 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
   public Boolean doesCloudInstanceExist(Organization organization, String teamId,
       String cloudInstanceName, String region) throws ExecutionException, InterruptedException {
-    String queryStr = "{InitializeRoboticsCloud(where: {and: [{organization: {name: {equal: \"" + organization.getName()
-        + "\"}}},{teamId: {equal:\"" + teamId + "\"}}, {cloudInstanceName: {equal: \"" + cloudInstanceName
-        + "\"}}]}) {id}}";
-
-    Response response = graphqlClient.executeSync(queryStr);
-
-    javax.json.JsonObject data = response.getData();
-    if (data.getJsonArray("InitializeRoboticsCloud").size() > 0) {
-      return true;
-    }
     return false;
+    // String queryStr = "{roboticsCloud(where: {and: [{organization: {name: {equal:
+    // \"" + organization.getName()
+    // + "\"}}},{teamId: {equal:\"" + teamId + "\"}}, {cloudInstanceName: {equal:
+    // \"" + cloudInstanceName
+    // + "\"}}]}) {id}}";
+
+    // Response response = graphqlClient.executeSync(queryStr);
+
+    // javax.json.JsonObject data = response.getData();
+    // if (data.getJsonArray("roboticsCloud").size() > 0) {
+    // return true;
+    // }
+    // return false;
 
   }
 
