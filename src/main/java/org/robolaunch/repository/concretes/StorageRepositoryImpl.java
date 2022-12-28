@@ -27,6 +27,7 @@ import org.robolaunch.models.Cluster;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.request.RequestCreateProvider;
 import org.robolaunch.models.request.RequestCreateRegion;
+import org.robolaunch.models.request.RequestCreateSuperCluster;
 import org.robolaunch.repository.abstracts.StorageRepository;
 import org.yaml.snakeyaml.Yaml;
 
@@ -43,6 +44,7 @@ import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
 import io.minio.Result;
+import io.minio.StatObjectArgs;
 import io.minio.UploadObjectArgs;
 import io.minio.errors.ErrorResponseException;
 import io.minio.errors.InsufficientDataException;
@@ -207,59 +209,75 @@ public class StorageRepositoryImpl implements StorageRepository {
             throws InvalidKeyException, ErrorResponseException,
             InsufficientDataException, InternalException, InvalidResponseException, NoSuchAlgorithmException,
             ServerException, XmlParserException, IllegalArgumentException, IOException {
-
-        // Check if the provider already exists
-        ListObjectsArgs listObjectsArgs = ListObjectsArgs.builder().bucket("providers").build();
-        Iterator<Result<Item>> iterator = minioClient.listObjects(listObjectsArgs).iterator();
-        while (iterator.hasNext()) {
-            Result<Item> item = iterator.next();
-            System.out.println("provider: " + item.get().objectName());
-            if (item.get().objectName().equals(requestCreateProvider.getName() + "/")) {
-                throw new ApplicationException("Provider already exists.");
+        try {
+            StatObjectArgs statObjectArgs = StatObjectArgs.builder().bucket("providers")
+                    .object(requestCreateProvider.getName() + "/").build();
+            minioClient.statObject(statObjectArgs);
+        } catch (ErrorResponseException e) {
+            System.out.println("error: " + e.errorResponse().code());
+            if (e.errorResponse().code().equals("NoSuchKey")) {
+                throw new ApplicationException("Provider does not exist. First create the provider folder on minio.");
+            } else {
+                throw new ApplicationException("Error while checking if the provider exists.");
             }
         }
 
-        // Create the provider
-        PutObjectArgs.Builder provider = PutObjectArgs.builder().bucket("providers")
-                .object(requestCreateProvider.getName() + "/").stream(new ByteArrayInputStream("".getBytes()), 0, -1);
-
-        minioClient.putObject(provider.build());
     }
 
     @Override
-    public void createRegion(RequestCreateRegion requestCreateRegion)
+    public void createRegion(RequestCreateRegion requestCreateRegion, String providerName)
+            throws InvalidKeyException, ErrorResponseException,
+            InsufficientDataException, InternalException, InvalidResponseException, NoSuchAlgorithmException,
+            ServerException, XmlParserException, IllegalArgumentException, IOException {
+        try {
+            StatObjectArgs statObjectArgs = StatObjectArgs.builder().bucket("providers")
+                    .object(providerName + "/").build();
+            minioClient.statObject(statObjectArgs);
+        } catch (ErrorResponseException e) {
+            System.out.println("error: " + e.errorResponse().code());
+            if (e.errorResponse().code().equals("NoSuchKey")) {
+                throw new ApplicationException("Provider does not exist. First create the provider folder on minio.");
+            } else {
+                throw new ApplicationException("Error while checking if the provider exists.");
+            }
+        }
+
+        try {
+            StatObjectArgs statObjectArgs = StatObjectArgs.builder().bucket("providers")
+                    .object(providerName + "/" + requestCreateRegion.getName() + "/").build();
+            minioClient.statObject(statObjectArgs);
+        } catch (ErrorResponseException e) {
+            System.out.println("error: " + e.errorResponse().code());
+            if (e.errorResponse().code().equals("NoSuchKey")) {
+                throw new ApplicationException("Region does not exist. First create the region folder on minio.");
+            } else {
+                throw new ApplicationException("Error while checking if the region exists.");
+            }
+        }
+
+    }
+
+    @Override
+    public void createSuperCluster(RequestCreateSuperCluster requestCreateSuperCluster, String regionName,
+            String providerName)
             throws InvalidKeyException, ErrorResponseException,
             InsufficientDataException, InternalException, InvalidResponseException, NoSuchAlgorithmException,
             ServerException, XmlParserException, IllegalArgumentException, IOException {
 
-        // Check if the provider exists.
-        ListObjectsArgs listObjectsArgs = ListObjectsArgs.builder().bucket("providers").build();
-        Iterator<Result<Item>> iterator = minioClient.listObjects(listObjectsArgs).iterator();
-        while (iterator.hasNext()) {
-            Result<Item> item = iterator.next();
-            if (item.get().objectName().equals(requestCreateRegion.getProvider() + "/")) {
-                System.out.println("Provider exists!");
-                break;
-            }
-            if (!iterator.hasNext()) {
-                throw new ApplicationException("Provider does not exist.");
-            }
-        }
-        // Check if the region already exists
-        while (iterator.hasNext()) {
-            Result<Item> item = iterator.next();
-            if (item.get().isDir() && item.get().objectName()
-                    .equals(requestCreateRegion.getProvider() + "/" + requestCreateRegion.getName() + "/")) {
-                throw new ApplicationException("Region already exists.");
+        try {
+            StatObjectArgs statObjectArgs = StatObjectArgs.builder().bucket("providers")
+                    .object(providerName + "/" + regionName + "/" + requestCreateSuperCluster.getName() + ".yaml")
+                    .build();
+            minioClient.statObject(statObjectArgs);
+        } catch (ErrorResponseException e) {
+            System.out.println("error: " + e.errorResponse().code());
+            if (e.errorResponse().code().equals("NoSuchKey")) {
+                throw new ApplicationException(
+                        "Super Cluster does not exist. First create the Super Cluster yaml file on minio.");
+            } else {
+                throw new ApplicationException("Error while checking if the Super Cluster exists.");
             }
         }
 
-        // Create the Region
-        PutObjectArgs.Builder region = PutObjectArgs.builder().bucket("providers")
-                .object(requestCreateRegion.getProvider() + "/" + requestCreateRegion.getName() + "/")
-                .stream(new ByteArrayInputStream("".getBytes()), 0, -1);
-
-        minioClient.putObject(region.build());
     }
-
 }

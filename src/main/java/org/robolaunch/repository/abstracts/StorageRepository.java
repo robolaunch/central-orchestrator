@@ -8,6 +8,7 @@ import org.robolaunch.models.Cluster;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.request.RequestCreateProvider;
 import org.robolaunch.models.request.RequestCreateRegion;
+import org.robolaunch.models.request.RequestCreateSuperCluster;
 
 import com.google.gson.JsonObject;
 
@@ -64,7 +65,14 @@ public interface StorageRepository {
                         InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
                         XmlParserException, IllegalArgumentException, IOException;
 
-        void createRegion(RequestCreateRegion requestCreateRegion)
+        void createRegion(RequestCreateRegion requestCreateRegion, String providerName)
+                        throws InvalidKeyException, ErrorResponseException, InsufficientDataException,
+                        InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
+                        XmlParserException, IllegalArgumentException, IOException;
+
+        void createSuperCluster(RequestCreateSuperCluster requestCreateSuperRequestCreateSuperCluster,
+                        String regionName,
+                        String providerName)
                         throws InvalidKeyException, ErrorResponseException, InsufficientDataException,
                         InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
                         XmlParserException, IllegalArgumentException, IOException;
