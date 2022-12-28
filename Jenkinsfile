@@ -69,6 +69,7 @@ pipeline {
       steps {
         container('ubuntu') {
           withCredentials([file(credentialsId: 'hetzner_prod', variable: 'config')]) {
+            sh 'export KUBECONFIG=$config'
             sh 'kogito use-project backend'
             sh 'kogito deploy-service central-orchestrator --image robolaunchio/central-orchestrator:pipeline --infra kogito-infinispan-infra --infra kogito-kafka-infra'
           }
