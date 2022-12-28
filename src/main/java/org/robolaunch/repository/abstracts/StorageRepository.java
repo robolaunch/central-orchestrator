@@ -33,10 +33,6 @@ public interface StorageRepository {
                         throws MinioException, InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException,
                         IOException;
 
-        JsonObject getContentJson(Artifact artifact, String bucket)
-                        throws MinioException, InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException,
-                        IOException;
-
         void remove(Artifact artifact, String bucket)
                         throws MinioException, InvalidKeyException, NoSuchAlgorithmException, IOException;
 

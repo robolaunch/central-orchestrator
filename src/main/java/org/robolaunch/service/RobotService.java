@@ -32,27 +32,30 @@ public class RobotService {
   @LoggerName("robotService")
   Logger robotLogger;
 
-  public Response makeRobotsPassive(String bufferName, String region) {
+  public PlainResponse makeRobotsPassive(String bufferName, String region) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       robotRepository.makeRobotsPassive(bufferName, region);
       robotLogger.info("Robots made passive");
-      return new Response(true, "Robots are now passive");
+      plainResponse.setSuccess(true);
     } catch (Exception e) {
       robotLogger.error("Error occured while making robots passive", e);
-      return new Response(false, "Error occured while making robots passive");
+      plainResponse.setSuccess(false);
     }
+    return plainResponse;
   }
 
-  public Response makeRobotsActive(String bufferName, String region) {
+  public PlainResponse makeRobotsActive(String bufferName, String region) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       robotRepository.makeRobotsActive(bufferName, region);
       robotLogger.info("Robots made active");
-
-      return new Response(true, "Robots are now active");
+      plainResponse.setSuccess(true);
     } catch (Exception e) {
       robotLogger.error("Error occured while making robots active", e);
-      return new Response(false, "Error occured while making robots active");
+      plainResponse.setSuccess(false);
     }
+    return plainResponse;
   }
 
   public PlainResponse createRobotBuildManager(RobotBuildManager robotBuildManager, String bufferName, String region) {
@@ -122,15 +125,6 @@ public class RobotService {
       plainResponse.setMessage("Error occured while creating robot.");
     }
     return plainResponse;
-  }
-
-  public void takes(RequestCreateRobot requestCreateRobot) {
-    try {
-      Gson gson = new Gson();
-      System.out.println("GOSN: " + gson.toJson(requestCreateRobot));
-    } catch (Exception e) {
-      System.out.println(e.getMessage());
-    }
   }
 
 }

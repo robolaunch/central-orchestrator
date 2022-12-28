@@ -1,34 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_8A2mUGc2EDubnfX_SpBakg" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_yIZ-wGjcEDuEE6pHcdxxkw" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_organizationItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="_teamIdItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_cloudInstanceNameItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="_robotsPassiveResponseItem" structureRef="org.robolaunch.models.Response"/>
-  <bpmn2:itemDefinition id="_scaleWorkloadsResponseItem" structureRef="org.robolaunch.models.Response"/>
   <bpmn2:itemDefinition id="_bufferNameItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="_scaleOAuthResponseItem" structureRef="org.robolaunch.models.Response"/>
-  <bpmn2:itemDefinition id="_scaleStatefulsetsResponseItem" structureRef="org.robolaunch.models.Response"/>
-  <bpmn2:itemDefinition id="_deleteDNSRecordResponseItem" structureRef="org.robolaunch.models.Response"/>
   <bpmn2:itemDefinition id="_nodeNameItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="_drainResponseItem" structureRef="org.robolaunch.models.Response"/>
   <bpmn2:itemDefinition id="_isNodeUnschedulableItem" structureRef="Boolean"/>
   <bpmn2:itemDefinition id="_isNodeReadyItem" structureRef="Boolean"/>
-  <bpmn2:itemDefinition id="_unlabelNodeResponseItem" structureRef="org.robolaunch.models.Response"/>
   <bpmn2:itemDefinition id="_namespaceNameItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_isResourcesDownItem" structureRef="Boolean"/>
-  <bpmn2:itemDefinition id="_cordonResponseItem" structureRef="org.robolaunch.models.Response"/>
-  <bpmn2:itemDefinition id="_stopInstanceResponseItem" structureRef="org.robolaunch.models.Response"/>
   <bpmn2:itemDefinition id="_isInstanceStoppedItem" structureRef="Boolean"/>
   <bpmn2:itemDefinition id="_adminStageItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_userStageItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_statusItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_regionItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_plainResponseItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__6A5BF8B8-49FA-4CE6-B96E-FD052B27A8BD_bufferNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__6A5BF8B8-49FA-4CE6-B96E-FD052B27A8BD_regionInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__6A5BF8B8-49FA-4CE6-B96E-FD052B27A8BD_robotsPassiveResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
+  <bpmn2:itemDefinition id="__6A5BF8B8-49FA-4CE6-B96E-FD052B27A8BD_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__38A61674-E001-476B-91FA-095DDC8AF5ED_bufferNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__38A61674-E001-476B-91FA-095DDC8AF5ED_regionInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__38A61674-E001-476B-91FA-095DDC8AF5ED_scaleWorkloadsResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
+  <bpmn2:itemDefinition id="__38A61674-E001-476B-91FA-095DDC8AF5ED_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__069E86CC-90B3-4B2E-A977-A178FE147483_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="__069E86CC-90B3-4B2E-A977-A178FE147483_cloudInstanceNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__069E86CC-90B3-4B2E-A977-A178FE147483_teamIdInputXItem" structureRef="String"/>
@@ -36,14 +28,14 @@
   <bpmn2:itemDefinition id="__069E86CC-90B3-4B2E-A977-A178FE147483_bufferNameOutputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__3366DD6E-42C3-425B-81C7-5122988029E2_bufferNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__3366DD6E-42C3-425B-81C7-5122988029E2_regionInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__3366DD6E-42C3-425B-81C7-5122988029E2_scaleOAuthResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
+  <bpmn2:itemDefinition id="__3366DD6E-42C3-425B-81C7-5122988029E2_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__850890F1-5B24-4759-9200-6AC1438302B7_bufferNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__850890F1-5B24-4759-9200-6AC1438302B7_regionInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__850890F1-5B24-4759-9200-6AC1438302B7_scaleStatefulsetsResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
+  <bpmn2:itemDefinition id="__850890F1-5B24-4759-9200-6AC1438302B7_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__F9628987-FBBE-4B0B-843B-63C2D4F76F43_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="__F9628987-FBBE-4B0B-843B-63C2D4F76F43_nodeNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__F9628987-FBBE-4B0B-843B-63C2D4F76F43_regionInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__F9628987-FBBE-4B0B-843B-63C2D4F76F43_deleteDNSRecordResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
+  <bpmn2:itemDefinition id="__F9628987-FBBE-4B0B-843B-63C2D4F76F43_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__708A2AF1-0D30-4055-B10B-73264C1B135B_bufferNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__708A2AF1-0D30-4055-B10B-73264C1B135B_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="__708A2AF1-0D30-4055-B10B-73264C1B135B_teamIdInputXItem" structureRef="String"/>
@@ -52,10 +44,10 @@
   <bpmn2:itemDefinition id="__708A2AF1-0D30-4055-B10B-73264C1B135B_nodeNameOutputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__21BD3DA5-5AED-4C61-AF44-8D92EB04885A_nodeNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__21BD3DA5-5AED-4C61-AF44-8D92EB04885A_regionInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__21BD3DA5-5AED-4C61-AF44-8D92EB04885A_drainResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
+  <bpmn2:itemDefinition id="__21BD3DA5-5AED-4C61-AF44-8D92EB04885A_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__0C4F9DAA-2764-44CF-AEB2-7FFC82B5FDC8_nodeNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__0C4F9DAA-2764-44CF-AEB2-7FFC82B5FDC8_regionInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__0C4F9DAA-2764-44CF-AEB2-7FFC82B5FDC8_stopInstanceResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
+  <bpmn2:itemDefinition id="__0C4F9DAA-2764-44CF-AEB2-7FFC82B5FDC8_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__6D792199-5969-4B8F-832B-846ADD509433_nodeNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__6D792199-5969-4B8F-832B-846ADD509433_regionInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__6D792199-5969-4B8F-832B-846ADD509433_isNodeUnschedulableOutputXItem" structureRef="Boolean"/>
@@ -64,7 +56,7 @@
   <bpmn2:itemDefinition id="__90EA90A0-3A8B-41FE-98E6-FBC7D9FFF24E_isNodeReadyOutputXItem" structureRef="Boolean"/>
   <bpmn2:itemDefinition id="__9DBF300F-B880-47F5-9F7B-83A7101EADC3_nodeNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__9DBF300F-B880-47F5-9F7B-83A7101EADC3_regionInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__9DBF300F-B880-47F5-9F7B-83A7101EADC3_unlabelNodeResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
+  <bpmn2:itemDefinition id="__9DBF300F-B880-47F5-9F7B-83A7101EADC3_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__734BAF19-B824-4692-9E16-5210A7959944_bufferNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__734BAF19-B824-4692-9E16-5210A7959944_regionInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__734BAF19-B824-4692-9E16-5210A7959944_namespaceNameOutputXItem" structureRef="String"/>
@@ -122,33 +114,25 @@
   <bpmn2:interface id="_760272D2-6388-4C46-B6A5-4B7452F24464_ServiceInterface" name="org.robolaunch.service.AmazonService" implementationRef="org.robolaunch.service.AmazonService">
     <bpmn2:operation id="_760272D2-6388-4C46-B6A5-4B7452F24464_ServiceOperation" name="isInstanceStopped" implementationRef="isInstanceStopped"/>
   </bpmn2:interface>
-  <bpmn2:collaboration id="_9FB6EDE0-4CF4-4721-B139-6A3F733DC096" name="Default Collaboration">
-    <bpmn2:participant id="_D78C0F92-6E48-4FA8-B893-6F26B3430BD8" name="Pool Participant" processRef="stopCloudInstance"/>
+  <bpmn2:collaboration id="_D60B4446-ABF2-4477-AE55-75FE80786183" name="Default Collaboration">
+    <bpmn2:participant id="_123CA9F2-DA8D-49BB-8382-83795DC914E2" name="Pool Participant" processRef="stopCloudInstance"/>
   </bpmn2:collaboration>
-  <bpmn2:process id="stopCloudInstance" drools:packageName="org.robolaunch.kogito.cloudInstance" drools:version="1.0" drools:adHoc="false" name="stopCloudInstance" isExecutable="true" processType="Public">
+  <bpmn2:process id="stopCloudInstance" drools:packageName="org.robolaunch.kogito" drools:version="1.0" drools:adHoc="false" name="stopCloudInstance" isExecutable="true" processType="Public">
     <bpmn2:property id="organization" itemSubjectRef="_organizationItem" name="organization"/>
     <bpmn2:property id="teamId" itemSubjectRef="_teamIdItem" name="teamId"/>
     <bpmn2:property id="cloudInstanceName" itemSubjectRef="_cloudInstanceNameItem" name="cloudInstanceName"/>
-    <bpmn2:property id="robotsPassiveResponse" itemSubjectRef="_robotsPassiveResponseItem" name="robotsPassiveResponse"/>
-    <bpmn2:property id="scaleWorkloadsResponse" itemSubjectRef="_scaleWorkloadsResponseItem" name="scaleWorkloadsResponse"/>
     <bpmn2:property id="bufferName" itemSubjectRef="_bufferNameItem" name="bufferName"/>
-    <bpmn2:property id="scaleOAuthResponse" itemSubjectRef="_scaleOAuthResponseItem" name="scaleOAuthResponse"/>
-    <bpmn2:property id="scaleStatefulsetsResponse" itemSubjectRef="_scaleStatefulsetsResponseItem" name="scaleStatefulsetsResponse"/>
-    <bpmn2:property id="deleteDNSRecordResponse" itemSubjectRef="_deleteDNSRecordResponseItem" name="deleteDNSRecordResponse"/>
     <bpmn2:property id="nodeName" itemSubjectRef="_nodeNameItem" name="nodeName"/>
-    <bpmn2:property id="drainResponse" itemSubjectRef="_drainResponseItem" name="drainResponse"/>
     <bpmn2:property id="isNodeUnschedulable" itemSubjectRef="_isNodeUnschedulableItem" name="isNodeUnschedulable"/>
     <bpmn2:property id="isNodeReady" itemSubjectRef="_isNodeReadyItem" name="isNodeReady"/>
-    <bpmn2:property id="unlabelNodeResponse" itemSubjectRef="_unlabelNodeResponseItem" name="unlabelNodeResponse"/>
     <bpmn2:property id="namespaceName" itemSubjectRef="_namespaceNameItem" name="namespaceName"/>
     <bpmn2:property id="isResourcesDown" itemSubjectRef="_isResourcesDownItem" name="isResourcesDown"/>
-    <bpmn2:property id="cordonResponse" itemSubjectRef="_cordonResponseItem" name="cordonResponse"/>
-    <bpmn2:property id="stopInstanceResponse" itemSubjectRef="_stopInstanceResponseItem" name="stopInstanceResponse"/>
     <bpmn2:property id="isInstanceStopped" itemSubjectRef="_isInstanceStoppedItem" name="isInstanceStopped"/>
     <bpmn2:property id="adminStage" itemSubjectRef="_adminStageItem" name="adminStage"/>
     <bpmn2:property id="userStage" itemSubjectRef="_userStageItem" name="userStage"/>
     <bpmn2:property id="status" itemSubjectRef="_statusItem" name="status"/>
     <bpmn2:property id="region" itemSubjectRef="_regionItem" name="region"/>
+    <bpmn2:property id="plainResponse" itemSubjectRef="_plainResponseItem" name="plainResponse"/>
     <bpmn2:sequenceFlow id="_AFD4CC28-9FCB-4CE9-8FB6-AD0B8B985226" sourceRef="_F7482696-DB5C-45AA-8550-858D9A2AD723" targetRef="_0C4A928D-6587-49C2-BFC4-DABB4AF0845D">
       <bpmn2:extensionElements>
         <drools:metaData name="isAutoConnection.target">
@@ -290,7 +274,7 @@
           <drools:metaValue><![CDATA[Success]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return unlabelNodeResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_23D6F99D-8641-478A-A922-DAE5D524FD3B" name="Failure" sourceRef="_A8D7EF7B-1265-445A-9383-5DF2BA820616" targetRef="_F7482696-DB5C-45AA-8550-858D9A2AD723">
       <bpmn2:extensionElements>
@@ -301,7 +285,7 @@
           <drools:metaValue><![CDATA[Failure]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !unlabelNodeResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_CB836F95-5888-4BD7-B31F-535F82D37ACD" sourceRef="_9DBF300F-B880-47F5-9F7B-83A7101EADC3" targetRef="_A8D7EF7B-1265-445A-9383-5DF2BA820616"/>
     <bpmn2:sequenceFlow id="_4DABF0A1-DD30-411C-AA05-6791CA59E705" sourceRef="_0C4A928D-6587-49C2-BFC4-DABB4AF0845D" targetRef="_9DBF300F-B880-47F5-9F7B-83A7101EADC3">
@@ -376,7 +360,7 @@
           <drools:metaValue><![CDATA[Success]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return stopInstanceResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_E04D96C6-B89C-48A4-AD01-93EE85C07D53" name="Failure" sourceRef="_3288F7E1-0A4C-46EE-80EF-730B4630A78B" targetRef="_131AF3DA-BD07-42F6-A258-EFD998F58071">
       <bpmn2:extensionElements>
@@ -387,7 +371,7 @@
           <drools:metaValue><![CDATA[Failure]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !stopInstanceResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_13C11566-17A9-4055-BFBF-4E02CE743938" sourceRef="_0C4F9DAA-2764-44CF-AEB2-7FFC82B5FDC8" targetRef="_3288F7E1-0A4C-46EE-80EF-730B4630A78B">
       <bpmn2:extensionElements>
@@ -412,7 +396,7 @@
           <drools:metaValue><![CDATA[Failure]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !drainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_0F91A72A-33E3-4906-82D1-0BFA23D2BF9B" name="Success" sourceRef="_BC344CC7-1386-40D9-9F64-B0B0424EC746" targetRef="_E1004F55-C40B-44FD-AD40-6A29BD0ABFF5">
       <bpmn2:extensionElements>
@@ -420,7 +404,7 @@
           <drools:metaValue><![CDATA[Success]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return drainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_C6E840BF-D4C2-46C6-8093-72F1AACEB090" sourceRef="_21BD3DA5-5AED-4C61-AF44-8D92EB04885A" targetRef="_BC344CC7-1386-40D9-9F64-B0B0424EC746">
       <bpmn2:extensionElements>
@@ -453,7 +437,7 @@
           <drools:metaValue><![CDATA[Success]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return deleteDNSRecordResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_536515E5-45F5-4293-8C48-4B6D10A0B6A0" name="Failure" sourceRef="_0854A702-E884-4E2A-809D-940D93934A8E" targetRef="_788E5BA5-81A9-4A50-8E15-C8F97E40FF21">
       <bpmn2:extensionElements>
@@ -464,7 +448,7 @@
           <drools:metaValue><![CDATA[Failure]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !deleteDNSRecordResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_B3103D44-A2C1-4760-ADB2-D490C6426CBE" sourceRef="_F9628987-FBBE-4B0B-843B-63C2D4F76F43" targetRef="_0854A702-E884-4E2A-809D-940D93934A8E">
       <bpmn2:extensionElements>
@@ -489,7 +473,7 @@
           <drools:metaValue><![CDATA[Success]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return scaleStatefulsetsResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_2FCDB6D8-EFFD-419F-B537-E3A766A6D234" name="Failure" sourceRef="_9054A8BC-9613-40E5-BEE3-9A28203ABD0A" targetRef="_933A11E8-8DF4-4998-A4A6-351EA7613AEF">
       <bpmn2:extensionElements>
@@ -500,7 +484,7 @@
           <drools:metaValue><![CDATA[Failure]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !scaleStatefulsetsResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_BA47F93E-E3F7-4D49-A58D-EA2387F2FFEB" sourceRef="_850890F1-5B24-4759-9200-6AC1438302B7" targetRef="_9054A8BC-9613-40E5-BEE3-9A28203ABD0A"/>
     <bpmn2:sequenceFlow id="_1A830229-96C2-446C-8823-33F55F8BC3EC" sourceRef="_2E2281A8-9C12-4006-8CBA-AFA25C2AE635" targetRef="_850890F1-5B24-4759-9200-6AC1438302B7">
@@ -522,7 +506,7 @@
           <drools:metaValue><![CDATA[Success]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return scaleOAuthResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_C79EC621-B8A8-4038-B4C1-F2D930E9A9B0" name="Failure" sourceRef="_922FD171-63F7-4B40-9649-26D682D37961" targetRef="_A66291A0-19BC-4DFF-BBC5-8B15BAD594D2">
       <bpmn2:extensionElements>
@@ -530,7 +514,7 @@
           <drools:metaValue><![CDATA[Failure]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !scaleOAuthResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_81B01532-17E7-4C90-B6FF-5B1EFB2FE128" sourceRef="_3366DD6E-42C3-425B-81C7-5122988029E2" targetRef="_922FD171-63F7-4B40-9649-26D682D37961">
       <bpmn2:extensionElements>
@@ -573,7 +557,7 @@
           <drools:metaValue><![CDATA[Success]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return scaleWorkloadsResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_D9116427-25C9-4604-A344-4D609276E4FF" name="Failure" sourceRef="_B9989CD7-A5EF-400B-8CF6-C697580FFD8F" targetRef="_D7E0DC70-A4EB-488B-9F4D-4CD8143262F3">
       <bpmn2:extensionElements>
@@ -581,7 +565,7 @@
           <drools:metaValue><![CDATA[Failure]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !scaleWorkloadsResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_9B80D166-3580-40B5-976A-E3CFCFD8EEBF" sourceRef="_38A61674-E001-476B-91FA-095DDC8AF5ED" targetRef="_B9989CD7-A5EF-400B-8CF6-C697580FFD8F"/>
     <bpmn2:sequenceFlow id="_700D85FE-F806-42F2-A02A-467D3AAED8B9" sourceRef="_AFEC6B04-A3CE-4BD7-AEF0-0CC15279A555" targetRef="_38A61674-E001-476B-91FA-095DDC8AF5ED">
@@ -597,7 +581,7 @@
           <drools:metaValue><![CDATA[Failure]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !robotsPassiveResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_5FC7E464-1DD5-408B-8BFA-9D9B4494C4CC" name="Success" sourceRef="_E53992E2-026C-4BD8-950B-5875331D6027" targetRef="_1C6D2775-9FAB-475A-AA44-40F4E54DCF0A">
       <bpmn2:extensionElements>
@@ -605,7 +589,7 @@
           <drools:metaValue><![CDATA[Success]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return robotsPassiveResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_2C611F63-4198-473A-BACD-FEF63589DF94" sourceRef="_6A5BF8B8-49FA-4CE6-B96E-FD052B27A8BD" targetRef="_E53992E2-026C-4BD8-950B-5875331D6027">
       <bpmn2:extensionElements>
@@ -1027,13 +1011,13 @@ kcontext.setVariable("status", "Stopping");</bpmn2:script>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_9DBF300F-B880-47F5-9F7B-83A7101EADC3_nodeNameInputX" drools:dtype="String" itemSubjectRef="__9DBF300F-B880-47F5-9F7B-83A7101EADC3_nodeNameInputXItem" name="nodeName"/>
         <bpmn2:dataInput id="_9DBF300F-B880-47F5-9F7B-83A7101EADC3_regionInputX" drools:dtype="String" itemSubjectRef="__9DBF300F-B880-47F5-9F7B-83A7101EADC3_regionInputXItem" name="region"/>
-        <bpmn2:dataOutput id="_9DBF300F-B880-47F5-9F7B-83A7101EADC3_unlabelNodeResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__9DBF300F-B880-47F5-9F7B-83A7101EADC3_unlabelNodeResponseOutputXItem" name="unlabelNodeResponse"/>
+        <bpmn2:dataOutput id="_9DBF300F-B880-47F5-9F7B-83A7101EADC3_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__9DBF300F-B880-47F5-9F7B-83A7101EADC3_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_9DBF300F-B880-47F5-9F7B-83A7101EADC3_nodeNameInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_9DBF300F-B880-47F5-9F7B-83A7101EADC3_regionInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_9DBF300F-B880-47F5-9F7B-83A7101EADC3_unlabelNodeResponseOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_9DBF300F-B880-47F5-9F7B-83A7101EADC3_plainResponseOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -1045,8 +1029,8 @@ kcontext.setVariable("status", "Stopping");</bpmn2:script>
         <bpmn2:targetRef>_9DBF300F-B880-47F5-9F7B-83A7101EADC3_regionInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_9DBF300F-B880-47F5-9F7B-83A7101EADC3_unlabelNodeResponseOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>unlabelNodeResponse</bpmn2:targetRef>
+        <bpmn2:sourceRef>_9DBF300F-B880-47F5-9F7B-83A7101EADC3_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:intermediateCatchEvent id="_534CA74D-FE53-44E1-9939-961DED297EBA" name="2s">
@@ -1175,13 +1159,13 @@ kcontext.setVariable("status", "Stopping");</bpmn2:script>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_0C4F9DAA-2764-44CF-AEB2-7FFC82B5FDC8_nodeNameInputX" drools:dtype="String" itemSubjectRef="__0C4F9DAA-2764-44CF-AEB2-7FFC82B5FDC8_nodeNameInputXItem" name="nodeName"/>
         <bpmn2:dataInput id="_0C4F9DAA-2764-44CF-AEB2-7FFC82B5FDC8_regionInputX" drools:dtype="String" itemSubjectRef="__0C4F9DAA-2764-44CF-AEB2-7FFC82B5FDC8_regionInputXItem" name="region"/>
-        <bpmn2:dataOutput id="_0C4F9DAA-2764-44CF-AEB2-7FFC82B5FDC8_stopInstanceResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__0C4F9DAA-2764-44CF-AEB2-7FFC82B5FDC8_stopInstanceResponseOutputXItem" name="stopInstanceResponse"/>
+        <bpmn2:dataOutput id="_0C4F9DAA-2764-44CF-AEB2-7FFC82B5FDC8_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__0C4F9DAA-2764-44CF-AEB2-7FFC82B5FDC8_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_0C4F9DAA-2764-44CF-AEB2-7FFC82B5FDC8_nodeNameInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_0C4F9DAA-2764-44CF-AEB2-7FFC82B5FDC8_regionInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_0C4F9DAA-2764-44CF-AEB2-7FFC82B5FDC8_stopInstanceResponseOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_0C4F9DAA-2764-44CF-AEB2-7FFC82B5FDC8_plainResponseOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -1193,8 +1177,8 @@ kcontext.setVariable("status", "Stopping");</bpmn2:script>
         <bpmn2:targetRef>_0C4F9DAA-2764-44CF-AEB2-7FFC82B5FDC8_regionInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_0C4F9DAA-2764-44CF-AEB2-7FFC82B5FDC8_stopInstanceResponseOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>stopInstanceResponse</bpmn2:targetRef>
+        <bpmn2:sourceRef>_0C4F9DAA-2764-44CF-AEB2-7FFC82B5FDC8_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:exclusiveGateway id="_BC344CC7-1386-40D9-9F64-B0B0424EC746" gatewayDirection="Diverging">
@@ -1213,13 +1197,13 @@ kcontext.setVariable("status", "Stopping");</bpmn2:script>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_21BD3DA5-5AED-4C61-AF44-8D92EB04885A_nodeNameInputX" drools:dtype="String" itemSubjectRef="__21BD3DA5-5AED-4C61-AF44-8D92EB04885A_nodeNameInputXItem" name="nodeName"/>
         <bpmn2:dataInput id="_21BD3DA5-5AED-4C61-AF44-8D92EB04885A_regionInputX" drools:dtype="String" itemSubjectRef="__21BD3DA5-5AED-4C61-AF44-8D92EB04885A_regionInputXItem" name="region"/>
-        <bpmn2:dataOutput id="_21BD3DA5-5AED-4C61-AF44-8D92EB04885A_drainResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__21BD3DA5-5AED-4C61-AF44-8D92EB04885A_drainResponseOutputXItem" name="drainResponse"/>
+        <bpmn2:dataOutput id="_21BD3DA5-5AED-4C61-AF44-8D92EB04885A_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__21BD3DA5-5AED-4C61-AF44-8D92EB04885A_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_21BD3DA5-5AED-4C61-AF44-8D92EB04885A_nodeNameInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_21BD3DA5-5AED-4C61-AF44-8D92EB04885A_regionInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_21BD3DA5-5AED-4C61-AF44-8D92EB04885A_drainResponseOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_21BD3DA5-5AED-4C61-AF44-8D92EB04885A_plainResponseOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -1231,8 +1215,8 @@ kcontext.setVariable("status", "Stopping");</bpmn2:script>
         <bpmn2:targetRef>_21BD3DA5-5AED-4C61-AF44-8D92EB04885A_regionInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_21BD3DA5-5AED-4C61-AF44-8D92EB04885A_drainResponseOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>drainResponse</bpmn2:targetRef>
+        <bpmn2:sourceRef>_21BD3DA5-5AED-4C61-AF44-8D92EB04885A_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:serviceTask id="_708A2AF1-0D30-4055-B10B-73264C1B135B" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.CloudInstanceHelperService" drools:serviceoperation="findNode" name="Find Node" implementation="Java" operationRef="_708A2AF1-0D30-4055-B10B-73264C1B135B_ServiceOperation">
@@ -1303,14 +1287,14 @@ kcontext.setVariable("status", "Stopping");</bpmn2:script>
         <bpmn2:dataInput id="_F9628987-FBBE-4B0B-843B-63C2D4F76F43_organizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__F9628987-FBBE-4B0B-843B-63C2D4F76F43_organizationInputXItem" name="organization"/>
         <bpmn2:dataInput id="_F9628987-FBBE-4B0B-843B-63C2D4F76F43_nodeNameInputX" drools:dtype="String" itemSubjectRef="__F9628987-FBBE-4B0B-843B-63C2D4F76F43_nodeNameInputXItem" name="nodeName"/>
         <bpmn2:dataInput id="_F9628987-FBBE-4B0B-843B-63C2D4F76F43_regionInputX" drools:dtype="String" itemSubjectRef="__F9628987-FBBE-4B0B-843B-63C2D4F76F43_regionInputXItem" name="region"/>
-        <bpmn2:dataOutput id="_F9628987-FBBE-4B0B-843B-63C2D4F76F43_deleteDNSRecordResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__F9628987-FBBE-4B0B-843B-63C2D4F76F43_deleteDNSRecordResponseOutputXItem" name="deleteDNSRecordResponse"/>
+        <bpmn2:dataOutput id="_F9628987-FBBE-4B0B-843B-63C2D4F76F43_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__F9628987-FBBE-4B0B-843B-63C2D4F76F43_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_F9628987-FBBE-4B0B-843B-63C2D4F76F43_organizationInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_F9628987-FBBE-4B0B-843B-63C2D4F76F43_nodeNameInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_F9628987-FBBE-4B0B-843B-63C2D4F76F43_regionInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_F9628987-FBBE-4B0B-843B-63C2D4F76F43_deleteDNSRecordResponseOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_F9628987-FBBE-4B0B-843B-63C2D4F76F43_plainResponseOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -1326,8 +1310,8 @@ kcontext.setVariable("status", "Stopping");</bpmn2:script>
         <bpmn2:targetRef>_F9628987-FBBE-4B0B-843B-63C2D4F76F43_regionInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_F9628987-FBBE-4B0B-843B-63C2D4F76F43_deleteDNSRecordResponseOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>deleteDNSRecordResponse</bpmn2:targetRef>
+        <bpmn2:sourceRef>_F9628987-FBBE-4B0B-843B-63C2D4F76F43_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:exclusiveGateway id="_9054A8BC-9613-40E5-BEE3-9A28203ABD0A" gatewayDirection="Diverging">
@@ -1346,13 +1330,13 @@ kcontext.setVariable("status", "Stopping");</bpmn2:script>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_850890F1-5B24-4759-9200-6AC1438302B7_bufferNameInputX" drools:dtype="String" itemSubjectRef="__850890F1-5B24-4759-9200-6AC1438302B7_bufferNameInputXItem" name="bufferName"/>
         <bpmn2:dataInput id="_850890F1-5B24-4759-9200-6AC1438302B7_regionInputX" drools:dtype="String" itemSubjectRef="__850890F1-5B24-4759-9200-6AC1438302B7_regionInputXItem" name="region"/>
-        <bpmn2:dataOutput id="_850890F1-5B24-4759-9200-6AC1438302B7_scaleStatefulsetsResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__850890F1-5B24-4759-9200-6AC1438302B7_scaleStatefulsetsResponseOutputXItem" name="scaleStatefulsetsResponse"/>
+        <bpmn2:dataOutput id="_850890F1-5B24-4759-9200-6AC1438302B7_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__850890F1-5B24-4759-9200-6AC1438302B7_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_850890F1-5B24-4759-9200-6AC1438302B7_bufferNameInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_850890F1-5B24-4759-9200-6AC1438302B7_regionInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_850890F1-5B24-4759-9200-6AC1438302B7_scaleStatefulsetsResponseOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_850890F1-5B24-4759-9200-6AC1438302B7_plainResponseOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -1364,8 +1348,8 @@ kcontext.setVariable("status", "Stopping");</bpmn2:script>
         <bpmn2:targetRef>_850890F1-5B24-4759-9200-6AC1438302B7_regionInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_850890F1-5B24-4759-9200-6AC1438302B7_scaleStatefulsetsResponseOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>scaleStatefulsetsResponse</bpmn2:targetRef>
+        <bpmn2:sourceRef>_850890F1-5B24-4759-9200-6AC1438302B7_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:exclusiveGateway id="_922FD171-63F7-4B40-9649-26D682D37961" gatewayDirection="Diverging">
@@ -1384,13 +1368,13 @@ kcontext.setVariable("status", "Stopping");</bpmn2:script>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_3366DD6E-42C3-425B-81C7-5122988029E2_bufferNameInputX" drools:dtype="String" itemSubjectRef="__3366DD6E-42C3-425B-81C7-5122988029E2_bufferNameInputXItem" name="bufferName"/>
         <bpmn2:dataInput id="_3366DD6E-42C3-425B-81C7-5122988029E2_regionInputX" drools:dtype="String" itemSubjectRef="__3366DD6E-42C3-425B-81C7-5122988029E2_regionInputXItem" name="region"/>
-        <bpmn2:dataOutput id="_3366DD6E-42C3-425B-81C7-5122988029E2_scaleOAuthResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__3366DD6E-42C3-425B-81C7-5122988029E2_scaleOAuthResponseOutputXItem" name="scaleOAuthResponse"/>
+        <bpmn2:dataOutput id="_3366DD6E-42C3-425B-81C7-5122988029E2_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__3366DD6E-42C3-425B-81C7-5122988029E2_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_3366DD6E-42C3-425B-81C7-5122988029E2_bufferNameInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_3366DD6E-42C3-425B-81C7-5122988029E2_regionInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_3366DD6E-42C3-425B-81C7-5122988029E2_scaleOAuthResponseOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_3366DD6E-42C3-425B-81C7-5122988029E2_plainResponseOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -1402,8 +1386,8 @@ kcontext.setVariable("status", "Stopping");</bpmn2:script>
         <bpmn2:targetRef>_3366DD6E-42C3-425B-81C7-5122988029E2_regionInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_3366DD6E-42C3-425B-81C7-5122988029E2_scaleOAuthResponseOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>scaleOAuthResponse</bpmn2:targetRef>
+        <bpmn2:sourceRef>_3366DD6E-42C3-425B-81C7-5122988029E2_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:serviceTask id="_069E86CC-90B3-4B2E-A977-A178FE147483" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.CloudInstanceHelperService" drools:serviceoperation="getBufferName" name="Get Buffer Name" implementation="Java" operationRef="_069E86CC-90B3-4B2E-A977-A178FE147483_ServiceOperation">
@@ -1470,13 +1454,13 @@ kcontext.setVariable("status", "Stopping");</bpmn2:script>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_38A61674-E001-476B-91FA-095DDC8AF5ED_bufferNameInputX" drools:dtype="String" itemSubjectRef="__38A61674-E001-476B-91FA-095DDC8AF5ED_bufferNameInputXItem" name="bufferName"/>
         <bpmn2:dataInput id="_38A61674-E001-476B-91FA-095DDC8AF5ED_regionInputX" drools:dtype="String" itemSubjectRef="__38A61674-E001-476B-91FA-095DDC8AF5ED_regionInputXItem" name="region"/>
-        <bpmn2:dataOutput id="_38A61674-E001-476B-91FA-095DDC8AF5ED_scaleWorkloadsResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__38A61674-E001-476B-91FA-095DDC8AF5ED_scaleWorkloadsResponseOutputXItem" name="scaleWorkloadsResponse"/>
+        <bpmn2:dataOutput id="_38A61674-E001-476B-91FA-095DDC8AF5ED_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__38A61674-E001-476B-91FA-095DDC8AF5ED_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_38A61674-E001-476B-91FA-095DDC8AF5ED_bufferNameInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_38A61674-E001-476B-91FA-095DDC8AF5ED_regionInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_38A61674-E001-476B-91FA-095DDC8AF5ED_scaleWorkloadsResponseOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_38A61674-E001-476B-91FA-095DDC8AF5ED_plainResponseOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -1488,8 +1472,8 @@ kcontext.setVariable("status", "Stopping");</bpmn2:script>
         <bpmn2:targetRef>_38A61674-E001-476B-91FA-095DDC8AF5ED_regionInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_38A61674-E001-476B-91FA-095DDC8AF5ED_scaleWorkloadsResponseOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>scaleWorkloadsResponse</bpmn2:targetRef>
+        <bpmn2:sourceRef>_38A61674-E001-476B-91FA-095DDC8AF5ED_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:exclusiveGateway id="_E53992E2-026C-4BD8-950B-5875331D6027" gatewayDirection="Diverging">
@@ -1508,13 +1492,13 @@ kcontext.setVariable("status", "Stopping");</bpmn2:script>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_6A5BF8B8-49FA-4CE6-B96E-FD052B27A8BD_bufferNameInputX" drools:dtype="String" itemSubjectRef="__6A5BF8B8-49FA-4CE6-B96E-FD052B27A8BD_bufferNameInputXItem" name="bufferName"/>
         <bpmn2:dataInput id="_6A5BF8B8-49FA-4CE6-B96E-FD052B27A8BD_regionInputX" drools:dtype="String" itemSubjectRef="__6A5BF8B8-49FA-4CE6-B96E-FD052B27A8BD_regionInputXItem" name="region"/>
-        <bpmn2:dataOutput id="_6A5BF8B8-49FA-4CE6-B96E-FD052B27A8BD_robotsPassiveResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__6A5BF8B8-49FA-4CE6-B96E-FD052B27A8BD_robotsPassiveResponseOutputXItem" name="robotsPassiveResponse"/>
+        <bpmn2:dataOutput id="_6A5BF8B8-49FA-4CE6-B96E-FD052B27A8BD_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__6A5BF8B8-49FA-4CE6-B96E-FD052B27A8BD_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_6A5BF8B8-49FA-4CE6-B96E-FD052B27A8BD_bufferNameInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_6A5BF8B8-49FA-4CE6-B96E-FD052B27A8BD_regionInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_6A5BF8B8-49FA-4CE6-B96E-FD052B27A8BD_robotsPassiveResponseOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_6A5BF8B8-49FA-4CE6-B96E-FD052B27A8BD_plainResponseOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -1526,8 +1510,8 @@ kcontext.setVariable("status", "Stopping");</bpmn2:script>
         <bpmn2:targetRef>_6A5BF8B8-49FA-4CE6-B96E-FD052B27A8BD_regionInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_6A5BF8B8-49FA-4CE6-B96E-FD052B27A8BD_robotsPassiveResponseOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>robotsPassiveResponse</bpmn2:targetRef>
+        <bpmn2:sourceRef>_6A5BF8B8-49FA-4CE6-B96E-FD052B27A8BD_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:startEvent id="_703CDD73-5CD8-48D6-A2F7-EE965FFE472F">
@@ -1914,6 +1898,7 @@ kcontext.setVariable("status", "Stopping");</bpmn2:script>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__A8D7EF7B-1265-445A-9383-5DF2BA820616_to_shape__F7482696-DB5C-45AA-8550-858D9A2AD723" bpmnElement="_23D6F99D-8641-478A-A922-DAE5D524FD3B">
         <di:waypoint x="4336" y="996"/>
+        <di:waypoint x="4334.330531342211" y="1034.6666564941406"/>
         <di:waypoint x="4335" y="1055"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__A8D7EF7B-1265-445A-9383-5DF2BA820616_to_shape__C60353ED-7D10-44A6-B3E7-51C19B868778" bpmnElement="_78355722-82E2-4DA6-A58A-0FDD47434B06">
@@ -2545,7 +2530,7 @@ kcontext.setVariable("status", "Stopping");</bpmn2:script>
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_8A2mUGc2EDubnfX_SpBakg</bpmn2:source>
-    <bpmn2:target>_8A2mUGc2EDubnfX_SpBakg</bpmn2:target>
+    <bpmn2:source>_yIZ-wGjcEDuEE6pHcdxxkw</bpmn2:source>
+    <bpmn2:target>_yIZ-wGjcEDuEE6pHcdxxkw</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>
