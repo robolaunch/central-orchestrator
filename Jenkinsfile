@@ -47,30 +47,30 @@ pipeline {
         }
       }
     }
-    stage('Build') {
-      steps {
-        container('ubuntu') {
-          sh 'mvn clean install'
-        }
-      }
-    }
-    stage('Docker Build') {
-      steps {
-        container('docker') {
-          sh 'docker build -f src/main/docker/Dockerfile.jvm -t robolaunchio/central-orchestrator:pipeline .'
-          withCredentials([usernamePassword(credentialsId: 'dockerhub-robolaunchio', passwordVariable: 'password', usernameVariable: 'username')]) {
-            sh 'docker login -u $username -p $password'
-          }
-          sh 'docker push robolaunchio/central-orchestrator:pipeline'
-        }
-      }
-    }
+    //stage('Build') {
+    //  steps {
+    //    container('ubuntu') {
+    //      sh 'mvn clean install'
+    //    }
+    //  }
+    //}
+    //stage('Docker Build') {
+    //  steps {
+    //    container('docker') {
+    //      sh 'docker build -f src/main/docker/Dockerfile.jvm -t robolaunchio/central-orchestrator:pipeline .'
+    //      withCredentials([usernamePassword(credentialsId: 'dockerhub-robolaunchio', passwordVariable: 'password', usernameVariable: 'username')]) {
+    //        sh 'docker login -u $username -p $password'
+    //      }
+    //      sh 'docker push robolaunchio/central-orchestrator:pipeline'
+    //    }
+    //  }
+    //}
     stage('Kubernetes Deploy') {
       steps {
         container('ubuntu') {
           withCredentials([file(credentialsId: 'hetzner_prod', variable: 'config')]) {
-            writeFile file: '/home/jenkins/agent/workspace/kogito/kubeconfig', text: '$config'
-            sh 'KUBECONFIG=/home/jenkins/agent/workspace/kogito/kubeconfig kubectl get ns'
+            //writeFile file: '/home/jenkins/agent/workspace/kogito/kubeconfig', text: '$config'
+            sh 'KUBECONFIG=$config kubectl get ns'
             //sh 'kogito use-project backend'
             //sh 'kogito deploy-service central-orchestrator --image robolaunchio/central-orchestrator:pipeline --infra kogito-infinispan-infra --infra kogito-kafka-infra'
           }
