@@ -37,16 +37,16 @@ pipeline {
     }
   }
   stages {
-    stage('Clone') {
-      steps {
-        container('ubuntu') {
-          git branch: 'main', changelog: false, poll: false, url: 'https://github.com/robolaunch/central-orchestrator.git'
-          withCredentials([file(credentialsId: 'backend.application.properties', variable: 'cnt')]) {
-            writeFile file: './src/main/resources/application.properties', text: '$cnt'
-          }
-        }
-      }
-    }
+    //stage('Clone') {
+    //  steps {
+    //    container('ubuntu') {
+    //      git branch: 'main', changelog: false, poll: false, url: 'https://github.com/robolaunch/central-orchestrator.git'
+    //      withCredentials([file(credentialsId: 'backend.application.properties', variable: 'cnt')]) {
+    //        writeFile file: './src/main/resources/application.properties', text: '$cnt'
+    //      }
+    //    }
+    //  }
+    //}
     //stage('Build') {
     //  steps {
     //    container('ubuntu') {
