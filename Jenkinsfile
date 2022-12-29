@@ -41,10 +41,6 @@ pipeline {
       steps {
         container('ubuntu') {
           git branch: 'main', changelog: false, poll: false, url: 'https://github.com/robolaunch/central-orchestrator.git'
-          withCredentials([file(credentialsId: 'backend.application.properties', variable: 'cnt')]) {
-            sh 'echo $cnt > ./src/main/resources/application.properties'
-            sh 'ls -l ./src/main/resources/application.properties && cat ./src/main/resources/application.properties'
-          }
         }
       }
     }
@@ -52,6 +48,11 @@ pipeline {
       steps {
         container('ubuntu') {
           sh 'mvn clean install'
+          withCredentials([file(credentialsId: 'backend.application.properties', variable: 'cnt')]) {
+            sh 'echo $cnt > ./src/main/resources/application.properties'
+            sh 'ls -l ./src/main/resources/application.properties && cat ./src/main/resources/application.properties'
+          }
+          sh 'maven install'
         }
       }
     }
