@@ -521,7 +521,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
         Optional<V1ObjectMeta> nodeMetadata = Optional.ofNullable(node).map(V1Node::getMetadata);
         if (!isNodeReady(nodeMetadata.get().getName(), provider, region, superCluster)
             && isNodeUnschedulable(nodeMetadata.get().getName(), provider, region, superCluster)) {
-          if (amazonRepository.getInstanceState(nodeMetadata.get().getName(), region)
+          if (amazonRepository.getInstanceState(nodeMetadata.get().getName(), provider, region, superCluster)
               .equals("stopped")) {
 
             Kubectl.label(V1Node.class).name(nodeMetadata.get().getName())
@@ -612,7 +612,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   @Override
   public Boolean healthCheck(Organization organization, String teamId, String cloudInstanceName,
       String nodeName, String provider, String region, String superCluster) {
-    Boolean isInstanceHealthy = amazonRepository.isRunning(nodeName, region);
+    Boolean isInstanceHealthy = amazonRepository.isRunning(nodeName, provider, region, superCluster);
     return isInstanceHealthy;
   }
 

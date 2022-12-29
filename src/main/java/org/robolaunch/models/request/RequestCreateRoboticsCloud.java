@@ -8,17 +8,8 @@ public class RequestCreateRoboticsCloud implements Serializable {
    private Organization organization;
    private String teamId;
    private String cloudInstanceName;
-   private String name;
 
    public RequestCreateRoboticsCloud() {
-   }
-
-   public String getName() {
-      return name;
-   }
-
-   public void setName(String name) {
-      this.name = name;
    }
 
    public Organization getOrganization() {

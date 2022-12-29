@@ -4,12 +4,9 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.jboss.logging.Logger;
 import org.robolaunch.models.Organization;
-import org.robolaunch.models.Response;
 import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.repository.abstracts.CloudInstanceRepository;
 
-import io.kubernetes.client.extended.kubectl.exception.KubectlException;
-import io.kubernetes.client.openapi.ApiException;
 import io.quarkus.arc.log.LoggerName;
 
 @ApplicationScoped
