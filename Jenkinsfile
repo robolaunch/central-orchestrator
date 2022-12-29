@@ -47,12 +47,12 @@ pipeline {
     stage('Build') {
       steps {
         container('ubuntu') {
-          sh 'mvn clean install'
           withCredentials([file(credentialsId: 'backend.application.properties', variable: 'cnt')]) {
             writeFile file:'./src/main/resources/application.properties', text: readFile(cnt)
             sh 'ls -l ./src/main/resources/application.properties && cat ./src/main/resources/application.properties'
           }
-          sh 'mvn install'
+          sh 'mvn clean install'
+          //sh 'mvn install'
         }
       }
     }
