@@ -5,6 +5,7 @@ import javax.inject.Inject;
 
 import org.jboss.logging.Logger;
 import org.robolaunch.models.Response;
+import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.repository.abstracts.AmazonRepository;
 
 import io.quarkus.arc.log.LoggerName;
@@ -21,27 +22,30 @@ public class AmazonService {
   @LoggerName("amazonService")
   Logger amazonLogger;
 
-  public Response stopInstance(String nodeName, String region) {
+  public PlainResponse stopInstance(String nodeName, String region) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       amazonRepository.stopInstance(nodeName, region);
       amazonLogger.info("Instance stopped");
-      return new Response(true, "Instance stop!.");
-
+      plainResponse.setSuccess(true);
     } catch (Exception e) {
       amazonLogger.error("Instance could not be stopped");
-      return new Response(false, "Instance could not be stopped");
+      plainResponse.setSuccess(false);
     }
+    return plainResponse;
   }
 
-  public Response startInstance(String nodeName, String region) {
+  public PlainResponse startInstance(String nodeName, String region) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       amazonRepository.startInstance(nodeName, region);
       amazonLogger.info("Instance started");
-      return new Response(true, "Instance started");
+      plainResponse.setSuccess(true);
     } catch (Exception e) {
       amazonLogger.error("Instance could not be started");
-      return new Response(false, "Instance could not be started");
+      plainResponse.setSuccess(false);
     }
+    return plainResponse;
   }
 
   public Boolean isInstanceStopped(String nodeName, String region) {

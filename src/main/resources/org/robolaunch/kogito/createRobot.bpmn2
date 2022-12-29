@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_X6oucGcoEDu2u5vrlSp4xA" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_WrFxMWjgEDu20vhcx7mfow" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_plainResponseItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="_requestCreateRobotItem" structureRef="org.robolaunch.models.request.RequestCreateRobot"/>
   <bpmn2:itemDefinition id="__9EB53A70-0E9C-4CDC-ABAD-38084FFFE23B_requestCreateRobotInputXItem" structureRef="org.robolaunch.models.request.RequestCreateRobot"/>
-  <bpmn2:itemDefinition id="__9EB53A70-0E9C-4CDC-ABAD-38084FFFE23B_plainResponseOutputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__9EB53A70-0E9C-4CDC-ABAD-38084FFFE23B_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:interface id="_9EB53A70-0E9C-4CDC-ABAD-38084FFFE23B_ServiceInterface" name="org.robolaunch.service.RobotService" implementationRef="org.robolaunch.service.RobotService">
     <bpmn2:operation id="_9EB53A70-0E9C-4CDC-ABAD-38084FFFE23B_ServiceOperation" name="createRobot" implementationRef="createRobot"/>
   </bpmn2:interface>
-  <bpmn2:collaboration id="_20E3660D-EF96-4B50-AE57-6045FA494CAF" name="Default Collaboration">
-    <bpmn2:participant id="_4645DDB3-BFF6-4627-9D64-14DD2D07BC6C" name="Pool Participant" processRef="createRobot"/>
+  <bpmn2:collaboration id="_8BE0234E-A5CA-452C-9944-B118AC721AAC" name="Default Collaboration">
+    <bpmn2:participant id="_A4D76FCC-332E-450A-9120-9EF65A780BDF" name="Pool Participant" processRef="createRobot"/>
   </bpmn2:collaboration>
   <bpmn2:process id="createRobot" drools:packageName="org.robolaunch.kogito.cloudInstance" drools:version="1.0" drools:adHoc="false" name="createRobot" isExecutable="true" processType="Public">
     <bpmn2:property id="plainResponse" itemSubjectRef="_plainResponseItem" name="plainResponse">
@@ -49,7 +49,7 @@
       <bpmn2:outgoing>_4B601F75-FC06-4CB5-A744-141948024094</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_9EB53A70-0E9C-4CDC-ABAD-38084FFFE23B_requestCreateRobotInputX" drools:dtype="org.robolaunch.models.request.RequestCreateRobot" itemSubjectRef="__9EB53A70-0E9C-4CDC-ABAD-38084FFFE23B_requestCreateRobotInputXItem" name="requestCreateRobot"/>
-        <bpmn2:dataOutput id="_9EB53A70-0E9C-4CDC-ABAD-38084FFFE23B_plainResponseOutputX" drools:dtype="String" itemSubjectRef="__9EB53A70-0E9C-4CDC-ABAD-38084FFFE23B_plainResponseOutputXItem" name="plainResponse"/>
+        <bpmn2:dataOutput id="_9EB53A70-0E9C-4CDC-ABAD-38084FFFE23B_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__9EB53A70-0E9C-4CDC-ABAD-38084FFFE23B_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_9EB53A70-0E9C-4CDC-ABAD-38084FFFE23B_requestCreateRobotInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
@@ -129,7 +129,7 @@
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_X6oucGcoEDu2u5vrlSp4xA</bpmn2:source>
-    <bpmn2:target>_X6oucGcoEDu2u5vrlSp4xA</bpmn2:target>
+    <bpmn2:source>_WrFxMWjgEDu20vhcx7mfow</bpmn2:source>
+    <bpmn2:target>_WrFxMWjgEDu20vhcx7mfow</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>
