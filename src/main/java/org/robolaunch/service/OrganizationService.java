@@ -455,7 +455,7 @@ public class OrganizationService {
   }
 
   public Integer getRoboticsCloudCount(Organization organization, String teamId) {
-
+    System.out.println("Gets it! count: ");
     /*
      * try {
      * String queryStr =

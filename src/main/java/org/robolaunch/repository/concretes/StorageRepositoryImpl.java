@@ -1,6 +1,7 @@
 package org.robolaunch.repository.concretes;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -10,21 +11,20 @@ import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.infinispan.client.hotrod.DefaultTemplate;
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
-import org.infinispan.client.hotrod.configuration.Configuration;
-import org.infinispan.client.hotrod.configuration.ConfigurationBuilder;
 import org.robolaunch.exception.ApplicationException;
 import org.robolaunch.models.Artifact;
 import org.robolaunch.models.Cluster;
-import org.robolaunch.models.Organization;
+import org.robolaunch.models.request.RequestCreateProvider;
+import org.robolaunch.models.request.RequestCreateRegion;
+import org.robolaunch.models.request.RequestCreateSuperCluster;
 import org.robolaunch.repository.abstracts.StorageRepository;
 import org.yaml.snakeyaml.Yaml;
 
@@ -35,11 +35,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
 import io.minio.GetObjectArgs;
+import io.minio.GetObjectResponse;
 import io.minio.ListObjectsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.RemoveObjectArgs;
 import io.minio.Result;
+import io.minio.StatObjectArgs;
 import io.minio.UploadObjectArgs;
 import io.minio.errors.ErrorResponseException;
 import io.minio.errors.InsufficientDataException;
@@ -74,11 +76,6 @@ public class StorageRepositoryImpl implements StorageRepository {
                 .object(artifact.getClusterName() + "/" + artifact.getName()).filename(tempFile.toString());
         minioClient.uploadObject(builder.build());
 
-        /*
-         * minioClient.uploadObject(UploadObjectArgs.builder().bucket(bucket)
-         * .object(artifact.getClusterName() + "/" + artifact.getName())
-         * .filename(artifactPath + "/" + artifact.getName()).build());
-         */
     }
 
     /* Get Template from "template-artifacts bucket" */
@@ -101,25 +98,6 @@ public class StorageRepositoryImpl implements StorageRepository {
         var jsonString = jsonMapper.writeValueAsString(object);
 
         return new Gson().fromJson(jsonString, JsonObject.class);
-    }
-
-    /* Get Template from "template-artifacts bucket" */
-    @Override
-    public JsonObject getContentJson(Artifact artifact, String bucket)
-            throws MinioException, InvalidKeyException, NoSuchAlgorithmException,
-            IllegalArgumentException, IOException {
-        InputStream inputStream = minioClient.getObject(GetObjectArgs.builder().bucket(bucket)
-                .object("/" + artifact.getName()).build());
-
-        Yaml yaml = new Yaml();
-        Iterable<Object> mData = yaml.loadAll(inputStream);
-        for (Object data : mData) {
-            String response = new Gson().toJson(data);
-            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-            String json = ow.writeValueAsString(data);
-        }
-
-        return null;
     }
 
     /* Get text content of the object on minio. */
@@ -179,6 +157,7 @@ public class StorageRepositoryImpl implements StorageRepository {
         }
     }
 
+    @Override
     public Boolean doesExist(Cluster cluster, String bucket)
             throws MinioException, InvalidKeyException, IllegalArgumentException,
             NoSuchAlgorithmException, IOException {
@@ -191,64 +170,96 @@ public class StorageRepositoryImpl implements StorageRepository {
         return false;
     }
 
+    @Override
     public void createBucket(String bucket) throws InvalidKeyException, ErrorResponseException,
             InsufficientDataException, InternalException, InvalidResponseException, NoSuchAlgorithmException,
             ServerException, XmlParserException, IllegalArgumentException, IOException, ApplicationException {
         minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
     }
 
-    public void createPricingFile(Organization organization)
-            throws IOException, InvalidKeyException, ErrorResponseException, InsufficientDataException,
-            InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException, XmlParserException,
-            IllegalArgumentException {
-        Path tempFile = Files.createTempFile("pricing", ".txt");
-        String content = "";
-
-        Files.write(tempFile, content.getBytes());
-        UploadObjectArgs.Builder builder = UploadObjectArgs.builder().bucket(organization.getName())
-                .object("pricing.txt").filename(tempFile.toString());
-        minioClient.uploadObject(builder.build());
-    }
-
-    public void addPricingStart(Organization organization, String teamId, String cloudInstanceName, String type)
+    @Override
+    public void createProvider(RequestCreateProvider requestCreateProvider)
             throws InvalidKeyException, ErrorResponseException,
             InsufficientDataException, InternalException, InvalidResponseException, NoSuchAlgorithmException,
             ServerException, XmlParserException, IllegalArgumentException, IOException {
-        Artifact artifact = new Artifact();
-        artifact.setName("pricing.txt");
-
-        String t = getContent(artifact, organization.getName());
-
-        Path tempFile = Files.createTempFile("pricing", ".txt");
-        t += "\nstart_" + new Date() + "_" + teamId + "_" + cloudInstanceName + "_" + type;
-
-        Files.write(tempFile, t.getBytes());
-        UploadObjectArgs.Builder builder = UploadObjectArgs.builder().bucket(organization.getName())
-                .object("pricing.txt").filename(tempFile.toString());
-        minioClient.uploadObject(builder.build());
+        ListObjectsArgs listObjectsArgs = ListObjectsArgs.builder().bucket("providers").build();
+        Iterator<Result<Item>> items = minioClient.listObjects(listObjectsArgs).iterator();
+        while (items.hasNext()) {
+            Result<Item> item = items.next();
+            if (item.get().objectName().equals(requestCreateProvider.getName() + "/")) {
+                break;
+            }
+            if (!items.hasNext()) {
+                throw new ApplicationException("Provider does not exists. First create the provider folder on minio.");
+            }
+        }
     }
 
-    public void addPricingStop(Organization organization, String teamId, String cloudInstanceName, String type)
+    @Override
+    public void createRegion(RequestCreateRegion requestCreateRegion, String providerName)
             throws InvalidKeyException, ErrorResponseException,
             InsufficientDataException, InternalException, InvalidResponseException, NoSuchAlgorithmException,
             ServerException, XmlParserException, IllegalArgumentException, IOException {
-        Artifact artifact = new Artifact();
-        artifact.setName("pricing.txt");
+        /*
+         * try {
+         * StatObjectArgs statObjectArgs = StatObjectArgs.builder().bucket("providers")
+         * .object(providerName + "/").build();
+         * minioClient.statObject(statObjectArgs);
+         * } catch (ErrorResponseException e) {
+         * System.out.println("error: " + e.errorResponse().code());
+         * if (e.errorResponse().code().equals("NoSuchKey")) {
+         * throw new
+         * ApplicationException("Provider does not exist. First create the provider folder on minio."
+         * );
+         * } else {
+         * throw new
+         * ApplicationException("Error while checking if the provider exists.");
+         * }
+         * }
+         * 
+         * try {
+         * StatObjectArgs statObjectArgs = StatObjectArgs.builder().bucket("providers")
+         * .object(providerName + "/" + requestCreateRegion.getName() + "/").build();
+         * minioClient.statObject(statObjectArgs);
+         * } catch (ErrorResponseException e) {
+         * System.out.println("error: " + e.errorResponse().code());
+         * if (e.errorResponse().code().equals("NoSuchKey")) {
+         * throw new
+         * ApplicationException("Region does not exist. First create the region folder on minio."
+         * );
+         * } else {
+         * throw new ApplicationException("Error while checking if the region exists.");
+         * }
+         * }
+         */
 
-        String t = getContent(artifact, organization.getName());
-
-        Path tempFile = Files.createTempFile("pricing", ".txt");
-        t += "\nstop_" + new Date() + "_" + teamId + "_" + cloudInstanceName + "_" + type;
-
-        Files.write(tempFile, t.getBytes());
-        UploadObjectArgs.Builder builder = UploadObjectArgs.builder().bucket(organization.getName())
-                .object("pricing.txt").filename(tempFile.toString());
-        minioClient.uploadObject(builder.build());
     }
 
-    public void infinispanConnect() {
-        Gson gson = new Gson();
-        ConfigurationBuilder builder = new ConfigurationBuilder();
-    }
+    @Override
+    public void createSuperCluster(RequestCreateSuperCluster requestCreateSuperCluster, String regionName,
+            String providerName)
+            throws InvalidKeyException, ErrorResponseException,
+            InsufficientDataException, InternalException, InvalidResponseException, NoSuchAlgorithmException,
+            ServerException, XmlParserException, IllegalArgumentException, IOException {
+        /*
+         * try {
+         * StatObjectArgs statObjectArgs = StatObjectArgs.builder().bucket("providers")
+         * .object(providerName + "/" + regionName + "/" +
+         * requestCreateSuperCluster.getName() + ".yaml")
+         * .build();
+         * minioClient.statObject(statObjectArgs);
+         * } catch (ErrorResponseException e) {
+         * System.out.println("error: " + e.errorResponse().code());
+         * if (e.errorResponse().code().equals("NoSuchKey")) {
+         * throw new ApplicationException(
+         * "Super Cluster does not exist. First create the Super Cluster yaml file on minio."
+         * );
+         * } else {
+         * throw new
+         * ApplicationException("Error while checking if the Super Cluster exists.");
+         * }
+         * }
+         */
 
+    }
 }

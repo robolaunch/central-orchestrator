@@ -6,6 +6,9 @@ import org.robolaunch.exception.ApplicationException;
 import org.robolaunch.models.Artifact;
 import org.robolaunch.models.Cluster;
 import org.robolaunch.models.Organization;
+import org.robolaunch.models.request.RequestCreateProvider;
+import org.robolaunch.models.request.RequestCreateRegion;
+import org.robolaunch.models.request.RequestCreateSuperCluster;
 
 import com.google.gson.JsonObject;
 
@@ -27,10 +30,6 @@ public interface StorageRepository {
                         IOException;
 
         JsonObject getYamlTemplate(Artifact artifact, String bucket)
-                        throws MinioException, InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException,
-                        IOException;
-
-        JsonObject getContentJson(Artifact artifact, String bucket)
                         throws MinioException, InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException,
                         IOException;
 
@@ -57,21 +56,20 @@ public interface StorageRepository {
                         InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
                         XmlParserException, IllegalArgumentException, IOException;
 
-        void createPricingFile(Organization organization)
-                        throws IOException, InvalidKeyException, ErrorResponseException, InsufficientDataException,
-                        InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
-                        XmlParserException, IllegalArgumentException;
-
-        void addPricingStart(Organization organization, String teamId, String cloudInstanceName, String type)
+        void createProvider(RequestCreateProvider requestCreateProvider)
                         throws InvalidKeyException, ErrorResponseException, InsufficientDataException,
                         InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
                         XmlParserException, IllegalArgumentException, IOException;
 
-        void addPricingStop(Organization organization, String teamId, String cloudInstanceName, String type)
+        void createRegion(RequestCreateRegion requestCreateRegion, String providerName)
                         throws InvalidKeyException, ErrorResponseException, InsufficientDataException,
                         InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
                         XmlParserException, IllegalArgumentException, IOException;
 
-        void infinispanConnect();
-
+        void createSuperCluster(RequestCreateSuperCluster requestCreateSuperRequestCreateSuperCluster,
+                        String regionName,
+                        String providerName)
+                        throws InvalidKeyException, ErrorResponseException, InsufficientDataException,
+                        InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
+                        XmlParserException, IllegalArgumentException, IOException;
 }
