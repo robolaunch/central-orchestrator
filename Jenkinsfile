@@ -43,7 +43,7 @@ pipeline {
           git branch: 'main', changelog: false, poll: false, url: 'https://github.com/robolaunch/central-orchestrator.git'
           withCredentials([file(credentialsId: 'backend.application.properties', variable: 'cnt')]) {
             writeFile file: './src/main/resources/application.properties', text: '$cnt'
-            sh 'ls -l ./src/main/resources/'
+            sh 'ls -l ./src/main/resources/application.properties && cat ./src/main/resources/application.properties'
           }
         }
       }
