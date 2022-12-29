@@ -8,6 +8,7 @@ public class RequestCreateRoboticsCloud implements Serializable {
    private Organization organization;
    private String teamId;
    private String cloudInstanceName;
+   private String instanceType;
 
    public RequestCreateRoboticsCloud() {
    }
@@ -34,6 +35,14 @@ public class RequestCreateRoboticsCloud implements Serializable {
 
    public void setCloudInstanceName(String cloudInstanceName) {
       this.cloudInstanceName = cloudInstanceName;
+   }
+
+   public String getInstanceType() {
+      return instanceType;
+   }
+
+   public void setInstanceType(String instanceType) {
+      this.instanceType = instanceType;
    }
 
 }

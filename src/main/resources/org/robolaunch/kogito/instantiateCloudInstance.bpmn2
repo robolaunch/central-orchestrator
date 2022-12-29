@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_jnqkAGmeEDuwxOU2vpwJuA" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_sxlbQGmxEDuqqLfoYTJneA" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_VCCountItem" structureRef="Integer"/>
   <bpmn2:itemDefinition id="_organizationItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="_bufferNameItem" structureRef="String"/>
@@ -93,7 +93,9 @@
   <bpmn2:itemDefinition id="__EFE7D00E-4C80-468C-A2ED-09D9C86799CB_regionInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__EFE7D00E-4C80-468C-A2ED-09D9C86799CB_superClusterInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__EFE7D00E-4C80-468C-A2ED-09D9C86799CB_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
-  <bpmn2:itemDefinition id="__EEDC55D9-8466-441B-8801-B7E48131CC29_cloudInstanceResultOutputXItem" structureRef="org.robolaunch.models.Result"/>
+  <bpmn2:itemDefinition id="__EEDC55D9-8466-441B-8801-B7E48131CC29_messageInputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__EEDC55D9-8466-441B-8801-B7E48131CC29_successInputXItem" structureRef="Boolean"/>
+  <bpmn2:itemDefinition id="__EEDC55D9-8466-441B-8801-B7E48131CC29_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__39DD29E6-B405-4B1D-AB4E-CF6390273B50_bufferNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__39DD29E6-B405-4B1D-AB4E-CF6390273B50_namespaceNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__39DD29E6-B405-4B1D-AB4E-CF6390273B50_cloudInstanceNameInputXItem" structureRef="String"/>
@@ -260,8 +262,8 @@
   <bpmn2:interface id="_EFE7D00E-4C80-468C-A2ED-09D9C86799CB_ServiceInterface" name="org.robolaunch.service.CloudInstanceService" implementationRef="org.robolaunch.service.CloudInstanceService">
     <bpmn2:operation id="_EFE7D00E-4C80-468C-A2ED-09D9C86799CB_ServiceOperation" name="labelVirtualCluster" implementationRef="labelVirtualCluster"/>
   </bpmn2:interface>
-  <bpmn2:interface id="_EEDC55D9-8466-441B-8801-B7E48131CC29_ServiceInterface" name="org.robolaunch.service.CloudInstanceHelperService" implementationRef="org.robolaunch.service.CloudInstanceHelperService">
-    <bpmn2:operation id="_EEDC55D9-8466-441B-8801-B7E48131CC29_ServiceOperation" name="errorCreatingCloudInstance" implementationRef="errorCreatingCloudInstance"/>
+  <bpmn2:interface id="_EEDC55D9-8466-441B-8801-B7E48131CC29_ServiceInterface" name="org.robolaunch.service.ErrorService" implementationRef="org.robolaunch.service.ErrorService">
+    <bpmn2:operation id="_EEDC55D9-8466-441B-8801-B7E48131CC29_ServiceOperation" name="plainResponseTemplate" implementationRef="plainResponseTemplate"/>
   </bpmn2:interface>
   <bpmn2:interface id="_39DD29E6-B405-4B1D-AB4E-CF6390273B50_ServiceInterface" name="org.robolaunch.service.CloudInstanceService" implementationRef="org.robolaunch.service.CloudInstanceService">
     <bpmn2:operation id="_39DD29E6-B405-4B1D-AB4E-CF6390273B50_ServiceOperation" name="createSubnet" implementationRef="createSubnet"/>
@@ -317,8 +319,8 @@
   <bpmn2:interface id="_FEA5D36D-ECB5-4ECE-A168-F0EC641E70E2_ServiceInterface" name="org.robolaunch.service.CloudInstanceHelperService" implementationRef="org.robolaunch.service.CloudInstanceHelperService">
     <bpmn2:operation id="_FEA5D36D-ECB5-4ECE-A168-F0EC641E70E2_ServiceOperation" name="getBufferedVirtualClusterCount" implementationRef="getBufferedVirtualClusterCount"/>
   </bpmn2:interface>
-  <bpmn2:collaboration id="_5DA843CC-8F70-4E65-AD36-4E22E43C9039" name="Default Collaboration">
-    <bpmn2:participant id="_1EF1B26A-C894-42D1-A3D8-B98DE712EC83" name="Pool Participant" processRef="instantiateCloudInstance"/>
+  <bpmn2:collaboration id="_C422715E-F2C6-485D-8436-A1F091C8D778" name="Default Collaboration">
+    <bpmn2:participant id="_8F5B32E0-9A8E-4E62-AED5-26681D7BD2A6" name="Pool Participant" processRef="instantiateCloudInstance"/>
   </bpmn2:collaboration>
   <bpmn2:process id="instantiateCloudInstance" drools:packageName="org.robolaunch.kogito" drools:version="1.0" drools:adHoc="false" name="instantiateCloudInstance" isExecutable="true" processType="Public">
     <bpmn2:property id="VCCount" itemSubjectRef="_VCCountItem" name="VCCount"/>
@@ -2777,7 +2779,7 @@ kcontext.setVariable("adminStage", "2/16 Waiting for buffer");</bpmn2:script>
 kcontext.setVariable("adminStage", "1/16 Labeling virtual cluster");
 kcontext.setVariable("userStage", "1/2 Starting Robotics Cloud");</bpmn2:script>
     </bpmn2:scriptTask>
-    <bpmn2:serviceTask id="_EEDC55D9-8466-441B-8801-B7E48131CC29" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.CloudInstanceHelperService" drools:serviceoperation="errorCreatingCloudInstance" name="Return error message" implementation="Java" operationRef="_EEDC55D9-8466-441B-8801-B7E48131CC29_ServiceOperation">
+    <bpmn2:serviceTask id="_EEDC55D9-8466-441B-8801-B7E48131CC29" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.ErrorService" drools:serviceoperation="plainResponseTemplate" name="Return error message" implementation="Java" operationRef="_EEDC55D9-8466-441B-8801-B7E48131CC29_ServiceOperation">
       <bpmn2:extensionElements>
         <drools:metaData name="elementname">
           <drools:metaValue><![CDATA[Return error message]]></drools:metaValue>
@@ -2786,11 +2788,35 @@ kcontext.setVariable("userStage", "1/2 Starting Robotics Cloud");</bpmn2:script>
       <bpmn2:incoming>_6D9C89B5-E9DB-405D-8494-DF0044D1648D</bpmn2:incoming>
       <bpmn2:outgoing>_FD2EAC58-3AF4-42B7-9B17-C0FEE6547834</bpmn2:outgoing>
       <bpmn2:ioSpecification>
-        <bpmn2:dataOutput id="_EEDC55D9-8466-441B-8801-B7E48131CC29_cloudInstanceResultOutputX" drools:dtype="org.robolaunch.models.Result" itemSubjectRef="__EEDC55D9-8466-441B-8801-B7E48131CC29_cloudInstanceResultOutputXItem" name="cloudInstanceResult"/>
+        <bpmn2:dataInput id="_EEDC55D9-8466-441B-8801-B7E48131CC29_messageInputX" drools:dtype="String" itemSubjectRef="__EEDC55D9-8466-441B-8801-B7E48131CC29_messageInputXItem" name="message"/>
+        <bpmn2:dataInput id="_EEDC55D9-8466-441B-8801-B7E48131CC29_successInputX" drools:dtype="Boolean" itemSubjectRef="__EEDC55D9-8466-441B-8801-B7E48131CC29_successInputXItem" name="success"/>
+        <bpmn2:dataOutput id="_EEDC55D9-8466-441B-8801-B7E48131CC29_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__EEDC55D9-8466-441B-8801-B7E48131CC29_plainResponseOutputXItem" name="plainResponse"/>
+        <bpmn2:inputSet>
+          <bpmn2:dataInputRefs>_EEDC55D9-8466-441B-8801-B7E48131CC29_messageInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_EEDC55D9-8466-441B-8801-B7E48131CC29_successInputX</bpmn2:dataInputRefs>
+        </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_EEDC55D9-8466-441B-8801-B7E48131CC29_cloudInstanceResultOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_EEDC55D9-8466-441B-8801-B7E48131CC29_plainResponseOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
+      <bpmn2:dataInputAssociation>
+        <bpmn2:targetRef>_EEDC55D9-8466-441B-8801-B7E48131CC29_messageInputX</bpmn2:targetRef>
+        <bpmn2:assignment>
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression"><![CDATA[Error creating cloud instance.]]></bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression"><![CDATA[_EEDC55D9-8466-441B-8801-B7E48131CC29_messageInputX]]></bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataInputAssociation>
+        <bpmn2:targetRef>_EEDC55D9-8466-441B-8801-B7E48131CC29_successInputX</bpmn2:targetRef>
+        <bpmn2:assignment>
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression"><![CDATA[false]]></bpmn2:from>
+          <bpmn2:to xsi:type="bpmn2:tFormalExpression"><![CDATA[_EEDC55D9-8466-441B-8801-B7E48131CC29_successInputX]]></bpmn2:to>
+        </bpmn2:assignment>
+      </bpmn2:dataInputAssociation>
+      <bpmn2:dataOutputAssociation>
+        <bpmn2:sourceRef>_EEDC55D9-8466-441B-8801-B7E48131CC29_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
+      </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:serviceTask id="_EFE7D00E-4C80-468C-A2ED-09D9C86799CB" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.CloudInstanceService" drools:serviceoperation="labelVirtualCluster" name="Label VC" implementation="Java" operationRef="_EFE7D00E-4C80-468C-A2ED-09D9C86799CB_ServiceOperation">
       <bpmn2:extensionElements>
@@ -5419,7 +5445,7 @@ kcontext.setVariable("userStage", "1/2 Starting Robotics Cloud");</bpmn2:script>
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_jnqkAGmeEDuwxOU2vpwJuA</bpmn2:source>
-    <bpmn2:target>_jnqkAGmeEDuwxOU2vpwJuA</bpmn2:target>
+    <bpmn2:source>_sxlbQGmxEDuqqLfoYTJneA</bpmn2:source>
+    <bpmn2:target>_sxlbQGmxEDuqqLfoYTJneA</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>

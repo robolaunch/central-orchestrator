@@ -55,6 +55,7 @@ import io.kubernetes.client.openapi.models.V1ContainerStatus;
 import io.kubernetes.client.openapi.models.V1Deployment;
 import io.kubernetes.client.openapi.models.V1DeploymentList;
 import io.kubernetes.client.openapi.models.V1DeploymentStatus;
+import io.kubernetes.client.openapi.models.V1NamespaceList;
 import io.kubernetes.client.openapi.models.V1Node;
 import io.kubernetes.client.openapi.models.V1NodeAddress;
 import io.kubernetes.client.openapi.models.V1NodeCondition;
@@ -1001,11 +1002,10 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   public ApiClient adminApiClient(String provider, String region, String superCluster)
       throws IOException, ApiException, InterruptedException, InvalidKeyException, NoSuchAlgorithmException,
       IllegalArgumentException, MinioException {
-    System.out.println("bees here!: " + region);
     String clusterName = provider + "/" + region + "/" + superCluster + ".yaml";
     Artifact artifact = new Artifact();
     artifact.setName(clusterName);
-    com.google.gson.JsonObject object = storageRepository.getYamlTemplate(artifact, "regions");
+    com.google.gson.JsonObject object = storageRepository.getYamlTemplate(artifact, "providers");
 
     String kubernetesServerUrl = object.get("clusters").getAsJsonArray().get(0).getAsJsonObject().get("cluster")
         .getAsJsonObject()
@@ -1035,6 +1035,12 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
         .setCertificateAuthority(byteCertificateAuthData)
         .setVerifyingSsl(true)
         .build();
+
+    CoreV1Api coreV1Api = new CoreV1Api(newClient);
+    V1NamespaceList namespaceList = coreV1Api.listNamespace(null, null, null, null, null, null, null, null, null, null);
+    namespaceList.getItems().forEach(namespace -> {
+      System.out.println("Namespace: " + namespace.getMetadata().getName());
+    });
 
     VCCreated++;
     System.out.println("Returning new VC! --- " + VCCreated);
