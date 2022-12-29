@@ -2,6 +2,7 @@ package org.robolaunch.service;
 
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.openapi.apis.AppsV1Api;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi;
 import io.minio.errors.MinioException;
@@ -26,10 +27,13 @@ public class ApiClientManager {
 
    private Map<String, ApiClient> apiClientMap = new ConcurrentHashMap<>();
    private Map<String, CoreV1Api> coreApiMap = new ConcurrentHashMap<>();
+   private Map<String, AppsV1Api> appsApiMap = new ConcurrentHashMap<>();
+
    private Map<String, DynamicKubernetesApi> machineDeploymentApiMap = new ConcurrentHashMap<>();
    private Map<String, DynamicKubernetesApi> clusterVersionApiMap = new ConcurrentHashMap<>();
    private Map<String, DynamicKubernetesApi> virtualClusterApiMap = new ConcurrentHashMap<>();
    private Map<String, DynamicKubernetesApi> subnetApiMap = new ConcurrentHashMap<>();
+   private Map<String, DynamicKubernetesApi> machineApiMap = new ConcurrentHashMap<>();
 
    @Unremovable
    public ApiClient getAdminApiClient(String region) throws InvalidKeyException, NoSuchAlgorithmException,
@@ -72,6 +76,19 @@ public class ApiClientManager {
    }
 
    @Unremovable
+   public AppsV1Api getAppsApi(String region)
+         throws InvalidKeyException, NoSuchAlgorithmException,
+         IllegalArgumentException, IOException, ApiException, InterruptedException, MinioException {
+      AppsV1Api appsApi = appsApiMap.get(region);
+      if (appsApi == null) {
+         ApiClient apiClient = getAdminApiClient(region);
+         appsApi = new AppsV1Api(apiClient);
+         appsApiMap.put(region, appsApi);
+      }
+      return appsApi;
+   }
+
+   @Unremovable
    public DynamicKubernetesApi getClusterVersionApi(String region)
          throws InvalidKeyException, NoSuchAlgorithmException,
          IllegalArgumentException, IOException, ApiException, InterruptedException, MinioException {
@@ -84,5 +101,48 @@ public class ApiClientManager {
          clusterVersionApiMap.put(region, clusterVersionApi);
       }
       return clusterVersionApi;
+   }
+
+   @Unremovable
+   public DynamicKubernetesApi getVirtualClusterApi(String region)
+         throws InvalidKeyException, NoSuchAlgorithmException,
+         IllegalArgumentException, IOException, ApiException, InterruptedException, MinioException {
+      DynamicKubernetesApi virtualClusterApi = virtualClusterApiMap.get(region);
+      if (virtualClusterApi == null) {
+         ApiClient apiClient = getAdminApiClient(region);
+         virtualClusterApi = new DynamicKubernetesApi("tenancy.x-k8s.io", "v1alpha1",
+               "virtualclusters", apiClient);
+         virtualClusterApiMap.put(region, virtualClusterApi);
+      }
+      return virtualClusterApi;
+   }
+
+   @Unremovable
+   public DynamicKubernetesApi getSubnetApi(String region)
+         throws InvalidKeyException, NoSuchAlgorithmException,
+         IllegalArgumentException, IOException, ApiException, InterruptedException, MinioException {
+      DynamicKubernetesApi subnetApi = subnetApiMap.get(region);
+      if (subnetApi == null) {
+         ApiClient apiClient = getAdminApiClient(region);
+         subnetApi = new DynamicKubernetesApi("kubeovn.io", "v1",
+               "subnets", apiClient);
+         subnetApiMap.put(region, subnetApi);
+      }
+      return subnetApi;
+   }
+
+   @Unremovable
+   public DynamicKubernetesApi getMachineApi(String region)
+         throws InvalidKeyException, NoSuchAlgorithmException,
+         IllegalArgumentException, IOException, ApiException, InterruptedException, MinioException {
+      DynamicKubernetesApi machineApi = machineApiMap.get(region);
+      if (machineApi == null) {
+         ApiClient apiClient = getAdminApiClient(region);
+         machineApi = new DynamicKubernetesApi("cluster.k8s.io",
+               "v1alpha1", "machines",
+               apiClient);
+         machineApiMap.put(region, machineApi);
+      }
+      return machineApi;
    }
 }

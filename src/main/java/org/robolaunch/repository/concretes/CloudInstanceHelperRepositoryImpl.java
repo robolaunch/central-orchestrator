@@ -36,6 +36,7 @@ import org.robolaunch.repository.abstracts.CloudInstanceHelperRepository;
 import org.robolaunch.repository.abstracts.GroupAdminRepository;
 import org.robolaunch.repository.abstracts.KubernetesRepository;
 import org.robolaunch.repository.abstracts.StorageRepository;
+import org.robolaunch.service.ApiClientManager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -88,13 +89,6 @@ import io.smallrye.graphql.client.dynamic.api.DynamicGraphQLClientBuilder;
 
 @ApplicationScoped
 public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRepository {
-  private DynamicKubernetesApi machinesApi;
-  private CoreV1Api coreV1Api;
-  private AppsV1Api appsApi;
-  private DynamicKubernetesApi virtualClustersApi;
-  private DynamicKubernetesApi subnetsApi;
-  private DynamicKubernetesApi clusterVersionApi;
-
   private DynamicGraphQLClient graphqlClient;
   public static Integer VCCreated = 0;
 
@@ -119,31 +113,21 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   StorageRepository storageRepository;
   @Inject
   JsonWebToken jwt;
+  @Inject
+  ApiClientManager apiClientManager;
 
   @PostConstruct
   public void initializeApis() throws IOException, ApiException, InterruptedException, InvalidKeyException,
       NoSuchAlgorithmException, IllegalArgumentException, MinioException {
-    ApiClient apiClient = adminApiClient("eu-central-1");
-
-    this.machinesApi = new DynamicKubernetesApi("cluster.k8s.io",
-        "v1alpha1", "machines",
-        apiClient);
-    this.clusterVersionApi = new DynamicKubernetesApi("tenancy.x-k8s.io", "v1alpha1",
-        "clusterversions", apiClient);
-    this.coreV1Api = new CoreV1Api(apiClient);
-    this.virtualClustersApi = new DynamicKubernetesApi("tenancy.x-k8s.io", "v1alpha1",
-        "virtualclusters", apiClient);
-    this.subnetsApi = new DynamicKubernetesApi("kubeovn.io", "v1",
-        "subnets", apiClient);
-    this.appsApi = new AppsV1Api(apiClient);
     graphqlClient = DynamicGraphQLClientBuilder.newBuilder()
         .url(kogitoDataIndexUrl + "/graphql/")
         .build();
-
   }
 
   @Override
-  public String getCloudInstanceIP(String bufferName, String region) throws ApiException {
+  public String getCloudInstanceIP(String bufferName, String region) throws ApiException, InvalidKeyException,
+      NoSuchAlgorithmException, IllegalArgumentException, IOException, InterruptedException, MinioException {
+    CoreV1Api coreV1Api = apiClientManager.getCoreApi(region);
     String namespaceName = getNamespaceNameWithBufferName(bufferName, region);
     String nodePort = "";
     for (V1Service service : coreV1Api
@@ -226,7 +210,10 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
-  public String getGeneratedMachineName(String bufferName, String region) {
+  public String getGeneratedMachineName(String bufferName, String region)
+      throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException, ApiException,
+      InterruptedException, MinioException {
+    DynamicKubernetesApi machinesApi = apiClientManager.getMachineApi(region);
     String machineName = "";
     var list = machinesApi.list("kube-system").getObject().getItems();
     Iterator<DynamicKubernetesObject> iterator = list.iterator();
@@ -244,9 +231,12 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
-  public Boolean nodeRefChecker(String bufferName, String machineName, String region) throws ApiException {
+  public Boolean nodeRefChecker(String bufferName, String machineName, String region)
+      throws ApiException, InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
+      InterruptedException, MinioException {
+    DynamicKubernetesApi machinesApi = apiClientManager.getMachineApi(region);
+    CoreV1Api coreV1Api = apiClientManager.getCoreApi(region);
     String nodeName = "";
-
     KubernetesApiResponse<DynamicKubernetesObject> machine = machinesApi.get("kube-system", machineName);
     if (machine.getObject().getRaw().get("status").getAsJsonObject().get("nodeRef") != null) {
       nodeName = machine.getObject().getRaw()
@@ -278,7 +268,10 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
-  public Boolean isVirtualClusterReady(String bufferName, String region) {
+  public Boolean isVirtualClusterReady(String bufferName, String region)
+      throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException, ApiException,
+      InterruptedException, MinioException {
+    DynamicKubernetesApi virtualClustersApi = apiClientManager.getVirtualClusterApi(region);
     String cloudInstanceName = "vc-" + bufferName;
 
     ListOptions listOptions = new ListOptions();
@@ -319,7 +312,11 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
-  public Integer getBufferedVirtualClusterCount(String instanceType, String region) {
+  public Integer getBufferedVirtualClusterCount(String instanceType, String region)
+      throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException, ApiException,
+      InterruptedException, MinioException {
+    DynamicKubernetesApi virtualClustersApi = apiClientManager.getVirtualClusterApi(region);
+
     ListOptions listOptions = new ListOptions();
     listOptions.setLabelSelector(
         "buffered=true, !robolaunch.io/organization, robolaunch.io/instance-type=" + instanceType);
@@ -335,7 +332,10 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
   @Override
   public String selectBufferedVirtualCluster(Integer vcCount, String region)
-      throws KubectlException, IOException, InterruptedException {
+      throws KubectlException, IOException, InterruptedException, InvalidKeyException, NoSuchAlgorithmException,
+      IllegalArgumentException, ApiException, MinioException {
+    DynamicKubernetesApi virtualClustersApi = apiClientManager.getVirtualClusterApi(region);
+
     ModelMapper.addModelMap("tenancy.x-k8s.io", "v1alpha1", "VirtualCluster",
         "virtualclusters", true,
         V1VirtualCluster.class);
@@ -354,7 +354,9 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
-  public String getNodeName(String machineName, String region) {
+  public String getNodeName(String machineName, String region) throws InvalidKeyException, NoSuchAlgorithmException,
+      IllegalArgumentException, IOException, ApiException, InterruptedException, MinioException {
+    DynamicKubernetesApi machinesApi = apiClientManager.getMachineApi(region);
     KubernetesApiResponse<DynamicKubernetesObject> machine = machinesApi.get(
         "kube-system",
         machineName);
@@ -369,7 +371,9 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
-  public Boolean isStatefulSetsUp(String namespaceName, String region) throws ApiException, IOException {
+  public Boolean isStatefulSetsUp(String namespaceName, String region) throws ApiException, IOException,
+      InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, InterruptedException, MinioException {
+    CoreV1Api coreV1Api = apiClientManager.getCoreApi(region);
     var pods = coreV1Api.listNamespacedPod(namespaceName, null, null, null, null, null, null, null, null,
         null, null);
     Boolean etcdReady = false;
@@ -411,7 +415,9 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
-  public Boolean isStatefulSetsDown(String namespaceName, String region) throws ApiException {
+  public Boolean isStatefulSetsDown(String namespaceName, String region) throws ApiException, InvalidKeyException,
+      NoSuchAlgorithmException, IllegalArgumentException, IOException, InterruptedException, MinioException {
+    CoreV1Api coreV1Api = apiClientManager.getCoreApi(region);
     V1PodList pods = coreV1Api.listNamespacedPod(namespaceName, null, null, null, null, null, null, null, null,
         null, null);
     for (V1Pod pod : pods.getItems()) {
@@ -429,7 +435,8 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
   @Override
   public Boolean isCoreDNSDeploymentUp(String bufferName, String region)
-      throws IOException, ApiException, InterruptedException {
+      throws IOException, ApiException, InterruptedException, InvalidKeyException, NoSuchAlgorithmException,
+      IllegalArgumentException, MinioException {
     ApiClient vcClient = getVirtualClusterClientWithBufferName(bufferName, region);
 
     AppsV1Api appsV1Api = new AppsV1Api(vcClient);
@@ -451,7 +458,8 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
   @Override
   public Boolean isCertManagerReady(String bufferName, String region)
-      throws ApiException, IOException, InterruptedException {
+      throws ApiException, IOException, InterruptedException, InvalidKeyException, NoSuchAlgorithmException,
+      IllegalArgumentException, MinioException {
     Boolean podsReady = false;
     Boolean svcReady = false;
 
@@ -495,8 +503,8 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   public String selectNode(String bufferName, String region)
       throws ApiException, KubectlException, IOException, InterruptedException, InvalidKeyException,
       NoSuchAlgorithmException, IllegalArgumentException, MinioException {
-    ApiClient apiClient = adminApiClient("eu-central-1");
-
+    CoreV1Api coreV1Api = apiClientManager.getCoreApi(region);
+    ApiClient apiClient = apiClientManager.getAdminApiClient(region);
     while (true) {
       V1NodeList nodeList = coreV1Api.listNode(null, null, null, null,
           "!node-role.kubernetes.io/master, !robolaunch.io/buffer-instance, node-role.kubernetes.io/worker=worker",
@@ -523,7 +531,9 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
-  public Boolean isNodeUnschedulable(String nodeName, String region) throws ApiException {
+  public Boolean isNodeUnschedulable(String nodeName, String region) throws ApiException, InvalidKeyException,
+      NoSuchAlgorithmException, IllegalArgumentException, IOException, InterruptedException, MinioException {
+    CoreV1Api coreV1Api = apiClientManager.getCoreApi(region);
     var node = coreV1Api.readNode(nodeName, null);
     Optional<V1NodeSpec> nodeSpec = Optional.ofNullable(node).map(V1Node::getSpec);
     if (nodeSpec.get().getUnschedulable() == null) {
@@ -535,7 +545,9 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
-  public Boolean isNodeReady(String nodeName, String region) throws ApiException {
+  public Boolean isNodeReady(String nodeName, String region) throws ApiException, InvalidKeyException,
+      NoSuchAlgorithmException, IllegalArgumentException, IOException, InterruptedException, MinioException {
+    CoreV1Api coreV1Api = apiClientManager.getCoreApi(region);
     var node = coreV1Api.readNode(nodeName, null);
     Optional<List<V1NodeCondition>> nodeConditions = Optional.ofNullable(node).map(V1Node::getStatus)
         .map(m -> m.getConditions());
@@ -546,7 +558,9 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
-  public Boolean isSubnetUsed(String bufferName, String region) throws ApiException {
+  public Boolean isSubnetUsed(String bufferName, String region) throws ApiException, InvalidKeyException,
+      NoSuchAlgorithmException, IllegalArgumentException, IOException, InterruptedException, MinioException {
+    DynamicKubernetesApi subnetsApi = apiClientManager.getSubnetApi(region);
     String namespaceName = getNamespaceNameWithBufferName(bufferName, region);
 
     var subnet = subnetsApi.get("subnet-" + namespaceName).getObject().getRaw();
@@ -555,7 +569,9 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
   @Override
   public String findNode(String bufferName, Organization organization, String teamId,
-      String cloudInstanceName, String region) throws ApiException {
+      String cloudInstanceName, String region) throws ApiException, InvalidKeyException, NoSuchAlgorithmException,
+      IllegalArgumentException, IOException, InterruptedException, MinioException {
+    CoreV1Api coreV1Api = apiClientManager.getCoreApi(region);
     V1NodeList nodeList = coreV1Api.listNode(null, null, null, null,
         "!node-role.kubernetes.io/master, robolaunch.io/organization=" + organization.getName()
             + ", robolaunch.io/team=" + teamId
@@ -566,7 +582,10 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
-  public Boolean isMachineCreated(String bufferName, String region) {
+  public Boolean isMachineCreated(String bufferName, String region)
+      throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException, ApiException,
+      InterruptedException, MinioException {
+    DynamicKubernetesApi machinesApi = apiClientManager.getMachineApi(region);
     var machines = machinesApi.list();
     for (var machine : machines.getObject().getItems()) {
       Optional<String> machineName = Optional.ofNullable(machine).map(DynamicKubernetesObject::getMetadata)
@@ -587,7 +606,9 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
   @Override
   public void deleteDNSRecord(Organization organization, String nodeName, String region)
-      throws ApiException, InternalError, ApplicationException, IOException {
+      throws ApiException, InternalError, ApplicationException, IOException, InvalidKeyException,
+      NoSuchAlgorithmException, IllegalArgumentException, InterruptedException, MinioException {
+    CoreV1Api coreV1Api = apiClientManager.getCoreApi(region);
     String externalIP = "";
     var node = coreV1Api.readNode(nodeName, null);
     Optional<List<V1NodeAddress>> nodeAddresses = Optional.ofNullable(node).map(V1Node::getStatus)
@@ -605,15 +626,19 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
-  public void deleteClusterVersion(String bufferName, String region) {
+  public void deleteClusterVersion(String bufferName, String region)
+      throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException, ApiException,
+      InterruptedException, MinioException {
+    DynamicKubernetesApi clusterVersionApi = apiClientManager.getClusterVersionApi(region);
     clusterVersionApi.delete("cv-" + bufferName);
   }
 
   @Override
   public void deleteOAuth2ProxyResources(String bufferName, String region)
-      throws ApiException, InvalidKeyException, ErrorResponseException, InsufficientDataException,
-      InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
-      XmlParserException, IllegalArgumentException, IOException, InterruptedException {
+      throws ApiException, InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
+      InterruptedException, MinioException {
+    CoreV1Api coreV1Api = apiClientManager.getCoreApi(region);
+    AppsV1Api appsApi = apiClientManager.getAppsApi(region);
     String namespaceName = getNamespaceNameWithBufferName(bufferName, region);
 
     Artifact artifact = new Artifact();
@@ -684,7 +709,9 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
   @Override
   public void deleteSubnet(String bufferName, String region)
-      throws InternalError, IOException, ApiException {
+      throws InternalError, IOException, ApiException, InvalidKeyException, NoSuchAlgorithmException,
+      IllegalArgumentException, InterruptedException, MinioException {
+    DynamicKubernetesApi subnetsApi = apiClientManager.getSubnetApi(region);
     String namespaceName = getNamespaceNameWithBufferName(bufferName, region);
     subnetsApi.delete("subnet-" + namespaceName);
 
@@ -724,7 +751,8 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
   @Override
   public void deleteVirtualClusterNodes(String bufferName, String region)
-      throws IOException, ApiException, InterruptedException, KubectlException {
+      throws IOException, ApiException, InterruptedException, KubectlException, InvalidKeyException,
+      NoSuchAlgorithmException, IllegalArgumentException, MinioException {
     ApiClient vcClient = getVirtualClusterClientWithBufferName(bufferName, region);
     CoreV1Api vcCoreV1Api = new CoreV1Api(vcClient);
     var nodeList = vcCoreV1Api.listNode(null, null, null, null, null, null, null, null, null, null);
@@ -761,7 +789,10 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
-  public String getNamespaceNameWithBufferName(String bufferName, String region) throws ApiException {
+  public String getNamespaceNameWithBufferName(String bufferName, String region)
+      throws ApiException, InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
+      InterruptedException, MinioException {
+    CoreV1Api coreV1Api = apiClientManager.getCoreApi(region);
     String namespaceName = "";
 
     var namespaces = coreV1Api.listNamespace(null, null, null, null, null, null, null, null, null, null);
@@ -779,7 +810,10 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
   @Override
   public ApiClient getVirtualClusterClientWithBufferName(String bufferName, String region)
-      throws IOException, ApiException, InterruptedException {
+      throws IOException, ApiException, InterruptedException, InvalidKeyException, NoSuchAlgorithmException,
+      IllegalArgumentException, MinioException {
+    CoreV1Api coreV1Api = apiClientManager.getCoreApi(region);
+    DynamicKubernetesApi virtualClustersApi = apiClientManager.getVirtualClusterApi(region);
     String namespaceName = getNamespaceNameWithBufferName(bufferName, region);
     V1Secret sc = coreV1Api.readNamespacedSecret("admin-kubeconfig", namespaceName, null);
     Optional<Map<String, byte[]>> data = Optional.ofNullable(sc).map(V1Secret::getData);
@@ -922,7 +956,10 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
   @Override
   public ApiClient userApiClient(String bufferName, String token, String region)
-      throws IOException, ApiException, InterruptedException {
+      throws IOException, ApiException, InterruptedException, InvalidKeyException, NoSuchAlgorithmException,
+      IllegalArgumentException, MinioException {
+    CoreV1Api coreV1Api = apiClientManager.getCoreApi(region);
+    DynamicKubernetesApi virtualClustersApi = apiClientManager.getVirtualClusterApi(region);
     String namespaceName = getNamespaceNameWithBufferName(bufferName, region);
     System.out.println("Namespace Name: " + namespaceName);
     V1Secret sc = coreV1Api.readNamespacedSecret("admin-kubeconfig", namespaceName, null);
