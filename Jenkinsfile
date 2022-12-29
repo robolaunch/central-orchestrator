@@ -73,6 +73,7 @@ pipeline {
             //writeFile file: '/home/jenkins/agent/workspace/kogito/kubeconfig', text: '$config'
             sh 'KUBECONFIG=$config kubectl get ns'
             sh 'KUBECONFIG=$config kogito use-project backend'
+            sh 'KUBECONFIG=$config kogito delete-service central-orchestrator'
             sh 'KUBECONFIG=$config kogito deploy-service central-orchestrator --image robolaunchio/central-orchestrator:pipeline --infra kogito-infinispan-infra --infra kogito-kafka-infra'
           }
         }
