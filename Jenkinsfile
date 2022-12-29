@@ -71,6 +71,7 @@ pipeline {
           withCredentials([file(credentialsId: 'hetzner_prod', variable: 'config')]) {
             writeFile file: './kubeconfig', text: '$config'
             sh 'export KUBECONFIG=./kubeconfig'
+            sh 'kubectl get ns'
             sh 'kogito use-project backend'
             sh 'kogito deploy-service central-orchestrator --image robolaunchio/central-orchestrator:pipeline --infra kogito-infinispan-infra --infra kogito-kafka-infra'
           }
