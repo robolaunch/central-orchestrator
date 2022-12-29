@@ -9,7 +9,6 @@ public class RequestCreateRoboticsCloud implements Serializable {
    private String teamId;
    private String cloudInstanceName;
    private String name;
-   private String region;
 
    public RequestCreateRoboticsCloud() {
    }
@@ -44,14 +43,6 @@ public class RequestCreateRoboticsCloud implements Serializable {
 
    public void setCloudInstanceName(String cloudInstanceName) {
       this.cloudInstanceName = cloudInstanceName;
-   }
-
-   public String getRegion() {
-      return region;
-   }
-
-   public void setRegion(String region) {
-      this.region = region;
    }
 
 }
