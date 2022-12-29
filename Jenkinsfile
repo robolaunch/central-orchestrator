@@ -52,7 +52,7 @@ pipeline {
             sh 'echo $cnt > ./src/main/resources/application.properties'
             sh 'ls -l ./src/main/resources/application.properties && cat ./src/main/resources/application.properties'
           }
-          sh 'maven install'
+          sh 'mvn install'
         }
       }
     }
