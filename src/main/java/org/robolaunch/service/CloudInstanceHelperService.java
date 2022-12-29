@@ -80,10 +80,11 @@ public class CloudInstanceHelperService {
     return new Result("Error starting cloud instance", false);
   }
 
-  public String getBufferName(Organization organization, String teamId, String cloudInstanceName, String region)
+  public String getBufferName(Organization organization, String teamId, String cloudInstanceName, String provider,
+      String region, String superCluster)
       throws IOException, ApiException, InterruptedException, InvalidKeyException, NoSuchAlgorithmException,
       IllegalArgumentException, MinioException {
-    ApiClient apiClient = cloudInstanceHelperRepository.adminApiClient("eu-central-1");
+    ApiClient apiClient = cloudInstanceHelperRepository.adminApiClient(provider, region, superCluster);
 
     DynamicKubernetesApi vcApi = new DynamicKubernetesApi("tenancy.x-k8s.io", "v1alpha1",
         "virtualclusters", apiClient);
@@ -95,17 +96,17 @@ public class CloudInstanceHelperService {
         .split("-")[1];
   }
 
-  public void bufferCall(String instanceType, String region) {
+  public void bufferCall(String instanceType, String provider, String region, String superCluster) {
     try {
-      cloudInstanceHelperRepository.bufferCall(instanceType, region);
+      cloudInstanceHelperRepository.bufferCall(instanceType, provider, region, superCluster);
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Buffer call failed");
     }
   }
 
-  public void CIOperationCall(String processId, String operation, String region) {
+  public void CIOperationCall(String processId, String operation, String provider, String region, String superCluster) {
     try {
-      cloudInstanceHelperRepository.CIOperationCall(processId, operation, region);
+      cloudInstanceHelperRepository.CIOperationCall(processId, operation, provider, region, superCluster);
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while calling CIOperationCall: " + e.getMessage());
     }
@@ -120,9 +121,9 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Boolean isMachineCreated(String bufferName, String region) {
+  public Boolean isMachineCreated(String bufferName, String provider, String region, String superCluster) {
     try {
-      return cloudInstanceHelperRepository.isMachineCreated(bufferName, region);
+      return cloudInstanceHelperRepository.isMachineCreated(bufferName, provider, region, superCluster);
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error creating cloud instance");
       return false;
@@ -137,17 +138,20 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public ApiClient getVirtualClusterClientWithBufferName(String bufferName, String region) {
+  public ApiClient getVirtualClusterClientWithBufferName(String bufferName, String provider, String region,
+      String superCluster) {
     try {
-      return cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName, region);
+      return cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName, provider, region,
+          superCluster);
     } catch (Exception e) {
       return null;
     }
   }
 
-  public String getGeneratedMachineName(String bufferName, String region) {
+  public String getGeneratedMachineName(String bufferName, String provider, String region, String superCluster) {
     try {
-      String machineName = cloudInstanceHelperRepository.getGeneratedMachineName(bufferName, region);
+      String machineName = cloudInstanceHelperRepository.getGeneratedMachineName(bufferName, provider, region,
+          superCluster);
       return machineName;
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error getting machne name", e);
@@ -155,18 +159,20 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Boolean nodeRefChecker(String bufferName, String machineName, String region) {
+  public Boolean nodeRefChecker(String bufferName, String machineName, String provider, String region,
+      String superCluster) {
     try {
-      Boolean isReady = cloudInstanceHelperRepository.nodeRefChecker(bufferName, machineName, region);
+      Boolean isReady = cloudInstanceHelperRepository.nodeRefChecker(bufferName, machineName, provider, region,
+          superCluster);
       return isReady;
     } catch (Exception e) {
       return null;
     }
   }
 
-  public Boolean isVirtualClusterReady(String bufferName, String region) {
+  public Boolean isVirtualClusterReady(String bufferName, String provider, String region, String superCluster) {
     try {
-      Boolean isReady = cloudInstanceHelperRepository.isVirtualClusterReady(bufferName, region);
+      Boolean isReady = cloudInstanceHelperRepository.isVirtualClusterReady(bufferName, provider, region, superCluster);
       return isReady;
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while creating virtual cluster.", e);
@@ -174,10 +180,13 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Integer getBufferingVirtualClusterCount(String instanceType, String region) {
+  public Integer getBufferingVirtualClusterCount(String instanceType, String provider, String region,
+      String superCluster) {
     try {
-      if (cloudInstanceHelperRepository.getBufferingVirtualClusterCount(instanceType, region) != null) {
-        Integer count = cloudInstanceHelperRepository.getBufferingVirtualClusterCount(instanceType, region);
+      if (cloudInstanceHelperRepository.getBufferingVirtualClusterCount(instanceType, provider, region,
+          superCluster) != null) {
+        Integer count = cloudInstanceHelperRepository.getBufferingVirtualClusterCount(instanceType, provider, region,
+            superCluster);
         cloudInstanceHelperLogger.info("Buffering -" + instanceType + "- virtual cluster count: " + count);
         return count;
       } else {
@@ -189,9 +198,11 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Integer getBufferedVirtualClusterCount(String instanceType, String region) {
+  public Integer getBufferedVirtualClusterCount(String instanceType, String provider, String region,
+      String superCluster) {
     try {
-      Integer count = cloudInstanceHelperRepository.getBufferedVirtualClusterCount(instanceType, region);
+      Integer count = cloudInstanceHelperRepository.getBufferedVirtualClusterCount(instanceType, provider, region,
+          superCluster);
       System.out.println("Buffered count: " + count);
       cloudInstanceHelperLogger.info("Buffered -" + instanceType + "- virtual cluster count: " + count);
       return count;
@@ -201,9 +212,10 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public String selectBufferedVirtualCluster(Integer vcCount, String region) {
+  public String selectBufferedVirtualCluster(Integer vcCount, String provider, String region, String superCluster) {
     try {
-      String bufferName = cloudInstanceHelperRepository.selectBufferedVirtualCluster(vcCount, region);
+      String bufferName = cloudInstanceHelperRepository.selectBufferedVirtualCluster(vcCount, provider, region,
+          superCluster);
       cloudInstanceHelperLogger.info("Buffered virtual cluster selected");
       return bufferName;
     } catch (Exception e) {
@@ -212,9 +224,9 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public String selectNode(String bufferName, String region) {
+  public String selectNode(String bufferName, String provider, String region, String superCluster) {
     try {
-      String nodeName = cloudInstanceHelperRepository.selectNode(bufferName, region);
+      String nodeName = cloudInstanceHelperRepository.selectNode(bufferName, provider, region, superCluster);
       cloudInstanceHelperLogger.info("Node name: " + nodeName);
       return nodeName;
     } catch (Exception e) {
@@ -223,9 +235,9 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public String getNodeName(String machineName, String region) {
+  public String getNodeName(String machineName, String provider, String region, String superCluster) {
     try {
-      String nodeName = cloudInstanceHelperRepository.getNodeName(machineName, region);
+      String nodeName = cloudInstanceHelperRepository.getNodeName(machineName, provider, region, superCluster);
       cloudInstanceHelperLogger.info("Node name: " + nodeName);
       return nodeName;
     } catch (Exception e) {
@@ -234,9 +246,10 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public String getGeneratedNodeName(String bufferName, String machineName, String region) {
+  public String getGeneratedNodeName(String bufferName, String machineName, String provider, String region,
+      String superCluster) {
     try {
-      String nodeName = cloudInstanceHelperRepository.getNodeName(machineName, region);
+      String nodeName = cloudInstanceHelperRepository.getNodeName(machineName, provider, region, superCluster);
       cloudInstanceHelperLogger.info("Node name: " + nodeName);
       return nodeName;
     } catch (Exception e) {
@@ -245,9 +258,10 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public String getNamespaceName(String bufferName, String region) {
+  public String getNamespaceName(String bufferName, String provider, String region, String superCluster) {
     try {
-      String namespaceName = cloudInstanceHelperRepository.getNamespaceNameWithBufferName(bufferName, region);
+      String namespaceName = cloudInstanceHelperRepository.getNamespaceNameWithBufferName(bufferName, provider, region,
+          superCluster);
       cloudInstanceHelperLogger.info("Namespace name: " + namespaceName);
       return namespaceName;
     } catch (Exception e) {
@@ -256,9 +270,10 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Boolean isCoreDNSDeploymentUp(String bufferName, String region) {
+  public Boolean isCoreDNSDeploymentUp(String bufferName, String provider, String region, String superCluster) {
     try {
-      Boolean isCoreDNSDeploymentUp = cloudInstanceHelperRepository.isCoreDNSDeploymentUp(bufferName, region);
+      Boolean isCoreDNSDeploymentUp = cloudInstanceHelperRepository.isCoreDNSDeploymentUp(bufferName, provider, region,
+          superCluster);
       return isCoreDNSDeploymentUp;
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while checking CoreDNS deployment status.", e);
@@ -266,18 +281,19 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Boolean isCertManagerReady(String bufferName, String region) {
+  public Boolean isCertManagerReady(String bufferName, String provider, String region, String superCluster) {
     try {
-      return cloudInstanceHelperRepository.isCertManagerReady(bufferName, region);
+      return cloudInstanceHelperRepository.isCertManagerReady(bufferName, provider, region, superCluster);
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while checking if cert manager is ready.", e);
       return false;
     }
   }
 
-  public Boolean isStatefulSetsUp(String namespaceName, String region) {
+  public Boolean isStatefulSetsUp(String namespaceName, String provider, String region, String superCluster) {
     try {
-      Boolean isResourcesUp = cloudInstanceHelperRepository.isStatefulSetsUp(namespaceName, region);
+      Boolean isResourcesUp = cloudInstanceHelperRepository.isStatefulSetsUp(namespaceName, provider, region,
+          superCluster);
       return isResourcesUp;
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while checking resources up.", e);
@@ -285,9 +301,10 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Boolean isStatefulSetsDown(String namespaceName, String region) {
+  public Boolean isStatefulSetsDown(String namespaceName, String provider, String region, String superCluster) {
     try {
-      Boolean isResourcesDown = cloudInstanceHelperRepository.isStatefulSetsDown(namespaceName, region);
+      Boolean isResourcesDown = cloudInstanceHelperRepository.isStatefulSetsDown(namespaceName, provider, region,
+          superCluster);
       return isResourcesDown;
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while checking resources up.", e);
@@ -295,9 +312,10 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Response deleteDNSRecord(Organization organization, String nodeName, String region) {
+  public Response deleteDNSRecord(Organization organization, String nodeName, String provider, String region,
+      String superCluster) {
     try {
-      cloudInstanceHelperRepository.deleteDNSRecord(organization, nodeName, region);
+      cloudInstanceHelperRepository.deleteDNSRecord(organization, nodeName, provider, region, superCluster);
       cloudInstanceHelperLogger.info("DNS Record deleted");
       return new Response(true, "DNS Record deleted.");
     } catch (Exception e) {
@@ -305,9 +323,10 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Boolean isNodeUnschedulable(String nodeName, String region) {
+  public Boolean isNodeUnschedulable(String nodeName, String provider, String region, String superCluster) {
     try {
-      Boolean isNodeUnschedulable = cloudInstanceHelperRepository.isNodeUnschedulable(nodeName, region);
+      Boolean isNodeUnschedulable = cloudInstanceHelperRepository.isNodeUnschedulable(nodeName, provider, region,
+          superCluster);
       cloudInstanceHelperLogger.info("Node unschedulable checked");
       return isNodeUnschedulable;
     } catch (Exception e) {
@@ -316,9 +335,9 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Boolean isNodeReady(String nodeName, String region) {
+  public Boolean isNodeReady(String nodeName, String provider, String region, String superCluster) {
     try {
-      Boolean isNodeReady = cloudInstanceHelperRepository.isNodeReady(nodeName, region);
+      Boolean isNodeReady = cloudInstanceHelperRepository.isNodeReady(nodeName, provider, region, superCluster);
       return isNodeReady;
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while checking node ready.", e);
@@ -326,9 +345,9 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Response deleteClusterVersion(String bufferName, String region) {
+  public Response deleteClusterVersion(String bufferName, String provider, String region, String superCluster) {
     try {
-      cloudInstanceHelperRepository.deleteClusterVersion(bufferName, region);
+      cloudInstanceHelperRepository.deleteClusterVersion(bufferName, provider, region, superCluster);
       cloudInstanceHelperLogger.info("Cluster version deleted");
       return new Response(true, "Cluster version deleted.");
     } catch (Exception e) {
@@ -337,9 +356,9 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Response deleteOAuth2ProxyResources(String bufferName, String region) {
+  public Response deleteOAuth2ProxyResources(String bufferName, String provider, String region, String superCluster) {
     try {
-      cloudInstanceHelperRepository.deleteOAuth2ProxyResources(bufferName, region);
+      cloudInstanceHelperRepository.deleteOAuth2ProxyResources(bufferName, provider, region, superCluster);
       cloudInstanceHelperLogger.info("OAuth2 Proxy resources deleted");
       return new Response(true, "OAuth2 Proxy resources deleted.");
     } catch (Exception e) {
@@ -348,9 +367,9 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Response deleteVirtualCluster(String bufferName, String region) {
+  public Response deleteVirtualCluster(String bufferName, String provider, String region, String superCluster) {
     try {
-      cloudInstanceHelperRepository.deleteVirtualCluster(bufferName, region);
+      cloudInstanceHelperRepository.deleteVirtualCluster(bufferName, provider, region, superCluster);
       cloudInstanceHelperLogger.info("Virtual cluster deleted");
       return new Response(true, "Virtual cluster deleted.");
     } catch (Exception e) {
@@ -359,9 +378,9 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Boolean isSubnetUsed(String bufferName, String region) {
+  public Boolean isSubnetUsed(String bufferName, String provider, String region, String superCluster) {
     try {
-      Boolean isSubnetUsed = cloudInstanceHelperRepository.isSubnetUsed(bufferName, region);
+      Boolean isSubnetUsed = cloudInstanceHelperRepository.isSubnetUsed(bufferName, provider, region, superCluster);
       cloudInstanceHelperLogger.info("Subnet used checked");
       return isSubnetUsed;
     } catch (Exception e) {
@@ -370,9 +389,10 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public String getCloudInstanceIP(String bufferName, String region) {
+  public String getCloudInstanceIP(String bufferName, String provider, String region, String superCluster) {
     try {
-      String cloudInstanceIP = cloudInstanceHelperRepository.getCloudInstanceIP(bufferName, region);
+      String cloudInstanceIP = cloudInstanceHelperRepository.getCloudInstanceIP(bufferName, provider, region,
+          superCluster);
       cloudInstanceHelperLogger.info("Cloud instance IP: " + cloudInstanceIP);
       return cloudInstanceIP;
     } catch (Exception e) {
@@ -381,9 +401,9 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Response deleteSubnet(String bufferName, String region) {
+  public Response deleteSubnet(String bufferName, String provider, String region, String superCluster) {
     try {
-      cloudInstanceHelperRepository.deleteSubnet(bufferName, region);
+      cloudInstanceHelperRepository.deleteSubnet(bufferName, provider, region, superCluster);
       cloudInstanceHelperLogger.info("Subnet deleted");
       return new Response(true, "Subnet deleted.");
     } catch (Exception e) {
@@ -392,9 +412,9 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Response deleteMachineDeployment(String bufferName, String region) {
+  public Response deleteMachineDeployment(String bufferName, String provider, String region, String superCluster) {
     try {
-      cloudInstanceHelperRepository.deleteMachineDeployment(bufferName, region);
+      cloudInstanceHelperRepository.deleteMachineDeployment(bufferName, provider, region, superCluster);
       cloudInstanceHelperLogger.info("Machine deployment deleted");
       return new Response(true, "Machine deployment deleted.");
     } catch (Exception e) {
@@ -403,9 +423,10 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Response deleteOrganizationLabelsFromNode(String nodeName, String region) {
+  public Response deleteOrganizationLabelsFromNode(String nodeName, String provider, String region,
+      String superCluster) {
     try {
-      cloudInstanceHelperRepository.deleteOrganizationLabelsFromSuperCluster(nodeName, region);
+      cloudInstanceHelperRepository.deleteOrganizationLabelsFromSuperCluster(nodeName, provider, region, superCluster);
       cloudInstanceHelperLogger.info("Node unlabelled");
       return new Response(true, "Node unlabelled.");
     } catch (Exception e) {
@@ -414,9 +435,9 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Response deleteWorkerLabelFromNode(String nodeName, String region) {
+  public Response deleteWorkerLabelFromNode(String nodeName, String provider, String region, String superCluster) {
     try {
-      cloudInstanceHelperRepository.deleteWorkerLabelFromNode(nodeName, region);
+      cloudInstanceHelperRepository.deleteWorkerLabelFromNode(nodeName, provider, region, superCluster);
       cloudInstanceHelperLogger.info("Node unlabelled");
       return new Response(true, "Node unlabelled.");
     } catch (Exception e) {
@@ -425,10 +446,10 @@ public class CloudInstanceHelperService {
   }
 
   public String findNode(String bufferName, Organization organization, String teamId,
-      String cloudInstanceName, String region) {
+      String cloudInstanceName, String provider, String region, String superCluster) {
     try {
       String nodeName = cloudInstanceHelperRepository.findNode(bufferName, organization, teamId,
-          cloudInstanceName, region);
+          cloudInstanceName, provider, region, superCluster);
       cloudInstanceHelperLogger.info("Node found");
       return nodeName;
     } catch (Exception e) {
@@ -437,9 +458,9 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Response deleteVCNodes(String bufferName, String region) {
+  public Response deleteVCNodes(String bufferName, String provider, String region, String superCluster) {
     try {
-      cloudInstanceHelperRepository.deleteVirtualClusterNodes(bufferName, region);
+      cloudInstanceHelperRepository.deleteVirtualClusterNodes(bufferName, provider, region, superCluster);
       cloudInstanceHelperLogger.info("VC nodes deleted");
       return new Response(true, "VC nodes deleted.");
     } catch (Exception e) {
@@ -449,10 +470,10 @@ public class CloudInstanceHelperService {
   }
 
   public Boolean healthCheck(Organization organization, String teamId, String cloudInstanceName,
-      String nodeName, String region) {
+      String nodeName, String provider, String region, String superCluster) {
     try {
       Boolean healthCheck = cloudInstanceHelperRepository.healthCheck(organization, teamId, cloudInstanceName,
-          nodeName, region);
+          nodeName, provider, region, superCluster);
       return healthCheck;
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while health check.", e);
@@ -469,18 +490,18 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public String getNamespaceNameWithBufferName(String bufferName, String region) {
+  public String getNamespaceNameWithBufferName(String bufferName, String provider, String region, String superCluster) {
     try {
-      return cloudInstanceHelperRepository.getNamespaceNameWithBufferName(bufferName, region);
+      return cloudInstanceHelperRepository.getNamespaceNameWithBufferName(bufferName, provider, region, superCluster);
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while calling getNamespaceNameWithBufferName: " + e.getMessage());
       return null;
     }
   }
 
-  public String getTeamIdFromProcessId(String processId, String region) {
+  public String getTeamIdFromProcessId(String processId, String provider, String region, String superCluster) {
     try {
-      String teamId = cloudInstanceHelperRepository.getTeamIdFromProcessId(processId, region);
+      String teamId = cloudInstanceHelperRepository.getTeamIdFromProcessId(processId, provider, region, superCluster);
       return teamId;
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while calling getTeamIdFromProcessId: " + e.getMessage());
@@ -489,10 +510,10 @@ public class CloudInstanceHelperService {
   }
 
   public Boolean doesCloudInstanceExist(Organization organization, String teamId, String cloudInstanceName,
-      String region) {
+      String provider, String region, String superCluster) {
     try {
       Boolean doesCloudInstanceExist = cloudInstanceHelperRepository.doesCloudInstanceExist(organization, teamId,
-          cloudInstanceName, region);
+          cloudInstanceName, provider, region, superCluster);
       return doesCloudInstanceExist;
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while calling doesCloudInstanceExist: " + e.getMessage());
@@ -500,9 +521,9 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public void connectAdminClient(String region) {
+  public void connectAdminClient(String provider, String region, String superCluster) {
     try {
-      ApiClient myApiCl = apiClientManager.getAdminApiClient(region);
+      ApiClient myApiCl = apiClientManager.getAdminApiClient(provider, region, superCluster);
       System.out.println("GOT THE CLIENT HERE!");
       CoreV1Api api = new CoreV1Api(myApiCl);
       for (V1Namespace ns : api.listNamespace(null, null, null, null, null, null, null, null, null, null).getItems()) {

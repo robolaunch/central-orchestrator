@@ -32,10 +32,10 @@ public class RobotService {
   @LoggerName("robotService")
   Logger robotLogger;
 
-  public PlainResponse makeRobotsPassive(String bufferName, String region) {
+  public PlainResponse makeRobotsPassive(String bufferName, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      robotRepository.makeRobotsPassive(bufferName, region);
+      robotRepository.makeRobotsPassive(bufferName, provider, region, superCluster);
       robotLogger.info("Robots made passive");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
@@ -45,10 +45,10 @@ public class RobotService {
     return plainResponse;
   }
 
-  public PlainResponse makeRobotsActive(String bufferName, String region) {
+  public PlainResponse makeRobotsActive(String bufferName, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      robotRepository.makeRobotsActive(bufferName, region);
+      robotRepository.makeRobotsActive(bufferName, provider, region, superCluster);
       robotLogger.info("Robots made active");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
@@ -58,11 +58,12 @@ public class RobotService {
     return plainResponse;
   }
 
-  public PlainResponse createRobotBuildManager(RobotBuildManager robotBuildManager, String bufferName, String region) {
+  public PlainResponse createRobotBuildManager(RobotBuildManager robotBuildManager, String bufferName, String provider,
+      String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
       String token = jwt.getRawToken();
-      robotRepository.createRobotBuildManager(robotBuildManager, bufferName, token, region);
+      robotRepository.createRobotBuildManager(robotBuildManager, bufferName, token, provider, region, superCluster);
       robotLogger.info("Robot build manager created");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Robot build manager created.");
@@ -74,11 +75,11 @@ public class RobotService {
   }
 
   public PlainResponse createRobotLaunchManager(RobotLaunchManager robotLaunchManager, String bufferName,
-      String region) {
+      String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
       String token = jwt.getRawToken();
-      robotRepository.createRobotLaunchManager(robotLaunchManager, bufferName, token, region);
+      robotRepository.createRobotLaunchManager(robotLaunchManager, bufferName, token, provider, region, superCluster);
       robotLogger.info("Robot launch manager created");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Robot launch manager created.");
@@ -89,11 +90,12 @@ public class RobotService {
     return plainResponse;
   }
 
-  public PlainResponse createRobotDevSuite(RobotDevSuite robotDevSuite, String bufferName, String region) {
+  public PlainResponse createRobotDevSuite(RobotDevSuite robotDevSuite, String bufferName, String provider,
+      String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
       String token = jwt.getRawToken();
-      robotRepository.createRobotDevelopmentSuite(robotDevSuite, bufferName, token, region);
+      robotRepository.createRobotDevelopmentSuite(robotDevSuite, bufferName, token, provider, region, superCluster);
       robotLogger.info("Robot development suite created");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Robot development suite created.");
@@ -110,7 +112,7 @@ public class RobotService {
       Gson gson = new Gson();
       System.out.println("GOSN: " + gson.toJson(requestCreateRobot));
       String token = jwt.getRawToken();
-      robotRepository.createRobot(requestCreateRobot, token, requestCreateRobot.getRegion());
+      robotRepository.createRobot(requestCreateRobot, token, "p", "r", "s");
       robotLogger.info("Robot created");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Robot created.");

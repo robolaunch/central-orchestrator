@@ -7,16 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.robolaunch.repository.abstracts.CloudInstanceHelperRepository;
 import org.robolaunch.repository.abstracts.RobotHelperRepository;
+import org.robolaunch.service.ApiClientManager;
 
 import com.google.gson.Gson;
 
-import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
 import io.kubernetes.client.openapi.models.V1Service;
@@ -26,21 +25,18 @@ import io.minio.errors.MinioException;
 
 @ApplicationScoped
 public class RobotHelperRepositoryImpl implements RobotHelperRepository {
-   private ApiClient adminApiClient;
-   private CoreV1Api coreV1Api;
 
    @Inject
    CloudInstanceHelperRepository cloudInstanceHelperRepository;
 
-   @PostConstruct
-   public void initializeApis() throws IOException, ApiException, InterruptedException, InvalidKeyException,
-         NoSuchAlgorithmException, IllegalArgumentException, MinioException {
-      this.adminApiClient = cloudInstanceHelperRepository.adminApiClient("eu-central-1");
-      this.coreV1Api = new CoreV1Api(adminApiClient);
-   }
+   @Inject
+   ApiClientManager apiClientManager;
 
    @Override
-   public String getAvailablePortRange(Integer requestedPortCount) throws ApiException {
+   public String getAvailablePortRange(Integer requestedPortCount, String provider, String region, String superCluster)
+         throws ApiException, InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
+         InterruptedException, MinioException {
+      CoreV1Api coreV1Api = apiClientManager.getCoreApi(provider, region, superCluster);
       List<V1Service> services = coreV1Api
             .listServiceForAllNamespaces(null, null, null, null, null, null,
                   null, null, null, null)

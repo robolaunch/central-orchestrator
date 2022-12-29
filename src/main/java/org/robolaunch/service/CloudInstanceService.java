@@ -26,11 +26,12 @@ public class CloudInstanceService {
   @LoggerName("cloudInstanceService")
   Logger cloudInstanceLogger;
 
-  public PlainResponse createMachineDeployment(String bufferName, String instanceType, String region) {
+  public PlainResponse createMachineDeployment(String bufferName, String instanceType, String provider, String region,
+      String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
       cloudInstanceLogger.info("Machine deployment created -> " + bufferName);
-      cloudInstanceRepository.createMachineDeployment(bufferName, instanceType, region);
+      cloudInstanceRepository.createMachineDeployment(bufferName, instanceType, provider, region, superCluster);
       plainResponse.setSuccess(true);
     } catch (Exception e) {
       cloudInstanceLogger.error("Error while creating machine deployment", e);
@@ -39,10 +40,11 @@ public class CloudInstanceService {
     return plainResponse;
   }
 
-  public PlainResponse claimTheSuperClusterNode(String nodeName, String bufferName, String region) {
+  public PlainResponse claimTheSuperClusterNode(String nodeName, String bufferName, String provider, String region,
+      String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      cloudInstanceRepository.claimTheSuperClusterNode(nodeName, bufferName, region);
+      cloudInstanceRepository.claimTheSuperClusterNode(nodeName, bufferName, provider, region, superCluster);
       cloudInstanceLogger.info("Label added to node");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
@@ -52,10 +54,10 @@ public class CloudInstanceService {
     return plainResponse;
   }
 
-  public PlainResponse createClusterVersion(String bufferName, String region) {
+  public PlainResponse createClusterVersion(String bufferName, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      cloudInstanceRepository.createClusterVersion(bufferName, region);
+      cloudInstanceRepository.createClusterVersion(bufferName, provider, region, superCluster);
       cloudInstanceLogger.info("Cluster version created");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
@@ -65,10 +67,10 @@ public class CloudInstanceService {
     return plainResponse;
   }
 
-  public PlainResponse createVirtualCluster(String bufferName, String region) {
+  public PlainResponse createVirtualCluster(String bufferName, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      cloudInstanceRepository.createVirtualCluster(bufferName, region);
+      cloudInstanceRepository.createVirtualCluster(bufferName, provider, region, superCluster);
       cloudInstanceLogger.info("Virtual cluster created");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
@@ -78,10 +80,10 @@ public class CloudInstanceService {
     return plainResponse;
   }
 
-  public PlainResponse scaleStatefulSetsDown(String bufferName, String region) {
+  public PlainResponse scaleStatefulSetsDown(String bufferName, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      cloudInstanceRepository.scaleStatefulSetsDown(bufferName, region);
+      cloudInstanceRepository.scaleStatefulSetsDown(bufferName, provider, region, superCluster);
       cloudInstanceLogger.info("Resources scaled");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
@@ -96,11 +98,11 @@ public class CloudInstanceService {
   }
 
   public PlainResponse labelVirtualCluster(String bufferName, Organization organization, String teamId,
-      String region, String cloudInstanceName, Boolean connectionHub) {
+      String cloudInstanceName, Boolean connectionHub, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
       cloudInstanceRepository.labelVirtualCluster(bufferName, organization, teamId,
-          region, cloudInstanceName, connectionHub);
+          cloudInstanceName, connectionHub, provider, region, superCluster);
       plainResponse.setSuccess(true);
       cloudInstanceLogger.info("VC labeled");
     } catch (Exception e) {
@@ -111,11 +113,11 @@ public class CloudInstanceService {
   }
 
   public PlainResponse addOrganizationLabelsToNode(Organization organization, String nodeName, String cloudInstanceName,
-      String teamId, String region, Boolean connectionHub) {
+      String teamId, Boolean connectionHub, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
       cloudInstanceRepository.addOrganizationLabelsToNode(organization, nodeName, cloudInstanceName, teamId,
-          region, connectionHub);
+          connectionHub, provider, region, superCluster);
       plainResponse.setSuccess(true);
       cloudInstanceLogger.info("SC Node labeled");
     } catch (Exception e) {
@@ -127,12 +129,12 @@ public class CloudInstanceService {
 
   public PlainResponse addNodeSelectorsToStatefulSets(String namespaceName, Organization organization,
       String teamId,
-      String cloudInstanceName, String region, String bufferName) {
+      String cloudInstanceName, String bufferName, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
       cloudInstanceRepository.addNodeSelectorsToStatefulSets(namespaceName, organization,
           teamId,
-          cloudInstanceName, region, bufferName);
+          cloudInstanceName, bufferName, provider, region, superCluster);
       plainResponse.setSuccess(true);
       cloudInstanceLogger.info("Node selectors added to statefulsets");
     } catch (Exception e) {
@@ -142,10 +144,10 @@ public class CloudInstanceService {
     return plainResponse;
   }
 
-  public PlainResponse scaleStatefulSetsUp(String bufferName, String region) {
+  public PlainResponse scaleStatefulSetsUp(String bufferName, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      cloudInstanceRepository.scaleStatefulSetsUp(bufferName, region);
+      cloudInstanceRepository.scaleStatefulSetsUp(bufferName, provider, region, superCluster);
       plainResponse.setSuccess(true);
       cloudInstanceLogger.info("Resources scaled up");
     } catch (Exception e) {
@@ -156,11 +158,11 @@ public class CloudInstanceService {
   }
 
   public PlainResponse createSubnet(String bufferName, String namespaceName, String cloudInstanceName,
-      String teamId, Organization organization, String region) {
+      String teamId, Organization organization, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
       cloudInstanceRepository.createSubnet(bufferName, namespaceName, cloudInstanceName,
-          teamId, organization, region);
+          teamId, organization, provider, region, superCluster);
       plainResponse.setSuccess(true);
       cloudInstanceLogger.info("Subnet created");
     } catch (Exception e) {
@@ -170,10 +172,11 @@ public class CloudInstanceService {
     return plainResponse;
   }
 
-  public PlainResponse createOauth2ProxyNamespace(String bufferName, String region) {
+  public PlainResponse createOauth2ProxyNamespace(String bufferName, String provider, String region,
+      String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      cloudInstanceRepository.createOauth2ProxyNamespace(bufferName, region);
+      cloudInstanceRepository.createOauth2ProxyNamespace(bufferName, provider, region, superCluster);
       cloudInstanceLogger.info("Oauth2 proxy namespace created");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
@@ -183,10 +186,10 @@ public class CloudInstanceService {
     return plainResponse;
   }
 
-  public PlainResponse createTLSSecrets(String bufferName, String region) {
+  public PlainResponse createTLSSecrets(String bufferName, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      cloudInstanceRepository.createTLSSecrets(bufferName, region);
+      cloudInstanceRepository.createTLSSecrets(bufferName, provider, region, superCluster);
       cloudInstanceLogger.info("TLS secrets created");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
@@ -197,11 +200,12 @@ public class CloudInstanceService {
   }
 
   public PlainResponse createOAuth2ProxyResources(Organization organization, String teamId,
-      String cloudInstanceName, String region, String namespaceName, String bufferName) {
+      String cloudInstanceName, String namespaceName, String bufferName, String provider, String region,
+      String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
       cloudInstanceRepository.createOAuth2ProxyResources(organization, teamId, cloudInstanceName,
-          region, namespaceName, bufferName);
+          namespaceName, bufferName, provider, region, superCluster);
       plainResponse.setSuccess(true);
       cloudInstanceLogger.info("OAuth2 proxy resources created");
     } catch (Exception e) {
@@ -212,10 +216,11 @@ public class CloudInstanceService {
   }
 
   public PlainResponse createIngressRule(Organization organization, String cloudInstanceName,
-      String bufferName, String region) {
+      String bufferName, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      cloudInstanceRepository.createIngressRule(organization, cloudInstanceName, bufferName, region);
+      cloudInstanceRepository.createIngressRule(organization, cloudInstanceName, bufferName, provider, region,
+          superCluster);
       cloudInstanceLogger.info("Ingress rule created");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
@@ -225,10 +230,10 @@ public class CloudInstanceService {
     return plainResponse;
   }
 
-  public PlainResponse scaleVCWorkloadsUp(String bufferName, String region) {
+  public PlainResponse scaleVCWorkloadsUp(String bufferName, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      cloudInstanceRepository.scaleVCWorkloadsUp(bufferName, region);
+      cloudInstanceRepository.scaleVCWorkloadsUp(bufferName, provider, region, superCluster);
       cloudInstanceLogger.info("VC workloads scaled to one");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
@@ -238,10 +243,10 @@ public class CloudInstanceService {
     return plainResponse;
   }
 
-  public PlainResponse scaleOAuth2ProxyDown(String bufferName, String region) {
+  public PlainResponse scaleOAuth2ProxyDown(String bufferName, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      cloudInstanceRepository.scaleOAuth2ProxyDown(bufferName, region);
+      cloudInstanceRepository.scaleOAuth2ProxyDown(bufferName, provider, region, superCluster);
       cloudInstanceLogger.info("OAuth2 Proxy scaled to zero");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
@@ -252,11 +257,12 @@ public class CloudInstanceService {
   }
 
   public PlainResponse createCoreDNS(Organization organization, String teamId,
-      String cloudInstanceName, String nodeName, String bufferName, String region) {
+      String cloudInstanceName, String nodeName, String bufferName, String provider, String region,
+      String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
       cloudInstanceRepository.createCoreDNS(organization, teamId,
-          cloudInstanceName, nodeName, bufferName, region);
+          cloudInstanceName, nodeName, bufferName, provider, region, superCluster);
       cloudInstanceLogger.info("CoreDNS created");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
@@ -268,11 +274,11 @@ public class CloudInstanceService {
 
   public PlainResponse addLabelsToVirtualClusterNode(Organization organization, String nodeName,
       String cloudInstanceName,
-      String teamId, String bufferName, String region, Boolean connectionHub) {
+      String teamId, String bufferName, Boolean connectionHub, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
       cloudInstanceRepository.addLabelsToVirtualClusterNode(organization, nodeName, cloudInstanceName,
-          teamId, bufferName, region, connectionHub);
+          teamId, bufferName, connectionHub, provider, region, superCluster);
       cloudInstanceLogger.info("Label added to virtual cluster node");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
@@ -283,11 +289,11 @@ public class CloudInstanceService {
   }
 
   public PlainResponse createCertManager(Organization organization, String teamId,
-      String cloudInstanceName, String bufferName, String region) {
+      String cloudInstanceName, String bufferName, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
       cloudInstanceRepository.createCertManager(organization, teamId,
-          cloudInstanceName, bufferName, region);
+          cloudInstanceName, bufferName, provider, region, superCluster);
       cloudInstanceLogger.info("Cert manager created");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
@@ -298,11 +304,11 @@ public class CloudInstanceService {
   }
 
   public PlainResponse createRobotOperator(Organization organization, String cloudInstanceName,
-      String teamId, String region, String bufferName) {
+      String teamId, String bufferName, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
       cloudInstanceRepository.createRobotOperator(organization, cloudInstanceName,
-          teamId, region, bufferName);
+          teamId, bufferName, provider, region, superCluster);
       plainResponse.setSuccess(true);
       cloudInstanceLogger.info("Robot operator created");
     } catch (Exception e) {
@@ -312,10 +318,10 @@ public class CloudInstanceService {
     return plainResponse;
   }
 
-  public PlainResponse drainNode(String nodeName, String region) {
+  public PlainResponse drainNode(String nodeName, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      cloudInstanceRepository.drainNode(nodeName, region);
+      cloudInstanceRepository.drainNode(nodeName, provider, region, superCluster);
       cloudInstanceLogger.info("Node drained");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
@@ -325,10 +331,10 @@ public class CloudInstanceService {
     return plainResponse;
   }
 
-  public PlainResponse uncordonNode(String nodeName, String region) {
+  public PlainResponse uncordonNode(String nodeName, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      cloudInstanceRepository.uncordonNode(nodeName, region);
+      cloudInstanceRepository.uncordonNode(nodeName, provider, region, superCluster);
       cloudInstanceLogger.info("Node uncordoned");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
@@ -338,10 +344,11 @@ public class CloudInstanceService {
     return plainResponse;
   }
 
-  public PlainResponse createDNSRecord(Organization organization, String nodeName, String region) {
+  public PlainResponse createDNSRecord(Organization organization, String nodeName, String provider, String region,
+      String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      cloudInstanceRepository.createDNSRecord(organization, nodeName, region);
+      cloudInstanceRepository.createDNSRecord(organization, nodeName, provider, region, superCluster);
       cloudInstanceLogger.info("DNS Record created");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
@@ -350,10 +357,11 @@ public class CloudInstanceService {
     return plainResponse;
   }
 
-  public PlainResponse addBufferedLabelToVC(String bufferName, String instanceType, String region) {
+  public PlainResponse addBufferedLabelToVC(String bufferName, String instanceType, String provider, String region,
+      String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      cloudInstanceRepository.addBufferedLabelToVC(bufferName, instanceType, region);
+      cloudInstanceRepository.addBufferedLabelToVC(bufferName, instanceType, provider, region, superCluster);
       plainResponse.setSuccess(true);
       cloudInstanceLogger.info("Buffered label added to VC");
     } catch (Exception e) {
@@ -363,10 +371,10 @@ public class CloudInstanceService {
     return plainResponse;
   }
 
-  public PlainResponse scaleVCWorkloadsDown(String bufferName, String region) {
+  public PlainResponse scaleVCWorkloadsDown(String bufferName, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      cloudInstanceRepository.scaleVCWorkloadsDown(bufferName, region);
+      cloudInstanceRepository.scaleVCWorkloadsDown(bufferName, provider, region, superCluster);
       cloudInstanceLogger.info("VC workloads scaled to zero");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
@@ -376,10 +384,10 @@ public class CloudInstanceService {
     return plainResponse;
   }
 
-  public PlainResponse scaleOAuth2ProxyUp(String bufferName, String region) {
+  public PlainResponse scaleOAuth2ProxyUp(String bufferName, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      cloudInstanceRepository.scaleOAuth2ProxyUp(bufferName, region);
+      cloudInstanceRepository.scaleOAuth2ProxyUp(bufferName, provider, region, superCluster);
       cloudInstanceLogger.info("OAuth2 Proxy scaled to one");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
@@ -389,10 +397,10 @@ public class CloudInstanceService {
     return plainResponse;
   }
 
-  public PlainResponse scaleCoreDNSUp(String bufferName, String region) {
+  public PlainResponse scaleCoreDNSUp(String bufferName, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      cloudInstanceRepository.scaleCoreDNSUp(bufferName, region);
+      cloudInstanceRepository.scaleCoreDNSUp(bufferName, provider, region, superCluster);
       cloudInstanceLogger.info("CoreDNS scaled to one");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
@@ -402,10 +410,10 @@ public class CloudInstanceService {
     return plainResponse;
   }
 
-  public PlainResponse unlabelSuperClusterNode(String nodeName, String region) {
+  public PlainResponse unlabelSuperClusterNode(String nodeName, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      cloudInstanceRepository.unlabelSuperClusterNode(nodeName, region);
+      cloudInstanceRepository.unlabelSuperClusterNode(nodeName, provider, region, superCluster);
       cloudInstanceLogger.info("Node unlabelled");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
@@ -416,11 +424,12 @@ public class CloudInstanceService {
   }
 
   public PlainResponse createVirtualLink(String namespaceName, String cloudInstanceName,
-      String teamId, Organization organization, String region, String bufferName) {
+      String teamId, Organization organization, String bufferName, String provider, String region,
+      String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
       cloudInstanceRepository.createVirtualLink(namespaceName, cloudInstanceName,
-          teamId, organization, region, bufferName);
+          teamId, organization, bufferName, provider, region, superCluster);
       cloudInstanceLogger.info("Virtual link created");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
@@ -431,11 +440,12 @@ public class CloudInstanceService {
   }
 
   public PlainResponse createConnectionHubOperator(String namespaceName, String cloudInstanceName,
-      String teamId, Organization organization, String region, String bufferName) {
+      String teamId, Organization organization, String bufferName, String provider, String region,
+      String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
       cloudInstanceRepository.createConnectionHubOperator(namespaceName, cloudInstanceName,
-          teamId, organization, region, bufferName);
+          teamId, organization, bufferName, provider, region, superCluster);
       cloudInstanceLogger.info("Connection hub operator created");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
@@ -446,12 +456,12 @@ public class CloudInstanceService {
   }
 
   public PlainResponse createConnectionHub(String bufferName, Organization organization, String teamId,
-      String cloudInstanceName, String namespaceName, String region) {
+      String cloudInstanceName, String namespaceName, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      String serverIP = cloudInstanceHelperService.getCloudInstanceIP(bufferName, region);
+      String serverIP = cloudInstanceHelperService.getCloudInstanceIP(bufferName, provider, region, superCluster);
       cloudInstanceRepository.createConnectionHub(bufferName, organization, teamId,
-          cloudInstanceName, serverIP, namespaceName, region);
+          cloudInstanceName, serverIP, namespaceName, provider, region, superCluster);
       cloudInstanceLogger.info("Connection hub created");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
@@ -462,10 +472,11 @@ public class CloudInstanceService {
   }
 
   public PlainResponse createClusterAdminRole(Organization organization, String bufferName, String username,
-      String region) {
+      String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      cloudInstanceRepository.createClusterAdminRole(organization, bufferName, username, region);
+      cloudInstanceRepository.createClusterAdminRole(organization, bufferName, username, provider, region,
+          superCluster);
       cloudInstanceLogger.info("Cluster admin role created");
       plainResponse.setSuccess(true);
     } catch (Exception e) {
