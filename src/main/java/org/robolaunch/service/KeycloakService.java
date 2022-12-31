@@ -104,144 +104,114 @@ public class KeycloakService {
   }
 
   /* Create realm on keycloak for organization. */
-  public Response createRealmForOrganization(Organization organization) throws ApplicationException {
+  public PlainResponse createRealmForOrganization(Organization organization) throws ApplicationException {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       keycloakLogger.warn("Creating realm for organization: " + organization.getName());
       keycloakAdminRepository.createRealm(organization);
       keycloakLogger.info("Realm " + organization.getName() + " created");
-      return new Response(true, UUID.randomUUID().toString());
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Realm created successfully.");
     } catch (Exception e) {
-      return new Response(false, UUID.randomUUID().toString());
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error creating realm for organization: " + organization.getName());
     }
-  }
-
-  /* Create realm on keycloak for organization. */
-  public Response createRealmForDefaultOrganization(Organization organization) throws ApplicationException {
-    try {
-      keycloakAdminRepository.createRealm(organization);
-      keycloakLogger.info("Realm " + organization.getName() + " created");
-      return new Response(true,
-          UUID.randomUUID().toString());
-    } catch (ApplicationException e) {
-      keycloakLogger.error("Error happened while creating organization realm." + e.getMessage());
-      return new Response(false,
-          UUID.randomUUID().toString());
-    }
-  }
-
-  /* Create realm on keycloak for organization. */
-  public Organization deleteRealmForDefaultOrganization(Organization organization)
-      throws ApplicationException, InternalError, IOException {
-    try {
-      keycloakAdminRepository.deleteRealm(organization);
-      keycloakLogger.info("Realm " + organization.getName() + " deleted");
-      return organization;
-    } catch (Exception e) {
-      throw new ApplicationException(e.getMessage());
-    }
+    return plainResponse;
   }
 
   /* Setting keycloak for the organization. */
-  public Response setKeycloakSettings(Organization organization)
+  public PlainResponse setKeycloakSettings(Organization organization)
       throws ApplicationException, InternalError, IOException {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       keycloakAdminRepository.updateFederation(organization);
       keycloakLogger.info("Realm " + organization.getName() + " updated");
-      return new Response(true,
-          UUID.randomUUID().toString());
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Realm updated successfully.");
     } catch (Exception e) {
-      return new Response(false,
-          UUID.randomUUID().toString());
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error updating realm for organization: " + organization.getName());
     }
-  }
-
-  /* Setting keycloak for the organization. */
-  public Response setKeycloakSettingsForDefaultOrganization(String defaultOrgName)
-      throws ApplicationException, InternalError, IOException {
-    try {
-      Organization organization = new Organization();
-      organization.setName(defaultOrgName);
-      keycloakAdminRepository.updateFederation(organization);
-      keycloakLogger.info("Realm " + organization.getName() + " updated again");
-      return new Response(true,
-          UUID.randomUUID().toString());
-    } catch (Exception e) {
-      return new Response(false,
-          UUID.randomUUID().toString());
-    }
+    return plainResponse;
   }
 
   /* Adding group mappers on keycloak */
-  public Response addGroupMapper(Organization organization) throws ApplicationException, InternalError, IOException {
+  public PlainResponse addGroupMapper(Organization organization)
+      throws ApplicationException, InternalError, IOException {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       keycloakAdminRepository.addGroupMapper(organization);
       keycloakAdminRepository.syncFederationMainRealm();
       keycloakLogger.info("Group Mapper added for organization: " + organization.getName() + "");
-      return new Response(true, UUID.randomUUID().toString());
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Group Mapper added successfully.");
     } catch (Exception e) {
-      return new Response(false, UUID.randomUUID().toString());
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error adding group mapper for organization: " + organization.getName());
     }
-  }
-
-  /* Adding group mappers on keycloak */
-  public Response addGroupMapperForDefaultOrganization(String defaultOrgName)
-      throws ApplicationException, InternalError, IOException {
-    try {
-      Organization organization = new Organization();
-      organization.setName(defaultOrgName);
-      keycloakAdminRepository.addGroupMapper(organization);
-      keycloakLogger.info("Group Mapper added for organization: " + organization.getName() + "");
-      return new Response(true, UUID.randomUUID().toString());
-    } catch (Exception e) {
-      return new Response(false, UUID.randomUUID().toString());
-    }
+    return plainResponse;
   }
 
   /* Running LDAP synchronozation on Keycloak. */
-  public Response syncIPAGroupsInCurrentKeycloakRealm(Organization organization) throws ApplicationException {
-
+  public PlainResponse syncIPAGroupsInCurrentKeycloakRealm(Organization organization) throws ApplicationException {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       keycloakAdminRepository.syncIPAGroupsInCurrentRealm(organization);
       keycloakAdminRepository.syncFederationMainRealm();
       keycloakLogger.info("IPA Groups synced in current keycloak realm.");
-      return new Response(true, UUID.randomUUID().toString());
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("IPA Groups synced in current keycloak realm.");
     } catch (Exception e) {
-      return new Response(false, UUID.randomUUID().toString());
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error syncing IPA Groups in current keycloak realm.");
     }
+    return plainResponse;
   }
 
   /* Set current user(who created the organization) as admin on Keycloak */
-  public Response setAsAdmin(Organization organization) throws ApplicationException, InternalError, IOException {
+  public PlainResponse setAsAdmin(Organization organization) throws ApplicationException, InternalError, IOException {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       User user = new User();
       user.setUsername(jwt.getClaim("preferred_username"));
 
       keycloakAdminRepository.setManagementRoles(user, organization);
       keycloakLogger.info("User set as admin");
-      return new Response(true, UUID.randomUUID().toString());
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("User set as admin");
     } catch (Exception e) {
-      return new Response(false, UUID.randomUUID().toString());
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error setting user as admin");
     }
+    return plainResponse;
   }
 
-  public Response setRegisteredUserAsAdmin(User user, Organization organization) throws ApplicationException {
+  public PlainResponse setRegisteredUserAsAdmin(User user, Organization organization) throws ApplicationException {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       keycloakAdminRepository.setManagementRoles(user, organization);
       keycloakLogger.info("User set as admin");
-      return new Response(true, UUID.randomUUID().toString());
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("User set as admin");
     } catch (Exception e) {
-      return new Response(false, UUID.randomUUID().toString());
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error setting user as admin");
     }
+    return plainResponse;
   }
 
-  public Response syncMainFederation() throws ApplicationException, IOException {
+  public PlainResponse syncMainFederation() throws ApplicationException, IOException {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       keycloakAdminRepository.syncFederationMainRealm();
       keycloakLogger.info("Main user federation synced");
-      return new Response(true, UUID.randomUUID().toString());
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Main user federation synced");
     } catch (Exception e) {
-      return new Response(false, UUID.randomUUID().toString());
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error syncing main user federation");
     }
+    return plainResponse;
   }
 
   public void syncRealmUserFederation(Organization organization)
@@ -327,17 +297,17 @@ public class KeycloakService {
     }
   }
 
-  public Response isPasswordUpdated(User user) {
+  public Boolean isPasswordUpdated(User user) {
     try {
       Boolean isUpdated = keycloakAdminRepository.isPasswordUpdated(user);
       if (isUpdated) {
-        return new Response(true, UUID.randomUUID().toString());
+        return true;
       } else {
-        return new Response(false, UUID.randomUUID().toString());
+        return false;
       }
     } catch (Exception e) {
       keycloakLogger.error("Error happened when password updated: " + e);
-      return new Response(false, UUID.randomUUID().toString());
+      return null;
     }
   }
 

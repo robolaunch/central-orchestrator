@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_XWMfoGdfEDuTB48tJponOQ" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
-  <bpmn2:collaboration id="_D15E0552-664B-4E72-A743-65B4685A5AB9" name="Default Collaboration">
-    <bpmn2:participant id="_F98AA804-120C-4DAA-B291-D822A6A8B735" name="Pool Participant" processRef="regionHealthCheck"/>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_pmwakGpMEDuTc8ilVArmhg" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+  <bpmn2:collaboration id="_CB49B79C-8129-4469-9C53-40478A9E870E" name="Default Collaboration">
+    <bpmn2:participant id="_D9FDAD31-D329-48A3-835D-5BDA17CD4D0A" name="Pool Participant" processRef="regionHealthCheck"/>
   </bpmn2:collaboration>
-  <bpmn2:process id="regionHealthCheck" drools:packageName="org.robolaunch.kogito" drools:version="1.0" drools:adHoc="false" name="regionHealthCheck" isExecutable="true" processType="Public">
+  <bpmn2:process id="regionHealthCheck" drools:packageName="org.robolaunch.kogito.provider" drools:version="1.0" drools:adHoc="false" name="regionHealthCheck" isExecutable="true" processType="Public">
     <bpmn2:sequenceFlow id="_7A835F0A-BBDA-466A-B9E8-DCC492FC25DB" name="infinite" sourceRef="_C5FFD4F9-8AF7-46A6-A12F-9822FDC83AD4" targetRef="_098D9C3B-71D4-41B1-A35A-AE33B77AF303">
       <bpmn2:extensionElements>
         <drools:metaData name="isAutoConnection.target">
@@ -162,7 +162,7 @@
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_XWMfoGdfEDuTB48tJponOQ</bpmn2:source>
-    <bpmn2:target>_XWMfoGdfEDuTB48tJponOQ</bpmn2:target>
+    <bpmn2:source>_pmwakGpMEDuTc8ilVArmhg</bpmn2:source>
+    <bpmn2:target>_pmwakGpMEDuTc8ilVArmhg</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>

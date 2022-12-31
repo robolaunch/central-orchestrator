@@ -13,6 +13,7 @@ import org.robolaunch.models.MailModel;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.Response;
 import org.robolaunch.models.User;
+import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.repository.abstracts.GroupAdminRepository;
 import org.robolaunch.repository.abstracts.UserRepository;
 
@@ -136,7 +137,8 @@ public class MailService {
         }
     }
 
-    public Response sendInvitedUserAcceptanceMail(String token, String email, Organization organization) {
+    public PlainResponse sendInvitedUserAcceptanceMail(String token, String email, Organization organization) {
+        PlainResponse plainResponse = new PlainResponse();
         try {
             MailModel mail = new MailModel();
             mail.setTo(email);
@@ -151,12 +153,14 @@ public class MailService {
             mail.setMessage(body);
             sendMail(mail);
             mailLogger.info("Invited user acceptance mail sent to " + email);
-            return new Response(true, UUID.randomUUID().toString());
+            plainResponse.setSuccess(true);
+            plainResponse.setMessage("Invited user acceptance mail sent to " + email);
         } catch (Exception e) {
             mailLogger.error("Failed to send invited user acceptance mail to " + email);
-            return new Response(false, UUID.randomUUID().toString());
-
+            plainResponse.setSuccess(false);
+            plainResponse.setMessage("Failed to send invited user acceptance mail to " + email);
         }
+        return plainResponse;
     }
 
     public void sendAcceptedOrganizationMail(CurrentUser currentUser) {

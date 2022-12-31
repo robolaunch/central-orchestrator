@@ -163,27 +163,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
-  public void bufferCall(String instanceType, String provider, String region, String superCluster) throws IOException {
-    URL url = new URL(backendUrl + "/bufferCloudInstance");
-    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-    connection.setRequestMethod("POST");
-    connection.setRequestProperty("Content-Type", "application/json");
-    connection.setDoOutput(true);
-    String input = "{\"instanceType\": \"" + instanceType + "\", \"region\": \"" + region + "\"}";
-
-    DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-    wr.write(input.getBytes());
-
-    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-    String line;
-    String result = "";
-    while ((line = bufferedReader.readLine()) != null) {
-      result += line;
-    }
-    wr.close();
-  }
-
-  @Override
   public String generateBufferName() {
     RandomGenerator randomGenerator = new RandomGeneratorImpl();
     String randomString = randomGenerator.generateRandomString(8);
@@ -302,7 +281,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
         + instanceType + "\"}}]}){id}}";
 
     Response response = graphqlClient.executeSync(queryStr);
-
+    System.out.println("response buffer: " + response.getData());
     javax.json.JsonObject data = response.getData();
     if (data != null) {
       if (data.get("BufferCloudInstance") != null) {
@@ -1002,7 +981,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   public ApiClient adminApiClient(String provider, String region, String superCluster)
       throws IOException, ApiException, InterruptedException, InvalidKeyException, NoSuchAlgorithmException,
       IllegalArgumentException, MinioException {
-    String clusterName = provider + "/" + region + "/" + superCluster + ".yaml";
+    String clusterName = provider + "/" + region + "/" + superCluster + "/" + "kubeconfig.yaml";
     Artifact artifact = new Artifact();
     artifact.setName(clusterName);
     com.google.gson.JsonObject object = storageRepository.getYamlTemplate(artifact, "providers");
@@ -1035,12 +1014,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
         .setCertificateAuthority(byteCertificateAuthData)
         .setVerifyingSsl(true)
         .build();
-
-    CoreV1Api coreV1Api = new CoreV1Api(newClient);
-    V1NamespaceList namespaceList = coreV1Api.listNamespace(null, null, null, null, null, null, null, null, null, null);
-    namespaceList.getItems().forEach(namespace -> {
-      System.out.println("Namespace: " + namespace.getMetadata().getName());
-    });
 
     VCCreated++;
     System.out.println("Returning new VC! --- " + VCCreated);
