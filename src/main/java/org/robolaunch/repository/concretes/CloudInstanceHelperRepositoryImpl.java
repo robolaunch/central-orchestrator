@@ -281,7 +281,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
         + instanceType + "\"}}]}){id}}";
 
     Response response = graphqlClient.executeSync(queryStr);
-
+    System.out.println("response buffer: " + response.getData());
     javax.json.JsonObject data = response.getData();
     if (data != null) {
       if (data.get("BufferCloudInstance") != null) {
@@ -981,7 +981,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   public ApiClient adminApiClient(String provider, String region, String superCluster)
       throws IOException, ApiException, InterruptedException, InvalidKeyException, NoSuchAlgorithmException,
       IllegalArgumentException, MinioException {
-    String clusterName = provider + "/" + region + "/" + superCluster + ".yaml";
+    String clusterName = provider + "/" + region + "/" + superCluster + "/" + "kubeconfig.yaml";
     Artifact artifact = new Artifact();
     artifact.setName(clusterName);
     com.google.gson.JsonObject object = storageRepository.getYamlTemplate(artifact, "providers");

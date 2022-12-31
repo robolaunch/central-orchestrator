@@ -134,7 +134,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 DynamicKubernetesApi machineDeploymentApi = apiClientManager.getMachineDeploymentApi(provider, region,
                                 superCluster);
                 String awsType = "";
-                Integer diskSize = 50;
+
                 if (instanceType.equals("r1.aws.cpu")) {
                         awsType = "t3a.xlarge";
                 } else if (instanceType.equals("r1.aws.gpu")) {
@@ -142,9 +142,13 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 } else if (instanceType.equals("r1.hz.cpu")) {
                         awsType = "CPX31"; // CCX31
                 }
+
+                Integer diskSize = 50;
                 Artifact artifact = new Artifact();
-                artifact.setName("machineDeployment.yaml");
-                String bucket = "template-artifacts";
+
+                artifact.setName(provider + "/" + region + "/" + superCluster + "/" + "machineDeployment.yaml");
+
+                String bucket = "providers";
                 JsonObject object = storageRepository.getYamlTemplate(artifact, bucket);
                 object.get("metadata").getAsJsonObject().addProperty("name",
                                 "md-" + bufferName);

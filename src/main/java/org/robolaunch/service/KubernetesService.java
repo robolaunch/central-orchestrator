@@ -37,4 +37,14 @@ public class KubernetesService {
     return response;
   }
 
+  public Integer getBufferInstanceCount(String provider, String region, String superCluster) {
+    try {
+      kubernetesRepository.getBufferInstanceCount(provider, region, superCluster);
+      return null;
+    } catch (Exception e) {
+      kubernetesLogger.error("Error while getting cloud instances from kubernetes buffer", e);
+    }
+    return 0;
+  }
+
 }

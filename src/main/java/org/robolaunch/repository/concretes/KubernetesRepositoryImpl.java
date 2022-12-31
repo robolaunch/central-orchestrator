@@ -27,7 +27,7 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
   @PostConstruct
   public void initializeServices() throws IOException {
     graphqlClient = DynamicGraphQLClientBuilder.newBuilder()
-        .url("https://data.robolaunch.dev/graphql")
+        .url(kogitoDataIndexUrl + "/graphql")
         .build();
 
   }
@@ -37,13 +37,27 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
       throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException {
     System.out.println("Organization: " + organization.getName());
     System.out.println("TeamId: " + teamId);
-    String queryStr = "query{ProcessInstances{id}}";
+    String queryStr = "query{ProcessInstances(where: {processName: {equal:\"superCluster\"}}){id childProcessInstances{processName parentProcessInstanceId variables}}}";
     Gson gson = new Gson();
 
     Response response = graphqlClient.executeSync(queryStr);
     JsonObject data = response.getData();
-
     System.out.println("data: " + gson.toJson(data));
+  }
+
+  @Override
+  public Integer getBufferInstanceCount(String provider, String region, String superCluster)
+      throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException {
+    String queryStr = "query{ProcessInstances(where: {processName: {equal:\"superCluster\"}}){id variables}}";
+    Gson gson = new Gson();
+
+    Response response = graphqlClient.executeSync(queryStr);
+    JsonObject data = response.getData();
+    System.out.println("data: " + gson.toJson(data));
+    data.getJsonArray("ProcessInstances").forEach(processInstance -> {
+      System.out.println("processInstance: " + gson.toJson(processInstance.asJsonObject().getString("variables")));
+    });
+    return 0;
   }
 
 }
