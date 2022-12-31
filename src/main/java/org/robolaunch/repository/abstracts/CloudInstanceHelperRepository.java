@@ -29,9 +29,6 @@ public interface CloudInstanceHelperRepository {
 
         public String generateBufferName();
 
-        public void bufferCall(String instanceType, String provider, String region, String superCluster)
-                        throws MalformedURLException, IOException;
-
         public void CIOperationCall(String processId, String operation, String provider, String region,
                         String superCluster) throws IOException;
 

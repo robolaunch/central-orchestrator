@@ -126,8 +126,9 @@ public class OrganizationService {
   }
 
   /* Creating IPA Group for organization. */
-  public Response createIPAGroupForOrganization(Organization organization)
+  public PlainResponse createIPAGroupForOrganization(Organization organization)
       throws ApplicationException, InternalError, IOException {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       /*
        * Check if organization name has one of the following, if so, throw error. May
@@ -135,20 +136,27 @@ public class OrganizationService {
        */
       if (organization.getName().contains("-")) {
         if (organization.getName().split("-").length > 2) {
-          return new Response(false, UUID.randomUUID().toString());
+          plainResponse.setSuccess(false);
+          plainResponse.setMessage("Organization name cannot contain hyphen (-).");
+          return plainResponse;
         }
       }
       if (organization.getName().contains(" ")
           || organization.getName().contains("_") || organization.getName().contains("$")) {
-        return new Response(false, UUID.randomUUID().toString());
+        plainResponse.setSuccess(false);
+        plainResponse.setMessage("Organization name cannot contain spaces, underscores (_) or dollar signs ($).");
+        return plainResponse;
       }
       groupAdminRepository.createGroup(organization);
       organizationLogger.info("Organization created: " + organization.getName());
-      return new Response(true, UUID.randomUUID().toString());
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Organization IPA Group created successfully.");
     } catch (ApplicationException e) {
       organizationLogger.error("Error happened when creating IPA Group for organization " + e.getMessage());
-      return new Response(false, UUID.randomUUID().toString());
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error happened when creating IPA Group for organization " + e.getMessage());
     }
+    return plainResponse;
   }
 
   public Organization formatDefaultOrganization(User user) throws InternalError, IOException {

@@ -1,9 +1,7 @@
 package org.robolaunch.service;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -16,9 +14,8 @@ import org.robolaunch.exception.ApplicationException;
 import org.robolaunch.models.DepartmentBasic;
 import org.robolaunch.models.GroupMember;
 import org.robolaunch.models.Organization;
-import org.robolaunch.models.Response;
-import org.robolaunch.models.Result;
 import org.robolaunch.models.User;
+import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.models.response.ResponseTeamMembers;
 import org.robolaunch.repository.abstracts.GroupAdminRepository;
 import org.robolaunch.repository.abstracts.GroupRepository;
@@ -62,43 +59,8 @@ public class InviteService {
   @LoggerName("inviteLogger")
   Logger inviteLogger;
 
-  public Result validationHandler() {
-    return new Result("Validation failed.", false);
-  }
-
-  public Result alreadyMemberHandler() {
-    return new Result("User is already member of the organization.", false);
-  }
-
-  public Result inviteErrorHandler() {
-    return new Result("Error inviting user.", false);
-  }
-
-  public Result duplicateInviteError() {
-    return new Result(
-        "The user has an active invitation to this organization. Please remove it before inviting this user again.",
-        false);
-  }
-
-  public Result acceptInviteError() {
-    return new Result(
-        "Error accepting invitation, please try again.",
-        false);
-  }
-
-  public Result deleteInviteError() {
-    return new Result(
-        "Error deleting invitation, please try again.",
-        false);
-  }
-
-  public Result rejectInviteError() {
-    return new Result(
-        "Error rejecting invitation, please try again.",
-        false);
-  }
-
-  public Response isUserInvited(Organization organization, User user, String token) {
+  public PlainResponse isUserInvited(Organization organization, User user, String token) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       Boolean isInvited = false;
       Boolean isTokenValid = false;
@@ -118,24 +80,30 @@ public class InviteService {
         }
       }
       if (isInvited && isTokenValid) {
-        return new Response(true, UUID.randomUUID().toString());
+        plainResponse.setSuccess(true);
+        plainResponse.setMessage("User is invited.");
       } else {
-        return new Response(false, UUID.randomUUID().toString());
+        plainResponse.setSuccess(false);
+        plainResponse.setMessage("User is not invited.");
       }
 
     } catch (Exception e) {
       inviteLogger.error("Error checking if user is invited: " + e.getMessage());
-      return new Response(false, UUID.randomUUID().toString());
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error checking if user is invited.");
     }
+    return plainResponse;
   }
 
-  public Response isPresentUserInvited(Organization organization, User user, String token) {
+  public PlainResponse isPresentUserInvited(Organization organization, User user, String token) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       Boolean isInvited = false;
       Boolean isTokenValid = false;
       String email = jwt.getClaim("email");
       if (email != user.getEmail()) {
-        return new Response(false, UUID.randomUUID().toString());
+        plainResponse.setSuccess(false);
+        plainResponse.setMessage("User is not invited.");
       }
       ResponseTeamMembers members = departmentService.getTeamUsers(organization, "invitedUsers");
       Iterator<GroupMember> it = members.getData().iterator();
@@ -153,15 +121,19 @@ public class InviteService {
         }
       }
       if (isInvited && isTokenValid) {
-        return new Response(true, UUID.randomUUID().toString());
+        plainResponse.setSuccess(true);
+        plainResponse.setMessage("User is invited.");
       } else {
-        return new Response(false, UUID.randomUUID().toString());
+        plainResponse.setSuccess(false);
+        plainResponse.setMessage("User is not invited.");
       }
 
     } catch (Exception e) {
       inviteLogger.error("Error checking if user is invited: " + e.getMessage());
-      return new Response(false, UUID.randomUUID().toString());
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error checking if user is invited.");
     }
+    return plainResponse;
   }
 
   public String createTokenForInvitedUser() {
@@ -186,15 +158,19 @@ public class InviteService {
     }
   }
 
-  public Response deleteUserFromInvitedUsersDepartment(Organization organization, User user)
+  public PlainResponse deleteUserFromInvitedUsersDepartment(Organization organization, User user)
       throws ApplicationException {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       User theUser = userRepository.getUserByFirstName(user.getEmail());
       departmentService.deleteUserFromTeam(theUser, organization, "invitedUsers");
-      return new Response(true, UUID.randomUUID().toString());
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("User deleted from invited users group.");
     } catch (Exception e) {
-      return new Response(false, UUID.randomUUID().toString());
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error deleting user from invited users group.");
     }
+    return plainResponse;
   }
 
   public void deleteInvitedUserRecord(String email)
@@ -207,8 +183,9 @@ public class InviteService {
     }
   }
 
-  public Response createInvitedUserRecordOnFreeIPA(String token, String email, Organization organization,
+  public PlainResponse createInvitedUserRecordOnFreeIPA(String token, String email, Organization organization,
       GroupMember groupMember) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       RandomGenerator randomGenerator = new RandomGeneratorImpl();
       String randomUsername = randomGenerator.generateRandomString(12);
@@ -222,16 +199,19 @@ public class InviteService {
 
       userAdminRepository.createUser(user);
       inviteLogger.info("Invited user record created.");
-      return new Response(true, UUID.randomUUID().toString());
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Invited user record created.");
     } catch (Exception e) {
       inviteLogger.error("Error creating invited user record on FreeIPA: " + e.getMessage());
-      return new Response(false, UUID.randomUUID().toString());
-
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error creating invited user record on FreeIPA: " + e.getMessage());
     }
+    return plainResponse;
   }
 
-  public Response addInvitedUserRecordToDepartment(String token, String email, Organization organization,
+  public PlainResponse addInvitedUserRecordToDepartment(String token, String email, Organization organization,
       GroupMember groupMember) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       User user = userAdminRepository.getUserByFirstName(email);
       DepartmentBasic department = new DepartmentBasic();
@@ -239,25 +219,32 @@ public class InviteService {
 
       departmentService.addUserToTeam(user, organization, department.getName());
       inviteLogger.info("Invited user record added to department.");
-      return new Response(true, UUID.randomUUID().toString());
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Invited user record added to department.");
     } catch (Exception e) {
       inviteLogger.error("Error adding invited user record to department: " + e.getMessage());
-      return new Response(false, UUID.randomUUID().toString());
-
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error adding invited user record to team: " + e.getMessage());
     }
+    return plainResponse;
   }
 
-  public Response addAcceptanceUserToIPAGroup(User user, Organization organization) throws ApplicationException {
+  public PlainResponse addAcceptanceUserToIPAGroup(User user, Organization organization) throws ApplicationException {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       User theUser = userRepository.getUserByEmail(user.getEmail());
       groupAdminRepository.addUserToGroup(theUser, organization);
       inviteLogger.info("User " + theUser.getUsername() + " accepted the invitation and added to group "
           + organization.getName());
-      return new Response(true, UUID.randomUUID().toString());
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("User " + theUser.getUsername() + " accepted the invitation and added to group "
+          + organization.getName());
     } catch (Exception e) {
       inviteLogger.error("Error happened when adding user to group " + e.getMessage());
-      return new Response(false, UUID.randomUUID().toString());
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error happened when adding user to group " + e.getMessage());
     }
+    return plainResponse;
   }
 
   public void editInvitedUserRecordDelete(String token, String email, Organization organization,
@@ -334,8 +321,9 @@ public class InviteService {
     }
   }
 
-  public Response updateInvitedUserRecordAccepted(User user, String token, Organization organization)
+  public PlainResponse updateInvitedUserRecordAccepted(User user, String token, Organization organization)
       throws ApplicationException {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       String email = user.getEmail();
       User invitedUserRecord = userRepository.getUserByFirstName(email);
@@ -357,16 +345,21 @@ public class InviteService {
       invitedUserRecord.setLastName(newLastName);
       userAdminRepository.updateUser(invitedUserRecord.getUsername(), invitedUserRecord);
       inviteLogger.info("Invited user record updated.");
-      return new Response(true, UUID.randomUUID().toString());
+      plainResponse.setSuccess(true);
+      plainResponse
+          .setMessage("User " + invitedUserRecord.getUsername() + " accepted the invitation and added to group "
+              + organization.getName());
     } catch (Exception e) {
       inviteLogger.error("Error updating invited user record: " + e.getMessage());
-      return new Response(false, UUID.randomUUID().toString());
-
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error happened when adding user to group " + e.getMessage());
     }
+    return plainResponse;
   }
 
-  public Response updateInvitedUserRecordRejected(User user, String token, Organization organization)
+  public PlainResponse updateInvitedUserRecordRejected(User user, String token, Organization organization)
       throws ApplicationException {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       String email = user.getEmail();
       User invitedUserRecord = userRepository.getUserByFirstName(email);
@@ -388,15 +381,21 @@ public class InviteService {
       invitedUserRecord.setLastName(newLastName);
       userAdminRepository.updateUser(invitedUserRecord.getUsername(), invitedUserRecord);
       inviteLogger.info("Invited user record updated.");
-      return new Response(true, UUID.randomUUID().toString());
+      plainResponse.setSuccess(true);
+      plainResponse
+          .setMessage("User " + invitedUserRecord.getUsername() + " rejected the invitation and removed from group "
+              + organization.getName());
     } catch (Exception e) {
       inviteLogger.error("Error updating invited user record: " + e.getMessage());
-      return new Response(false, UUID.randomUUID().toString());
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error happened when removing user from group " + e.getMessage());
     }
+    return plainResponse;
   }
 
-  public Response updateInvitedUserRecordDeleted(User user, Organization organization)
+  public PlainResponse updateInvitedUserRecordDeleted(User user, Organization organization)
       throws ApplicationException {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       String email = user.getEmail();
       User invitedUserRecord = userRepository.getUserByFirstName(email);
@@ -416,10 +415,15 @@ public class InviteService {
       }
       invitedUserRecord.setLastName(newLastName);
       userAdminRepository.updateUser(invitedUserRecord.getUsername(), invitedUserRecord);
-      return new Response(true, UUID.randomUUID().toString());
+      plainResponse.setSuccess(true);
+      plainResponse
+          .setMessage("User " + invitedUserRecord.getUsername() + " deleted the invitation and removed from group "
+              + organization.getName());
     } catch (Exception e) {
-      return new Response(false, UUID.randomUUID().toString());
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error happened when removing user from group " + e.getMessage());
     }
+    return plainResponse;
   }
 
   public String createInvitedUsersDepartment(Organization organization) throws ApplicationException {
@@ -436,34 +440,39 @@ public class InviteService {
     }
   }
 
-  public Response addInvitedUsersDepartmentAsMember(Organization organization, String teamName)
+  public PlainResponse addInvitedUsersDepartmentAsMember(Organization organization, String teamName)
       throws ApplicationException {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       groupRepository.addSubgroupToGroup(organization, teamName);
 
       inviteLogger.info("Managers group added as member.");
-      return new Response(true, UUID.randomUUID().toString());
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Managers group added as member.");
     } catch (Exception e) {
       inviteLogger.error("Error happened when creating IPA Group for organization " + e.getMessage());
-      return new Response(false, UUID.randomUUID().toString());
-
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error happened when creating IPA Group for organization " + e.getMessage());
     }
+    return plainResponse;
   }
 
-  public Response addFounderToInvitedUsersTeam(Organization organization, String invitedUsersGroupName)
+  public PlainResponse addFounderToInvitedUsersTeam(Organization organization, String invitedUsersGroupName)
       throws InternalError, IOException, ApplicationException {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       DepartmentBasic dept = new DepartmentBasic();
       dept.setName(invitedUsersGroupName);
       groupAdminRepository.setInitialManagersForDepartment(organization, dept);
       inviteLogger.info("Founder added to managers group.");
-      return new Response(true, UUID.randomUUID().toString());
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Founder added to managers group.");
     } catch (Exception e) {
       inviteLogger.error("Error happened when adding founder to managers group " + e.getMessage());
-      return new Response(false, UUID.randomUUID().toString());
-
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error happened when adding founder to managers group " + e.getMessage());
     }
-
+    return plainResponse;
   }
 
 }

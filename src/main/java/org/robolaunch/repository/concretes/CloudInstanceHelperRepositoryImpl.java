@@ -163,27 +163,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
-  public void bufferCall(String instanceType, String provider, String region, String superCluster) throws IOException {
-    URL url = new URL(backendUrl + "/bufferCloudInstance");
-    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-    connection.setRequestMethod("POST");
-    connection.setRequestProperty("Content-Type", "application/json");
-    connection.setDoOutput(true);
-    String input = "{\"instanceType\": \"" + instanceType + "\", \"region\": \"" + region + "\"}";
-
-    DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-    wr.write(input.getBytes());
-
-    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-    String line;
-    String result = "";
-    while ((line = bufferedReader.readLine()) != null) {
-      result += line;
-    }
-    wr.close();
-  }
-
-  @Override
   public String generateBufferName() {
     RandomGenerator randomGenerator = new RandomGeneratorImpl();
     String randomString = randomGenerator.generateRandomString(8);
@@ -1035,12 +1014,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
         .setCertificateAuthority(byteCertificateAuthData)
         .setVerifyingSsl(true)
         .build();
-
-    CoreV1Api coreV1Api = new CoreV1Api(newClient);
-    V1NamespaceList namespaceList = coreV1Api.listNamespace(null, null, null, null, null, null, null, null, null, null);
-    namespaceList.getItems().forEach(namespace -> {
-      System.out.println("Namespace: " + namespace.getMetadata().getName());
-    });
 
     VCCreated++;
     System.out.println("Returning new VC! --- " + VCCreated);

@@ -60,26 +60,6 @@ public class CloudInstanceHelperService {
     return new Result(tCreateRCResult.getReason(), false);
   }
 
-  public Result errorNotAuthorizedResult() {
-    return new Result("You are not authorized.", false);
-  }
-
-  public Result alreadyExistsResult() {
-    return new Result("A Cloud Instance with this name already exists.", false);
-  }
-
-  public Result mustBeStoppedResult() {
-    return new Result("You must stop the cloud instance before termination.", false);
-  }
-
-  public Result errorCreatingCloudInstance() {
-    return new Result("Error creating cloud instance", false);
-  }
-
-  public Result errorStartingCloudInstance() {
-    return new Result("Error starting cloud instance", false);
-  }
-
   public String getBufferName(Organization organization, String teamId, String cloudInstanceName, String provider,
       String region, String superCluster)
       throws IOException, ApiException, InterruptedException, InvalidKeyException, NoSuchAlgorithmException,
@@ -94,14 +74,6 @@ public class CloudInstanceHelperService {
 
     return vcApi.list(listOptions).getObject().getItems().get(0).getMetadata().getName()
         .split("-")[1];
-  }
-
-  public void bufferCall(String instanceType, String provider, String region, String superCluster) {
-    try {
-      cloudInstanceHelperRepository.bufferCall(instanceType, provider, region, superCluster);
-    } catch (Exception e) {
-      cloudInstanceHelperLogger.error("Buffer call failed");
-    }
   }
 
   public void CIOperationCall(String processId, String operation, String provider, String region, String superCluster) {
