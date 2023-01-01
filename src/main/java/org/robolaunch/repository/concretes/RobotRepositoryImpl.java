@@ -49,11 +49,11 @@ public class RobotRepositoryImpl implements RobotRepository {
         RobotHelperRepository robotHelperRepository;
 
         @Override
-        public void makeRobotsPassive(String bufferName, String region)
+        public void makeRobotsPassive(String bufferName, String provider, String region, String superCluster)
                         throws IOException, ApiException, InterruptedException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
-                                region);
+                                provider, region, superCluster);
                 DynamicKubernetesApi robotsApi = new DynamicKubernetesApi("robot.roboscale.io", "v1alpha1",
                                 "robots",
                                 vcClient);
@@ -69,12 +69,12 @@ public class RobotRepositoryImpl implements RobotRepository {
 
         @Override
         public void makeRobotsActive(
-                        String bufferName, String region)
+                        String bufferName, String provider, String region, String superCluster)
                         throws IOException, ApiException, InterruptedException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException {
 
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
-                                region);
+                                provider, region, superCluster);
                 DynamicKubernetesApi robotsApi = new DynamicKubernetesApi("robot.roboscale.io", "v1alpha1",
                                 "robots",
                                 vcClient);
@@ -91,10 +91,11 @@ public class RobotRepositoryImpl implements RobotRepository {
 
         @Override
         public void createRobotBuildManager(RobotBuildManager robotBuildManager, String bufferName, String token,
-                        String region)
+                        String provider, String region, String superCluster)
                         throws InvalidKeyException, NoSuchAlgorithmException,
                         IllegalArgumentException, MinioException, IOException, ApiException, InterruptedException {
-                ApiClient robotsApi = cloudInstanceHelperRepository.userApiClient(bufferName, token, region);
+                ApiClient robotsApi = cloudInstanceHelperRepository.userApiClient(bufferName, token, provider, region,
+                                superCluster);
                 DynamicKubernetesApi robotBuildManagerApi = new DynamicKubernetesApi("robot.roboscale.io", "v1alpha1",
                                 "buildmanagers", robotsApi);
                 // Get template RobotBuildManager YAML from MINIO.
@@ -127,10 +128,11 @@ public class RobotRepositoryImpl implements RobotRepository {
 
         @Override
         public void createRobotLaunchManager(RobotLaunchManager robotLaunchManager, String bufferName, String token,
-                        String region)
+                        String provider, String region, String superCluster)
                         throws InvalidKeyException, NoSuchAlgorithmException,
                         IllegalArgumentException, MinioException, IOException, ApiException, InterruptedException {
-                ApiClient robotsApi = cloudInstanceHelperRepository.userApiClient(bufferName, token, region);
+                ApiClient robotsApi = cloudInstanceHelperRepository.userApiClient(bufferName, token, provider, region,
+                                superCluster);
                 DynamicKubernetesApi robotBuildManagerApi = new DynamicKubernetesApi("robot.roboscale.io", "v1alpha1",
                                 "launchmanagers", robotsApi);
                 // Get template RobotLaunchManager YAML from MINIO.
@@ -171,10 +173,11 @@ public class RobotRepositoryImpl implements RobotRepository {
 
         @Override
         public void createRobotDevelopmentSuite(RobotDevSuite robotDevSuite, String bufferName, String token,
-                        String region)
+                        String provider, String region, String superCluster)
                         throws InvalidKeyException, NoSuchAlgorithmException,
                         IllegalArgumentException, MinioException, IOException, ApiException, InterruptedException {
-                ApiClient robotsApi = cloudInstanceHelperRepository.userApiClient(bufferName, token, region);
+                ApiClient robotsApi = cloudInstanceHelperRepository.userApiClient(bufferName, token, provider, region,
+                                superCluster);
                 DynamicKubernetesApi robotBuildManagerApi = new DynamicKubernetesApi("robot.roboscale.io", "v1alpha1",
                                 "robotdevsuites", robotsApi);
 
@@ -198,7 +201,8 @@ public class RobotRepositoryImpl implements RobotRepository {
                         vdiObject.addProperty("ingress", robotDevSuite.getVdiTemplate().isIngress());
                         vdiObject.addProperty("privileged", robotDevSuite.getVdiTemplate().isPrivileged());
 
-                        String webRTCPorts = robotHelperRepository.getAvailablePortRange(3);
+                        String webRTCPorts = robotHelperRepository.getAvailablePortRange(3, provider, region,
+                                        superCluster);
                         vdiObject.addProperty("webrtcPortRange", webRTCPorts);
                 }
 
@@ -213,7 +217,8 @@ public class RobotRepositoryImpl implements RobotRepository {
 
         }
 
-        public void createRobot(RequestCreateRobot requestCreateRobot, String token, String region)
+        public void createRobot(RequestCreateRobot requestCreateRobot, String token, String provider, String region,
+                        String superCluster)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException {
                 Gson gson = new Gson();
@@ -221,10 +226,11 @@ public class RobotRepositoryImpl implements RobotRepository {
                 String bufferName = requestCreateRobot.getBufferName();
                 System.out.println("Buffername: " + bufferName);
 
-                ApiClient robotsApi = cloudInstanceHelperRepository.userApiClient(bufferName, token, region);
+                ApiClient robotsApi = cloudInstanceHelperRepository.userApiClient(bufferName, token, provider, region,
+                                superCluster);
                 // ApiClient roApi =
                 // cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
-                // region);
+                // provider, region, superCluster);
                 // DynamicKubernetesApi robotBuildManagerApi = new
                 // DynamicKubernetesApi("robot.roboscale.io", "v1alpha1",
                 // "robots", robotsApi);
@@ -292,7 +298,8 @@ public class RobotRepositoryImpl implements RobotRepository {
                         vdiObject.addProperty("serviceType", "NodePort");
                         vdiObject.addProperty("ingress", false);
                         vdiObject.addProperty("privileged", false);
-                        String webRTCPortRange = robotHelperRepository.getAvailablePortRange(2);
+                        String webRTCPortRange = robotHelperRepository.getAvailablePortRange(2, provider, region,
+                                        superCluster);
                         vdiObject.addProperty("webrtcPortRange", webRTCPortRange);
 
                         object.get("spec").getAsJsonObject().get("robotDevSuiteTemplate").getAsJsonObject()

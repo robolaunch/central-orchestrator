@@ -39,7 +39,7 @@ public class AmazonRepositoryImpl implements AmazonRepository {
   }
 
   @Override
-  public void stopInstance(String nodeName, String region) {
+  public void stopInstance(String nodeName, String provider, String region, String superCluster) {
     DescribeInstancesRequest describeInstancesRequest = DescribeInstancesRequest.builder().build();
     DescribeInstancesResponse describeInstancesResponse = ec2Client.describeInstances(describeInstancesRequest);
 
@@ -57,7 +57,7 @@ public class AmazonRepositoryImpl implements AmazonRepository {
   }
 
   @Override
-  public void startInstance(String nodeName, String region) {
+  public void startInstance(String nodeName, String provider, String region, String superCluster) {
     DescribeInstancesRequest describeInstancesRequest = DescribeInstancesRequest.builder().build();
     DescribeInstancesResponse describeInstancesResponse = ec2Client.describeInstances(describeInstancesRequest);
 
@@ -77,7 +77,7 @@ public class AmazonRepositoryImpl implements AmazonRepository {
   }
 
   @Override
-  public String getInstanceState(String nodeName, String region) {
+  public String getInstanceState(String nodeName, String provider, String region, String superCluster) {
     DescribeInstancesRequest describeInstancesRequest = DescribeInstancesRequest.builder().build();
     DescribeInstancesResponse describeInstancesResponse = ec2Client.describeInstances(describeInstancesRequest);
 
@@ -93,7 +93,7 @@ public class AmazonRepositoryImpl implements AmazonRepository {
   }
 
   @Override
-  public Boolean isInstanceStopped(String nodeName, String region) {
+  public Boolean isInstanceStopped(String nodeName, String provider, String region, String superCluster) {
     DescribeInstancesRequest describeInstancesRequest = DescribeInstancesRequest.builder().build();
     DescribeInstancesResponse describeInstancesResponse = ec2Client.describeInstances(describeInstancesRequest);
 
@@ -109,7 +109,7 @@ public class AmazonRepositoryImpl implements AmazonRepository {
   }
 
   @Override
-  public Boolean isRunning(String nodeName, String region) {
+  public Boolean isRunning(String nodeName, String provider, String region, String superCluster) {
     DescribeInstancesRequest describeInstancesRequest = DescribeInstancesRequest.builder().build();
     DescribeInstancesResponse describeInstancesResponse = ec2Client.describeInstances(describeInstancesRequest);
 

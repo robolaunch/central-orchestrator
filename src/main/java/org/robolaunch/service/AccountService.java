@@ -5,7 +5,6 @@ import java.net.HttpCookie;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -31,8 +30,6 @@ import org.robolaunch.models.LoginResponse;
 import org.robolaunch.models.LoginResponseWithIPA;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.RegisteredDepartment;
-import org.robolaunch.models.Response;
-import org.robolaunch.models.Result;
 import org.robolaunch.models.User;
 import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.models.response.ResponseCurrentUser;
@@ -83,24 +80,6 @@ public class AccountService {
 
     @LoggerName("accountService")
     Logger accountLogger;
-
-    public void timer() {
-        accountLogger.info("Timer is working");
-    }
-
-    public Result notAuthorizedHandler() {
-        return new Result("Authorization error. Please make sure that you have the permissions for this operation.",
-                false);
-    }
-
-    public Result ipaErrorHandler(Response response) {
-        accountLogger.error("Error: " + response.getResourceId());
-        return new Result(response.getResourceId(), false);
-    }
-
-    public Result errorHandler() {
-        return new Result("Error creating user", false);
-    }
 
     public ResponseLogin userLogin(LoginRequest loginRequest) throws InterruptedException, ExecutionException {
         ResponseLogin responseLogin = new ResponseLogin();
@@ -203,19 +182,22 @@ public class AccountService {
         }
     }
 
-    public Result userChangePassword(String oldPassword, String newPassword)
+    public PlainResponse userChangePassword(String oldPassword, String newPassword)
             throws ApplicationException, IOException {
+        PlainResponse plainResponse = new PlainResponse();
         try {
             User user = new User();
             user.setUsername(jwt.getClaim("preferred_username"));
             userRepository.changePassword(oldPassword, newPassword, user.getUsername());
             accountLogger.info("User password updated.");
-            return new Result("Password changed successfully", true);
+            plainResponse.setSuccess(true);
+            plainResponse.setMessage("Password updated successfully.");
         } catch (ApplicationException e) {
             accountLogger.error("Error changing password: ");
-            return new Result("Error changing password. Please try again.", false);
-
+            plainResponse.setSuccess(false);
+            plainResponse.setMessage("Error changing password.");
         }
+        return plainResponse;
     }
 
     public void logout() {
@@ -373,16 +355,18 @@ public class AccountService {
         }
     }
 
-    public Response createRegisteredUserWithPassword(@Valid User user) throws ApplicationException, IOException {
+    public PlainResponse createRegisteredUserWithPassword(@Valid User user) throws ApplicationException, IOException {
+        PlainResponse plainResponse = new PlainResponse();
         try {
             userAdminRepository.createUserWithPassword(user);
             accountLogger.info("User " + user.getUsername() + " created");
-            return new Response(true,
-                    UUID.randomUUID().toString());
+            plainResponse.setSuccess(true);
+            plainResponse.setMessage("User created successfully.");
         } catch (ApplicationException e) {
-            return new Response(false,
-                    e.getMessage());
+            plainResponse.setSuccess(false);
+            plainResponse.setMessage("Error registering user with password.");
         }
+        return plainResponse;
     }
 
     public void deleteUserFromFreeIPA(@Valid User user) throws ApplicationException, IOException {
@@ -476,14 +460,10 @@ public class AccountService {
         }
     }
 
-    public Response doesEmailExist(User user) {
+    public Boolean doesEmailExist(User user) {
         try {
             Boolean doesItExist = userAdminRepository.doesEmailExist(user.getEmail());
-            if (doesItExist) {
-                return new Response(false, "Email already exists.");
-            } else {
-                return new Response(true, "Email does not exists");
-            }
+            return doesItExist;
         } catch (Exception e) {
             return null;
         }

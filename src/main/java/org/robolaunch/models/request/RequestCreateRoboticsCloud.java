@@ -8,17 +8,10 @@ public class RequestCreateRoboticsCloud implements Serializable {
    private Organization organization;
    private String teamId;
    private String cloudInstanceName;
-   private String name;
+   private String instanceType;
+   private Boolean connectionHub;
 
    public RequestCreateRoboticsCloud() {
-   }
-
-   public String getName() {
-      return name;
-   }
-
-   public void setName(String name) {
-      this.name = name;
    }
 
    public Organization getOrganization() {
@@ -43,6 +36,22 @@ public class RequestCreateRoboticsCloud implements Serializable {
 
    public void setCloudInstanceName(String cloudInstanceName) {
       this.cloudInstanceName = cloudInstanceName;
+   }
+
+   public String getInstanceType() {
+      return instanceType;
+   }
+
+   public void setInstanceType(String instanceType) {
+      this.instanceType = instanceType;
+   }
+
+   public Boolean isConnectionHub() {
+      return connectionHub;
+   }
+
+   public void setConnectionHub(Boolean connectionHub) {
+      this.connectionHub = connectionHub;
    }
 
 }

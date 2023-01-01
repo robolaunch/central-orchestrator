@@ -1,52 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_u6rFkGHYEDuSPK7SyZy3zQ" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_ElVMIGqVEDuSCre2gcynhw" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_organizationItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="_doesExistItem" structureRef="Boolean"/>
   <bpmn2:itemDefinition id="_invitedUsersGroupNameItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="_ipaOrganizationResponseItem" structureRef="org.robolaunch.models.Response"/>
-  <bpmn2:itemDefinition id="_managerResponseItem" structureRef="org.robolaunch.models.Response"/>
-  <bpmn2:itemDefinition id="_departmentResponseItem" structureRef="org.robolaunch.models.Response"/>
-  <bpmn2:itemDefinition id="_depManagerResponseItem" structureRef="org.robolaunch.models.Response"/>
-  <bpmn2:itemDefinition id="_inviteUserDepResponseItem" structureRef="org.robolaunch.models.Response"/>
-  <bpmn2:itemDefinition id="_founderResponseItem" structureRef="org.robolaunch.models.Response"/>
   <bpmn2:itemDefinition id="_finalOrganizationItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="_currentUserItem" structureRef="org.robolaunch.models.CurrentUser"/>
   <bpmn2:itemDefinition id="_enterpriseApprovedItem" structureRef="Boolean"/>
-  <bpmn2:itemDefinition id="_realmResponseItem" structureRef="org.robolaunch.models.Response"/>
-  <bpmn2:itemDefinition id="_groupMapperResponseItem" structureRef="org.robolaunch.models.Response"/>
-  <bpmn2:itemDefinition id="_adminResponseItem" structureRef="org.robolaunch.models.Response"/>
-  <bpmn2:itemDefinition id="_bucketResponseItem" structureRef="org.robolaunch.models.Response"/>
-  <bpmn2:itemDefinition id="_groupSyncResponseItem" structureRef="org.robolaunch.models.Response"/>
-  <bpmn2:itemDefinition id="_oauthClientResponseItem" structureRef="org.robolaunch.models.Response"/>
-  <bpmn2:itemDefinition id="_clientScopeResponseItem" structureRef="org.robolaunch.models.Response"/>
-  <bpmn2:itemDefinition id="_gatekeeperResponseItem" structureRef="org.robolaunch.models.Response"/>
-  <bpmn2:itemDefinition id="_keycloakSettingsResponseItem" structureRef="org.robolaunch.models.Response"/>
   <bpmn2:itemDefinition id="_plainResponseItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="_managersTeamIdItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__B61D07B6-15B7-4D5F-ADFC-9E839A72DE4C_finalOrganizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
-  <bpmn2:itemDefinition id="__B61D07B6-15B7-4D5F-ADFC-9E839A72DE4C_managerResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
+  <bpmn2:itemDefinition id="__B61D07B6-15B7-4D5F-ADFC-9E839A72DE4C_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__2736CAE9-02BA-48AF-A65B-17A2038B6E2E_finalOrganizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
-  <bpmn2:itemDefinition id="__2736CAE9-02BA-48AF-A65B-17A2038B6E2E_ipaOrganizationResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
+  <bpmn2:itemDefinition id="__2736CAE9-02BA-48AF-A65B-17A2038B6E2E_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__20B5A858-E8F2-4C12-A0B4-1E88F61F2BEC_finalOrganizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="__20B5A858-E8F2-4C12-A0B4-1E88F61F2BEC_managersTeamIdOutputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__EB3FF32B-849D-4684-8F89-2EB7B7C7CF26_finalOrganizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="__EB3FF32B-849D-4684-8F89-2EB7B7C7CF26_managersTeamIdInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__EB3FF32B-849D-4684-8F89-2EB7B7C7CF26_depManagerResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
+  <bpmn2:itemDefinition id="__EB3FF32B-849D-4684-8F89-2EB7B7C7CF26_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__48FD818A-1AF9-420C-810F-D83BC083CC3D_finalOrganizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="__48FD818A-1AF9-420C-810F-D83BC083CC3D_managersTeamIdInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__48FD818A-1AF9-420C-810F-D83BC083CC3D_ResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
+  <bpmn2:itemDefinition id="__48FD818A-1AF9-420C-810F-D83BC083CC3D_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__DFCC2CDF-9A94-4BAE-BB3C-2BE6140C8021_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="__DFCC2CDF-9A94-4BAE-BB3C-2BE6140C8021_doesExistOutputXItem" structureRef="Boolean"/>
   <bpmn2:itemDefinition id="__A04C3449-6D38-47AB-99B8-E1FC9F3BC430_finalOrganizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="__A04C3449-6D38-47AB-99B8-E1FC9F3BC430_invitedUsersGroupNameOutputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__5058CA21-94E0-486C-A849-A7B594675B3F_finalOrganizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="__5058CA21-94E0-486C-A849-A7B594675B3F_invitedUsersGroupNameInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__5058CA21-94E0-486C-A849-A7B594675B3F_invitedUserDepResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
+  <bpmn2:itemDefinition id="__5058CA21-94E0-486C-A849-A7B594675B3F_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__71EA0E08-3AC9-48B4-A7BD-F9D532C70358_finalOrganizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="__71EA0E08-3AC9-48B4-A7BD-F9D532C70358_invitedUsersGroupNameInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__71EA0E08-3AC9-48B4-A7BD-F9D532C70358_founderResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
+  <bpmn2:itemDefinition id="__71EA0E08-3AC9-48B4-A7BD-F9D532C70358_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__58F65FA1-02EB-4610-ADCA-2C38F05AF86E_finalOrganizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
-  <bpmn2:itemDefinition id="__58F65FA1-02EB-4610-ADCA-2C38F05AF86E_bucketResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
+  <bpmn2:itemDefinition id="__58F65FA1-02EB-4610-ADCA-2C38F05AF86E_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__EBF452C6-F7C7-49A6-B1F3-BCE27C7593B8_messageInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__EBF452C6-F7C7-49A6-B1F3-BCE27C7593B8_successInputXItem" structureRef="Boolean"/>
   <bpmn2:itemDefinition id="__EBF452C6-F7C7-49A6-B1F3-BCE27C7593B8_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
@@ -79,21 +64,21 @@
   <bpmn2:itemDefinition id="__C32DF5B5-E867-476B-BCAB-CF5897D6BA5E_successInputXItem" structureRef="Boolean"/>
   <bpmn2:itemDefinition id="__C32DF5B5-E867-476B-BCAB-CF5897D6BA5E_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__BE514795-7F30-49D5-A0F6-D21705170F18_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
-  <bpmn2:itemDefinition id="__BE514795-7F30-49D5-A0F6-D21705170F18_realmResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
+  <bpmn2:itemDefinition id="__BE514795-7F30-49D5-A0F6-D21705170F18_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__B94481C9-1CB8-4515-A24C-635B4FDCF05A_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
-  <bpmn2:itemDefinition id="__B94481C9-1CB8-4515-A24C-635B4FDCF05A_keycloakSettingsResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
+  <bpmn2:itemDefinition id="__B94481C9-1CB8-4515-A24C-635B4FDCF05A_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__A4036809-E580-4410-8A29-400BB117F416_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
-  <bpmn2:itemDefinition id="__A4036809-E580-4410-8A29-400BB117F416_groupMapperResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
+  <bpmn2:itemDefinition id="__A4036809-E580-4410-8A29-400BB117F416_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__24A31B82-B220-4A06-96BC-0B9638DAF33C_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
-  <bpmn2:itemDefinition id="__24A31B82-B220-4A06-96BC-0B9638DAF33C_adminResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
+  <bpmn2:itemDefinition id="__24A31B82-B220-4A06-96BC-0B9638DAF33C_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__39A86831-961D-4AB6-98BA-53776F5C7BE2_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
-  <bpmn2:itemDefinition id="__39A86831-961D-4AB6-98BA-53776F5C7BE2_groupSyncResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
+  <bpmn2:itemDefinition id="__39A86831-961D-4AB6-98BA-53776F5C7BE2_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__03F65EFE-97A8-4850-A2B4-806FF5F49629_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
-  <bpmn2:itemDefinition id="__03F65EFE-97A8-4850-A2B4-806FF5F49629_clientScopeResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
+  <bpmn2:itemDefinition id="__03F65EFE-97A8-4850-A2B4-806FF5F49629_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__94911968-0EE1-4C27-8234-0C1D90F65AB9_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
-  <bpmn2:itemDefinition id="__94911968-0EE1-4C27-8234-0C1D90F65AB9_gatekeeperResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
+  <bpmn2:itemDefinition id="__94911968-0EE1-4C27-8234-0C1D90F65AB9_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__0DE28F19-7683-4380-AB17-A63FB9D5BBB8_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
-  <bpmn2:itemDefinition id="__0DE28F19-7683-4380-AB17-A63FB9D5BBB8_oauthClientResponseOutputXItem" structureRef="org.robolaunch.models.Response"/>
+  <bpmn2:itemDefinition id="__0DE28F19-7683-4380-AB17-A63FB9D5BBB8_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__04F096FB-56EB-4C00-A554-AD3FDCB9136E_messageInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__04F096FB-56EB-4C00-A554-AD3FDCB9136E_successInputXItem" structureRef="Boolean"/>
   <bpmn2:itemDefinition id="__04F096FB-56EB-4C00-A554-AD3FDCB9136E_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
@@ -191,8 +176,8 @@
   <bpmn2:interface id="_2ACB1232-16E8-4051-B451-419E88DAD802_ServiceInterface" name="org.robolaunch.service.KeycloakService" implementationRef="org.robolaunch.service.KeycloakService">
     <bpmn2:operation id="_2ACB1232-16E8-4051-B451-419E88DAD802_ServiceOperation" name="deleteRealm" implementationRef="deleteRealm"/>
   </bpmn2:interface>
-  <bpmn2:collaboration id="_F112B27A-6380-4573-8F8B-DD39AF7D7FE7" name="Default Collaboration">
-    <bpmn2:participant id="_CBC15ACA-C1F1-4E5A-B1F0-0A4FA39D0591" name="Pool Participant" processRef="createOrganization"/>
+  <bpmn2:collaboration id="_07E222B5-E5D5-40FE-B137-D12153210D4E" name="Default Collaboration">
+    <bpmn2:participant id="_3E6B8E6C-C8C4-4B49-B5E5-E8FB7270C273" name="Pool Participant" processRef="createOrganization"/>
   </bpmn2:collaboration>
   <bpmn2:process id="createOrganization" drools:packageName="org.robolaunch.kogito.organization" drools:version="1.0" drools:adHoc="false" name="createOrganization" isExecutable="true" processType="Public">
     <bpmn2:property id="organization" itemSubjectRef="_organizationItem" name="organization">
@@ -204,24 +189,9 @@
     </bpmn2:property>
     <bpmn2:property id="doesExist" itemSubjectRef="_doesExistItem" name="doesExist"/>
     <bpmn2:property id="invitedUsersGroupName" itemSubjectRef="_invitedUsersGroupNameItem" name="invitedUsersGroupName"/>
-    <bpmn2:property id="ipaOrganizationResponse" itemSubjectRef="_ipaOrganizationResponseItem" name="ipaOrganizationResponse"/>
-    <bpmn2:property id="managerResponse" itemSubjectRef="_managerResponseItem" name="managerResponse"/>
-    <bpmn2:property id="departmentResponse" itemSubjectRef="_departmentResponseItem" name="departmentResponse"/>
-    <bpmn2:property id="depManagerResponse" itemSubjectRef="_depManagerResponseItem" name="depManagerResponse"/>
-    <bpmn2:property id="inviteUserDepResponse" itemSubjectRef="_inviteUserDepResponseItem" name="inviteUserDepResponse"/>
-    <bpmn2:property id="founderResponse" itemSubjectRef="_founderResponseItem" name="founderResponse"/>
     <bpmn2:property id="finalOrganization" itemSubjectRef="_finalOrganizationItem" name="finalOrganization"/>
     <bpmn2:property id="currentUser" itemSubjectRef="_currentUserItem" name="currentUser"/>
     <bpmn2:property id="enterpriseApproved" itemSubjectRef="_enterpriseApprovedItem" name="enterpriseApproved"/>
-    <bpmn2:property id="realmResponse" itemSubjectRef="_realmResponseItem" name="realmResponse"/>
-    <bpmn2:property id="groupMapperResponse" itemSubjectRef="_groupMapperResponseItem" name="groupMapperResponse"/>
-    <bpmn2:property id="adminResponse" itemSubjectRef="_adminResponseItem" name="adminResponse"/>
-    <bpmn2:property id="bucketResponse" itemSubjectRef="_bucketResponseItem" name="bucketResponse"/>
-    <bpmn2:property id="groupSyncResponse" itemSubjectRef="_groupSyncResponseItem" name="groupSyncResponse"/>
-    <bpmn2:property id="oauthClientResponse" itemSubjectRef="_oauthClientResponseItem" name="oauthClientResponse"/>
-    <bpmn2:property id="clientScopeResponse" itemSubjectRef="_clientScopeResponseItem" name="clientScopeResponse"/>
-    <bpmn2:property id="gatekeeperResponse" itemSubjectRef="_gatekeeperResponseItem" name="gatekeeperResponse"/>
-    <bpmn2:property id="keycloakSettingsResponse" itemSubjectRef="_keycloakSettingsResponseItem" name="keycloakSettingsResponse"/>
     <bpmn2:property id="plainResponse" itemSubjectRef="_plainResponseItem" name="plainResponse">
       <bpmn2:extensionElements>
         <drools:metaData name="customTags">
@@ -236,7 +206,7 @@
           <drools:metaValue><![CDATA[Failure]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !oauthClientResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_3A6CF554-DB42-42A9-B22D-A2A534C6EC80" sourceRef="_7AD5D0AE-3366-4446-B4C0-0767442FBEC8" targetRef="_89F959BC-F236-48DA-97FC-F1CE431E3F34">
       <bpmn2:extensionElements>
@@ -251,7 +221,7 @@
           <drools:metaValue><![CDATA[Failure]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !gatekeeperResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_999B5CB2-6F30-4D85-9B02-BC0CDE48B029" sourceRef="_89F959BC-F236-48DA-97FC-F1CE431E3F34" targetRef="_142481C6-C217-4658-9464-4A396F2C2B78">
       <bpmn2:extensionElements>
@@ -266,7 +236,7 @@
           <drools:metaValue><![CDATA[Failure]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !clientScopeResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_D97DB63C-D3E2-4932-B65B-5B93B3A6FCF0" sourceRef="_3868DBA6-9B67-4E81-870C-31EBBE0F1B52" targetRef="_04F096FB-56EB-4C00-A554-AD3FDCB9136E">
       <bpmn2:extensionElements>
@@ -289,7 +259,7 @@
           <drools:metaValue><![CDATA[Success]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return gatekeeperResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_CB7DB4A8-B1E4-4AD3-B8B7-0A1625227175" sourceRef="_94911968-0EE1-4C27-8234-0C1D90F65AB9" targetRef="_63AB8335-A7D2-4D46-A53A-8ED416E14C32"/>
     <bpmn2:sequenceFlow id="_B4D6B449-01A6-4BE7-98B7-9CA8A7064A6C" name="Success" sourceRef="_C1042624-4A35-4C1E-A099-A70908E2BA38" targetRef="_94911968-0EE1-4C27-8234-0C1D90F65AB9">
@@ -301,7 +271,7 @@
           <drools:metaValue><![CDATA[Success]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return clientScopeResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_10DA8FCB-1402-40BB-81AE-3E4743359B58" sourceRef="_03F65EFE-97A8-4850-A2B4-806FF5F49629" targetRef="_C1042624-4A35-4C1E-A099-A70908E2BA38">
       <bpmn2:extensionElements>
@@ -316,7 +286,7 @@
           <drools:metaValue><![CDATA[Failure]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !bucketResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_68F1E426-9A05-49EF-86A3-EC9B8B7D6291" name="Failure" sourceRef="_239A0D0E-F6D6-460C-B9DE-5BB87F891E84" targetRef="_2FC41071-D1E4-4F57-A631-60E0252E36A5">
       <bpmn2:extensionElements>
@@ -324,7 +294,7 @@
           <drools:metaValue><![CDATA[Failure]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !groupSyncResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_AAC0E1D5-C66D-41A7-8BA5-16885177C4E4" sourceRef="_2FC41071-D1E4-4F57-A631-60E0252E36A5" targetRef="_E7E6B2A8-2A0B-4E52-BA5F-51C2150D8813">
       <bpmn2:extensionElements>
@@ -342,7 +312,7 @@
           <drools:metaValue><![CDATA[Failure]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !adminResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_729EC776-33F4-4535-826E-B6072F01E948" sourceRef="_7BEA4BCD-E36B-4A32-A136-868DA0D0426A" targetRef="_7AD5D0AE-3366-4446-B4C0-0767442FBEC8">
       <bpmn2:extensionElements>
@@ -358,7 +328,7 @@
           <drools:metaValue><![CDATA[Failure]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !groupMapperResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_A97722AB-8AB1-45E9-8E72-8A580E0742F0" sourceRef="_142481C6-C217-4658-9464-4A396F2C2B78" targetRef="_C8B6CD84-BA17-4014-97F8-8A53CE7B4B4B">
       <bpmn2:extensionElements>
@@ -373,7 +343,7 @@
           <drools:metaValue><![CDATA[Failure]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !keycloakSettingsResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_593025A3-E5DE-42A3-B5D1-1C98F6FD81E2" name="Success" sourceRef="_FCD99587-6BA0-41D5-A7C9-70414AF0EA4A" targetRef="_03F65EFE-97A8-4850-A2B4-806FF5F49629">
       <bpmn2:extensionElements>
@@ -384,7 +354,7 @@
           <drools:metaValue><![CDATA[Success]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return keycloakSettingsResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_B6364A8F-F894-4CA2-AFAC-8ACF52D24038" sourceRef="_C8B6CD84-BA17-4014-97F8-8A53CE7B4B4B" targetRef="_7206091E-C445-4D02-BA9D-4E16A9F1FAA1"/>
     <bpmn2:sequenceFlow id="_9222DA97-5909-4A88-AC69-133C327C8FB8" sourceRef="_7206091E-C445-4D02-BA9D-4E16A9F1FAA1" targetRef="_5FB09AE3-B9F9-4A96-A266-F464372BF090">
@@ -400,7 +370,7 @@
           <drools:metaValue><![CDATA[Failure]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !realmResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_4677E2EE-D439-417D-8F81-3CACA9FFBDFA" sourceRef="_39A86831-961D-4AB6-98BA-53776F5C7BE2" targetRef="_239A0D0E-F6D6-460C-B9DE-5BB87F891E84"/>
     <bpmn2:sequenceFlow id="_377950BF-6F25-4677-B65C-EAB95E1136E8" name="Success" sourceRef="_B8C47C59-87ED-4E4E-902F-CB86F514FE79" targetRef="_39A86831-961D-4AB6-98BA-53776F5C7BE2">
@@ -412,7 +382,7 @@
           <drools:metaValue><![CDATA[Success]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return adminResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_8F092CE2-48F7-43D4-868D-DB0F9FFB0036" sourceRef="_24A31B82-B220-4A06-96BC-0B9638DAF33C" targetRef="_B8C47C59-87ED-4E4E-902F-CB86F514FE79"/>
     <bpmn2:sequenceFlow id="_E93303A3-49CF-4C9F-AA67-04314363FABA" name="Success" sourceRef="_40F19DAA-A1A1-4AA2-9929-0021575519A3" targetRef="_24A31B82-B220-4A06-96BC-0B9638DAF33C">
@@ -424,7 +394,7 @@
           <drools:metaValue><![CDATA[Success]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return groupMapperResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_B7E4A694-7A29-4807-BBC1-217BB99401AA" sourceRef="_A4036809-E580-4410-8A29-400BB117F416" targetRef="_40F19DAA-A1A1-4AA2-9929-0021575519A3"/>
     <bpmn2:sequenceFlow id="_A645F734-0641-450D-9930-4009C60C52A9" name="Success" sourceRef="_D5D64990-87FB-4CC1-9A99-F449E3BD9301" targetRef="_A4036809-E580-4410-8A29-400BB117F416">
@@ -436,7 +406,7 @@
           <drools:metaValue><![CDATA[Success]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return oauthClientResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_39A98FED-DB2C-4E1E-866B-24B61CF9303F" sourceRef="_B94481C9-1CB8-4515-A24C-635B4FDCF05A" targetRef="_FCD99587-6BA0-41D5-A7C9-70414AF0EA4A"/>
     <bpmn2:sequenceFlow id="_7905320A-7E0A-4D8B-8251-8C87D90FCEFE" name="Success" sourceRef="_FA168C3D-2DB3-45ED-A2B5-63C4736D4A00" targetRef="_B94481C9-1CB8-4515-A24C-635B4FDCF05A">
@@ -448,9 +418,19 @@
           <drools:metaValue><![CDATA[Success]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return realmResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_47A01985-AC73-401D-B7F1-B47316CF66BE" sourceRef="_BE514795-7F30-49D5-A0F6-D21705170F18" targetRef="_FA168C3D-2DB3-45ED-A2B5-63C4736D4A00"/>
+    <bpmn2:sequenceFlow id="_3D706ADC-0BD3-4DDF-9393-87B7D3F34107" sourceRef="_C32DF5B5-E867-476B-BCAB-CF5897D6BA5E" targetRef="_DB6E81D3-A18C-407B-8B63-0EA667296715">
+      <bpmn2:extensionElements>
+        <drools:metaData name="isAutoConnection.source">
+          <drools:metaValue><![CDATA[true]]></drools:metaValue>
+        </drools:metaData>
+        <drools:metaData name="isAutoConnection.target">
+          <drools:metaValue><![CDATA[true]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+    </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_1D8C68AA-D0D5-4356-8521-009A63A76720" sourceRef="_CA402695-13B7-450B-99D5-B3936CCF2BA7" targetRef="_3868DBA6-9B67-4E81-870C-31EBBE0F1B52">
       <bpmn2:extensionElements>
         <drools:metaData name="isAutoConnection.target">
@@ -483,7 +463,7 @@
           <drools:metaValue><![CDATA[Success]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return bucketResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_40AA4869-0659-49EB-8732-63DE507F05D4" name="Approved" sourceRef="_28C1A39E-7FF3-4177-B446-49AED02C87C2" targetRef="_233F8B5B-6112-4912-9F9D-C56442DF3980">
       <bpmn2:extensionElements>
@@ -496,6 +476,13 @@
       </bpmn2:extensionElements>
       <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return enterpriseApproved == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="_F33BFBBF-F92A-47F0-82C5-D6B1AA288002" sourceRef="_202787EC-07D4-47C0-82B4-054A95BC1915" targetRef="_43C7F04E-B75F-419F-B097-E2D85E17528B">
+      <bpmn2:extensionElements>
+        <drools:metaData name="isAutoConnection.target">
+          <drools:metaValue><![CDATA[true]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+    </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_1AB17BCE-5757-4DDB-A90B-3AF22889C936" name="Rejected" sourceRef="_28C1A39E-7FF3-4177-B446-49AED02C87C2" targetRef="_202787EC-07D4-47C0-82B4-054A95BC1915">
       <bpmn2:extensionElements>
         <drools:metaData name="isAutoConnection.target">
@@ -503,13 +490,6 @@
         </drools:metaData>
         <drools:metaData name="elementname">
           <drools:metaValue><![CDATA[Rejected]]></drools:metaValue>
-        </drools:metaData>
-      </bpmn2:extensionElements>
-    </bpmn2:sequenceFlow>
-    <bpmn2:sequenceFlow id="_F33BFBBF-F92A-47F0-82C5-D6B1AA288002" sourceRef="_202787EC-07D4-47C0-82B4-054A95BC1915" targetRef="_33C2B166-F680-426C-BAFF-BDAA41C80128">
-      <bpmn2:extensionElements>
-        <drools:metaData name="isAutoConnection.target">
-          <drools:metaValue><![CDATA[true]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
     </bpmn2:sequenceFlow>
@@ -553,7 +533,7 @@
           <drools:metaValue><![CDATA[Failed]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !founderResponse.isSuccess();]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_BD1FBC02-9021-46CF-AB13-948F0360D9DF" name="Success" sourceRef="_98AF7521-3964-4CF9-A193-A34DF08EC268" targetRef="_BE514795-7F30-49D5-A0F6-D21705170F18">
       <bpmn2:extensionElements>
@@ -567,7 +547,7 @@
           <drools:metaValue><![CDATA[Success]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return founderResponse.isSuccess();]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_B77505A0-A1ED-44E2-B783-F9A73EED1CB3" name="Failed" sourceRef="_AB24A01F-7FD6-413B-9036-1B72A03E05D8" targetRef="_A6F68C51-D28B-4456-AC3C-179F2F3508EE">
       <bpmn2:extensionElements>
@@ -578,7 +558,7 @@
           <drools:metaValue><![CDATA[Failed]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !inviteUserDepResponse.isSuccess();]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_ED6C50DA-CC11-4AD8-B35D-6B15B7439CA7" name="Failed" sourceRef="_5768AB52-3F43-4FA7-A0EE-BD1602914C7E" targetRef="_1737A1A8-0C80-439B-9E41-0716E0CE98A8">
       <bpmn2:extensionElements>
@@ -586,7 +566,7 @@
           <drools:metaValue><![CDATA[Failed]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !depManagerResponse.isSuccess();]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_D9644C26-D205-4D56-867A-12F91E2B297B" name="Failed" sourceRef="_14B5CA99-4DCC-49B6-A111-098DCF5C173E" targetRef="_EDBA813B-FF81-4A48-A795-5719854E155F">
       <bpmn2:extensionElements>
@@ -594,7 +574,7 @@
           <drools:metaValue><![CDATA[Failed]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !departmentResponse.isSuccess();]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_3F46C50B-4BF9-4EE5-A3A9-F78FDE4C299E" name="Failed" sourceRef="_65A36402-0269-48C4-8DC3-124A35656A5E" targetRef="_F3EC8439-3111-487C-B197-10DC4CEE8E46">
       <bpmn2:extensionElements>
@@ -602,7 +582,7 @@
           <drools:metaValue><![CDATA[Failed]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !managerResponse.isSuccess();]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_8E1418F5-757C-4AA6-B891-0F73EF7673D5" sourceRef="_EBF452C6-F7C7-49A6-B1F3-BCE27C7593B8" targetRef="_E7EA9C14-400C-4A91-91DC-AC7C4D924596">
       <bpmn2:extensionElements>
@@ -628,7 +608,7 @@
           <drools:metaValue><![CDATA[Failed]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !ipaOrganizationResponse.isSuccess();]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_B3F467C5-22E5-46EC-9900-380A79131A61" name="Enterprise" sourceRef="_CC629E1D-A8C5-4942-87EE-EF3A9C6E19CA" targetRef="_A2E7714E-E35C-49C5-9193-C5779736BCB4">
       <bpmn2:extensionElements>
@@ -668,7 +648,7 @@
           <drools:metaValue><![CDATA[Success]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return groupSyncResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_850D0416-1DD5-419E-A8B4-5D90900863D9" sourceRef="_71EA0E08-3AC9-48B4-A7BD-F9D532C70358" targetRef="_98AF7521-3964-4CF9-A193-A34DF08EC268"/>
     <bpmn2:sequenceFlow id="_D55D0D8A-F438-4E3B-91F8-DD8643B12952" name="Success" sourceRef="_AB24A01F-7FD6-413B-9036-1B72A03E05D8" targetRef="_71EA0E08-3AC9-48B4-A7BD-F9D532C70358">
@@ -683,7 +663,7 @@
           <drools:metaValue><![CDATA[Success]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return inviteUserDepResponse.isSuccess();]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_C09771BE-B7FF-4549-907C-6E51CC1D8B64" sourceRef="_5058CA21-94E0-486C-A849-A7B594675B3F" targetRef="_AB24A01F-7FD6-413B-9036-1B72A03E05D8">
       <bpmn2:extensionElements>
@@ -711,17 +691,7 @@
           <drools:metaValue><![CDATA[Added]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return depManagerResponse.isSuccess();]]></bpmn2:conditionExpression>
-    </bpmn2:sequenceFlow>
-    <bpmn2:sequenceFlow id="_3D706ADC-0BD3-4DDF-9393-87B7D3F34107" sourceRef="_C32DF5B5-E867-476B-BCAB-CF5897D6BA5E" targetRef="_E79A8E8F-60FD-481E-897D-6EC395EBA61F">
-      <bpmn2:extensionElements>
-        <drools:metaData name="isAutoConnection.source">
-          <drools:metaValue><![CDATA[true]]></drools:metaValue>
-        </drools:metaData>
-        <drools:metaData name="isAutoConnection.target">
-          <drools:metaValue><![CDATA[true]]></drools:metaValue>
-        </drools:metaData>
-      </bpmn2:extensionElements>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_C2678122-FCBC-4D7D-9C27-79319BF623C1" name="Exist" sourceRef="_D1AB273A-5EB8-4B70-8D84-E1ACCC03FD3E" targetRef="_C32DF5B5-E867-476B-BCAB-CF5897D6BA5E">
       <bpmn2:extensionElements>
@@ -770,7 +740,7 @@
           <drools:metaValue><![CDATA[Created]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return departmentResponse.isSuccess();]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_361224EC-C984-49B9-AAE2-AE8114CFA32E" sourceRef="_20B5A858-E8F2-4C12-A0B4-1E88F61F2BEC" targetRef="_48FD818A-1AF9-420C-810F-D83BC083CC3D"/>
     <bpmn2:sequenceFlow id="_ACCD7543-01F4-4FA4-B498-E446899BA1F4" name="Added" sourceRef="_65A36402-0269-48C4-8DC3-124A35656A5E" targetRef="_20B5A858-E8F2-4C12-A0B4-1E88F61F2BEC">
@@ -779,7 +749,7 @@
           <drools:metaValue><![CDATA[Added]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return managerResponse.isSuccess();]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_B6F96D8D-0499-415F-BBD5-B00E5D510994" sourceRef="_21F6128C-6EDA-4801-A98D-4A02236C92F2" targetRef="_FDC085EC-154F-434B-A71E-B2B3F41496F1">
       <bpmn2:extensionElements>
@@ -819,8 +789,14 @@
           <drools:metaValue><![CDATA[Created]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return ipaOrganizationResponse.isSuccess();]]></bpmn2:conditionExpression>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
+    <bpmn2:endEvent id="_43C7F04E-B75F-419F-B097-E2D85E17528B">
+      <bpmn2:incoming>_F33BFBBF-F92A-47F0-82C5-D6B1AA288002</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:endEvent id="_DB6E81D3-A18C-407B-8B63-0EA667296715">
+      <bpmn2:incoming>_3D706ADC-0BD3-4DDF-9393-87B7D3F34107</bpmn2:incoming>
+    </bpmn2:endEvent>
     <bpmn2:serviceTask id="_2ACB1232-16E8-4051-B451-419E88DAD802" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.KeycloakService" drools:serviceoperation="deleteRealm" name="Delete Realm" isForCompensation="true" implementation="Java" operationRef="_2ACB1232-16E8-4051-B451-419E88DAD802_ServiceOperation">
       <bpmn2:extensionElements>
         <drools:metaData name="elementname">
@@ -928,12 +904,12 @@
       <bpmn2:outgoing>_853536DF-4F59-4049-9A25-CF918D3B7445</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_0DE28F19-7683-4380-AB17-A63FB9D5BBB8_organizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__0DE28F19-7683-4380-AB17-A63FB9D5BBB8_organizationInputXItem" name="organization"/>
-        <bpmn2:dataOutput id="_0DE28F19-7683-4380-AB17-A63FB9D5BBB8_oauthClientResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__0DE28F19-7683-4380-AB17-A63FB9D5BBB8_oauthClientResponseOutputXItem" name="oauthClientResponse"/>
+        <bpmn2:dataOutput id="_0DE28F19-7683-4380-AB17-A63FB9D5BBB8_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__0DE28F19-7683-4380-AB17-A63FB9D5BBB8_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_0DE28F19-7683-4380-AB17-A63FB9D5BBB8_organizationInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_0DE28F19-7683-4380-AB17-A63FB9D5BBB8_oauthClientResponseOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_0DE28F19-7683-4380-AB17-A63FB9D5BBB8_plainResponseOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -941,8 +917,8 @@
         <bpmn2:targetRef>_0DE28F19-7683-4380-AB17-A63FB9D5BBB8_organizationInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_0DE28F19-7683-4380-AB17-A63FB9D5BBB8_oauthClientResponseOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>oauthClientResponse</bpmn2:targetRef>
+        <bpmn2:sourceRef>_0DE28F19-7683-4380-AB17-A63FB9D5BBB8_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:serviceTask id="_94911968-0EE1-4C27-8234-0C1D90F65AB9" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.KeycloakService" drools:serviceoperation="createGatekeeperClient" name="Create Gatekeeper Client" implementation="Java" operationRef="_94911968-0EE1-4C27-8234-0C1D90F65AB9_ServiceOperation">
@@ -955,12 +931,12 @@
       <bpmn2:outgoing>_CB7DB4A8-B1E4-4AD3-B8B7-0A1625227175</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_94911968-0EE1-4C27-8234-0C1D90F65AB9_organizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__94911968-0EE1-4C27-8234-0C1D90F65AB9_organizationInputXItem" name="organization"/>
-        <bpmn2:dataOutput id="_94911968-0EE1-4C27-8234-0C1D90F65AB9_gatekeeperResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__94911968-0EE1-4C27-8234-0C1D90F65AB9_gatekeeperResponseOutputXItem" name="gatekeeperResponse"/>
+        <bpmn2:dataOutput id="_94911968-0EE1-4C27-8234-0C1D90F65AB9_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__94911968-0EE1-4C27-8234-0C1D90F65AB9_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_94911968-0EE1-4C27-8234-0C1D90F65AB9_organizationInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_94911968-0EE1-4C27-8234-0C1D90F65AB9_gatekeeperResponseOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_94911968-0EE1-4C27-8234-0C1D90F65AB9_plainResponseOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -968,8 +944,8 @@
         <bpmn2:targetRef>_94911968-0EE1-4C27-8234-0C1D90F65AB9_organizationInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_94911968-0EE1-4C27-8234-0C1D90F65AB9_gatekeeperResponseOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>gatekeeperResponse</bpmn2:targetRef>
+        <bpmn2:sourceRef>_94911968-0EE1-4C27-8234-0C1D90F65AB9_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:serviceTask id="_03F65EFE-97A8-4850-A2B4-806FF5F49629" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.KeycloakService" drools:serviceoperation="createClientScope" name="Create Client Scope" implementation="Java" operationRef="_03F65EFE-97A8-4850-A2B4-806FF5F49629_ServiceOperation">
@@ -982,12 +958,12 @@
       <bpmn2:outgoing>_10DA8FCB-1402-40BB-81AE-3E4743359B58</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_03F65EFE-97A8-4850-A2B4-806FF5F49629_organizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__03F65EFE-97A8-4850-A2B4-806FF5F49629_organizationInputXItem" name="organization"/>
-        <bpmn2:dataOutput id="_03F65EFE-97A8-4850-A2B4-806FF5F49629_clientScopeResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__03F65EFE-97A8-4850-A2B4-806FF5F49629_clientScopeResponseOutputXItem" name="clientScopeResponse"/>
+        <bpmn2:dataOutput id="_03F65EFE-97A8-4850-A2B4-806FF5F49629_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__03F65EFE-97A8-4850-A2B4-806FF5F49629_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_03F65EFE-97A8-4850-A2B4-806FF5F49629_organizationInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_03F65EFE-97A8-4850-A2B4-806FF5F49629_clientScopeResponseOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_03F65EFE-97A8-4850-A2B4-806FF5F49629_plainResponseOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -995,8 +971,8 @@
         <bpmn2:targetRef>_03F65EFE-97A8-4850-A2B4-806FF5F49629_organizationInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_03F65EFE-97A8-4850-A2B4-806FF5F49629_clientScopeResponseOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>clientScopeResponse</bpmn2:targetRef>
+        <bpmn2:sourceRef>_03F65EFE-97A8-4850-A2B4-806FF5F49629_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:exclusiveGateway id="_B9C70146-0ECA-4544-BEAD-10283D0FD0BD" gatewayDirection="Diverging">
@@ -1069,12 +1045,12 @@
       <bpmn2:outgoing>_4677E2EE-D439-417D-8F81-3CACA9FFBDFA</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_39A86831-961D-4AB6-98BA-53776F5C7BE2_organizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__39A86831-961D-4AB6-98BA-53776F5C7BE2_organizationInputXItem" name="organization"/>
-        <bpmn2:dataOutput id="_39A86831-961D-4AB6-98BA-53776F5C7BE2_groupSyncResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__39A86831-961D-4AB6-98BA-53776F5C7BE2_groupSyncResponseOutputXItem" name="groupSyncResponse"/>
+        <bpmn2:dataOutput id="_39A86831-961D-4AB6-98BA-53776F5C7BE2_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__39A86831-961D-4AB6-98BA-53776F5C7BE2_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_39A86831-961D-4AB6-98BA-53776F5C7BE2_organizationInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_39A86831-961D-4AB6-98BA-53776F5C7BE2_groupSyncResponseOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_39A86831-961D-4AB6-98BA-53776F5C7BE2_plainResponseOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -1082,8 +1058,8 @@
         <bpmn2:targetRef>_39A86831-961D-4AB6-98BA-53776F5C7BE2_organizationInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_39A86831-961D-4AB6-98BA-53776F5C7BE2_groupSyncResponseOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>groupSyncResponse</bpmn2:targetRef>
+        <bpmn2:sourceRef>_39A86831-961D-4AB6-98BA-53776F5C7BE2_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:serviceTask id="_24A31B82-B220-4A06-96BC-0B9638DAF33C" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.KeycloakService" drools:serviceoperation="setAsAdmin" name="Set Realm Admin" implementation="Java" operationRef="_24A31B82-B220-4A06-96BC-0B9638DAF33C_ServiceOperation">
@@ -1096,12 +1072,12 @@
       <bpmn2:outgoing>_8F092CE2-48F7-43D4-868D-DB0F9FFB0036</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_24A31B82-B220-4A06-96BC-0B9638DAF33C_organizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__24A31B82-B220-4A06-96BC-0B9638DAF33C_organizationInputXItem" name="organization"/>
-        <bpmn2:dataOutput id="_24A31B82-B220-4A06-96BC-0B9638DAF33C_adminResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__24A31B82-B220-4A06-96BC-0B9638DAF33C_adminResponseOutputXItem" name="adminResponse"/>
+        <bpmn2:dataOutput id="_24A31B82-B220-4A06-96BC-0B9638DAF33C_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__24A31B82-B220-4A06-96BC-0B9638DAF33C_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_24A31B82-B220-4A06-96BC-0B9638DAF33C_organizationInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_24A31B82-B220-4A06-96BC-0B9638DAF33C_adminResponseOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_24A31B82-B220-4A06-96BC-0B9638DAF33C_plainResponseOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -1109,8 +1085,8 @@
         <bpmn2:targetRef>_24A31B82-B220-4A06-96BC-0B9638DAF33C_organizationInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_24A31B82-B220-4A06-96BC-0B9638DAF33C_adminResponseOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>adminResponse</bpmn2:targetRef>
+        <bpmn2:sourceRef>_24A31B82-B220-4A06-96BC-0B9638DAF33C_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:serviceTask id="_A4036809-E580-4410-8A29-400BB117F416" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.KeycloakService" drools:serviceoperation="addGroupMapper" name="Add Group Mapper (ldap)" implementation="Java" operationRef="_A4036809-E580-4410-8A29-400BB117F416_ServiceOperation">
@@ -1123,12 +1099,12 @@
       <bpmn2:outgoing>_B7E4A694-7A29-4807-BBC1-217BB99401AA</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_A4036809-E580-4410-8A29-400BB117F416_organizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__A4036809-E580-4410-8A29-400BB117F416_organizationInputXItem" name="organization"/>
-        <bpmn2:dataOutput id="_A4036809-E580-4410-8A29-400BB117F416_groupMapperResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__A4036809-E580-4410-8A29-400BB117F416_groupMapperResponseOutputXItem" name="groupMapperResponse"/>
+        <bpmn2:dataOutput id="_A4036809-E580-4410-8A29-400BB117F416_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__A4036809-E580-4410-8A29-400BB117F416_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_A4036809-E580-4410-8A29-400BB117F416_organizationInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_A4036809-E580-4410-8A29-400BB117F416_groupMapperResponseOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_A4036809-E580-4410-8A29-400BB117F416_plainResponseOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -1136,8 +1112,8 @@
         <bpmn2:targetRef>_A4036809-E580-4410-8A29-400BB117F416_organizationInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_A4036809-E580-4410-8A29-400BB117F416_groupMapperResponseOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>groupMapperResponse</bpmn2:targetRef>
+        <bpmn2:sourceRef>_A4036809-E580-4410-8A29-400BB117F416_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:serviceTask id="_B94481C9-1CB8-4515-A24C-635B4FDCF05A" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.KeycloakService" drools:serviceoperation="setKeycloakSettings" name="Set Keycloak Settings" implementation="Java" operationRef="_B94481C9-1CB8-4515-A24C-635B4FDCF05A_ServiceOperation">
@@ -1150,12 +1126,12 @@
       <bpmn2:outgoing>_39A98FED-DB2C-4E1E-866B-24B61CF9303F</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_B94481C9-1CB8-4515-A24C-635B4FDCF05A_organizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__B94481C9-1CB8-4515-A24C-635B4FDCF05A_organizationInputXItem" name="organization"/>
-        <bpmn2:dataOutput id="_B94481C9-1CB8-4515-A24C-635B4FDCF05A_keycloakSettingsResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__B94481C9-1CB8-4515-A24C-635B4FDCF05A_keycloakSettingsResponseOutputXItem" name="keycloakSettingsResponse"/>
+        <bpmn2:dataOutput id="_B94481C9-1CB8-4515-A24C-635B4FDCF05A_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__B94481C9-1CB8-4515-A24C-635B4FDCF05A_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_B94481C9-1CB8-4515-A24C-635B4FDCF05A_organizationInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_B94481C9-1CB8-4515-A24C-635B4FDCF05A_keycloakSettingsResponseOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_B94481C9-1CB8-4515-A24C-635B4FDCF05A_plainResponseOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -1163,8 +1139,8 @@
         <bpmn2:targetRef>_B94481C9-1CB8-4515-A24C-635B4FDCF05A_organizationInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_B94481C9-1CB8-4515-A24C-635B4FDCF05A_keycloakSettingsResponseOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>keycloakSettingsResponse</bpmn2:targetRef>
+        <bpmn2:sourceRef>_B94481C9-1CB8-4515-A24C-635B4FDCF05A_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:serviceTask id="_BE514795-7F30-49D5-A0F6-D21705170F18" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.KeycloakService" drools:serviceoperation="createRealmForOrganization" name="Create Keycloak Realm" implementation="Java" operationRef="_BE514795-7F30-49D5-A0F6-D21705170F18_ServiceOperation">
@@ -1177,12 +1153,12 @@
       <bpmn2:outgoing>_47A01985-AC73-401D-B7F1-B47316CF66BE</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_BE514795-7F30-49D5-A0F6-D21705170F18_organizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__BE514795-7F30-49D5-A0F6-D21705170F18_organizationInputXItem" name="organization"/>
-        <bpmn2:dataOutput id="_BE514795-7F30-49D5-A0F6-D21705170F18_realmResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__BE514795-7F30-49D5-A0F6-D21705170F18_realmResponseOutputXItem" name="realmResponse"/>
+        <bpmn2:dataOutput id="_BE514795-7F30-49D5-A0F6-D21705170F18_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__BE514795-7F30-49D5-A0F6-D21705170F18_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_BE514795-7F30-49D5-A0F6-D21705170F18_organizationInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_BE514795-7F30-49D5-A0F6-D21705170F18_realmResponseOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_BE514795-7F30-49D5-A0F6-D21705170F18_plainResponseOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -1190,8 +1166,8 @@
         <bpmn2:targetRef>_BE514795-7F30-49D5-A0F6-D21705170F18_organizationInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_BE514795-7F30-49D5-A0F6-D21705170F18_realmResponseOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>realmResponse</bpmn2:targetRef>
+        <bpmn2:sourceRef>_BE514795-7F30-49D5-A0F6-D21705170F18_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:serviceTask id="_C32DF5B5-E867-476B-BCAB-CF5897D6BA5E" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.ErrorService" drools:serviceoperation="plainResponseTemplate" name="Already Exist Response" implementation="Java" operationRef="_C32DF5B5-E867-476B-BCAB-CF5897D6BA5E_ServiceOperation">
@@ -1308,10 +1284,6 @@
         <bpmn2:targetRef>_202787EC-07D4-47C0-82B4-054A95BC1915_currentUserInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
     </bpmn2:serviceTask>
-    <bpmn2:endEvent id="_33C2B166-F680-426C-BAFF-BDAA41C80128">
-      <bpmn2:incoming>_F33BFBBF-F92A-47F0-82C5-D6B1AA288002</bpmn2:incoming>
-      <bpmn2:terminateEventDefinition/>
-    </bpmn2:endEvent>
     <bpmn2:inclusiveGateway id="_1F32CE1F-FCA7-4599-8133-13C2433EFCF2" drools:dg="_96D02312-BAA9-4B8A-95C1-2B2908E05563" gatewayDirection="Converging" default="_96D02312-BAA9-4B8A-95C1-2B2908E05563">
       <bpmn2:incoming>_07DE6F58-1DD3-4AC4-A3A3-B0BD70644797</bpmn2:incoming>
       <bpmn2:incoming>_C5F8F433-4034-43C2-A974-1E4B57D1B149</bpmn2:incoming>
@@ -1395,8 +1367,8 @@
         <bpmn2:sourceRef>_A2E7714E-E35C-49C5-9193-C5779736BCB4_enterpriseApprovedOutputX</bpmn2:sourceRef>
         <bpmn2:targetRef>enterpriseApproved</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
-      <bpmn2:potentialOwner id="_u63S0GHYEDuSPK7SyZy3zQ">
-        <bpmn2:resourceAssignmentExpression id="_u63S0WHYEDuSPK7SyZy3zQ">
+      <bpmn2:potentialOwner id="_EleWEGqVEDuSCre2gcynhw">
+        <bpmn2:resourceAssignmentExpression id="_Ele9IGqVEDuSCre2gcynhw">
           <bpmn2:formalExpression>mert</bpmn2:formalExpression>
         </bpmn2:resourceAssignmentExpression>
       </bpmn2:potentialOwner>
@@ -1592,12 +1564,12 @@
       <bpmn2:outgoing>_C211A4D4-447D-47FD-8AAD-A6C3E2DFB3A4</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_58F65FA1-02EB-4610-ADCA-2C38F05AF86E_finalOrganizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__58F65FA1-02EB-4610-ADCA-2C38F05AF86E_finalOrganizationInputXItem" name="finalOrganization"/>
-        <bpmn2:dataOutput id="_58F65FA1-02EB-4610-ADCA-2C38F05AF86E_bucketResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__58F65FA1-02EB-4610-ADCA-2C38F05AF86E_bucketResponseOutputXItem" name="bucketResponse"/>
+        <bpmn2:dataOutput id="_58F65FA1-02EB-4610-ADCA-2C38F05AF86E_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__58F65FA1-02EB-4610-ADCA-2C38F05AF86E_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_58F65FA1-02EB-4610-ADCA-2C38F05AF86E_finalOrganizationInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_58F65FA1-02EB-4610-ADCA-2C38F05AF86E_bucketResponseOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_58F65FA1-02EB-4610-ADCA-2C38F05AF86E_plainResponseOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -1605,8 +1577,8 @@
         <bpmn2:targetRef>_58F65FA1-02EB-4610-ADCA-2C38F05AF86E_finalOrganizationInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_58F65FA1-02EB-4610-ADCA-2C38F05AF86E_bucketResponseOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>bucketResponse</bpmn2:targetRef>
+        <bpmn2:sourceRef>_58F65FA1-02EB-4610-ADCA-2C38F05AF86E_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:serviceTask id="_71EA0E08-3AC9-48B4-A7BD-F9D532C70358" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.InviteService" drools:serviceoperation="addFounderToInvitedUsersTeam" name="Add Founder To Managers Group" implementation="Java" operationRef="_71EA0E08-3AC9-48B4-A7BD-F9D532C70358_ServiceOperation">
@@ -1620,13 +1592,13 @@
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_71EA0E08-3AC9-48B4-A7BD-F9D532C70358_finalOrganizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__71EA0E08-3AC9-48B4-A7BD-F9D532C70358_finalOrganizationInputXItem" name="finalOrganization"/>
         <bpmn2:dataInput id="_71EA0E08-3AC9-48B4-A7BD-F9D532C70358_invitedUsersGroupNameInputX" drools:dtype="String" itemSubjectRef="__71EA0E08-3AC9-48B4-A7BD-F9D532C70358_invitedUsersGroupNameInputXItem" name="invitedUsersGroupName"/>
-        <bpmn2:dataOutput id="_71EA0E08-3AC9-48B4-A7BD-F9D532C70358_founderResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__71EA0E08-3AC9-48B4-A7BD-F9D532C70358_founderResponseOutputXItem" name="founderResponse"/>
+        <bpmn2:dataOutput id="_71EA0E08-3AC9-48B4-A7BD-F9D532C70358_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__71EA0E08-3AC9-48B4-A7BD-F9D532C70358_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_71EA0E08-3AC9-48B4-A7BD-F9D532C70358_finalOrganizationInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_71EA0E08-3AC9-48B4-A7BD-F9D532C70358_invitedUsersGroupNameInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_71EA0E08-3AC9-48B4-A7BD-F9D532C70358_founderResponseOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_71EA0E08-3AC9-48B4-A7BD-F9D532C70358_plainResponseOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -1638,8 +1610,8 @@
         <bpmn2:targetRef>_71EA0E08-3AC9-48B4-A7BD-F9D532C70358_invitedUsersGroupNameInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_71EA0E08-3AC9-48B4-A7BD-F9D532C70358_founderResponseOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>founderResponse</bpmn2:targetRef>
+        <bpmn2:sourceRef>_71EA0E08-3AC9-48B4-A7BD-F9D532C70358_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:serviceTask id="_5058CA21-94E0-486C-A849-A7B594675B3F" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.InviteService" drools:serviceoperation="addInvitedUsersDepartmentAsMember" name="Add invitedUsers group to organization" implementation="Java" operationRef="_5058CA21-94E0-486C-A849-A7B594675B3F_ServiceOperation">
@@ -1653,13 +1625,13 @@
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_5058CA21-94E0-486C-A849-A7B594675B3F_finalOrganizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__5058CA21-94E0-486C-A849-A7B594675B3F_finalOrganizationInputXItem" name="finalOrganization"/>
         <bpmn2:dataInput id="_5058CA21-94E0-486C-A849-A7B594675B3F_invitedUsersGroupNameInputX" drools:dtype="String" itemSubjectRef="__5058CA21-94E0-486C-A849-A7B594675B3F_invitedUsersGroupNameInputXItem" name="invitedUsersGroupName"/>
-        <bpmn2:dataOutput id="_5058CA21-94E0-486C-A849-A7B594675B3F_invitedUserDepResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__5058CA21-94E0-486C-A849-A7B594675B3F_invitedUserDepResponseOutputXItem" name="invitedUserDepResponse"/>
+        <bpmn2:dataOutput id="_5058CA21-94E0-486C-A849-A7B594675B3F_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__5058CA21-94E0-486C-A849-A7B594675B3F_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_5058CA21-94E0-486C-A849-A7B594675B3F_finalOrganizationInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_5058CA21-94E0-486C-A849-A7B594675B3F_invitedUsersGroupNameInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_5058CA21-94E0-486C-A849-A7B594675B3F_invitedUserDepResponseOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_5058CA21-94E0-486C-A849-A7B594675B3F_plainResponseOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -1671,8 +1643,8 @@
         <bpmn2:targetRef>_5058CA21-94E0-486C-A849-A7B594675B3F_invitedUsersGroupNameInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_5058CA21-94E0-486C-A849-A7B594675B3F_invitedUserDepResponseOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>inviteUserDepResponse</bpmn2:targetRef>
+        <bpmn2:sourceRef>_5058CA21-94E0-486C-A849-A7B594675B3F_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:serviceTask id="_A04C3449-6D38-47AB-99B8-E1FC9F3BC430" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.InviteService" drools:serviceoperation="createInvitedUsersDepartment" name="Create InvitedUsers Group for Organization" implementation="Java" operationRef="_A04C3449-6D38-47AB-99B8-E1FC9F3BC430_ServiceOperation">
@@ -1702,10 +1674,6 @@
         <bpmn2:targetRef>invitedUsersGroupName</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
-    <bpmn2:endEvent id="_E79A8E8F-60FD-481E-897D-6EC395EBA61F">
-      <bpmn2:incoming>_3D706ADC-0BD3-4DDF-9393-87B7D3F34107</bpmn2:incoming>
-      <bpmn2:terminateEventDefinition/>
-    </bpmn2:endEvent>
     <bpmn2:exclusiveGateway id="_D1AB273A-5EB8-4B70-8D84-E1ACCC03FD3E" gatewayDirection="Diverging">
       <bpmn2:incoming>_41F462DA-91C7-4D7B-A9B8-5562B4B85BF7</bpmn2:incoming>
       <bpmn2:outgoing>_B59EB1D9-EAF5-4DDD-A910-D7C75B4CF263</bpmn2:outgoing>
@@ -1749,13 +1717,13 @@
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_48FD818A-1AF9-420C-810F-D83BC083CC3D_finalOrganizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__48FD818A-1AF9-420C-810F-D83BC083CC3D_finalOrganizationInputXItem" name="finalOrganization"/>
         <bpmn2:dataInput id="_48FD818A-1AF9-420C-810F-D83BC083CC3D_managersTeamIdInputX" drools:dtype="String" itemSubjectRef="__48FD818A-1AF9-420C-810F-D83BC083CC3D_managersTeamIdInputXItem" name="managersTeamId"/>
-        <bpmn2:dataOutput id="_48FD818A-1AF9-420C-810F-D83BC083CC3D_ResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__48FD818A-1AF9-420C-810F-D83BC083CC3D_ResponseOutputXItem" name="Response"/>
+        <bpmn2:dataOutput id="_48FD818A-1AF9-420C-810F-D83BC083CC3D_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__48FD818A-1AF9-420C-810F-D83BC083CC3D_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_48FD818A-1AF9-420C-810F-D83BC083CC3D_finalOrganizationInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_48FD818A-1AF9-420C-810F-D83BC083CC3D_managersTeamIdInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_48FD818A-1AF9-420C-810F-D83BC083CC3D_ResponseOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_48FD818A-1AF9-420C-810F-D83BC083CC3D_plainResponseOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -1767,8 +1735,8 @@
         <bpmn2:targetRef>_48FD818A-1AF9-420C-810F-D83BC083CC3D_managersTeamIdInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_48FD818A-1AF9-420C-810F-D83BC083CC3D_ResponseOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>departmentResponse</bpmn2:targetRef>
+        <bpmn2:sourceRef>_48FD818A-1AF9-420C-810F-D83BC083CC3D_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:serviceTask id="_EB3FF32B-849D-4684-8F89-2EB7B7C7CF26" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.DepartmentService" drools:serviceoperation="addFounderToManagersTeam" name="Add Founder To Managers Group" implementation="Java" operationRef="_EB3FF32B-849D-4684-8F89-2EB7B7C7CF26_ServiceOperation">
@@ -1782,13 +1750,13 @@
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_EB3FF32B-849D-4684-8F89-2EB7B7C7CF26_finalOrganizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__EB3FF32B-849D-4684-8F89-2EB7B7C7CF26_finalOrganizationInputXItem" name="finalOrganization"/>
         <bpmn2:dataInput id="_EB3FF32B-849D-4684-8F89-2EB7B7C7CF26_managersTeamIdInputX" drools:dtype="String" itemSubjectRef="__EB3FF32B-849D-4684-8F89-2EB7B7C7CF26_managersTeamIdInputXItem" name="managersTeamId"/>
-        <bpmn2:dataOutput id="_EB3FF32B-849D-4684-8F89-2EB7B7C7CF26_depManagerResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__EB3FF32B-849D-4684-8F89-2EB7B7C7CF26_depManagerResponseOutputXItem" name="depManagerResponse"/>
+        <bpmn2:dataOutput id="_EB3FF32B-849D-4684-8F89-2EB7B7C7CF26_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__EB3FF32B-849D-4684-8F89-2EB7B7C7CF26_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_EB3FF32B-849D-4684-8F89-2EB7B7C7CF26_finalOrganizationInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_EB3FF32B-849D-4684-8F89-2EB7B7C7CF26_managersTeamIdInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_EB3FF32B-849D-4684-8F89-2EB7B7C7CF26_depManagerResponseOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_EB3FF32B-849D-4684-8F89-2EB7B7C7CF26_plainResponseOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -1800,8 +1768,8 @@
         <bpmn2:targetRef>_EB3FF32B-849D-4684-8F89-2EB7B7C7CF26_managersTeamIdInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_EB3FF32B-849D-4684-8F89-2EB7B7C7CF26_depManagerResponseOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>depManagerResponse</bpmn2:targetRef>
+        <bpmn2:sourceRef>_EB3FF32B-849D-4684-8F89-2EB7B7C7CF26_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:serviceTask id="_20B5A858-E8F2-4C12-A0B4-1E88F61F2BEC" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.DepartmentService" drools:serviceoperation="createManagersTeam" name="Create Managers Group for Organization" implementation="Java" operationRef="_20B5A858-E8F2-4C12-A0B4-1E88F61F2BEC_ServiceOperation">
@@ -1850,12 +1818,12 @@
       <bpmn2:outgoing>_BB006F69-BDD4-4915-B4DF-0EE9E2B87CB8</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_2736CAE9-02BA-48AF-A65B-17A2038B6E2E_finalOrganizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__2736CAE9-02BA-48AF-A65B-17A2038B6E2E_finalOrganizationInputXItem" name="finalOrganization"/>
-        <bpmn2:dataOutput id="_2736CAE9-02BA-48AF-A65B-17A2038B6E2E_ipaOrganizationResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__2736CAE9-02BA-48AF-A65B-17A2038B6E2E_ipaOrganizationResponseOutputXItem" name="ipaOrganizationResponse"/>
+        <bpmn2:dataOutput id="_2736CAE9-02BA-48AF-A65B-17A2038B6E2E_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__2736CAE9-02BA-48AF-A65B-17A2038B6E2E_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_2736CAE9-02BA-48AF-A65B-17A2038B6E2E_finalOrganizationInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_2736CAE9-02BA-48AF-A65B-17A2038B6E2E_ipaOrganizationResponseOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_2736CAE9-02BA-48AF-A65B-17A2038B6E2E_plainResponseOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -1863,8 +1831,8 @@
         <bpmn2:targetRef>_2736CAE9-02BA-48AF-A65B-17A2038B6E2E_finalOrganizationInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_2736CAE9-02BA-48AF-A65B-17A2038B6E2E_ipaOrganizationResponseOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>ipaOrganizationResponse</bpmn2:targetRef>
+        <bpmn2:sourceRef>_2736CAE9-02BA-48AF-A65B-17A2038B6E2E_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:serviceTask id="_B61D07B6-15B7-4D5F-ADFC-9E839A72DE4C" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.GroupService" drools:serviceoperation="addFounderToIPAGroup" name="Add Organizations' Managers to Organization Group  in FreeIPA" implementation="Java" operationRef="_B61D07B6-15B7-4D5F-ADFC-9E839A72DE4C_ServiceOperation">
@@ -1877,12 +1845,12 @@
       <bpmn2:outgoing>_7C91A637-0767-4549-A3F7-501F6DD79080</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_B61D07B6-15B7-4D5F-ADFC-9E839A72DE4C_finalOrganizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__B61D07B6-15B7-4D5F-ADFC-9E839A72DE4C_finalOrganizationInputXItem" name="finalOrganization"/>
-        <bpmn2:dataOutput id="_B61D07B6-15B7-4D5F-ADFC-9E839A72DE4C_managerResponseOutputX" drools:dtype="org.robolaunch.models.Response" itemSubjectRef="__B61D07B6-15B7-4D5F-ADFC-9E839A72DE4C_managerResponseOutputXItem" name="managerResponse"/>
+        <bpmn2:dataOutput id="_B61D07B6-15B7-4D5F-ADFC-9E839A72DE4C_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__B61D07B6-15B7-4D5F-ADFC-9E839A72DE4C_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_B61D07B6-15B7-4D5F-ADFC-9E839A72DE4C_finalOrganizationInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_B61D07B6-15B7-4D5F-ADFC-9E839A72DE4C_managerResponseOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_B61D07B6-15B7-4D5F-ADFC-9E839A72DE4C_plainResponseOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
@@ -1890,8 +1858,8 @@
         <bpmn2:targetRef>_B61D07B6-15B7-4D5F-ADFC-9E839A72DE4C_finalOrganizationInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_B61D07B6-15B7-4D5F-ADFC-9E839A72DE4C_managerResponseOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>managerResponse</bpmn2:targetRef>
+        <bpmn2:sourceRef>_B61D07B6-15B7-4D5F-ADFC-9E839A72DE4C_plainResponseOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>plainResponse</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:boundaryEvent id="_B3DF4FB9-3A9B-4D9F-8724-F0C6DE91A20D" drools:dockerinfo="52.649179654839244^32.800000000000125|" attachedToRef="_20B5A858-E8F2-4C12-A0B4-1E88F61F2BEC">
@@ -1948,9 +1916,6 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__D1AB273A-5EB8-4B70-8D84-E1ACCC03FD3E" bpmnElement="_D1AB273A-5EB8-4B70-8D84-E1ACCC03FD3E">
         <dc:Bounds height="56" width="56" x="467" y="700"/>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="shape__E79A8E8F-60FD-481E-897D-6EC395EBA61F" bpmnElement="_E79A8E8F-60FD-481E-897D-6EC395EBA61F">
-        <dc:Bounds height="56" width="56" x="318" y="595"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__A04C3449-6D38-47AB-99B8-E1FC9F3BC430" bpmnElement="_A04C3449-6D38-47AB-99B8-E1FC9F3BC430">
         <dc:Bounds height="65.20000000000016" width="138.0999999999999" x="2253.95" y="695.3999999999999"/>
@@ -2027,9 +1992,6 @@
       <bpmndi:BPMNShape id="shape__1F32CE1F-FCA7-4599-8133-13C2433EFCF2" bpmnElement="_1F32CE1F-FCA7-4599-8133-13C2433EFCF2">
         <dc:Bounds height="56" width="56" x="780" y="696"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="shape__33C2B166-F680-426C-BAFF-BDAA41C80128" bpmnElement="_33C2B166-F680-426C-BAFF-BDAA41C80128">
-        <dc:Bounds height="56" width="56" x="615" y="343"/>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__202787EC-07D4-47C0-82B4-054A95BC1915" bpmnElement="_202787EC-07D4-47C0-82B4-054A95BC1915">
         <dc:Bounds height="51.084104617999856" width="148.88360155349994" x="568.1163984465002" y="431.91589538200014"/>
       </bpmndi:BPMNShape>
@@ -2073,7 +2035,7 @@
         <dc:Bounds height="56" width="56" x="3211" y="564"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__FCD99587-6BA0-41D5-A7C9-70414AF0EA4A" bpmnElement="_FCD99587-6BA0-41D5-A7C9-70414AF0EA4A">
-        <dc:Bounds height="56" width="56" x="3493" y="696"/>
+        <dc:Bounds height="56" width="56" x="3493" y="697"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__C8B6CD84-BA17-4014-97F8-8A53CE7B4B4B" bpmnElement="_C8B6CD84-BA17-4014-97F8-8A53CE7B4B4B">
         <dc:Bounds height="56" width="56" x="3493" y="566"/>
@@ -2140,6 +2102,12 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__2ACB1232-16E8-4051-B451-419E88DAD802" bpmnElement="_2ACB1232-16E8-4051-B451-419E88DAD802">
         <dc:Bounds height="68.12000000000012" width="134.63999999999987" x="3028" y="817"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape__DB6E81D3-A18C-407B-8B63-0EA667296715" bpmnElement="_DB6E81D3-A18C-407B-8B63-0EA667296715">
+        <dc:Bounds height="56" width="56" x="332" y="595"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape__43C7F04E-B75F-419F-B097-E2D85E17528B" bpmnElement="_43C7F04E-B75F-419F-B097-E2D85E17528B">
+        <dc:Bounds height="56" width="56" x="615" y="354"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="edge_shape__B3DF4FB9-3A9B-4D9F-8724-F0C6DE91A20D_to_shape__ABEFD970-CDFA-44C1-B0E9-B2A96CA8260A" bpmnElement="_3E33F5CF-4107-49FB-8513-DC3238BCFC6A">
         <di:waypoint x="1556.6491796548391" y="756.8000000000002"/>
@@ -2216,10 +2184,6 @@
       <bpmndi:BPMNEdge id="edge_shape__D1AB273A-5EB8-4B70-8D84-E1ACCC03FD3E_to_shape__C32DF5B5-E867-476B-BCAB-CF5897D6BA5E" bpmnElement="_C2678122-FCBC-4D7D-9C27-79319BF623C1">
         <di:waypoint x="495" y="700"/>
         <di:waypoint x="494.5" y="654"/>
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__C32DF5B5-E867-476B-BCAB-CF5897D6BA5E_to_shape__E79A8E8F-60FD-481E-897D-6EC395EBA61F" bpmnElement="_3D706ADC-0BD3-4DDF-9393-87B7D3F34107">
-        <di:waypoint x="421" y="622.5"/>
-        <di:waypoint x="374" y="623"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__5768AB52-3F43-4FA7-A0EE-BD1602914C7E_to_shape__A04C3449-6D38-47AB-99B8-E1FC9F3BC430" bpmnElement="_933AF766-42B2-4552-82B3-CBDB7378095B">
         <di:waypoint x="2188" y="726"/>
@@ -2326,13 +2290,13 @@
         <di:waypoint x="810" y="556"/>
         <di:waypoint x="808" y="696"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__202787EC-07D4-47C0-82B4-054A95BC1915_to_shape__33C2B166-F680-426C-BAFF-BDAA41C80128" bpmnElement="_F33BFBBF-F92A-47F0-82C5-D6B1AA288002">
-        <di:waypoint x="642.5581992232502" y="457.4579476910001"/>
-        <di:waypoint x="643" y="399"/>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__28C1A39E-7FF3-4177-B446-49AED02C87C2_to_shape__202787EC-07D4-47C0-82B4-054A95BC1915" bpmnElement="_1AB17BCE-5757-4DDB-A90B-3AF22889C936">
         <di:waypoint x="643" y="556"/>
         <di:waypoint x="642.5581992232502" y="483"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_shape__202787EC-07D4-47C0-82B4-054A95BC1915_to_shape__43C7F04E-B75F-419F-B097-E2D85E17528B" bpmnElement="_F33BFBBF-F92A-47F0-82C5-D6B1AA288002">
+        <di:waypoint x="642.5581992232502" y="457.4579476910001"/>
+        <di:waypoint x="643" y="410"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__28C1A39E-7FF3-4177-B446-49AED02C87C2_to_shape__233F8B5B-6112-4912-9F9D-C56442DF3980" bpmnElement="_40AA4869-0659-49EB-8732-63DE507F05D4">
         <di:waypoint x="671" y="556"/>
@@ -2356,6 +2320,10 @@
         <di:waypoint x="5741" y="619.9999997090621"/>
         <di:waypoint x="5713" y="666"/>
       </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_shape__C32DF5B5-E867-476B-BCAB-CF5897D6BA5E_to_shape__DB6E81D3-A18C-407B-8B63-0EA667296715" bpmnElement="_3D706ADC-0BD3-4DDF-9393-87B7D3F34107">
+        <di:waypoint x="421" y="622.5"/>
+        <di:waypoint x="360" y="651"/>
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__BE514795-7F30-49D5-A0F6-D21705170F18_to_shape__FA168C3D-2DB3-45ED-A2B5-63C4736D4A00" bpmnElement="_47A01985-AC73-401D-B7F1-B47316CF66BE">
         <di:waypoint x="3096" y="729"/>
         <di:waypoint x="3237" y="729"/>
@@ -2366,7 +2334,7 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__B94481C9-1CB8-4515-A24C-635B4FDCF05A_to_shape__FCD99587-6BA0-41D5-A7C9-70414AF0EA4A" bpmnElement="_39A98FED-DB2C-4E1E-866B-24B61CF9303F">
         <di:waypoint x="3392.9" y="727.8"/>
-        <di:waypoint x="3521" y="724"/>
+        <di:waypoint x="3521" y="725"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__D5D64990-87FB-4CC1-9A99-F449E3BD9301_to_shape__A4036809-E580-4410-8A29-400BB117F416" bpmnElement="_A645F734-0641-450D-9930-4009C60C52A9">
         <di:waypoint x="4324" y="726"/>
@@ -2405,11 +2373,11 @@
         <di:waypoint x="3267" y="592"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__FCD99587-6BA0-41D5-A7C9-70414AF0EA4A_to_shape__03F65EFE-97A8-4850-A2B4-806FF5F49629" bpmnElement="_593025A3-E5DE-42A3-B5D1-1C98F6FD81E2">
-        <di:waypoint x="3521" y="724"/>
+        <di:waypoint x="3521" y="725"/>
         <di:waypoint x="3652" y="696"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__FCD99587-6BA0-41D5-A7C9-70414AF0EA4A_to_shape__C8B6CD84-BA17-4014-97F8-8A53CE7B4B4B" bpmnElement="_18CA42E7-3917-4FD2-866C-99F5652D06FC">
-        <di:waypoint x="3521" y="724"/>
+        <di:waypoint x="3521" y="725"/>
         <di:waypoint x="3521" y="594"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__142481C6-C217-4658-9464-4A396F2C2B78_to_shape__C8B6CD84-BA17-4014-97F8-8A53CE7B4B4B" bpmnElement="_A97722AB-8AB1-45E9-8E72-8A580E0742F0">
@@ -3150,7 +3118,7 @@
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_u6rFkGHYEDuSPK7SyZy3zQ</bpmn2:source>
-    <bpmn2:target>_u6rFkGHYEDuSPK7SyZy3zQ</bpmn2:target>
+    <bpmn2:source>_ElVMIGqVEDuSCre2gcynhw</bpmn2:source>
+    <bpmn2:target>_ElVMIGqVEDuSCre2gcynhw</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>

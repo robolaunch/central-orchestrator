@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -89,13 +88,7 @@ import io.kubernetes.client.util.ModelMapper;
 import io.kubernetes.client.util.Yaml;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesObject;
-import io.minio.errors.ErrorResponseException;
-import io.minio.errors.InsufficientDataException;
-import io.minio.errors.InternalException;
-import io.minio.errors.InvalidResponseException;
 import io.minio.errors.MinioException;
-import io.minio.errors.ServerException;
-import io.minio.errors.XmlParserException;
 
 @ApplicationScoped
 public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
@@ -134,22 +127,18 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         String robolaunchHelmRepo;
 
         @Override
-        public void createMachineDeployment(String bufferName, String instanceType, String region)
+        public void createMachineDeployment(String bufferName, String instanceType, String provider, String region,
+                        String superCluster)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException {
-                DynamicKubernetesApi machineDeploymentApi = apiClientManager.getMachineDeploymentApi(region);
-                String awsType = "";
+                DynamicKubernetesApi machineDeploymentApi = apiClientManager.getMachineDeploymentApi(provider, region,
+                                superCluster);
                 Integer diskSize = 50;
-                if (instanceType.equals("r1.aws.cpu")) {
-                        awsType = "t3a.xlarge";
-                } else if (instanceType.equals("r1.aws.gpu")) {
-                        awsType = "t2.medium"; // g4dn.xlarge
-                } else if (instanceType.equals("r1.hz.cpu")) {
-                        awsType = "CPX31"; // CCX31
-                }
                 Artifact artifact = new Artifact();
-                artifact.setName("machineDeployment.yaml");
-                String bucket = "template-artifacts";
+
+                artifact.setName(provider + "/" + region + "/" + superCluster + "/" + "machineDeployment.yaml");
+                System.out.println("Tnig: " + artifact.getName());
+                String bucket = "providers";
                 JsonObject object = storageRepository.getYamlTemplate(artifact, bucket);
                 object.get("metadata").getAsJsonObject().addProperty("name",
                                 "md-" + bufferName);
@@ -157,7 +146,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 object.get("spec").getAsJsonObject().get("template").getAsJsonObject().get("spec").getAsJsonObject()
                                 .get("providerSpec").getAsJsonObject().get("value").getAsJsonObject()
                                 .get("cloudProviderSpec").getAsJsonObject()
-                                .addProperty("instanceType", awsType);
+                                .addProperty("instanceType", instanceType);
 
                 object.get("spec").getAsJsonObject().get("template").getAsJsonObject().get("spec").getAsJsonObject()
                                 .get("providerSpec").getAsJsonObject().get("value").getAsJsonObject()
@@ -171,10 +160,11 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void claimTheSuperClusterNode(String nodeName, String bufferName, String region)
+        public void claimTheSuperClusterNode(String nodeName, String bufferName, String provider, String region,
+                        String superCluster)
                         throws IOException, KubectlException, ApiException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, InterruptedException, MinioException {
-                ApiClient adminApiClient = apiClientManager.getAdminApiClient(region);
+                ApiClient adminApiClient = apiClientManager.getAdminApiClient(provider, region, superCluster);
                 Kubectl.label(V1Node.class).apiClient(adminApiClient)
                                 .name(
                                                 nodeName)
@@ -188,11 +178,12 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void createClusterVersion(String bufferName, String region)
+        public void createClusterVersion(String bufferName, String provider, String region, String superCluster)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException,
                         ApiException, InterruptedException {
-                DynamicKubernetesApi clusterVersionApi = apiClientManager.getClusterVersionApi(region);
+                DynamicKubernetesApi clusterVersionApi = apiClientManager.getClusterVersionApi(provider, region,
+                                superCluster);
                 Artifact artifact = new Artifact();
                 artifact.setName("clusterVersion.yaml");
                 String bucket = "template-artifacts";
@@ -228,11 +219,12 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void createVirtualCluster(String bufferName, String region)
+        public void createVirtualCluster(String bufferName, String provider, String region, String superCluster)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException,
                         ApiException, InterruptedException {
-                DynamicKubernetesApi virtualClustersApi = apiClientManager.getVirtualClusterApi(region);
+                DynamicKubernetesApi virtualClustersApi = apiClientManager.getVirtualClusterApi(provider, region,
+                                superCluster);
                 Artifact artifact = new Artifact();
                 artifact.setName("virtualCluster.yaml");
                 String bucket = "template-artifacts";
@@ -248,11 +240,12 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void scaleStatefulSetsDown(String bufferName, String region)
+        public void scaleStatefulSetsDown(String bufferName, String provider, String region, String superCluster)
                         throws ApiException, KubectlException, IOException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, InterruptedException, MinioException {
-                ApiClient adminApiClient = apiClientManager.getAdminApiClient(region);
-                String namespaceName = cloudInstanceHelperRepository.getNamespaceNameWithBufferName(bufferName, region);
+                ApiClient adminApiClient = apiClientManager.getAdminApiClient(provider, region, superCluster);
+                String namespaceName = cloudInstanceHelperRepository.getNamespaceNameWithBufferName(bufferName,
+                                provider, region, superCluster);
 
                 Kubectl.scale(V1StatefulSet.class).apiClient(adminApiClient).namespace(namespaceName).name("etcd")
                                 .replicas(0).execute();
@@ -264,10 +257,10 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void drainNode(String nodeName, String region)
+        public void drainNode(String nodeName, String provider, String region, String superCluster)
                         throws IOException, KubectlException, InvalidKeyException, NoSuchAlgorithmException,
                         IllegalArgumentException, ApiException, InterruptedException, MinioException {
-                ApiClient adminApiClient = apiClientManager.getAdminApiClient(region);
+                ApiClient adminApiClient = apiClientManager.getAdminApiClient(provider, region, superCluster);
 
                 try {
                         Kubectl.drain().ignoreDaemonSets().gracePeriod(60).name(nodeName).apiClient(adminApiClient)
@@ -279,23 +272,24 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void uncordonNode(String nodeName, String region)
+        public void uncordonNode(String nodeName, String provider, String region, String superCluster)
                         throws IOException, KubectlException, InvalidKeyException, NoSuchAlgorithmException,
                         IllegalArgumentException, ApiException, InterruptedException, MinioException {
-                ApiClient adminApiClient = apiClientManager.getAdminApiClient(region);
+                ApiClient adminApiClient = apiClientManager.getAdminApiClient(provider, region, superCluster);
 
                 Kubectl.uncordon().name(nodeName).apiClient(adminApiClient).execute();
         }
 
         @Override
         public void labelVirtualCluster(String bufferName, Organization organization, String teamId,
-                        String region, String cloudInstanceName, Boolean connectionHub)
+                        String cloudInstanceName, Boolean connectionHub, String provider, String region,
+                        String superCluster)
                         throws IOException, KubectlException, InterruptedException, ApiException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException {
                 ModelMapper.addModelMap("tenancy.x-k8s.io", "v1alpha1", "VirtualCluster",
                                 "virtualclusters", true,
                                 V1VirtualCluster.class);
-                ApiClient client = cloudInstanceHelperRepository.adminApiClient("eu-central-1");
+                ApiClient client = cloudInstanceHelperRepository.adminApiClient(provider, region, superCluster);
 
                 if (!connectionHub) {
                         Kubectl.label(V1VirtualCluster.class).apiClient(client)
@@ -326,10 +320,10 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
 
         @Override
         public void addOrganizationLabelsToNode(Organization organization, String nodeName, String cloudInstanceName,
-                        String teamId, String region, Boolean connectionHub)
+                        String teamId, Boolean connectionHub, String provider, String region, String superCluster)
                         throws KubectlException, IOException, InvalidKeyException, NoSuchAlgorithmException,
                         IllegalArgumentException, ApiException, InterruptedException, MinioException {
-                ApiClient adminApiClient = apiClientManager.getAdminApiClient(region);
+                ApiClient adminApiClient = apiClientManager.getAdminApiClient(provider, region, superCluster);
 
                 if (!connectionHub) {
                         Kubectl.label(V1Node.class).apiClient(adminApiClient)
@@ -354,10 +348,11 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         @Override
         public void addNodeSelectorsToStatefulSets(String namespaceName, Organization organization,
                         String teamId,
-                        String cloudInstanceName, String region, String bufferName)
+                        String cloudInstanceName, String bufferName, String provider, String region,
+                        String superCluster)
                         throws ApiException, InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException,
                         IOException, InterruptedException, MinioException {
-                AppsV1Api appsApi = apiClientManager.getAppsApi(region);
+                AppsV1Api appsApi = apiClientManager.getAppsApi(provider, region, superCluster);
                 V1StatefulSetList statefulsets = appsApi.listNamespacedStatefulSet(
                                 namespaceName, null, null, null,
                                 null, null, null, null, null, null,
@@ -408,11 +403,12 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void scaleStatefulSetsUp(String bufferName, String region)
+        public void scaleStatefulSetsUp(String bufferName, String provider, String region, String superCluster)
                         throws ApiException, IOException, KubectlException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, InterruptedException, MinioException {
-                ApiClient adminApiClient = apiClientManager.getAdminApiClient(region);
-                String namespaceName = cloudInstanceHelperRepository.getNamespaceNameWithBufferName(bufferName, region);
+                ApiClient adminApiClient = apiClientManager.getAdminApiClient(provider, region, superCluster);
+                String namespaceName = cloudInstanceHelperRepository.getNamespaceNameWithBufferName(bufferName,
+                                provider, region, superCluster);
 
                 Kubectl.scale(V1StatefulSet.class).apiClient(adminApiClient).namespace(namespaceName).name("etcd")
                                 .replicas(1).execute();
@@ -426,10 +422,10 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         /* Create subnet for namespace */
         @Override
         public void createSubnet(String bufferName, String namespaceName, String cloudInstanceName,
-                        String teamId, Organization organization, String region)
+                        String teamId, Organization organization, String provider, String region, String superCluster)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException {
-                DynamicKubernetesApi subnetsApi = apiClientManager.getSubnetApi(region);
+                DynamicKubernetesApi subnetsApi = apiClientManager.getSubnetApi(provider, region, superCluster);
                 Artifact artifact = new Artifact();
                 artifact.setName("subnet.yaml");
                 String bucket = "template-artifacts";
@@ -514,13 +510,15 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
 
         @Override
         public void createVirtualLink(String namespaceName, String cloudInstanceName,
-                        String teamId, Organization organization, String region, String bufferName)
+                        String teamId, Organization organization, String bufferName, String provider, String region,
+                        String superCluster)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
-                                region);
-                DynamicKubernetesApi subnetsApi = apiClientManager.getSubnetApi(region);
-                DynamicKubernetesApi machineDeploymentApi = apiClientManager.getMachineDeploymentApi(region);
+                                provider, region, superCluster);
+                DynamicKubernetesApi subnetsApi = apiClientManager.getSubnetApi(provider, region, superCluster);
+                DynamicKubernetesApi machineDeploymentApi = apiClientManager.getMachineDeploymentApi(provider, region,
+                                superCluster);
                 Artifact artifact = new Artifact();
                 artifact.setName("virtualLink.yaml");
                 String bucket = "template-artifacts";
@@ -559,11 +557,11 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void createOauth2ProxyNamespace(String bufferName, String region)
+        public void createOauth2ProxyNamespace(String bufferName, String provider, String region, String superCluster)
                         throws ApiException, IOException, InterruptedException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
-                                region);
+                                provider, region, superCluster);
                 CoreV1Api coreV1Api = new CoreV1Api(vcClient);
                 V1Namespace namespace = new V1Namespace();
                 namespace.setApiVersion("v1");
@@ -573,11 +571,11 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void createTLSSecrets(String bufferName, String region)
+        public void createTLSSecrets(String bufferName, String provider, String region, String superCluster)
                         throws ApiException, InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException,
                         IOException, InterruptedException, MinioException {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
-                                region);
+                                provider, region, superCluster);
                 Artifact artifactCrt = new Artifact();
                 artifactCrt.setName("server.crt");
                 Artifact artifactKey = new Artifact();
@@ -603,11 +601,12 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
 
         @Override
         public void createOAuth2ProxyResources(Organization organization, String teamId,
-                        String cloudInstanceName, String region, String namespaceName, String bufferName)
+                        String cloudInstanceName, String namespaceName, String bufferName, String provider,
+                        String region, String superCluster)
                         throws IllegalArgumentException, IOException, ApiException, JSONException,
                         GeneralSecurityException, MinioException, InterruptedException {
-                CoreV1Api coreV1Api = apiClientManager.getCoreApi(region);
-                AppsV1Api appsApi = apiClientManager.getAppsApi(region);
+                CoreV1Api coreV1Api = apiClientManager.getCoreApi(provider, region, superCluster);
+                AppsV1Api appsApi = apiClientManager.getAppsApi(provider, region, superCluster);
                 String yamlString = "";
                 Artifact artifact = new Artifact();
                 artifact.setName("oauth2Proxy.yaml");
@@ -730,11 +729,11 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
 
         @Override
         public void createIngressRule(Organization organization, String cloudInstanceName,
-                        String bufferName, String region)
+                        String bufferName, String provider, String region, String superCluster)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
                         ApiException, MinioException, InterruptedException {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
-                                region);
+                                provider, region, superCluster);
                 String yamlString = "";
                 Artifact artifact = new Artifact();
                 artifact.setName("ingress.yaml");
@@ -768,12 +767,13 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
 
         @Override
         public void createCoreDNS(Organization organization, String teamId,
-                        String cloudInstanceName, String nodeName, String bufferName, String region)
+                        String cloudInstanceName, String nodeName, String bufferName, String provider, String region,
+                        String superCluster)
                         throws IOException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, ApiException, MinioException,
                         InterruptedException {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
-                                region);
+                                provider, region, superCluster);
                 String yamlString = "";
                 Artifact artifact = new Artifact();
                 artifact.setName("coreDNS.yaml");
@@ -896,11 +896,12 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
 
         @Override
         public void addLabelsToVirtualClusterNode(Organization organization, String nodeName, String cloudInstanceName,
-                        String teamId, String bufferName, String region, Boolean connectionHub)
+                        String teamId, String bufferName, Boolean connectionHub, String provider, String region,
+                        String superCluster)
                         throws KubectlException, IOException, ApiException, InterruptedException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
-                                region);
+                                provider, region, superCluster);
                 if (!connectionHub) {
                         Kubectl.label(V1Node.class).apiClient(vcClient)
                                         .name(
@@ -930,11 +931,12 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
 
         @Override
         public void createCertManager(Organization organization, String teamId,
-                        String cloudInstanceName, String bufferName, String region)
+                        String cloudInstanceName, String bufferName, String provider, String region,
+                        String superCluster)
                         throws KubectlException, IOException, ApiException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException, InterruptedException {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
-                                region);
+                                provider, region, superCluster);
                 String yamlString = "";
                 Artifact artifact = new Artifact();
                 artifact.setName("certManager.yaml");
@@ -1094,13 +1096,13 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
 
         @Override
         public void createConnectionHubOperator(String namespaceName, String cloudInstanceName,
-                        String teamId, Organization organization, String region,
-                        String bufferName)
+                        String teamId, Organization organization,
+                        String bufferName, String provider, String region, String superCluster)
                         throws IOException, ApiException, InterruptedException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException,
                         KubectlException, MinioException {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
-                                region);
+                                provider, region, superCluster);
                 String yamlString = "";
                 Artifact artifact = new Artifact();
                 artifact.setName("connectionHubOperator.yaml");
@@ -1270,12 +1272,13 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
 
         @Override
         public void createConnectionHub(String bufferName, Organization organization, String teamId,
-                        String cloudInstanceName, String serverIP, String namespaceName, String region)
+                        String cloudInstanceName, String serverIP, String namespaceName, String provider, String region,
+                        String superCluster)
                         throws IOException, ApiException, InterruptedException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
-                                region);
-                DynamicKubernetesApi subnetsApi = apiClientManager.getSubnetApi(region);
+                                provider, region, superCluster);
+                DynamicKubernetesApi subnetsApi = apiClientManager.getSubnetApi(provider, region, superCluster);
                 Artifact artifact = new Artifact();
                 artifact.setName("connectionHubCloudInstance.yaml");
                 String bucket = "template-artifacts";
@@ -1307,11 +1310,11 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
 
         @Override
         public void createRobotOperator(Organization organization, String cloudInstanceName,
-                        String teamId, String region, String bufferName)
+                        String teamId, String bufferName, String provider, String region, String superCluster)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
                         MinioException, ApiException, KubectlException, InterruptedException {
                 ApiClient vcClient = cloudInstanceHelperRepository
-                                .getVirtualClusterClientWithBufferName(bufferName, region);
+                                .getVirtualClusterClientWithBufferName(bufferName, provider, region, superCluster);
                 String yamlString = "";
                 Artifact artifact = new Artifact();
                 artifact.setName("robotOperator.yaml");
@@ -1528,10 +1531,11 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void createDNSRecord(Organization organization, String nodeName, String region)
+        public void createDNSRecord(Organization organization, String nodeName, String provider, String region,
+                        String superCluster)
                         throws ApiException, InternalError, ApplicationException, IOException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, InterruptedException, MinioException {
-                CoreV1Api coreV1Api = apiClientManager.getCoreApi(region);
+                CoreV1Api coreV1Api = apiClientManager.getCoreApi(provider, region, superCluster);
                 /* Get ExternalIP from node */
                 String externalIP = "";
                 var node = coreV1Api.readNode(nodeName, null);
@@ -1552,10 +1556,11 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void addBufferedLabelToVC(String bufferName, String instanceType, String region)
+        public void addBufferedLabelToVC(String bufferName, String instanceType, String provider, String region,
+                        String superCluster)
                         throws KubectlException, IOException, ApiException, InterruptedException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException {
-                ApiClient apiClient = apiClientManager.getAdminApiClient(region);
+                ApiClient apiClient = apiClientManager.getAdminApiClient(provider, region, superCluster);
                 ModelMapper.addModelMap("tenancy.x-k8s.io", "v1alpha1", "VirtualCluster",
                                 "virtualclusters", true,
                                 V1VirtualCluster.class);
@@ -1571,11 +1576,11 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void scaleVCWorkloadsDown(String bufferName, String region)
+        public void scaleVCWorkloadsDown(String bufferName, String provider, String region, String superCluster)
                         throws IOException, ApiException, InterruptedException, KubectlException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
-                                region);
+                                provider, region, superCluster);
                 AppsV1Api appsV1Api = new AppsV1Api(vcClient);
                 V1DeploymentList deploymentList = appsV1Api.listDeploymentForAllNamespaces(null, null, null, null, null,
                                 null, null, null, null, null);
@@ -1609,11 +1614,11 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void scaleVCWorkloadsUp(String bufferName, String region)
+        public void scaleVCWorkloadsUp(String bufferName, String provider, String region, String superCluster)
                         throws IOException, ApiException, InterruptedException, KubectlException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
-                                region);
+                                provider, region, superCluster);
                 AppsV1Api appsV1Api = new AppsV1Api(vcClient);
                 V1DeploymentList deploymentList = appsV1Api.listDeploymentForAllNamespaces(null, null, null, null, null,
                                 null, null, null, null, null);
@@ -1647,11 +1652,12 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void scaleOAuth2ProxyDown(String bufferName, String region)
+        public void scaleOAuth2ProxyDown(String bufferName, String provider, String region, String superCluster)
                         throws ApiException, IOException, KubectlException, InterruptedException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException {
-                String namespaceName = cloudInstanceHelperRepository.getNamespaceNameWithBufferName(bufferName, region);
-                ApiClient apiClient = cloudInstanceHelperRepository.adminApiClient("eu-central-1");
+                String namespaceName = cloudInstanceHelperRepository.getNamespaceNameWithBufferName(bufferName,
+                                provider, region, superCluster);
+                ApiClient apiClient = cloudInstanceHelperRepository.adminApiClient(provider, region, superCluster);
                 Kubectl.scale(V1Deployment.class).apiClient(apiClient)
                                 .namespace(namespaceName + "-oauth2-proxy")
                                 .name("oauth2-proxy").replicas(0).execute();
@@ -1659,21 +1665,22 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void scaleOAuth2ProxyUp(String bufferName, String region)
+        public void scaleOAuth2ProxyUp(String bufferName, String provider, String region, String superCluster)
                         throws ApiException, IOException, KubectlException, InterruptedException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException {
-                String namespaceName = cloudInstanceHelperRepository.getNamespaceNameWithBufferName(bufferName, region);
-                ApiClient apiClient = cloudInstanceHelperRepository.adminApiClient("eu-central-1");
+                String namespaceName = cloudInstanceHelperRepository.getNamespaceNameWithBufferName(bufferName,
+                                provider, region, superCluster);
+                ApiClient apiClient = cloudInstanceHelperRepository.adminApiClient(provider, region, superCluster);
                 Kubectl.scale(V1Deployment.class).apiClient(apiClient).namespace(namespaceName + "-oauth2-proxy")
                                 .name("oauth2-proxy").replicas(1).execute();
         }
 
         @Override
-        public void scaleCoreDNSUp(String bufferName, String region)
+        public void scaleCoreDNSUp(String bufferName, String provider, String region, String superCluster)
                         throws ApiException, IOException, InterruptedException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
-                                region);
+                                provider, region, superCluster);
                 try {
                         Kubectl.scale(V1Deployment.class).apiClient(vcClient).namespace("kube-system")
                                         .name("coredns").replicas(1).execute();
@@ -1683,17 +1690,18 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
-        public void unlabelSuperClusterNode(String nodeName, String region)
+        public void unlabelSuperClusterNode(String nodeName, String provider, String region, String superCluster)
                         throws IOException, KubectlException, ApiException, InterruptedException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException {
-                ApiClient apiClient = apiClientManager.getAdminApiClient(region);
+                ApiClient apiClient = apiClientManager.getAdminApiClient(provider, region, superCluster);
                 String patchString = "[{ \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1buffer-instance\" }]";
                 V1Patch patch = new V1Patch(patchString);
                 Kubectl.patch(V1Node.class).apiClient(apiClient).name(nodeName).patchContent(patch).execute();
         }
 
         @Override
-        public void createClusterAdminRole(Organization organization, String bufferName, String username, String region)
+        public void createClusterAdminRole(Organization organization, String bufferName, String username,
+                        String provider, String region, String superCluster)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
                         ApiException, InterruptedException, MinioException {
                 Artifact artifact = new Artifact();
@@ -1703,7 +1711,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 List<Object> list = Yaml.loadAll(yaml);
 
                 ApiClient apiClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
-                                region);
+                                provider, region, superCluster);
 
                 RbacAuthorizationV1Api rbacAuthorizationV1Api = new RbacAuthorizationV1Api(apiClient);
 

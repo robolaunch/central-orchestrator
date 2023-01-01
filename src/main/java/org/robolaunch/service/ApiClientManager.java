@@ -36,112 +36,114 @@ public class ApiClientManager {
    private Map<String, DynamicKubernetesApi> machineApiMap = new ConcurrentHashMap<>();
 
    @Unremovable
-   public ApiClient getAdminApiClient(String region) throws InvalidKeyException, NoSuchAlgorithmException,
+   public ApiClient getAdminApiClient(String provider, String region, String superCluster)
+         throws InvalidKeyException, NoSuchAlgorithmException,
          IllegalArgumentException, IOException, ApiException, InterruptedException, MinioException {
-      ApiClient apiClient = apiClientMap.get(region);
+      ApiClient apiClient = apiClientMap.get(provider + "/" + region + "/" + superCluster);
       if (apiClient == null) {
          System.out.println("will create a new vc");
-         apiClient = cloudInstanceHelperRepository.adminApiClient(region);
-         apiClientMap.put(region, apiClient);
+         apiClient = cloudInstanceHelperRepository.adminApiClient(provider, region, superCluster);
+         apiClientMap.put(provider + "/" + region + "/" + superCluster, apiClient);
       }
       return apiClient;
    }
 
    @Unremovable
-   public DynamicKubernetesApi getMachineDeploymentApi(String region)
+   public DynamicKubernetesApi getMachineDeploymentApi(String provider, String region, String superCluster)
          throws InvalidKeyException, NoSuchAlgorithmException,
          IllegalArgumentException, IOException, ApiException, InterruptedException, MinioException {
-      DynamicKubernetesApi machineDeploymentApi = machineDeploymentApiMap.get(region);
+      DynamicKubernetesApi machineDeploymentApi = machineDeploymentApiMap
+            .get(provider + "/" + region + "/" + superCluster);
       if (machineDeploymentApi == null) {
-         ApiClient apiClient = getAdminApiClient(region);
+         ApiClient apiClient = getAdminApiClient(provider, region, superCluster);
          machineDeploymentApi = new DynamicKubernetesApi("cluster.k8s.io", "v1alpha1",
                "machinedeployments",
                apiClient);
-         machineDeploymentApiMap.put(region, machineDeploymentApi);
+         machineDeploymentApiMap.put(provider + "/" + region + "/" + superCluster, machineDeploymentApi);
       }
       return machineDeploymentApi;
    }
 
    @Unremovable
-   public CoreV1Api getCoreApi(String region)
+   public CoreV1Api getCoreApi(String provider, String region, String superCluster)
          throws InvalidKeyException, NoSuchAlgorithmException,
          IllegalArgumentException, IOException, ApiException, InterruptedException, MinioException {
-      CoreV1Api coreV1Api = coreApiMap.get(region);
+      CoreV1Api coreV1Api = coreApiMap.get(provider + "/" + region + "/" + superCluster);
       if (coreV1Api == null) {
-         ApiClient apiClient = getAdminApiClient(region);
+         ApiClient apiClient = getAdminApiClient(provider, region, superCluster);
          coreV1Api = new CoreV1Api(apiClient);
-         coreApiMap.put(region, coreV1Api);
+         coreApiMap.put(provider + "/" + region + "/" + superCluster, coreV1Api);
       }
       return coreV1Api;
    }
 
    @Unremovable
-   public AppsV1Api getAppsApi(String region)
+   public AppsV1Api getAppsApi(String provider, String region, String superCluster)
          throws InvalidKeyException, NoSuchAlgorithmException,
          IllegalArgumentException, IOException, ApiException, InterruptedException, MinioException {
-      AppsV1Api appsApi = appsApiMap.get(region);
+      AppsV1Api appsApi = appsApiMap.get(provider + "/" + region + "/" + superCluster);
       if (appsApi == null) {
-         ApiClient apiClient = getAdminApiClient(region);
+         ApiClient apiClient = getAdminApiClient(provider, region, superCluster);
          appsApi = new AppsV1Api(apiClient);
-         appsApiMap.put(region, appsApi);
+         appsApiMap.put(provider + "/" + region + "/" + superCluster, appsApi);
       }
       return appsApi;
    }
 
    @Unremovable
-   public DynamicKubernetesApi getClusterVersionApi(String region)
+   public DynamicKubernetesApi getClusterVersionApi(String provider, String region, String superCluster)
          throws InvalidKeyException, NoSuchAlgorithmException,
          IllegalArgumentException, IOException, ApiException, InterruptedException, MinioException {
-      DynamicKubernetesApi clusterVersionApi = clusterVersionApiMap.get(region);
+      DynamicKubernetesApi clusterVersionApi = clusterVersionApiMap.get(provider + "/" + region + "/" + superCluster);
 
       if (clusterVersionApi == null) {
-         ApiClient apiClient = getAdminApiClient(region);
+         ApiClient apiClient = getAdminApiClient(provider, region, superCluster);
          clusterVersionApi = new DynamicKubernetesApi("tenancy.x-k8s.io", "v1alpha1",
                "clusterversions", apiClient);
-         clusterVersionApiMap.put(region, clusterVersionApi);
+         clusterVersionApiMap.put(provider + "/" + region + "/" + superCluster, clusterVersionApi);
       }
       return clusterVersionApi;
    }
 
    @Unremovable
-   public DynamicKubernetesApi getVirtualClusterApi(String region)
+   public DynamicKubernetesApi getVirtualClusterApi(String provider, String region, String superCluster)
          throws InvalidKeyException, NoSuchAlgorithmException,
          IllegalArgumentException, IOException, ApiException, InterruptedException, MinioException {
-      DynamicKubernetesApi virtualClusterApi = virtualClusterApiMap.get(region);
+      DynamicKubernetesApi virtualClusterApi = virtualClusterApiMap.get(provider + "/" + region + "/" + superCluster);
       if (virtualClusterApi == null) {
-         ApiClient apiClient = getAdminApiClient(region);
+         ApiClient apiClient = getAdminApiClient(provider, region, superCluster);
          virtualClusterApi = new DynamicKubernetesApi("tenancy.x-k8s.io", "v1alpha1",
                "virtualclusters", apiClient);
-         virtualClusterApiMap.put(region, virtualClusterApi);
+         virtualClusterApiMap.put(provider + "/" + region + "/" + superCluster, virtualClusterApi);
       }
       return virtualClusterApi;
    }
 
    @Unremovable
-   public DynamicKubernetesApi getSubnetApi(String region)
+   public DynamicKubernetesApi getSubnetApi(String provider, String region, String superCluster)
          throws InvalidKeyException, NoSuchAlgorithmException,
          IllegalArgumentException, IOException, ApiException, InterruptedException, MinioException {
-      DynamicKubernetesApi subnetApi = subnetApiMap.get(region);
+      DynamicKubernetesApi subnetApi = subnetApiMap.get(provider + "/" + region + "/" + superCluster);
       if (subnetApi == null) {
-         ApiClient apiClient = getAdminApiClient(region);
+         ApiClient apiClient = getAdminApiClient(provider, region, superCluster);
          subnetApi = new DynamicKubernetesApi("kubeovn.io", "v1",
                "subnets", apiClient);
-         subnetApiMap.put(region, subnetApi);
+         subnetApiMap.put(provider + "/" + region + "/" + superCluster, subnetApi);
       }
       return subnetApi;
    }
 
    @Unremovable
-   public DynamicKubernetesApi getMachineApi(String region)
+   public DynamicKubernetesApi getMachineApi(String provider, String region, String superCluster)
          throws InvalidKeyException, NoSuchAlgorithmException,
          IllegalArgumentException, IOException, ApiException, InterruptedException, MinioException {
-      DynamicKubernetesApi machineApi = machineApiMap.get(region);
+      DynamicKubernetesApi machineApi = machineApiMap.get(provider + "/" + region + "/" + superCluster);
       if (machineApi == null) {
-         ApiClient apiClient = getAdminApiClient(region);
+         ApiClient apiClient = getAdminApiClient(provider, region, superCluster);
          machineApi = new DynamicKubernetesApi("cluster.k8s.io",
                "v1alpha1", "machines",
                apiClient);
-         machineApiMap.put(region, machineApi);
+         machineApiMap.put(provider + "/" + region + "/" + superCluster, machineApi);
       }
       return machineApi;
    }

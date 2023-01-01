@@ -18,7 +18,6 @@ import org.robolaunch.models.DepartmentBasic;
 import org.robolaunch.models.GroupMember;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.Response;
-import org.robolaunch.models.Result;
 import org.robolaunch.models.User;
 import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.models.response.ResponseTeamMembers;
@@ -614,28 +613,35 @@ public class DepartmentService {
     }
   }
 
-  public Response addManagersTeamAsMember(Organization organization, String teamName)
+  public PlainResponse addManagersTeamAsMember(Organization organization, String teamName)
       throws ApplicationException {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       groupRepository.addSubgroupToGroup(organization, teamName);
       departmentLogger.info("Managers group added as member.");
-      return new Response(true, UUID.randomUUID().toString());
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Managers group added as member.");
     } catch (Exception e) {
       departmentLogger.error("Error happened when creating IPA Group for organization " + e.getMessage());
-      return new Response(false, UUID.randomUUID().toString());
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error happened when creating IPA Group for organization " + e.getMessage());
     }
+    return plainResponse;
   }
 
-  public Response addFounderToManagersTeam(Organization organization, String teamName)
+  public PlainResponse addFounderToManagersTeam(Organization organization, String teamName)
       throws InternalError, IOException, ApplicationException {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       setInitialManagersForTeam(organization, teamName);
       departmentLogger.info("Founder added to managers group.");
-      return new Response(true, UUID.randomUUID().toString());
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Founder added to managers group.");
     } catch (Exception e) {
       departmentLogger.error("Error happened when adding founder to managers group " + e.getMessage());
-      return new Response(false, UUID.randomUUID().toString());
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error happened when adding founder to managers group " + e.getMessage());
     }
-
+    return plainResponse;
   }
 }

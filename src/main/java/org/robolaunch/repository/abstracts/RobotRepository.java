@@ -14,30 +14,31 @@ import io.minio.errors.MinioException;
 
 public interface RobotRepository {
 
-        public void createRobot(RequestCreateRobot requestCreateRobot, String token, String region)
+        public void createRobot(RequestCreateRobot requestCreateRobot, String token, String provider, String region,
+                        String superCluster)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException;
 
         public void createRobotBuildManager(RobotBuildManager robotBuildManager, String bufferName, String token,
-                        String region)
+                        String provider, String region, String superCluster)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException;
 
         public void createRobotLaunchManager(RobotLaunchManager robotLaunchManager, String bufferName, String token,
-                        String region)
+                        String provider, String region, String superCluster)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException;
 
         public void createRobotDevelopmentSuite(RobotDevSuite robotDevSuite, String bufferName, String token,
-                        String region)
+                        String provider, String region, String superCluster)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException;
 
-        public void makeRobotsPassive(String bufferName, String region)
+        public void makeRobotsPassive(String bufferName, String provider, String region, String superCluster)
                         throws IOException, ApiException, InterruptedException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException;
 
-        public void makeRobotsActive(String bufferName, String region)
+        public void makeRobotsActive(String bufferName, String provider, String region, String superCluster)
                         throws IOException, ApiException, InterruptedException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException;
 }
