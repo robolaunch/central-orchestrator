@@ -133,21 +133,11 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         IOException, ApiException, InterruptedException {
                 DynamicKubernetesApi machineDeploymentApi = apiClientManager.getMachineDeploymentApi(provider, region,
                                 superCluster);
-                String awsType = "";
-
-                if (instanceType.equals("r1.aws.cpu")) {
-                        awsType = "t3a.xlarge";
-                } else if (instanceType.equals("r1.aws.gpu")) {
-                        awsType = "t2.medium"; // g4dn.xlarge
-                } else if (instanceType.equals("r1.hz.cpu")) {
-                        awsType = "CPX31"; // CCX31
-                }
-
                 Integer diskSize = 50;
                 Artifact artifact = new Artifact();
 
                 artifact.setName(provider + "/" + region + "/" + superCluster + "/" + "machineDeployment.yaml");
-
+                System.out.println("Tnig: " + artifact.getName());
                 String bucket = "providers";
                 JsonObject object = storageRepository.getYamlTemplate(artifact, bucket);
                 object.get("metadata").getAsJsonObject().addProperty("name",
@@ -156,7 +146,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 object.get("spec").getAsJsonObject().get("template").getAsJsonObject().get("spec").getAsJsonObject()
                                 .get("providerSpec").getAsJsonObject().get("value").getAsJsonObject()
                                 .get("cloudProviderSpec").getAsJsonObject()
-                                .addProperty("instanceType", awsType);
+                                .addProperty("instanceType", instanceType);
 
                 object.get("spec").getAsJsonObject().get("template").getAsJsonObject().get("spec").getAsJsonObject()
                                 .get("providerSpec").getAsJsonObject().get("value").getAsJsonObject()

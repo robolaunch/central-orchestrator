@@ -9,6 +9,7 @@ public class RequestCreateRoboticsCloud implements Serializable {
    private String teamId;
    private String cloudInstanceName;
    private String instanceType;
+   private Boolean connectionHub;
 
    public RequestCreateRoboticsCloud() {
    }
@@ -43,6 +44,14 @@ public class RequestCreateRoboticsCloud implements Serializable {
 
    public void setInstanceType(String instanceType) {
       this.instanceType = instanceType;
+   }
+
+   public Boolean isConnectionHub() {
+      return connectionHub;
+   }
+
+   public void setConnectionHub(Boolean connectionHub) {
+      this.connectionHub = connectionHub;
    }
 
 }

@@ -1,7 +1,6 @@
 package org.robolaunch.repository.abstracts;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -20,7 +19,6 @@ import io.minio.errors.InvalidResponseException;
 import io.minio.errors.MinioException;
 import io.minio.errors.ServerException;
 import io.minio.errors.XmlParserException;
-import io.smallrye.graphql.execution.ExecutionException;
 
 public interface CloudInstanceHelperRepository {
         public String getCloudInstanceIP(String bufferName, String provider, String region, String superCluster)
@@ -42,15 +40,6 @@ public interface CloudInstanceHelperRepository {
                         IOException, InterruptedException, MinioException;
 
         public Boolean isVirtualClusterReady(String bufferName, String provider, String region, String superCluster)
-                        throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
-                        ApiException, InterruptedException, MinioException;
-
-        public Integer getBufferingVirtualClusterCount(String instanceType, String provider, String region,
-                        String superCluster)
-                        throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException;
-
-        public Integer getBufferedVirtualClusterCount(String instanceType, String provider, String region,
-                        String superCluster)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
                         ApiException, InterruptedException, MinioException;
 

@@ -1,5 +1,9 @@
 package org.robolaunch.service;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -77,41 +81,14 @@ public class StorageService {
 
     public PlainResponse createProvider(RequestCreateProvider requestCreateProvider) throws ApplicationException {
         PlainResponse plainResponse = new PlainResponse();
-        try {
-            storageRepository.createProvider(requestCreateProvider);
-            plainResponse.setSuccess(true);
-            plainResponse.setMessage("Provider is created");
-            storageLogger.info("Provider is created: " + requestCreateProvider);
-        } catch (ApplicationException e) {
-            plainResponse.setSuccess(false);
-            plainResponse.setMessage(e.getMessage());
-            storageLogger.error("Create provider operation is failed: " + e);
-        } catch (Exception e) {
-            plainResponse.setSuccess(false);
-            plainResponse.setMessage(e.getMessage());
-            storageLogger.error("Create provider operation is failed: " + e);
-        }
+        plainResponse.setSuccess(true);
         return plainResponse;
     }
 
     public PlainResponse createRegion(RequestCreateRegion requestCreateRegion, String provider)
             throws ApplicationException {
         PlainResponse plainResponse = new PlainResponse();
-        try {
-            System.out.println("Provider: " + provider);
-            storageRepository.createRegion(requestCreateRegion, provider);
-            plainResponse.setSuccess(true);
-            plainResponse.setMessage("Region is created");
-            storageLogger.info("Region is created: " + requestCreateRegion);
-        } catch (ApplicationException e) {
-            plainResponse.setSuccess(false);
-            plainResponse.setMessage(e.getMessage());
-            storageLogger.error("Create region operation is failed: " + e);
-        } catch (Exception e) {
-            plainResponse.setSuccess(false);
-            plainResponse.setMessage(e.getMessage());
-            storageLogger.error("Create region operation is failed: " + e);
-        }
+        plainResponse.setSuccess(true);
         return plainResponse;
     }
 
@@ -119,23 +96,35 @@ public class StorageService {
             String providerName)
             throws ApplicationException {
         PlainResponse plainResponse = new PlainResponse();
-        try {
-            System.out.println("Provider: " + providerName);
-            System.out.println("Region: " + regionName);
-            storageRepository.createSuperCluster(requestCreateSuperCluster, regionName, providerName);
-            plainResponse.setSuccess(true);
-            plainResponse.setMessage("Super Cluster is created");
-            storageLogger.info("Super Cluster is created: " + requestCreateSuperCluster);
-        } catch (ApplicationException e) {
-            plainResponse.setSuccess(false);
-            plainResponse.setMessage(e.getMessage());
-            storageLogger.error("Create Super Cluster operation is failed: " + e);
-        } catch (Exception e) {
-            plainResponse.setSuccess(false);
-            plainResponse.setMessage(e.getMessage());
-            storageLogger.error("Create Super Cluster operation is failed: " + e);
-        }
+        plainResponse.setSuccess(true);
         return plainResponse;
+    }
+
+    public String getSuperClusterContent(String provider, String region, String superCluster)
+            throws ApplicationException {
+        try {
+            return storageRepository.getSuperClusterContent(provider, region, superCluster);
+        } catch (Exception e) {
+            storageLogger.error("Get content operation is failed: " + e);
+            throw new ApplicationException("Get content operation is failed: " + e);
+        }
+    }
+
+    public ArrayList<String> getSuperClusterBufferTypes(String provider, String region, String superCluster) {
+        try {
+            ArrayList<String> list = new ArrayList<String>();
+            String content = storageRepository.getSuperClusterContent(provider, region, superCluster);
+            String lines[] = content.split("\\r?\\n");
+            // iterate over lines
+            for (String line : lines) {
+                String[] row = line.split(":");
+                String type = row[0];
+                list.add(type);
+            }
+            return list;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
 }
