@@ -55,7 +55,6 @@ import io.kubernetes.client.openapi.models.V1ContainerStatus;
 import io.kubernetes.client.openapi.models.V1Deployment;
 import io.kubernetes.client.openapi.models.V1DeploymentList;
 import io.kubernetes.client.openapi.models.V1DeploymentStatus;
-import io.kubernetes.client.openapi.models.V1NamespaceList;
 import io.kubernetes.client.openapi.models.V1Node;
 import io.kubernetes.client.openapi.models.V1NodeAddress;
 import io.kubernetes.client.openapi.models.V1NodeCondition;
@@ -77,13 +76,7 @@ import io.kubernetes.client.util.generic.KubernetesApiResponse;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesObject;
 import io.kubernetes.client.util.generic.options.ListOptions;
-import io.minio.errors.ErrorResponseException;
-import io.minio.errors.InsufficientDataException;
-import io.minio.errors.InternalException;
-import io.minio.errors.InvalidResponseException;
 import io.minio.errors.MinioException;
-import io.minio.errors.ServerException;
-import io.minio.errors.XmlParserException;
 import io.smallrye.graphql.client.Response;
 import io.smallrye.graphql.client.dynamic.api.DynamicGraphQLClient;
 import io.smallrye.graphql.client.dynamic.api.DynamicGraphQLClientBuilder;
@@ -271,48 +264,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
       }
     }
     return false;
-  }
-
-  @Override
-  public Integer getBufferingVirtualClusterCount(String instanceType, String provider, String region,
-      String superCluster)
-      throws InterruptedException, ExecutionException {
-    String queryStr = "{BufferCloudInstance(where: {and: [{status: {equal: \"Creating\"}},{instanceType: {equal:\""
-        + instanceType + "\"}}]}){id}}";
-
-    Response response = graphqlClient.executeSync(queryStr);
-    System.out.println("response buffer: " + response.getData());
-    javax.json.JsonObject data = response.getData();
-    if (data != null) {
-      if (data.get("BufferCloudInstance") != null) {
-        return data.get("BufferCloudInstance").asJsonArray().size();
-      } else {
-        return 0;
-      }
-    } else {
-      return 0;
-    }
-
-  }
-
-  @Override
-  public Integer getBufferedVirtualClusterCount(String instanceType, String provider, String region,
-      String superCluster)
-      throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException, ApiException,
-      InterruptedException, MinioException {
-    DynamicKubernetesApi virtualClustersApi = apiClientManager.getVirtualClusterApi(provider, region, superCluster);
-
-    ListOptions listOptions = new ListOptions();
-    listOptions.setLabelSelector(
-        "buffered=true, !robolaunch.io/organization, robolaunch.io/instance-type=" + instanceType);
-    var vcs = virtualClustersApi.list(listOptions).getObject().getItems();
-    Integer counter = 0;
-    for (DynamicKubernetesObject vc : vcs) {
-      if (vc.getRaw().get("status").getAsJsonObject().get("phase").getAsString().equals("Running")) {
-        counter++;
-      }
-    }
-    return counter;
   }
 
   @Override

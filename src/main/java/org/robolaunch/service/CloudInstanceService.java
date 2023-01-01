@@ -98,6 +98,14 @@ public class CloudInstanceService {
       String cloudInstanceName, Boolean connectionHub, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
+      System.out.println("bufferName: " + bufferName);
+      System.out.println("organization: " + organization.getName());
+      System.out.println("teamId: " + teamId);
+      System.out.println("cloudInstanceName: " + cloudInstanceName);
+      System.out.println("connectionHub: " + connectionHub);
+      System.out.println("provider: " + provider);
+      System.out.println("region: " + region);
+      System.out.println("superCluster: " + superCluster);
       cloudInstanceRepository.labelVirtualCluster(bufferName, organization, teamId,
           cloudInstanceName, connectionHub, provider, region, superCluster);
       plainResponse.setSuccess(true);

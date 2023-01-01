@@ -152,38 +152,6 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Integer getBufferingVirtualClusterCount(String instanceType, String provider, String region,
-      String superCluster) {
-    try {
-      if (cloudInstanceHelperRepository.getBufferingVirtualClusterCount(instanceType, provider, region,
-          superCluster) != null) {
-        Integer count = cloudInstanceHelperRepository.getBufferingVirtualClusterCount(instanceType, provider, region,
-            superCluster);
-        cloudInstanceHelperLogger.info("Buffering -" + instanceType + "- virtual cluster count: " + count);
-        return count;
-      } else {
-        return 0;
-      }
-    } catch (Exception e) {
-      cloudInstanceHelperLogger.error("Error while getting buffering virtual cluster count.", e);
-      return null;
-    }
-  }
-
-  public Integer getBufferedVirtualClusterCount(String instanceType, String provider, String region,
-      String superCluster) {
-    try {
-      Integer count = cloudInstanceHelperRepository.getBufferedVirtualClusterCount(instanceType, provider, region,
-          superCluster);
-      System.out.println("Buffered count: " + count);
-      cloudInstanceHelperLogger.info("Buffered -" + instanceType + "- virtual cluster count: " + count);
-      return count;
-    } catch (Exception e) {
-      cloudInstanceHelperLogger.error("Error while getting buffered virtual cluster count.", e);
-      return null;
-    }
-  }
-
   public String selectBufferedVirtualCluster(Integer vcCount, String provider, String region, String superCluster) {
     try {
       String bufferName = cloudInstanceHelperRepository.selectBufferedVirtualCluster(vcCount, provider, region,
