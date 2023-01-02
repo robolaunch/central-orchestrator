@@ -12,6 +12,7 @@ import javax.json.JsonObject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.robolaunch.models.Organization;
+import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.repository.abstracts.KubernetesRepository;
 import org.robolaunch.service.ApiClientManager;
 
@@ -46,15 +47,6 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
         .url(kogitoDataIndexUrl + "/graphql")
         .build();
 
-  }
-
-  @Override
-  public void getCloudInstances(Organization organization, String teamId)
-      throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException {
-    String queryStr = "query{ProcessInstances(where: {processName: {equal:\"superCluster\"}}){id childProcessInstances{processName parentProcessInstanceId variables}}}";
-
-    Response response = graphqlClient.executeSync(queryStr);
-    JsonObject data = response.getData();
   }
 
   @Override
@@ -135,4 +127,63 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
     return counter;
   }
 
+  @Override
+  public Boolean providerExists(String provider) throws java.util.concurrent.ExecutionException, InterruptedException {
+    String queryStr = "query{ProcessInstances(where: {processName: {equal:\"provider\"}}){id variables}}";
+
+    Response response = graphqlClient.executeSync(queryStr);
+    JsonObject data = response.getData();
+
+    JsonArray processInstances = data.getJsonArray("ProcessInstances");
+
+    // Iterate over processInstances and check if providerName is equal to provider
+    for (int i = 0; i < processInstances.size(); i++) {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode childNode;
+      try {
+        childNode = mapper.readTree(processInstances.getJsonObject(i).getString("variables"));
+        if (childNode.get("providerName").asText().equals(provider)) {
+          return true;
+        }
+      } catch (JsonProcessingException e) {
+        e.printStackTrace();
+      }
+    }
+
+    return false;
+  }
+
+  @Override
+  public Boolean regionExists(String provider, String region)
+      throws java.util.concurrent.ExecutionException, InterruptedException {
+    String queryStr = "query{ProcessInstances(where: {processName: {equal:\"provider\"}}){id variables childProcessInstances{id processName variables}}}";
+
+    Response response = graphqlClient.executeSync(queryStr);
+    JsonObject data = response.getData();
+
+    JsonArray processInstances = data.getJsonArray("ProcessInstances");
+
+    // Iterate over processInstances and check if providerName is equal to provider
+    for (int i = 0; i < processInstances.size(); i++) {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonArray childProcessInstances = processInstances.getJsonObject(i).getJsonArray("childProcessInstances");
+      for (int j = 0; j < childProcessInstances.size(); j++) {
+        if (childProcessInstances.getJsonObject(j).getString("processName").equals("region")) {
+          JsonNode childNode;
+          try {
+            childNode = mapper.readTree(childProcessInstances.getJsonObject(j).getString("variables"));
+            if (childNode.get("providerName").asText().equals(provider)
+                && childNode.get("regionName").asText().equals(region)) {
+              System.out.println("region found");
+              return true;
+            }
+          } catch (JsonProcessingException e) {
+            return null;
+          }
+        }
+      }
+    }
+    System.out.println("region not found");
+    return false;
+  }
 }
