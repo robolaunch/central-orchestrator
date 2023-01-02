@@ -61,6 +61,11 @@ public interface KubernetesRepository {
                         throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException,
                         JsonMappingException, JsonProcessingException;
 
+        public ArrayList<RoboticsCloudKubernetes> getRoboticsCloudsUser(Organization organization, String teamId,
+                        String username)
+                        throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException,
+                        JsonMappingException, JsonProcessingException;
+
         public ArrayList<RoboticsCloudKubernetes> getRoboticsCloudsSuperClusterOrganization(Organization organization,
                         String superClusterProcessId)
                         throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
@@ -68,6 +73,12 @@ public interface KubernetesRepository {
 
         public ArrayList<RoboticsCloudKubernetes> getRoboticsCloudsSuperClusterTeam(Organization organization,
                         String teamId,
+                        String superClusterProcessId)
+                        throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
+                        JsonProcessingException;
+
+        public ArrayList<RoboticsCloudKubernetes> getRoboticsCloudsSuperClusterUser(Organization organization,
+                        String teamId, String username,
                         String superClusterProcessId)
                         throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
                         JsonProcessingException;

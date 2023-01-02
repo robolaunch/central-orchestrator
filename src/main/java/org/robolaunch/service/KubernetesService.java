@@ -20,7 +20,6 @@ import org.robolaunch.models.response.ResponseSuperClusters;
 import org.robolaunch.repository.abstracts.KubernetesRepository;
 
 import io.quarkus.arc.log.LoggerName;
-import io.smallrye.graphql.execution.ExecutionException;
 
 @ApplicationScoped
 public class KubernetesService {
@@ -207,6 +206,22 @@ public class KubernetesService {
     try {
       ArrayList<RoboticsCloudKubernetes> roboticsClouds = kubernetesRepository
           .getRoboticsCloudsTeam(organization, teamId);
+      responseRoboticsClouds.setData(roboticsClouds);
+      responseRoboticsClouds.setSuccess(true);
+      responseRoboticsClouds.setMessage("RoboticsClouds fetched successfully.");
+    } catch (Exception e) {
+      responseRoboticsClouds.setSuccess(false);
+      responseRoboticsClouds.setMessage("Error while fetching RoboticsClouds." + e.getMessage());
+    }
+    return responseRoboticsClouds;
+  }
+
+  public ResponseRoboticsClouds getRoboticsCloudsUser(Organization organization, String teamId) {
+    ResponseRoboticsClouds responseRoboticsClouds = new ResponseRoboticsClouds();
+    String username = jwt.getClaim("preferred_username");
+    try {
+      ArrayList<RoboticsCloudKubernetes> roboticsClouds = kubernetesRepository
+          .getRoboticsCloudsUser(organization, teamId, username);
       responseRoboticsClouds.setData(roboticsClouds);
       responseRoboticsClouds.setSuccess(true);
       responseRoboticsClouds.setMessage("RoboticsClouds fetched successfully.");

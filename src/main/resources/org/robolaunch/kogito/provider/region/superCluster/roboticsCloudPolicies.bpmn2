@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_16wnQWwXEDuqHrCoWGsYkA" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_hDoDoG0EEDuclfKDRKOb6w" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_usernameItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_organizationItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="_plainResponseItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
@@ -99,8 +99,8 @@
   <bpmn2:interface id="_7B4B3AD8-DBAC-448F-9994-3F882C55B574_ServiceInterface" name="org.robolaunch.service.ErrorService" implementationRef="org.robolaunch.service.ErrorService">
     <bpmn2:operation id="_7B4B3AD8-DBAC-448F-9994-3F882C55B574_ServiceOperation" name="plainResponseTemplate" implementationRef="plainResponseTemplate"/>
   </bpmn2:interface>
-  <bpmn2:collaboration id="_B88C367B-30A5-49CD-9C98-47450BEE4CBE" name="Default Collaboration">
-    <bpmn2:participant id="_4AAB0D44-7E53-4E0C-9380-7F98BF500A56" name="Pool Participant" processRef="roboticsCloudPolicies"/>
+  <bpmn2:collaboration id="_FB0B5F71-251C-4620-B6B7-746744851F58" name="Default Collaboration">
+    <bpmn2:participant id="_5307EF20-DFD8-4D67-B532-DFA9E39C77AE" name="Pool Participant" processRef="roboticsCloudPolicies"/>
   </bpmn2:collaboration>
   <bpmn2:process id="roboticsCloudPolicies" drools:packageName="org.robolaunch.kogito.provider" drools:version="1.0" drools:adHoc="false" name="policies" isExecutable="true" processType="Public">
     <bpmn2:property id="username" itemSubjectRef="_usernameItem" name="username"/>
@@ -137,6 +137,17 @@
         </drools:metaData>
       </bpmn2:extensionElements>
     </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="_A8082BC6-1591-4972-A7F5-EF28ECC114EA" name="Not Authorized" sourceRef="_F5B641F6-103B-443F-AE68-1496E6E45B50" targetRef="_C6280BE3-9380-4528-9DCF-5790EA4D0362">
+      <bpmn2:extensionElements>
+        <drools:metaData name="isAutoConnection.target">
+          <drools:metaValue><![CDATA[true]]></drools:metaValue>
+        </drools:metaData>
+        <drools:metaData name="elementname">
+          <drools:metaValue><![CDATA[Not Authorized]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !isThingReady == true;]]></bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_DD23448B-CAFE-40FC-A9F4-C6EC77A85EE3" name="Authorized" sourceRef="_F5B641F6-103B-443F-AE68-1496E6E45B50" targetRef="_7B4B3AD8-DBAC-448F-9994-3F882C55B574">
       <bpmn2:extensionElements>
         <drools:metaData name="isAutoConnection.source">
@@ -150,17 +161,6 @@
         </drools:metaData>
       </bpmn2:extensionElements>
       <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return isThingReady == true;]]></bpmn2:conditionExpression>
-    </bpmn2:sequenceFlow>
-    <bpmn2:sequenceFlow id="_A8082BC6-1591-4972-A7F5-EF28ECC114EA" name="Not Authorized" sourceRef="_F5B641F6-103B-443F-AE68-1496E6E45B50" targetRef="_C6280BE3-9380-4528-9DCF-5790EA4D0362">
-      <bpmn2:extensionElements>
-        <drools:metaData name="isAutoConnection.target">
-          <drools:metaValue><![CDATA[true]]></drools:metaValue>
-        </drools:metaData>
-        <drools:metaData name="elementname">
-          <drools:metaValue><![CDATA[Not Authorized]]></drools:metaValue>
-        </drools:metaData>
-      </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !isThingReady == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_DF8AAB2D-CC84-4B5A-98BE-F5D60256679F" sourceRef="_492E4479-ED5D-4DCB-AED9-F47D25B7860A" targetRef="_93D5F716-166C-4792-9AE8-3DA58E024B20">
       <bpmn2:extensionElements>
@@ -176,6 +176,17 @@
         </drools:metaData>
       </bpmn2:extensionElements>
     </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="_EA2326F8-A12B-432C-A86B-974C5A3A9993" name="Does not exist" sourceRef="_88951A82-BF7D-453E-9FCC-FB0CA3796DFB" targetRef="_A04BECBF-D65E-483D-A4E0-061994ADD5B0">
+      <bpmn2:extensionElements>
+        <drools:metaData name="isAutoConnection.target">
+          <drools:metaValue><![CDATA[true]]></drools:metaValue>
+        </drools:metaData>
+        <drools:metaData name="elementname">
+          <drools:metaValue><![CDATA[Does not exist]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return isThingReady == true;]]></bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_FDD0D093-BB7C-4E3B-AA81-516F4D9989A0" name="Does &#10;exist" sourceRef="_88951A82-BF7D-453E-9FCC-FB0CA3796DFB" targetRef="_EF7B95D6-0149-4B82-9388-13C2700EAA2E">
       <bpmn2:extensionElements>
         <drools:metaData name="isAutoConnection.target">
@@ -188,29 +199,7 @@ exist]]></drools:metaValue>
       </bpmn2:extensionElements>
       <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !isThingReady == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
-    <bpmn2:sequenceFlow id="_EA2326F8-A12B-432C-A86B-974C5A3A9993" name="Does not exist" sourceRef="_88951A82-BF7D-453E-9FCC-FB0CA3796DFB" targetRef="_A04BECBF-D65E-483D-A4E0-061994ADD5B0">
-      <bpmn2:extensionElements>
-        <drools:metaData name="isAutoConnection.target">
-          <drools:metaValue><![CDATA[true]]></drools:metaValue>
-        </drools:metaData>
-        <drools:metaData name="elementname">
-          <drools:metaValue><![CDATA[Does not exist]]></drools:metaValue>
-        </drools:metaData>
-      </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return isThingReady == true;]]></bpmn2:conditionExpression>
-    </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_559A0C6A-6EF7-429E-92D1-1E629ED97ADF" sourceRef="_518E21D5-4C03-4D15-9F7A-1E94ABEFDCE9" targetRef="_88951A82-BF7D-453E-9FCC-FB0CA3796DFB"/>
-    <bpmn2:sequenceFlow id="_3AB8C6A1-EB26-425F-9D2C-5D2381ECF452" name="Does exist" sourceRef="_23DEB9B5-FC24-4AA9-936D-87492EF8FBB6" targetRef="_518E21D5-4C03-4D15-9F7A-1E94ABEFDCE9">
-      <bpmn2:extensionElements>
-        <drools:metaData name="isAutoConnection.target">
-          <drools:metaValue><![CDATA[true]]></drools:metaValue>
-        </drools:metaData>
-        <drools:metaData name="elementname">
-          <drools:metaValue><![CDATA[Does exist]]></drools:metaValue>
-        </drools:metaData>
-      </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return isThingReady == true;]]></bpmn2:conditionExpression>
-    </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_CF889325-D447-4443-9BBA-534D0259D2E6" name="Does not exist" sourceRef="_23DEB9B5-FC24-4AA9-936D-87492EF8FBB6" targetRef="_492E4479-ED5D-4DCB-AED9-F47D25B7860A">
       <bpmn2:extensionElements>
         <drools:metaData name="isAutoConnection.target">
@@ -221,6 +210,17 @@ exist]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
       <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !isThingReady == true;]]></bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="_3AB8C6A1-EB26-425F-9D2C-5D2381ECF452" name="Does exist" sourceRef="_23DEB9B5-FC24-4AA9-936D-87492EF8FBB6" targetRef="_518E21D5-4C03-4D15-9F7A-1E94ABEFDCE9">
+      <bpmn2:extensionElements>
+        <drools:metaData name="isAutoConnection.target">
+          <drools:metaValue><![CDATA[true]]></drools:metaValue>
+        </drools:metaData>
+        <drools:metaData name="elementname">
+          <drools:metaValue><![CDATA[Does exist]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return isThingReady == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_43A07930-356E-4B51-98F3-92D8E5E5711E" sourceRef="_E82A2AE6-C7B2-449D-9A55-E205183CB7E4" targetRef="_23DEB9B5-FC24-4AA9-936D-87492EF8FBB6">
       <bpmn2:extensionElements>
@@ -236,17 +236,6 @@ exist]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
     </bpmn2:sequenceFlow>
-    <bpmn2:sequenceFlow id="_C3AB8BA1-3E28-4B53-B5CC-1601F8E0874C" name="Can Create" sourceRef="_43142465-20FD-4AED-94C7-34DABFF6624B" targetRef="_E82A2AE6-C7B2-449D-9A55-E205183CB7E4">
-      <bpmn2:extensionElements>
-        <drools:metaData name="isAutoConnection.target">
-          <drools:metaValue><![CDATA[true]]></drools:metaValue>
-        </drools:metaData>
-        <drools:metaData name="elementname">
-          <drools:metaValue><![CDATA[Can Create]]></drools:metaValue>
-        </drools:metaData>
-      </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return tCreateRCResult.isCanCreate() == true;]]></bpmn2:conditionExpression>
-    </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_8E01FB4D-CBB2-44B0-B507-48D20A8385C5" name="Cannot Create" sourceRef="_43142465-20FD-4AED-94C7-34DABFF6624B" targetRef="_112B53BD-3F92-40F0-A018-C7576ED73D66">
       <bpmn2:extensionElements>
         <drools:metaData name="isAutoConnection.target">
@@ -257,6 +246,17 @@ exist]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
       <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !tCreateRCResult.isCanCreate() == true;]]></bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="_C3AB8BA1-3E28-4B53-B5CC-1601F8E0874C" name="Can Create" sourceRef="_43142465-20FD-4AED-94C7-34DABFF6624B" targetRef="_E82A2AE6-C7B2-449D-9A55-E205183CB7E4">
+      <bpmn2:extensionElements>
+        <drools:metaData name="isAutoConnection.target">
+          <drools:metaValue><![CDATA[true]]></drools:metaValue>
+        </drools:metaData>
+        <drools:metaData name="elementname">
+          <drools:metaValue><![CDATA[Can Create]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return tCreateRCResult.isCanCreate() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_A4A5DE75-8ED3-4732-BC2C-076143071A12" sourceRef="_A990DD50-3681-42F0-9A69-D7BE19D67643" targetRef="_43142465-20FD-4AED-94C7-34DABFF6624B">
       <bpmn2:extensionElements>
@@ -280,6 +280,14 @@ exist]]></drools:metaValue>
       </bpmn2:extensionElements>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_5804748A-E039-45CF-89D5-77E90F1CB127" sourceRef="_3E6E03D0-AFAE-4922-A6A8-65ED14208CDB" targetRef="_5A318DA7-E4CB-4AD4-81A4-8B77506FE24C"/>
+    <bpmn2:sequenceFlow id="_F6D515CB-E103-497D-A417-0106F0091A20" name="Does not exist" sourceRef="_2D95C296-B0A6-4EF9-A853-90095D979891" targetRef="_3E6E03D0-AFAE-4922-A6A8-65ED14208CDB">
+      <bpmn2:extensionElements>
+        <drools:metaData name="elementname">
+          <drools:metaValue><![CDATA[Does not exist]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !isThingReady == true;]]></bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_5ED27172-F1D5-455A-984C-E06F6D6E3AD6" name="Exists" sourceRef="_2D95C296-B0A6-4EF9-A853-90095D979891" targetRef="_1B92AF30-B2A3-4978-93A6-16BA999689D2">
       <bpmn2:extensionElements>
         <drools:metaData name="isAutoConnection.target">
@@ -290,14 +298,6 @@ exist]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
       <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return isThingReady == true;]]></bpmn2:conditionExpression>
-    </bpmn2:sequenceFlow>
-    <bpmn2:sequenceFlow id="_F6D515CB-E103-497D-A417-0106F0091A20" name="Does not exist" sourceRef="_2D95C296-B0A6-4EF9-A853-90095D979891" targetRef="_3E6E03D0-AFAE-4922-A6A8-65ED14208CDB">
-      <bpmn2:extensionElements>
-        <drools:metaData name="elementname">
-          <drools:metaValue><![CDATA[Does not exist]]></drools:metaValue>
-        </drools:metaData>
-      </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return !isThingReady == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_909DAC08-24A3-4407-B0C6-17F63BF41BA6" sourceRef="_4E7FDE6A-E489-4E3A-8241-2F29D76F0B17" targetRef="_2D95C296-B0A6-4EF9-A853-90095D979891">
       <bpmn2:extensionElements>
@@ -461,8 +461,8 @@ exist]]></drools:metaValue>
     </bpmn2:serviceTask>
     <bpmn2:exclusiveGateway id="_F5B641F6-103B-443F-AE68-1496E6E45B50" gatewayDirection="Diverging">
       <bpmn2:incoming>_EF4E9C1C-4249-46E3-A1AE-7D823DE1FE1A</bpmn2:incoming>
-      <bpmn2:outgoing>_A8082BC6-1591-4972-A7F5-EF28ECC114EA</bpmn2:outgoing>
       <bpmn2:outgoing>_DD23448B-CAFE-40FC-A9F4-C6EC77A85EE3</bpmn2:outgoing>
+      <bpmn2:outgoing>_A8082BC6-1591-4972-A7F5-EF28ECC114EA</bpmn2:outgoing>
     </bpmn2:exclusiveGateway>
     <bpmn2:serviceTask id="_492E4479-ED5D-4DCB-AED9-F47D25B7860A" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.ErrorService" drools:serviceoperation="plainResponseTemplate" name="Team Does Not Exist Error Response" implementation="Java" operationRef="_492E4479-ED5D-4DCB-AED9-F47D25B7860A_ServiceOperation">
       <bpmn2:extensionElements>
@@ -538,8 +538,8 @@ exist]]></drools:metaValue>
     </bpmn2:serviceTask>
     <bpmn2:exclusiveGateway id="_88951A82-BF7D-453E-9FCC-FB0CA3796DFB" gatewayDirection="Diverging">
       <bpmn2:incoming>_559A0C6A-6EF7-429E-92D1-1E629ED97ADF</bpmn2:incoming>
-      <bpmn2:outgoing>_EA2326F8-A12B-432C-A86B-974C5A3A9993</bpmn2:outgoing>
       <bpmn2:outgoing>_FDD0D093-BB7C-4E3B-AA81-516F4D9989A0</bpmn2:outgoing>
+      <bpmn2:outgoing>_EA2326F8-A12B-432C-A86B-974C5A3A9993</bpmn2:outgoing>
     </bpmn2:exclusiveGateway>
     <bpmn2:serviceTask id="_518E21D5-4C03-4D15-9F7A-1E94ABEFDCE9" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.CloudInstanceHelperService" drools:serviceoperation="doesCloudInstanceExist" name="Does Cloud Instance Exist" implementation="Java" operationRef="_518E21D5-4C03-4D15-9F7A-1E94ABEFDCE9_ServiceOperation">
       <bpmn2:extensionElements>
@@ -600,8 +600,8 @@ exist]]></drools:metaValue>
     </bpmn2:serviceTask>
     <bpmn2:exclusiveGateway id="_23DEB9B5-FC24-4AA9-936D-87492EF8FBB6" gatewayDirection="Diverging">
       <bpmn2:incoming>_43A07930-356E-4B51-98F3-92D8E5E5711E</bpmn2:incoming>
-      <bpmn2:outgoing>_CF889325-D447-4443-9BBA-534D0259D2E6</bpmn2:outgoing>
       <bpmn2:outgoing>_3AB8C6A1-EB26-425F-9D2C-5D2381ECF452</bpmn2:outgoing>
+      <bpmn2:outgoing>_CF889325-D447-4443-9BBA-534D0259D2E6</bpmn2:outgoing>
     </bpmn2:exclusiveGateway>
     <bpmn2:serviceTask id="_E82A2AE6-C7B2-449D-9A55-E205183CB7E4" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.DepartmentService" drools:serviceoperation="doesTeamExistsById" name="Does Team Exist" implementation="Java" operationRef="_E82A2AE6-C7B2-449D-9A55-E205183CB7E4_ServiceOperation">
       <bpmn2:extensionElements>
@@ -680,8 +680,8 @@ exist]]></drools:metaValue>
     </bpmn2:serviceTask>
     <bpmn2:exclusiveGateway id="_43142465-20FD-4AED-94C7-34DABFF6624B" gatewayDirection="Diverging">
       <bpmn2:incoming>_A4A5DE75-8ED3-4732-BC2C-076143071A12</bpmn2:incoming>
-      <bpmn2:outgoing>_8E01FB4D-CBB2-44B0-B507-48D20A8385C5</bpmn2:outgoing>
       <bpmn2:outgoing>_C3AB8BA1-3E28-4B53-B5CC-1601F8E0874C</bpmn2:outgoing>
+      <bpmn2:outgoing>_8E01FB4D-CBB2-44B0-B507-48D20A8385C5</bpmn2:outgoing>
     </bpmn2:exclusiveGateway>
     <bpmn2:businessRuleTask id="_A990DD50-3681-42F0-9A69-D7BE19D67643" name="Policy" implementation="http://www.jboss.org/drools/dmn">
       <bpmn2:extensionElements>
@@ -844,8 +844,8 @@ exist]]></drools:metaValue>
     </bpmn2:serviceTask>
     <bpmn2:exclusiveGateway id="_2D95C296-B0A6-4EF9-A853-90095D979891" gatewayDirection="Diverging">
       <bpmn2:incoming>_909DAC08-24A3-4407-B0C6-17F63BF41BA6</bpmn2:incoming>
-      <bpmn2:outgoing>_F6D515CB-E103-497D-A417-0106F0091A20</bpmn2:outgoing>
       <bpmn2:outgoing>_5ED27172-F1D5-455A-984C-E06F6D6E3AD6</bpmn2:outgoing>
+      <bpmn2:outgoing>_F6D515CB-E103-497D-A417-0106F0091A20</bpmn2:outgoing>
     </bpmn2:exclusiveGateway>
     <bpmn2:serviceTask id="_4E7FDE6A-E489-4E3A-8241-2F29D76F0B17" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.OrganizationService" drools:serviceoperation="doesOrganizationExistForRoboticsCloud" name="Does Organization Exist" implementation="Java" operationRef="_4E7FDE6A-E489-4E3A-8241-2F29D76F0B17_ServiceOperation">
       <bpmn2:extensionElements>
@@ -1002,13 +1002,13 @@ exist]]></drools:metaValue>
         <di:waypoint x="883" y="604"/>
         <di:waypoint x="999" y="604"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__2D95C296-B0A6-4EF9-A853-90095D979891_to_shape__3E6E03D0-AFAE-4922-A6A8-65ED14208CDB" bpmnElement="_F6D515CB-E103-497D-A417-0106F0091A20">
-        <di:waypoint x="1027" y="604"/>
-        <di:waypoint x="1027" y="471"/>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__2D95C296-B0A6-4EF9-A853-90095D979891_to_shape__1B92AF30-B2A3-4978-93A6-16BA999689D2" bpmnElement="_5ED27172-F1D5-455A-984C-E06F6D6E3AD6">
         <di:waypoint x="1027" y="604"/>
         <di:waypoint x="1124.6423655946137" y="603.8777069263667"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_shape__2D95C296-B0A6-4EF9-A853-90095D979891_to_shape__3E6E03D0-AFAE-4922-A6A8-65ED14208CDB" bpmnElement="_F6D515CB-E103-497D-A417-0106F0091A20">
+        <di:waypoint x="1027" y="604"/>
+        <di:waypoint x="1027" y="471"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__3E6E03D0-AFAE-4922-A6A8-65ED14208CDB_to_shape__5A318DA7-E4CB-4AD4-81A4-8B77506FE24C" bpmnElement="_5804748A-E039-45CF-89D5-77E90F1CB127">
         <di:waypoint x="1027" y="471"/>
@@ -1026,13 +1026,13 @@ exist]]></drools:metaValue>
         <di:waypoint x="1614.2652509880375" y="603.7731968367536"/>
         <di:waypoint x="1729" y="604.1263061715757"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__43142465-20FD-4AED-94C7-34DABFF6624B_to_shape__112B53BD-3F92-40F0-A018-C7576ED73D66" bpmnElement="_8E01FB4D-CBB2-44B0-B507-48D20A8385C5">
-        <di:waypoint x="1757" y="604.1263061715757"/>
-        <di:waypoint x="1757" y="510.44478981572814"/>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__43142465-20FD-4AED-94C7-34DABFF6624B_to_shape__E82A2AE6-C7B2-449D-9A55-E205183CB7E4" bpmnElement="_C3AB8BA1-3E28-4B53-B5CC-1601F8E0874C">
         <di:waypoint x="1757" y="604.1263061715757"/>
         <di:waypoint x="1857.0955307955282" y="604.4447898157282"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_shape__43142465-20FD-4AED-94C7-34DABFF6624B_to_shape__112B53BD-3F92-40F0-A018-C7576ED73D66" bpmnElement="_8E01FB4D-CBB2-44B0-B507-48D20A8385C5">
+        <di:waypoint x="1757" y="604.1263061715757"/>
+        <di:waypoint x="1757" y="510.44478981572814"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__112B53BD-3F92-40F0-A018-C7576ED73D66_to_shape__BEA8C109-514D-4497-BE91-C8CEAEB4522E" bpmnElement="_94001922-D6CE-41F5-BF61-FB17993C24AB">
         <di:waypoint x="1757" y="459.44478981572814"/>
@@ -1042,25 +1042,25 @@ exist]]></drools:metaValue>
         <di:waypoint x="1934.0955307955282" y="604.4447898157282"/>
         <di:waypoint x="2051.2612186095107" y="603.5080322978303"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__23DEB9B5-FC24-4AA9-936D-87492EF8FBB6_to_shape__492E4479-ED5D-4DCB-AED9-F47D25B7860A" bpmnElement="_CF889325-D447-4443-9BBA-534D0259D2E6">
-        <di:waypoint x="2079.2612186095107" y="603.5080322978303"/>
-        <di:waypoint x="2079.4913872237394" y="509.83415352341933"/>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__23DEB9B5-FC24-4AA9-936D-87492EF8FBB6_to_shape__518E21D5-4C03-4D15-9F7A-1E94ABEFDCE9" bpmnElement="_3AB8C6A1-EB26-425F-9D2C-5D2381ECF452">
         <di:waypoint x="2079.2612186095107" y="603.5080322978303"/>
         <di:waypoint x="2144" y="604.3493971662907"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_shape__23DEB9B5-FC24-4AA9-936D-87492EF8FBB6_to_shape__492E4479-ED5D-4DCB-AED9-F47D25B7860A" bpmnElement="_CF889325-D447-4443-9BBA-534D0259D2E6">
+        <di:waypoint x="2079.2612186095107" y="603.5080322978303"/>
+        <di:waypoint x="2079.4913872237394" y="509.83415352341933"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__518E21D5-4C03-4D15-9F7A-1E94ABEFDCE9_to_shape__88951A82-BF7D-453E-9FCC-FB0CA3796DFB" bpmnElement="_559A0C6A-6EF7-429E-92D1-1E629ED97ADF">
         <di:waypoint x="2221" y="604.3493971662907"/>
         <di:waypoint x="2363" y="603.8739542440792"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__88951A82-BF7D-453E-9FCC-FB0CA3796DFB_to_shape__A04BECBF-D65E-483D-A4E0-061994ADD5B0" bpmnElement="_EA2326F8-A12B-432C-A86B-974C5A3A9993">
-        <di:waypoint x="2363" y="603.8739542440792"/>
-        <di:waypoint x="2363" y="509.83415352341933"/>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__88951A82-BF7D-453E-9FCC-FB0CA3796DFB_to_shape__EF7B95D6-0149-4B82-9388-13C2700EAA2E" bpmnElement="_FDD0D093-BB7C-4E3B-AA81-516F4D9989A0">
         <di:waypoint x="2363" y="603.8739542440792"/>
         <di:waypoint x="2428" y="603.6666660308838"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_shape__88951A82-BF7D-453E-9FCC-FB0CA3796DFB_to_shape__A04BECBF-D65E-483D-A4E0-061994ADD5B0" bpmnElement="_EA2326F8-A12B-432C-A86B-974C5A3A9993">
+        <di:waypoint x="2363" y="603.8739542440792"/>
+        <di:waypoint x="2363" y="509.83415352341933"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__EF7B95D6-0149-4B82-9388-13C2700EAA2E_to_shape__F5B641F6-103B-443F-AE68-1496E6E45B50" bpmnElement="_EF4E9C1C-4249-46E3-A1AE-7D823DE1FE1A">
         <di:waypoint x="2505" y="603.6666660308838"/>
@@ -1071,13 +1071,13 @@ exist]]></drools:metaValue>
         <di:waypoint x="2079.491669269184" y="338"/>
         <di:waypoint x="2363" y="366"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__F5B641F6-103B-443F-AE68-1496E6E45B50_to_shape__C6280BE3-9380-4528-9DCF-5790EA4D0362" bpmnElement="_A8082BC6-1591-4972-A7F5-EF28ECC114EA">
-        <di:waypoint x="2647" y="604"/>
-        <di:waypoint x="2647" y="509.83415352341933"/>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__F5B641F6-103B-443F-AE68-1496E6E45B50_to_shape__7B4B3AD8-DBAC-448F-9994-3F882C55B574" bpmnElement="_DD23448B-CAFE-40FC-A9F4-C6EC77A85EE3">
         <di:waypoint x="2675" y="604"/>
         <di:waypoint x="2720" y="604"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_shape__F5B641F6-103B-443F-AE68-1496E6E45B50_to_shape__C6280BE3-9380-4528-9DCF-5790EA4D0362" bpmnElement="_A8082BC6-1591-4972-A7F5-EF28ECC114EA">
+        <di:waypoint x="2647" y="604"/>
+        <di:waypoint x="2647" y="509.83415352341933"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__A04BECBF-D65E-483D-A4E0-061994ADD5B0_to_shape__93D5F716-166C-4792-9AE8-3DA58E024B20" bpmnElement="_7EE722BF-B22C-47BD-876B-77B47AFDBA9C">
         <di:waypoint x="2363" y="458.83415352341933"/>
@@ -1413,7 +1413,7 @@ exist]]></drools:metaValue>
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_16wnQWwXEDuqHrCoWGsYkA</bpmn2:source>
-    <bpmn2:target>_16wnQWwXEDuqHrCoWGsYkA</bpmn2:target>
+    <bpmn2:source>_hDoDoG0EEDuclfKDRKOb6w</bpmn2:source>
+    <bpmn2:target>_hDoDoG0EEDuclfKDRKOb6w</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>
