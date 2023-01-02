@@ -41,15 +41,16 @@ pipeline {
       steps {
         container('ubuntu') {
           git branch: 'main', changelog: false, poll: false, url: 'https://github.com/robolaunch/central-orchestrator.git'
-          withCredentials([file(credentialsId: 'backend.application.properties', variable: 'cnt')]) {
-            writeFile file: './src/main/resources/application.properties', text: '$cnt'
-          }
         }
       }
     }
     stage('Build') {
       steps {
         container('ubuntu') {
+          withCredentials([file(credentialsId: 'backend.application.properties', variable: 'cnt')]) {
+            writeFile file:'./src/main/resources/application.properties', text: readFile(cnt)
+            sh 'ls -l ./src/main/resources/application.properties && cat ./src/main/resources/application.properties'
+          }
           sh 'mvn clean install'
         }
       }
@@ -69,10 +70,11 @@ pipeline {
       steps {
         container('ubuntu') {
           withCredentials([file(credentialsId: 'hetzner_prod', variable: 'config')]) {
-            writeFile file: '/home/jenkins/agent/workspace/kogito/kubeconfig', text: '$config'
-            sh 'KUBECONFIG=/home/jenkins/agent/workspace/kogito/kubeconfig kubectl get ns'
-            //sh 'kogito use-project backend'
-            //sh 'kogito deploy-service central-orchestrator --image robolaunchio/central-orchestrator:pipeline --infra kogito-infinispan-infra --infra kogito-kafka-infra'
+            //writeFile file: '/home/jenkins/agent/workspace/kogito/kubeconfig', text: '$config'
+            sh 'KUBECONFIG=$config kubectl get ns'
+            sh 'KUBECONFIG=$config kogito use-project backend'
+            sh 'KUBECONFIG=$config kogito delete-service central-orchestrator'
+            sh 'KUBECONFIG=$config kogito deploy-service central-orchestrator --image robolaunchio/central-orchestrator:pipeline --infra kogito-infinispan-infra --infra kogito-kafka-infra'
           }
         }
       }
