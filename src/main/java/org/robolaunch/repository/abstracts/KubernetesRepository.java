@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.Provider;
 import org.robolaunch.models.RegionKubernetes;
-import org.robolaunch.models.RoboticsCloud;
-import org.robolaunch.models.SuperCluster;
+import org.robolaunch.models.RoboticsCloudKubernetes;
+import org.robolaunch.models.SuperClusterKubernetes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -50,7 +50,26 @@ public interface KubernetesRepository {
         public ArrayList<RegionKubernetes> getRegions(String provider)
                         throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException;
 
-        public ArrayList<SuperCluster> getSuperClusters(String provider, String region)
+        public ArrayList<SuperClusterKubernetes> getSuperClusters(String provider, String region)
                         throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException;
+
+        public ArrayList<RoboticsCloudKubernetes> getRoboticsCloudsOrganization(Organization organization)
+                        throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException,
+                        JsonMappingException, JsonProcessingException;
+
+        public ArrayList<RoboticsCloudKubernetes> getRoboticsCloudsTeam(Organization organization, String teamId)
+                        throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException,
+                        JsonMappingException, JsonProcessingException;
+
+        public ArrayList<RoboticsCloudKubernetes> getRoboticsCloudsSuperClusterOrganization(Organization organization,
+                        String superClusterProcessId)
+                        throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
+                        JsonProcessingException;
+
+        public ArrayList<RoboticsCloudKubernetes> getRoboticsCloudsSuperClusterTeam(Organization organization,
+                        String teamId,
+                        String superClusterProcessId)
+                        throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
+                        JsonProcessingException;
 
 }

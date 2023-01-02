@@ -74,7 +74,7 @@ public class CloudInstanceHelperService {
     listOptions.setLabelSelector("robolaunch.io/organization=" + organization.getName() + ",robolaunch.io/team="
         + teamId + ",robolaunch.io/cloud-instance=" + cloudInstanceName);
     String vcName = vcApi.list(listOptions).getObject().getItems().get(0).getMetadata().getName();
-    return vcName.split("-")[1];
+    return vcName;
   }
 
   public String getProcessId(Organization organization, String teamId) {

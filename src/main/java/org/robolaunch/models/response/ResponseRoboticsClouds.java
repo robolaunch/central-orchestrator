@@ -3,12 +3,12 @@ package org.robolaunch.models.response;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import org.robolaunch.models.RoboticsCloud;
+import org.robolaunch.models.RoboticsCloudKubernetes;
 
 public class ResponseRoboticsClouds implements Serializable {
    private String message;
    private Boolean success;
-   private ArrayList<RoboticsCloud> data;
+   private ArrayList<RoboticsCloudKubernetes> data;
 
    public ResponseRoboticsClouds() {
    }
@@ -21,7 +21,7 @@ public class ResponseRoboticsClouds implements Serializable {
       this.message = message;
    }
 
-   public Boolean getSuccess() {
+   public Boolean isSuccess() {
       return success;
    }
 
@@ -29,11 +29,11 @@ public class ResponseRoboticsClouds implements Serializable {
       this.success = success;
    }
 
-   public ArrayList<RoboticsCloud> getData() {
+   public ArrayList<RoboticsCloudKubernetes> getData() {
       return data;
    }
 
-   public void setData(ArrayList<RoboticsCloud> data) {
+   public void setData(ArrayList<RoboticsCloudKubernetes> data) {
       this.data = data;
    }
 

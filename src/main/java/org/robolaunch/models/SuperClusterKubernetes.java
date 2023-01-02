@@ -2,11 +2,11 @@ package org.robolaunch.models;
 
 import java.io.Serializable;
 
-public class RoboticsCloud implements Serializable {
+public class SuperClusterKubernetes implements Serializable {
    private String processId;
    private String name;
 
-   public RoboticsCloud() {
+   public SuperClusterKubernetes() {
    }
 
    public String getProcessId() {

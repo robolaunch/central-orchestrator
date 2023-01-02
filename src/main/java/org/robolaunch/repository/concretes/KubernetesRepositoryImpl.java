@@ -13,10 +13,11 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.robolaunch.models.Organization;
 import org.robolaunch.models.Provider;
 import org.robolaunch.models.RegionKubernetes;
-import org.robolaunch.models.RoboticsCloud;
-import org.robolaunch.models.SuperCluster;
+import org.robolaunch.models.RoboticsCloudKubernetes;
+import org.robolaunch.models.SuperClusterKubernetes;
 import org.robolaunch.repository.abstracts.KubernetesRepository;
 import org.robolaunch.service.ApiClientManager;
 
@@ -302,7 +303,7 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
   }
 
   @Override
-  public ArrayList<SuperCluster> getSuperClusters(String provider, String region)
+  public ArrayList<SuperClusterKubernetes> getSuperClusters(String provider, String region)
       throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException {
     String regionId = getRegionId(provider, region);
     System.out.println("regionId: " + regionId);
@@ -312,7 +313,7 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
     Response response = graphqlClient.executeSync(queryStr);
     JsonObject data = response.getData();
     JsonArray processInstances = data.getJsonArray("ProcessInstances");
-    ArrayList<SuperCluster> superClusters = new ArrayList<SuperCluster>();
+    ArrayList<SuperClusterKubernetes> superClusters = new ArrayList<SuperClusterKubernetes>();
 
     ObjectMapper mapper = new ObjectMapper();
     JsonArray childProcessInstances = processInstances.getJsonObject(0).getJsonArray("childProcessInstances");
@@ -324,7 +325,7 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
           childNode = mapper.readTree(childProcessInstances.getJsonObject(j).getString("variables"));
           if (childNode.get("providerName").asText().equals(provider)
               && childNode.get("regionName").asText().equals(region)) {
-            SuperCluster superCluster = new SuperCluster();
+            SuperClusterKubernetes superCluster = new SuperClusterKubernetes();
             superCluster.setName(childNode.get("superClusterName").asText());
             superCluster.setProcessId(childProcessInstances.getJsonObject(j).getString("id"));
             superClusters.add(superCluster);
@@ -335,6 +336,134 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
       }
     }
     return superClusters;
+  }
+
+  @Override
+  public ArrayList<RoboticsCloudKubernetes> getRoboticsCloudsOrganization(Organization organization)
+      throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException, JsonMappingException,
+      JsonProcessingException {
+    ArrayList<RoboticsCloudKubernetes> roboticsClouds = new ArrayList<RoboticsCloudKubernetes>();
+    ArrayList<Provider> providers = getProviders();
+    for (int i = 0; i < providers.size(); i++) {
+      ArrayList<RegionKubernetes> regions = getRegions(providers.get(i).getName());
+      for (int j = 0; j < regions.size(); j++) {
+        ArrayList<SuperClusterKubernetes> superClusters = getSuperClusters(providers.get(i).getName(),
+            regions.get(j).getName());
+        for (int k = 0; k < superClusters.size(); k++) {
+          ArrayList<RoboticsCloudKubernetes> rcs = getRoboticsCloudsSuperClusterOrganization(organization,
+              superClusters.get(k).getProcessId());
+          System.out.println("rc count: " + rcs.size());
+          rcs.forEach(rc -> {
+            System.out.println("rc: " + rc.getName());
+            roboticsClouds.add(rc);
+          });
+        }
+      }
+    }
+    return roboticsClouds;
+  }
+
+  @Override
+  public ArrayList<RoboticsCloudKubernetes> getRoboticsCloudsSuperClusterOrganization(Organization organization,
+      String superClusterProcessId) throws java.util.concurrent.ExecutionException, InterruptedException,
+      JsonMappingException, JsonProcessingException {
+
+    String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\"" + superClusterProcessId
+        + "\"}}, {state: {equal: ACTIVE}}]}){id state childProcessInstances{id processName state variables}}}";
+
+    Response response = graphqlClient.executeSync(queryStr);
+    JsonObject data = response.getData();
+    JsonArray processInstances = data.getJsonArray("ProcessInstances");
+    ArrayList<RoboticsCloudKubernetes> roboticsClouds = new ArrayList<RoboticsCloudKubernetes>();
+
+    ObjectMapper mapper = new ObjectMapper();
+    JsonArray childProcessInstances = processInstances.getJsonObject(0).getJsonArray("childProcessInstances");
+
+    for (int i = 0; i < childProcessInstances.size(); i++) {
+      if (childProcessInstances.getJsonObject(i).getString("processName").equals("roboticsCloud")) {
+        JsonNode childNode = mapper.readTree(childProcessInstances.getJsonObject(i).getString("variables"));
+        // check if childnode has organization node
+        if (childNode.get("organization") == null) {
+          continue;
+        }
+
+        JsonNode organizationNode = childNode.get("organization");
+        if (organizationNode.get("name").asText().equals(organization.getName())) {
+          RoboticsCloudKubernetes singleRoboticsCloud = new RoboticsCloudKubernetes();
+          singleRoboticsCloud.setName(childNode.get("cloudInstanceName").asText());
+          singleRoboticsCloud.setProcessId(childProcessInstances.getJsonObject(i).getString("id"));
+          roboticsClouds.add(singleRoboticsCloud);
+        }
+      } else {
+      }
+    }
+
+    return roboticsClouds;
+  }
+
+  @Override
+  public ArrayList<RoboticsCloudKubernetes> getRoboticsCloudsSuperClusterTeam(Organization organization, String teamId,
+      String superClusterProcessId) throws java.util.concurrent.ExecutionException, InterruptedException,
+      JsonMappingException, JsonProcessingException {
+
+    String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\"" + superClusterProcessId
+        + "\"}}, {state: {equal: ACTIVE}}]}){id state childProcessInstances{id processName state variables}}}";
+
+    Response response = graphqlClient.executeSync(queryStr);
+    JsonObject data = response.getData();
+    JsonArray processInstances = data.getJsonArray("ProcessInstances");
+    ArrayList<RoboticsCloudKubernetes> roboticsClouds = new ArrayList<RoboticsCloudKubernetes>();
+
+    ObjectMapper mapper = new ObjectMapper();
+    JsonArray childProcessInstances = processInstances.getJsonObject(0).getJsonArray("childProcessInstances");
+
+    for (int i = 0; i < childProcessInstances.size(); i++) {
+      if (childProcessInstances.getJsonObject(i).getString("processName").equals("roboticsCloud")) {
+        JsonNode childNode = mapper.readTree(childProcessInstances.getJsonObject(i).getString("variables"));
+        // check if childnode has organization node
+        if (childNode.get("organization") == null) {
+          continue;
+        }
+
+        JsonNode organizationNode = childNode.get("organization");
+        if (organizationNode.get("name").asText().equals(organization.getName()) && childNode.get("teamId").asText()
+            .equals(teamId)) {
+          RoboticsCloudKubernetes singleRoboticsCloud = new RoboticsCloudKubernetes();
+          singleRoboticsCloud.setName(childNode.get("cloudInstanceName").asText());
+          singleRoboticsCloud.setProcessId(childProcessInstances.getJsonObject(i).getString("id"));
+          roboticsClouds.add(singleRoboticsCloud);
+        }
+      } else {
+      }
+    }
+
+    return roboticsClouds;
+  }
+
+  public ArrayList<RoboticsCloudKubernetes> getRoboticsCloudsTeam(Organization organization, String teamId)
+      throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException,
+      JsonMappingException, JsonProcessingException {
+    ArrayList<RoboticsCloudKubernetes> roboticsClouds = new ArrayList<RoboticsCloudKubernetes>();
+
+    ArrayList<Provider> providers = getProviders();
+
+    for (int i = 0; i < providers.size(); i++) {
+      ArrayList<RegionKubernetes> regions = getRegions(providers.get(i).getName());
+      for (int j = 0; j < regions.size(); j++) {
+        ArrayList<SuperClusterKubernetes> superClusters = getSuperClusters(providers.get(i).getName(),
+            regions.get(j).getName());
+        for (int k = 0; k < superClusters.size(); k++) {
+          ArrayList<RoboticsCloudKubernetes> rcs = getRoboticsCloudsSuperClusterTeam(organization, teamId,
+              superClusters.get(k).getProcessId());
+          System.out.println("rc count: " + rcs.size());
+          rcs.forEach(rc -> {
+            System.out.println("rc: " + rc.getName());
+            roboticsClouds.add(rc);
+          });
+        }
+      }
+    }
+    return roboticsClouds;
   }
 
 }

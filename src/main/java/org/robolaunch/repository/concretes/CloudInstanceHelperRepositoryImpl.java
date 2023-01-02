@@ -255,6 +255,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
         .map(m -> m.getLabels());
     String bufferName = labels.get()
         .get("robolaunch.io/buffer-instance");
+    System.out.println("picked bn: " + bufferName);
     return bufferName;
 
   }
