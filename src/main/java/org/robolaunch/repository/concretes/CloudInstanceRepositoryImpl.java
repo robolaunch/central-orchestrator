@@ -289,7 +289,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 "virtualclusters", true,
                                 V1VirtualCluster.class);
                 ApiClient client = cloudInstanceHelperRepository.adminApiClient(provider, region, superCluster);
-
+                System.out.println("received bufferName: " + bufferName);
                 if (!connectionHub) {
                         Kubectl.label(V1VirtualCluster.class).apiClient(client)
                                         .skipDiscovery()

@@ -7,16 +7,20 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
+import org.robolaunch.models.Organization;
 import org.robolaunch.models.Provider;
 import org.robolaunch.models.RegionKubernetes;
-import org.robolaunch.models.SuperCluster;
+import org.robolaunch.models.RoboticsCloudKubernetes;
+import org.robolaunch.models.SuperClusterKubernetes;
 import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.models.response.ResponseProviders;
 import org.robolaunch.models.response.ResponseRegions;
+import org.robolaunch.models.response.ResponseRoboticsClouds;
 import org.robolaunch.models.response.ResponseSuperClusters;
 import org.robolaunch.repository.abstracts.KubernetesRepository;
 
 import io.quarkus.arc.log.LoggerName;
+import io.smallrye.graphql.execution.ExecutionException;
 
 @ApplicationScoped
 public class KubernetesService {
@@ -172,7 +176,7 @@ public class KubernetesService {
   public ResponseSuperClusters getSuperClusters(String provider, String region) {
     ResponseSuperClusters responseSuperClusters = new ResponseSuperClusters();
     try {
-      ArrayList<SuperCluster> superClusters = kubernetesRepository.getSuperClusters(provider, region);
+      ArrayList<SuperClusterKubernetes> superClusters = kubernetesRepository.getSuperClusters(provider, region);
       responseSuperClusters.setData(superClusters);
       responseSuperClusters.setSuccess(true);
       responseSuperClusters.setMessage("regions fetched successfully.");
@@ -181,6 +185,36 @@ public class KubernetesService {
       responseSuperClusters.setMessage("Error while fetching regions." + e.getMessage());
     }
     return responseSuperClusters;
+  }
+
+  public ResponseRoboticsClouds getRoboticsCloudsOrganization(Organization organization) {
+    ResponseRoboticsClouds responseRoboticsClouds = new ResponseRoboticsClouds();
+    try {
+      ArrayList<RoboticsCloudKubernetes> roboticsClouds = kubernetesRepository
+          .getRoboticsCloudsOrganization(organization);
+      responseRoboticsClouds.setData(roboticsClouds);
+      responseRoboticsClouds.setSuccess(true);
+      responseRoboticsClouds.setMessage("RoboticsClouds fetched successfully.");
+    } catch (Exception e) {
+      responseRoboticsClouds.setSuccess(false);
+      responseRoboticsClouds.setMessage("Error while fetching RoboticsClouds." + e.getMessage());
+    }
+    return responseRoboticsClouds;
+  }
+
+  public ResponseRoboticsClouds getRoboticsCloudsTeam(Organization organization, String teamId) {
+    ResponseRoboticsClouds responseRoboticsClouds = new ResponseRoboticsClouds();
+    try {
+      ArrayList<RoboticsCloudKubernetes> roboticsClouds = kubernetesRepository
+          .getRoboticsCloudsTeam(organization, teamId);
+      responseRoboticsClouds.setData(roboticsClouds);
+      responseRoboticsClouds.setSuccess(true);
+      responseRoboticsClouds.setMessage("RoboticsClouds fetched successfully.");
+    } catch (Exception e) {
+      responseRoboticsClouds.setSuccess(false);
+      responseRoboticsClouds.setMessage("Error while fetching RoboticsClouds." + e.getMessage());
+    }
+    return responseRoboticsClouds;
   }
 
 }
