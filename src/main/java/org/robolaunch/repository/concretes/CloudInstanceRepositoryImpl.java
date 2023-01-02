@@ -229,9 +229,9 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 String bucket = "template-artifacts";
                 JsonObject object = storageRepository.getYamlTemplate(artifact, bucket);
                 object.get("metadata").getAsJsonObject().addProperty("name",
-                                "vc-" + bufferName);
+                                bufferName);
                 object.get("spec").getAsJsonObject().addProperty("clusterDomain",
-                                "vc-" + bufferName + ".local");
+                                bufferName + ".local");
                 object.get("spec").getAsJsonObject().addProperty("clusterVersionName", "cv-" + bufferName);
                 object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject()
                                 .addProperty("robolaunch.io/buffer-instance", bufferName);
@@ -294,7 +294,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         Kubectl.label(V1VirtualCluster.class).apiClient(client)
                                         .skipDiscovery()
                                         .namespace("default")
-                                        .name("vc-" + bufferName)
+                                        .name(bufferName)
                                         .addLabel("robolaunch.io/buffer-instance", bufferName)
                                         .addLabel("robolaunch.io/organization", organization.getName())
                                         .addLabel("robolaunch.io/team", teamId)
@@ -305,7 +305,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         Kubectl.label(V1VirtualCluster.class).apiClient(client)
                                         .skipDiscovery()
                                         .namespace("default")
-                                        .name("vc-" + bufferName)
+                                        .name(bufferName)
                                         .addLabel("robolaunch.io/buffer-instance", bufferName)
                                         .addLabel("robolaunch.io/organization", organization.getName())
                                         .addLabel("robolaunch.io/team", teamId)
@@ -833,7 +833,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                                                 "      lameduck 5s\n" +
                                                                 "    }\n" +
                                                                 "    ready\n" +
-                                                                "    kubernetes " + "vc-" + bufferName
+                                                                "    kubernetes " + bufferName
                                                                 + ".local in-addr.arpa ip6.arpa {\n" +
                                                                 "      fallthrough in-addr.arpa ip6.arpa\n" +
                                                                 "    }\n" +
@@ -1447,6 +1447,10 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                                 .map(V1PodTemplateSpec::getSpec).map(m -> m.getNodeSelector());
                                 nodeSelectors.get()
                                                 .put(
+                                                                "robolaunch.io/buffer-instance",
+                                                                bufferName);
+                                nodeSelectors.get()
+                                                .put(
                                                                 "robolaunch.io/organization",
                                                                 organization.getName());
                                 nodeSelectors.get()
@@ -1556,11 +1560,11 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 "virtualclusters", true,
                                 V1VirtualCluster.class);
 
-                Kubectl.label(V1VirtualCluster.class).apiClient(apiClient).name("vc-" + bufferName).namespace("default")
+                Kubectl.label(V1VirtualCluster.class).apiClient(apiClient).name(bufferName).namespace("default")
                                 .addLabel("buffered", "true")
                                 .execute();
 
-                Kubectl.label(V1VirtualCluster.class).apiClient(apiClient).name("vc-" + bufferName).namespace("default")
+                Kubectl.label(V1VirtualCluster.class).apiClient(apiClient).name(bufferName).namespace("default")
                                 .addLabel("robolaunch.io/instance-type", instanceType)
                                 .execute();
 
@@ -1730,7 +1734,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 v1SubjectAdmin.setName(
                                                 keycloakURL + "/realms/" + organization.getName() + "#" + "bigboss");
                                 v1SubjectAdmin.setApiGroup("rbac.authorization.k8s.io");
-                                clusterRoleBinding.addSubjectsItem(v1Subject);
+                                clusterRoleBinding.addSubjectsItem(v1SubjectAdmin);
                                 rbacAuthorizationV1Api.createClusterRoleBinding(clusterRoleBinding, null, null, null,
                                                 null);
                         }
