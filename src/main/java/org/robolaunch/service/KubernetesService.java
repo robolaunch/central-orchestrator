@@ -1,8 +1,6 @@
 package org.robolaunch.service;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -93,18 +91,23 @@ public class KubernetesService {
 
   public String checkIfTypeNeedsBuffer(String provider, String region,
       String superCluster) {
-
+    System.out.println("enters types.");
     ArrayList<String> types = storageService.getSuperClusterBufferTypes(provider, region, superCluster);
+    System.out.println("types -> " + types);
     try {
       for (String type : types) {
+        System.out.println("type -> " + type);
         Integer desiredBufferCount = getDesiredBufferCountOfType(type, provider, region, superCluster);
+        System.out.println("desiredBufferCount -> " + desiredBufferCount);
         Integer currentBufferCount = getCurrentBufferCountOfType(type, provider, region, superCluster);
+        System.out.println("currentBufferCount -> " + currentBufferCount);
         if (desiredBufferCount > currentBufferCount) {
           return type;
         }
       }
       return "";
     } catch (Exception e) {
+      System.out.println("Error while checking if type needs buffer: " + e.getMessage());
       return null;
     }
   }

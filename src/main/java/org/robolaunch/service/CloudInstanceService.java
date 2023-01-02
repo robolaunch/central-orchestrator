@@ -7,6 +7,7 @@ import org.robolaunch.models.Organization;
 import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.repository.abstracts.CloudInstanceRepository;
 
+import io.kubernetes.client.openapi.ApiException;
 import io.quarkus.arc.log.LoggerName;
 
 @ApplicationScoped
@@ -98,14 +99,6 @@ public class CloudInstanceService {
       String cloudInstanceName, Boolean connectionHub, String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      System.out.println("bufferName: " + bufferName);
-      System.out.println("organization: " + organization.getName());
-      System.out.println("teamId: " + teamId);
-      System.out.println("cloudInstanceName: " + cloudInstanceName);
-      System.out.println("connectionHub: " + connectionHub);
-      System.out.println("provider: " + provider);
-      System.out.println("region: " + region);
-      System.out.println("superCluster: " + superCluster);
       cloudInstanceRepository.labelVirtualCluster(bufferName, organization, teamId,
           cloudInstanceName, connectionHub, provider, region, superCluster);
       plainResponse.setSuccess(true);
@@ -453,7 +446,14 @@ public class CloudInstanceService {
           teamId, organization, bufferName, provider, region, superCluster);
       cloudInstanceLogger.info("Connection hub operator created");
       plainResponse.setSuccess(true);
+    } catch (ApiException e) {
+      System.out.println("Error while creating connection hub operator." + e.getResponseBody());
+      System.out.println(e.getMessage());
+      System.out.println(e.getCode());
+      cloudInstanceLogger.error("Error while creating connection hub operator.", e);
+      plainResponse.setSuccess(false);
     } catch (Exception e) {
+      System.out.println("Error while creating connection hub operator." + e.getMessage());
       cloudInstanceLogger.error("Error while creating connection hub operator.", e);
       plainResponse.setSuccess(false);
     }

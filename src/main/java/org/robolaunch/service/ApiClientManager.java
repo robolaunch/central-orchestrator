@@ -41,7 +41,6 @@ public class ApiClientManager {
          IllegalArgumentException, IOException, ApiException, InterruptedException, MinioException {
       ApiClient apiClient = apiClientMap.get(provider + "/" + region + "/" + superCluster);
       if (apiClient == null) {
-         System.out.println("will create a new vc");
          apiClient = cloudInstanceHelperRepository.adminApiClient(provider, region, superCluster);
          apiClientMap.put(provider + "/" + region + "/" + superCluster, apiClient);
       }

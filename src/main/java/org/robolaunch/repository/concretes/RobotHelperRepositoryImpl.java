@@ -57,8 +57,6 @@ public class RobotHelperRepositoryImpl implements RobotHelperRepository {
       }
       Gson gson = new Gson();
 
-      System.out.println("Ports: " + gson.toJson(ports));
-
       List<Integer> selectedPorts = new ArrayList<Integer>();
       Integer currentPort = 30000;
       while (selectedPorts.size() < requestedPortCount) {

@@ -51,8 +51,6 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
   @Override
   public void getCloudInstances(Organization organization, String teamId)
       throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException {
-    System.out.println("Organization: " + organization.getName());
-    System.out.println("TeamId: " + teamId);
     String queryStr = "query{ProcessInstances(where: {processName: {equal:\"superCluster\"}}){id childProcessInstances{processName parentProcessInstanceId variables}}}";
 
     Response response = graphqlClient.executeSync(queryStr);

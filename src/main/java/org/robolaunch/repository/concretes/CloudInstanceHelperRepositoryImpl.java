@@ -86,8 +86,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   private DynamicGraphQLClient graphqlClient;
   public static Integer VCCreated = 0;
 
-  @ConfigProperty(name = "backend.url")
-  String backendUrl;
   @ConfigProperty(name = "dns.zone")
   String dnsZoneName;
   @ConfigProperty(name = "kogito.dataindex.http.url")
@@ -163,28 +161,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
-  public void CIOperationCall(String processId, String operation, String provider, String region, String superCluster)
-      throws IOException {
-    URL url = new URL(backendUrl + "/roboticsCloud/" + processId + "/operation");
-    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-    connection.setRequestMethod("POST");
-    connection.setRequestProperty("Content-Type", "application/json");
-    connection.setDoOutput(true);
-
-    DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-    String jsonInputString = "{\"operation\": \"" + operation + "\"}";
-    wr.write(jsonInputString.getBytes());
-
-    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-    String line;
-    String result = "";
-    while ((line = bufferedReader.readLine()) != null) {
-      result += line;
-    }
-    wr.close();
-  }
-
-  @Override
   public String getGeneratedMachineName(String bufferName, String provider, String region, String superCluster)
       throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException, ApiException,
       InterruptedException, MinioException {
@@ -248,11 +224,12 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
       throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException, ApiException,
       InterruptedException, MinioException {
     DynamicKubernetesApi virtualClustersApi = apiClientManager.getVirtualClusterApi(provider, region, superCluster);
+    System.out.println("got vc appi");
     String cloudInstanceName = "vc-" + bufferName;
-
     ListOptions listOptions = new ListOptions();
     listOptions.setLabelSelector("robolaunch.io/buffer-instance=" + bufferName);
     var vcs = virtualClustersApi.list(listOptions);
+    System.out.println("vc count: " + vcs.getObject().getItems().size());
     for (var vc : vcs.getObject().getItems()) {
       Optional<String> vcName = Optional.ofNullable(vc).map(DynamicKubernetesObject::getMetadata)
           .map(m -> m.getName());

@@ -27,9 +27,6 @@ public interface CloudInstanceHelperRepository {
 
         public String generateBufferName();
 
-        public void CIOperationCall(String processId, String operation, String provider, String region,
-                        String superCluster) throws IOException;
-
         public String getGeneratedMachineName(String bufferName, String provider, String region, String superCluster)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
                         ApiException, InterruptedException, MinioException;

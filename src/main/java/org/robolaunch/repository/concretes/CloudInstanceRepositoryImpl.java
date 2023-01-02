@@ -137,7 +137,6 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 Artifact artifact = new Artifact();
 
                 artifact.setName(provider + "/" + region + "/" + superCluster + "/" + "machineDeployment.yaml");
-                System.out.println("Tnig: " + artifact.getName());
                 String bucket = "providers";
                 JsonObject object = storageRepository.getYamlTemplate(artifact, bucket);
                 object.get("metadata").getAsJsonObject().addProperty("name",
@@ -1212,7 +1211,6 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 yamlString += "---";
                         }
                         if (type.equals("V1Deployment")) {
-                                System.out.println("inside dep");
                                 V1Deployment deployment = (V1Deployment) obj;
                                 Map<String, String> nodeSelectors = new HashMap<>();
                                 nodeSelectors.put("robolaunch.io/organization", organization.getName());
@@ -1231,6 +1229,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 yamlString += "---";
                         }
                         if (type.equals("V1alpha2Certificate")) {
+                                Thread.sleep(5000);
                                 customObjectsApi.createNamespacedCustomObject("cert-manager.io",
                                                 "v1",
                                                 "connection-hub-system", "certificates", object,
@@ -1326,7 +1325,6 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 ModelMapper.addModelMap("cert-manager.io", "v1", "Issuer", "issuers",
                                 V1alpha2Issuer.class,
                                 V1alpha2IssuerList.class);
-                System.out.println("created the model mappers.");
                 Artifact artifact2 = new Artifact();
                 artifact2.setName("certificate.yaml");
                 JsonObject object = storageRepository.getYamlTemplate(artifact2, bucket);
@@ -1357,7 +1355,6 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         }
 
                         if (type.equals("V1CustomResourceDefinition")) {
-                                System.out.println("crd found");
                                 V1CustomResourceDefinition crd = (V1CustomResourceDefinition) obj;
                                 Kubectl.apply(V1CustomResourceDefinition.class)
                                                 .forceConflict(true)
@@ -1474,29 +1471,24 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 yamlString += "---";
                         }
                         if (type.equals("V1alpha2Certificate")) {
-                                System.out.println("alpha2certificate will be created.");
                                 Thread.sleep(5000);
                                 customObjectsApi.createNamespacedCustomObject("cert-manager.io",
                                                 "v1",
                                                 "robot-system", "certificates", object,
                                                 null, null, null);
-                                System.out.println("alpha2certificate created.");
 
                         }
 
                         if (type.equals("V1alpha2Issuer")) {
-                                System.out.println("alpha2issuer will be created.");
                                 customObjectsApi.createNamespacedCustomObject("cert-manager.io",
                                                 "v1",
                                                 "robot-system", "issuers",
                                                 objectIssuer,
                                                 null, null, null);
-                                System.out.println("alpha2issuer created.");
 
                         }
 
                         if (type.equals("V1MutatingWebhookConfiguration")) {
-                                System.out.println("MutatingWebhookConfiguration will be created.");
                                 V1MutatingWebhookConfiguration mutatingWebhookConf = (V1MutatingWebhookConfiguration) obj;
                                 admissionApi.createMutatingWebhookConfiguration(
                                                 mutatingWebhookConf, null,
@@ -1506,7 +1498,6 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 yamlString += cloudInstanceHelperRepository
                                                 .convertJsonStringToYamlString(mJSONObject.toString());
                                 yamlString += "---";
-                                System.out.println("MutatingWebhookConfiguration created.");
                         }
 
                         if (type.equals("V1ValidatingWebhookConfiguration")) {
