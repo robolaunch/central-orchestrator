@@ -31,17 +31,6 @@ public class KubernetesService {
   @LoggerName("kubernetesService")
   Logger kubernetesLogger;
 
-  public PlainResponse getCloudInstances(Organization organization, String teamId) {
-    PlainResponse response = new PlainResponse();
-    try {
-      kubernetesRepository.getCloudInstances(organization, teamId);
-      return null;
-    } catch (Exception e) {
-      kubernetesLogger.error("Error while getting cloud instances from kubernetes buffer", e);
-    }
-    return response;
-  }
-
   public Integer getDesiredBufferCountOfType(String instanceType, String provider, String region, String superCluster) {
     try {
       String getContent = storageService.getSuperClusterContent(provider, region, superCluster);
@@ -109,6 +98,40 @@ public class KubernetesService {
     } catch (Exception e) {
       System.out.println("Error while checking if type needs buffer: " + e.getMessage());
       return null;
+    }
+  }
+
+  public PlainResponse providerExists(String provider) {
+    PlainResponse plainResponse = new PlainResponse();
+    try {
+      Boolean exists = kubernetesRepository.providerExists(provider);
+      if (exists) {
+        plainResponse.setSuccess(true);
+        plainResponse.setMessage("Not created. Provider already exists: " + exists);
+      } else {
+        plainResponse.setSuccess(false);
+        plainResponse.setMessage("Provider does not exist. Will be created now.");
+      }
+      return plainResponse;
+    } catch (Exception e) {
+      return plainResponse;
+    }
+  }
+
+  public PlainResponse regionExists(String provider, String region) {
+    PlainResponse plainResponse = new PlainResponse();
+    try {
+      Boolean exists = kubernetesRepository.regionExists(provider, region);
+      if (exists) {
+        plainResponse.setSuccess(true);
+        plainResponse.setMessage("Not created. Provider already exists: " + exists);
+      } else {
+        plainResponse.setSuccess(false);
+        plainResponse.setMessage("Provider does not exist. Will be created now.");
+      }
+      return plainResponse;
+    } catch (Exception e) {
+      return plainResponse;
     }
   }
 }
