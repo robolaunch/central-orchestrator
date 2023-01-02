@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_6Hl4YWz5EDuiNf5ZWZ9D-w" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_W0JCwG0CEDup7e2CM_Rv0A" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_roboticsCloudsItem" structureRef="org.robolaunch.models.response.ResponseRoboticsClouds"/>
   <bpmn2:itemDefinition id="_organizationItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="__16CE3969-283A-416C-AD7E-8C994E4F10EC_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
@@ -7,10 +7,10 @@
   <bpmn2:interface id="_16CE3969-283A-416C-AD7E-8C994E4F10EC_ServiceInterface" name="org.robolaunch.service.KubernetesService" implementationRef="org.robolaunch.service.KubernetesService">
     <bpmn2:operation id="_16CE3969-283A-416C-AD7E-8C994E4F10EC_ServiceOperation" name="getRoboticsCloudsOrganization" implementationRef="getRoboticsCloudsOrganization"/>
   </bpmn2:interface>
-  <bpmn2:collaboration id="_3472BF6B-1EEE-467E-AB35-8CD231471996" name="Default Collaboration">
-    <bpmn2:participant id="_CEC42E5D-87B7-4272-B3B9-2F741CF3B79D" name="Pool Participant" processRef="getRoboticsCloudsOrganization"/>
+  <bpmn2:collaboration id="_085230C1-EEAC-4721-AE1F-A3BD964AAF81" name="Default Collaboration">
+    <bpmn2:participant id="_4541A024-DE99-4BEB-A6A2-FBC702D21754" name="Pool Participant" processRef="getRoboticsCloudsOrganization"/>
   </bpmn2:collaboration>
-  <bpmn2:process id="getRoboticsCloudsOrganization" drools:packageName="org.robolaunch.kogito.organization" drools:version="1.0" drools:adHoc="false" name="getRoboticsCloudsOrganization" isExecutable="true" processType="Public">
+  <bpmn2:process id="getRoboticsCloudsOrganization" drools:packageName="org.robolaunch.kogito.provider" drools:version="1.0" drools:adHoc="false" name="getRoboticsCloudsOrganization" isExecutable="true" processType="Public">
     <bpmn2:property id="roboticsClouds" itemSubjectRef="_roboticsCloudsItem" name="roboticsClouds"/>
     <bpmn2:property id="organization" itemSubjectRef="_organizationItem" name="organization"/>
     <bpmn2:sequenceFlow id="_369AC2E6-33E7-4D18-990D-EEC2B0F04575" sourceRef="_16CE3969-283A-416C-AD7E-8C994E4F10EC" targetRef="_A6D2990C-7DA5-4604-A186-18F094EA9D48">
@@ -117,7 +117,7 @@
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_6Hl4YWz5EDuiNf5ZWZ9D-w</bpmn2:source>
-    <bpmn2:target>_6Hl4YWz5EDuiNf5ZWZ9D-w</bpmn2:target>
+    <bpmn2:source>_W0JCwG0CEDup7e2CM_Rv0A</bpmn2:source>
+    <bpmn2:target>_W0JCwG0CEDup7e2CM_Rv0A</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>
