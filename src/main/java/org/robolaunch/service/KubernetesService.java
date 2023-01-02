@@ -7,8 +7,13 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
-import org.robolaunch.models.Organization;
+import org.robolaunch.models.Provider;
+import org.robolaunch.models.RegionKubernetes;
+import org.robolaunch.models.SuperCluster;
 import org.robolaunch.models.response.PlainResponse;
+import org.robolaunch.models.response.ResponseProviders;
+import org.robolaunch.models.response.ResponseRegions;
+import org.robolaunch.models.response.ResponseSuperClusters;
 import org.robolaunch.repository.abstracts.KubernetesRepository;
 
 import io.quarkus.arc.log.LoggerName;
@@ -47,7 +52,7 @@ public class KubernetesService {
 
       return null;
     } catch (Exception e) {
-      kubernetesLogger.error("Error while getting cloud instances from kubernetes buffer", e);
+      kubernetesLogger.error("Error while getting cloud instances desired from kubernetes buffer", e);
     }
     return 0;
   }
@@ -64,7 +69,7 @@ public class KubernetesService {
 
       return bufferingCount + bufferedCount;
     } catch (Exception e) {
-      kubernetesLogger.error("Error while getting cloud instances from kubernetes buffer", e);
+      kubernetesLogger.error("Error while getting cloud instances current from kubernetes buffer", e);
       return null;
     }
   }
@@ -134,4 +139,48 @@ public class KubernetesService {
       return plainResponse;
     }
   }
+
+  public ResponseProviders getProviders() {
+    ResponseProviders responseProviders = new ResponseProviders();
+    try {
+      ArrayList<Provider> providers = kubernetesRepository.getProviders();
+      responseProviders.setData(providers);
+      responseProviders.setSuccess(true);
+      responseProviders.setMessage("Providers fetched successfully.");
+    } catch (Exception e) {
+      responseProviders.setSuccess(false);
+      responseProviders.setMessage("Error while fetching providers." + e.getMessage());
+    }
+    return responseProviders;
+
+  }
+
+  public ResponseRegions getRegions(String provider) {
+    ResponseRegions responseRegions = new ResponseRegions();
+    try {
+      ArrayList<RegionKubernetes> regions = kubernetesRepository.getRegions(provider);
+      responseRegions.setData(regions);
+      responseRegions.setSuccess(true);
+      responseRegions.setMessage("regions fetched successfully.");
+    } catch (Exception e) {
+      responseRegions.setSuccess(false);
+      responseRegions.setMessage("Error while fetching regions." + e.getMessage());
+    }
+    return responseRegions;
+  }
+
+  public ResponseSuperClusters getSuperClusters(String provider, String region) {
+    ResponseSuperClusters responseSuperClusters = new ResponseSuperClusters();
+    try {
+      ArrayList<SuperCluster> superClusters = kubernetesRepository.getSuperClusters(provider, region);
+      responseSuperClusters.setData(superClusters);
+      responseSuperClusters.setSuccess(true);
+      responseSuperClusters.setMessage("regions fetched successfully.");
+    } catch (Exception e) {
+      responseSuperClusters.setSuccess(false);
+      responseSuperClusters.setMessage("Error while fetching regions." + e.getMessage());
+    }
+    return responseSuperClusters;
+  }
+
 }

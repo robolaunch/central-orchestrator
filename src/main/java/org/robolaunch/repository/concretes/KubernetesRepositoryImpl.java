@@ -3,6 +3,8 @@ package org.robolaunch.repository.concretes;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -11,8 +13,10 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.robolaunch.models.Organization;
-import org.robolaunch.models.response.PlainResponse;
+import org.robolaunch.models.Provider;
+import org.robolaunch.models.RegionKubernetes;
+import org.robolaunch.models.RoboticsCloud;
+import org.robolaunch.models.SuperCluster;
 import org.robolaunch.repository.abstracts.KubernetesRepository;
 import org.robolaunch.service.ApiClientManager;
 
@@ -46,13 +50,61 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
     graphqlClient = DynamicGraphQLClientBuilder.newBuilder()
         .url(kogitoDataIndexUrl + "/graphql")
         .build();
+  }
 
+  public String getProviderId(String provider)
+      throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException {
+    String queryStr = "query{ProcessInstances(where: {and: [{processName: {equal:\"provider\"}}, {state: {equal: ACTIVE}}]}){id state variables}}";
+
+    Response response = graphqlClient.executeSync(queryStr);
+    JsonObject data = response.getData();
+
+    JsonArray processInstances = data.getJsonArray("ProcessInstances");
+
+    for (int i = 0; i < processInstances.size(); i++) {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode rootNode;
+      try {
+        rootNode = mapper.readTree(processInstances.getJsonObject(i).getString("variables"));
+        if (rootNode.get("providerName").asText().equals(provider)) {
+          return processInstances.getJsonObject(i).getString("id");
+        }
+      } catch (JsonProcessingException e) {
+        e.printStackTrace();
+      }
+    }
+    return null;
+  }
+
+  public String getRegionId(String provider, String region)
+      throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException {
+    String queryStr = "query{ProcessInstances(where: {and: [{processName: {equal:\"region\"}}, {state: {equal: ACTIVE}}]}){id state variables}}";
+
+    Response response = graphqlClient.executeSync(queryStr);
+    JsonObject data = response.getData();
+
+    JsonArray processInstances = data.getJsonArray("ProcessInstances");
+
+    for (int i = 0; i < processInstances.size(); i++) {
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode rootNode;
+      try {
+        rootNode = mapper.readTree(processInstances.getJsonObject(i).getString("variables"));
+        if (rootNode.get("providerName").asText().equals(provider)
+            && rootNode.get("regionName").asText().equals(region)) {
+          return processInstances.getJsonObject(i).getString("id");
+        }
+      } catch (JsonProcessingException e) {
+        e.printStackTrace();
+      }
+    }
+    return null;
   }
 
   @Override
   public String getSuperClusterProcessId(String provider, String region, String superCluster)
       throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException {
-    String queryStr = "query{ProcessInstances(where: {processName: {equal:\"superCluster\"}}){id variables}}";
+    String queryStr = "query{ProcessInstances(where: {and: [{processName: {equal:\"superCluster\"}}, {state: {equal: ACTIVE}}]}){id state variables}}";
 
     Response response = graphqlClient.executeSync(queryStr);
     JsonObject data = response.getData();
@@ -74,7 +126,6 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
       }
     }
     return processId;
-
   }
 
   @Override
@@ -93,18 +144,21 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
     JsonArray processInstances = data.getJsonArray("ProcessInstances");
 
     ObjectMapper mapper = new ObjectMapper();
-    JsonArray childProcessInstances = processInstances.getJsonObject(0).getJsonArray("childProcessInstances");
+    if (processInstances != null) {
+      JsonArray childProcessInstances = processInstances.getJsonObject(0).getJsonArray("childProcessInstances");
 
-    for (int i = 0; i < childProcessInstances.size(); i++) {
-      if (childProcessInstances.getJsonObject(i).getString("processName").equals("bufferCloudInstance")) {
-        JsonNode childNode = mapper.readTree(childProcessInstances.getJsonObject(i).getString("variables"));
-        if (childNode.get("instanceType").asText().equals(instanceType)
-            && childNode.get("status").asText().equals("Creating")) {
-          counter++;
+      for (int i = 0; i < childProcessInstances.size(); i++) {
+        if (childProcessInstances.getJsonObject(i).getString("processName").equals("bufferCloudInstance")) {
+          JsonNode childNode = mapper.readTree(childProcessInstances.getJsonObject(i).getString("variables"));
+          if (childNode.get("instanceType").asText().equals(instanceType)
+              && childNode.get("status").asText().equals("Creating")) {
+            counter++;
+          }
+
         }
-
       }
     }
+
     return counter;
   }
 
@@ -117,7 +171,8 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
     ListOptions listOptions = new ListOptions();
     listOptions.setLabelSelector(
         "buffered=true, !robolaunch.io/organization, robolaunch.io/instance-type=" + instanceType);
-    var vcs = virtualClustersApi.list(listOptions).getObject().getItems();
+    List<DynamicKubernetesObject> vcs = virtualClustersApi.list(listOptions).getObject().getItems();
+    System.out.println("VCs: " + vcs.size());
     Integer counter = 0;
     for (DynamicKubernetesObject vc : vcs) {
       if (vc.getRaw().get("status").getAsJsonObject().get("phase").getAsString().equals("Running")) {
@@ -186,4 +241,100 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
     System.out.println("region not found");
     return false;
   }
+
+  @Override
+  public ArrayList<Provider> getProviders() throws java.util.concurrent.ExecutionException, InterruptedException {
+    String queryStr = "query{ProcessInstances(where: {and: [{processName: {equal:\"provider\"}}, {state: {equal: ACTIVE}}]}){id state variables}}";
+    Response response = graphqlClient.executeSync(queryStr);
+    JsonObject data = response.getData();
+
+    JsonArray processInstances = data.getJsonArray("ProcessInstances");
+    ArrayList<Provider> providers = new ArrayList<Provider>();
+    for (int i = 0; i < processInstances.size(); i++) {
+      Provider provider = new Provider();
+      ObjectMapper mapper = new ObjectMapper();
+      JsonNode childNode;
+      try {
+        childNode = mapper.readTree(processInstances.getJsonObject(i).getString("variables"));
+        provider.setName(childNode.get("providerName").asText());
+        provider.setProcessId(processInstances.getJsonObject(i).getString("id"));
+        providers.add(provider);
+      } catch (JsonProcessingException e) {
+        e.printStackTrace();
+      }
+    }
+    return providers;
+  }
+
+  @Override
+  public ArrayList<RegionKubernetes> getRegions(String provider)
+      throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException {
+    String providerId = getProviderId(provider);
+    System.out.println("providerId: " + providerId);
+    String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\"" + providerId
+        + "\"}}, {state: {equal: ACTIVE}}]}){id state childProcessInstances{id processName state variables}}}";
+    Response response = graphqlClient.executeSync(queryStr);
+    JsonObject data = response.getData();
+    System.out.println("data: " + data);
+    JsonArray processInstances = data.getJsonArray("ProcessInstances");
+
+    ArrayList<RegionKubernetes> regions = new ArrayList<RegionKubernetes>();
+
+    ObjectMapper mapper = new ObjectMapper();
+    JsonArray childProcessInstances = processInstances.getJsonObject(0).getJsonArray("childProcessInstances");
+    for (int j = 0; j < childProcessInstances.size(); j++) {
+      if (childProcessInstances.getJsonObject(j).getString("processName").equals("region")) {
+        JsonNode childNode;
+        try {
+          childNode = mapper.readTree(childProcessInstances.getJsonObject(j).getString("variables"));
+          if (childNode.get("providerName").asText().equals(provider)) {
+            RegionKubernetes region = new RegionKubernetes();
+            region.setName(childNode.get("regionName").asText());
+            region.setProcessId(childProcessInstances.getJsonObject(j).getString("id"));
+            regions.add(region);
+          }
+        } catch (JsonProcessingException e) {
+          return null;
+        }
+      }
+    }
+    return regions;
+  }
+
+  @Override
+  public ArrayList<SuperCluster> getSuperClusters(String provider, String region)
+      throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException {
+    String regionId = getRegionId(provider, region);
+    System.out.println("regionId: " + regionId);
+    String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\"" + regionId
+        + "\"}}, {state: {equal: ACTIVE}}]}){id state childProcessInstances{id processName state variables}}}";
+
+    Response response = graphqlClient.executeSync(queryStr);
+    JsonObject data = response.getData();
+    JsonArray processInstances = data.getJsonArray("ProcessInstances");
+    ArrayList<SuperCluster> superClusters = new ArrayList<SuperCluster>();
+
+    ObjectMapper mapper = new ObjectMapper();
+    JsonArray childProcessInstances = processInstances.getJsonObject(0).getJsonArray("childProcessInstances");
+
+    for (int j = 0; j < childProcessInstances.size(); j++) {
+      if (childProcessInstances.getJsonObject(j).getString("processName").equals("superCluster")) {
+        JsonNode childNode;
+        try {
+          childNode = mapper.readTree(childProcessInstances.getJsonObject(j).getString("variables"));
+          if (childNode.get("providerName").asText().equals(provider)
+              && childNode.get("regionName").asText().equals(region)) {
+            SuperCluster superCluster = new SuperCluster();
+            superCluster.setName(childNode.get("superClusterName").asText());
+            superCluster.setProcessId(childProcessInstances.getJsonObject(j).getString("id"));
+            superClusters.add(superCluster);
+          }
+        } catch (JsonProcessingException e) {
+          return null;
+        }
+      }
+    }
+    return superClusters;
+  }
+
 }

@@ -262,7 +262,7 @@ public class RobotRepositoryImpl implements RobotRepository {
 
                 object.get("spec").getAsJsonObject().get("discoveryServerTemplate").getAsJsonObject().addProperty(
                                 "cluster",
-                                "vc-" + requestCreateRobot.getBufferName());
+                                requestCreateRobot.getBufferName());
 
                 //// NEED FIX - ROS BRIDGE
                 if (requestCreateRobot.getRobotInfo().isRobotRos1Bridge()) {
