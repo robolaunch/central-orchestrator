@@ -41,6 +41,11 @@ pipeline {
       steps {
         container('ubuntu') {
           git branch: 'main', changelog: false, poll: false, url: 'https://github.com/robolaunch/central-orchestrator.git'
+          sh '''export VER=\$(grep '<version>' pom.xml | head -n 1 | sed 's/<version>//' | sed 's/<\\/version>//' | sed 's/ //g') && echo \$VER > version.txt'''
+          script {
+            env.VER = readFile('version.txt').trim()
+          }
+          echo "${env.VER}"
         }
       }
     }
@@ -58,11 +63,11 @@ pipeline {
     stage('Docker Build') {
       steps {
         container('docker') {
-          sh 'docker build -f src/main/docker/Dockerfile.jvm -t robolaunchio/central-orchestrator:pipeline .'
+          sh "docker build -f src/main/docker/Dockerfile.jvm -t robolaunchio/central-orchestrator:${env.VER} ."
           withCredentials([usernamePassword(credentialsId: 'dockerhub-robolaunchio', passwordVariable: 'password', usernameVariable: 'username')]) {
             sh 'docker login -u $username -p $password'
           }
-          sh 'docker push robolaunchio/central-orchestrator:pipeline'
+          sh "docker push robolaunchio/central-orchestrator:${env.VER}"
         }
       }
     }
@@ -70,11 +75,10 @@ pipeline {
       steps {
         container('ubuntu') {
           withCredentials([file(credentialsId: 'hetzner_prod', variable: 'config')]) {
-            //writeFile file: '/home/jenkins/agent/workspace/kogito/kubeconfig', text: '$config'
             sh 'KUBECONFIG=$config kubectl get ns'
             sh 'KUBECONFIG=$config kogito use-project backend'
             sh 'KUBECONFIG=$config kogito delete-service central-orchestrator'
-            sh 'KUBECONFIG=$config kogito deploy-service central-orchestrator --image robolaunchio/central-orchestrator:pipeline --infra kogito-infinispan-infra --infra kogito-kafka-infra'
+            sh "KUBECONFIG=$config kogito deploy-service central-orchestrator --image robolaunchio/central-orchestrator:${env.VER} --infra kogito-infinispan-infra --infra kogito-kafka-infra  --replicas 2"
           }
         }
       }
