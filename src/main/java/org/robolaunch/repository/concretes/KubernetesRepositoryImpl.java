@@ -352,9 +352,7 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
         for (int k = 0; k < superClusters.size(); k++) {
           ArrayList<RoboticsCloudKubernetes> rcs = getRoboticsCloudsSuperClusterOrganization(organization,
               superClusters.get(k).getProcessId());
-          System.out.println("rc count: " + rcs.size());
           rcs.forEach(rc -> {
-            System.out.println("rc: " + rc.getName());
             roboticsClouds.add(rc);
           });
         }
@@ -391,6 +389,12 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
         if (organizationNode.get("name").asText().equals(organization.getName())) {
           RoboticsCloudKubernetes singleRoboticsCloud = new RoboticsCloudKubernetes();
           singleRoboticsCloud.setName(childNode.get("cloudInstanceName").asText());
+          singleRoboticsCloud.setInstanceType(childNode.get("instanceType").asText());
+          singleRoboticsCloud.setBufferName(childNode.get("bufferName").asText());
+          singleRoboticsCloud.setOrganization(organizationNode.get("name").asText());
+          singleRoboticsCloud.setRegionName(childNode.get("regionName").asText());
+          singleRoboticsCloud.setUserStage(childNode.get("userStage").asText());
+          singleRoboticsCloud.setTeam(childNode.get("team").asText());
           singleRoboticsCloud.setProcessId(childProcessInstances.getJsonObject(i).getString("id"));
           roboticsClouds.add(singleRoboticsCloud);
         }
@@ -429,6 +433,12 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
             .equals(teamId)) {
           RoboticsCloudKubernetes singleRoboticsCloud = new RoboticsCloudKubernetes();
           singleRoboticsCloud.setName(childNode.get("cloudInstanceName").asText());
+          singleRoboticsCloud.setInstanceType(childNode.get("instanceType").asText());
+          singleRoboticsCloud.setBufferName(childNode.get("bufferName").asText());
+          singleRoboticsCloud.setOrganization(organizationNode.get("name").asText());
+          singleRoboticsCloud.setRegionName(childNode.get("regionName").asText());
+          singleRoboticsCloud.setUserStage(childNode.get("userStage").asText());
+          singleRoboticsCloud.setTeam(childNode.get("team").asText());
           singleRoboticsCloud.setProcessId(childProcessInstances.getJsonObject(i).getString("id"));
           roboticsClouds.add(singleRoboticsCloud);
         }
@@ -468,6 +478,11 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
             .equals(teamId) && childNode.get("username").asText().equals(username)) {
           RoboticsCloudKubernetes singleRoboticsCloud = new RoboticsCloudKubernetes();
           singleRoboticsCloud.setName(childNode.get("cloudInstanceName").asText());
+          singleRoboticsCloud.setInstanceType(childNode.get("instanceType").asText());
+          singleRoboticsCloud.setBufferName(childNode.get("bufferName").asText());
+          singleRoboticsCloud.setOrganization(organizationNode.get("name").asText());
+          singleRoboticsCloud.setRegionName(childNode.get("regionName").asText());
+          singleRoboticsCloud.setUserStage(childNode.get("userStage").asText());
           singleRoboticsCloud.setProcessId(childProcessInstances.getJsonObject(i).getString("id"));
           roboticsClouds.add(singleRoboticsCloud);
         }
@@ -492,9 +507,7 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
         for (int k = 0; k < superClusters.size(); k++) {
           ArrayList<RoboticsCloudKubernetes> rcs = getRoboticsCloudsSuperClusterTeam(organization, teamId,
               superClusters.get(k).getProcessId());
-          System.out.println("rc count: " + rcs.size());
           rcs.forEach(rc -> {
-            System.out.println("rc: " + rc.getName());
             roboticsClouds.add(rc);
           });
         }
@@ -520,9 +533,7 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
         for (int k = 0; k < superClusters.size(); k++) {
           ArrayList<RoboticsCloudKubernetes> rcs = getRoboticsCloudsSuperClusterTeam(organization, teamId,
               superClusters.get(k).getProcessId());
-          System.out.println("rc count: " + rcs.size());
           rcs.forEach(rc -> {
-            System.out.println("rc: " + rc.getName());
             roboticsClouds.add(rc);
           });
         }
