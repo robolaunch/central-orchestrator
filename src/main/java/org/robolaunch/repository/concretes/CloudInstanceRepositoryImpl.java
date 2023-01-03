@@ -449,6 +449,10 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 .add(namespaceName + "-submariner-operator");
                 object.get("spec").getAsJsonObject().get("namespaces").getAsJsonArray()
                                 .add(namespaceName + "-kube-federation-system");
+                object.get("spec").getAsJsonObject().get("namespaces").getAsJsonArray()
+                                .add(namespaceName + "-submariner-k8s-broker");
+                object.get("spec").getAsJsonObject().get("namespaces").getAsJsonArray()
+                                .add(namespaceName + "-connection-hub-system");
                 object.get("metadata").getAsJsonObject().addProperty("name",
                                 "subnet-" + namespaceName);
                 object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
