@@ -41,7 +41,7 @@ pipeline {
       steps {
         container('ubuntu') {
           git branch: 'main', changelog: false, poll: false, url: 'https://github.com/robolaunch/central-orchestrator.git'
-          sh '''export VER=`grep "<version>" pom.xml | head -n 1 | sed 's/<version>//' | sed 's/<\\\/version>//'` && echo \$VER > version.txt && echo \$VER'''
+          sh '''export VER=`grep "<version>" pom.xml | head -n 1 | sed 's/<version>//' | sed 's/<\\\\\\/version>//'` && echo \$VER > version.txt && echo \$VER'''
           script {
             env.VER = readFile('version.txt').trim()
           }
