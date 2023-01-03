@@ -1,8 +1,6 @@
 package org.robolaunch.service;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -10,7 +8,15 @@ import javax.inject.Inject;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
 import org.robolaunch.models.Organization;
+import org.robolaunch.models.Provider;
+import org.robolaunch.models.RegionKubernetes;
+import org.robolaunch.models.RoboticsCloudKubernetes;
+import org.robolaunch.models.SuperClusterKubernetes;
 import org.robolaunch.models.response.PlainResponse;
+import org.robolaunch.models.response.ResponseProviders;
+import org.robolaunch.models.response.ResponseRegions;
+import org.robolaunch.models.response.ResponseRoboticsClouds;
+import org.robolaunch.models.response.ResponseSuperClusters;
 import org.robolaunch.repository.abstracts.KubernetesRepository;
 
 import io.quarkus.arc.log.LoggerName;
@@ -33,17 +39,6 @@ public class KubernetesService {
   @LoggerName("kubernetesService")
   Logger kubernetesLogger;
 
-  public PlainResponse getCloudInstances(Organization organization, String teamId) {
-    PlainResponse response = new PlainResponse();
-    try {
-      kubernetesRepository.getCloudInstances(organization, teamId);
-      return null;
-    } catch (Exception e) {
-      kubernetesLogger.error("Error while getting cloud instances from kubernetes buffer", e);
-    }
-    return response;
-  }
-
   public Integer getDesiredBufferCountOfType(String instanceType, String provider, String region, String superCluster) {
     try {
       String getContent = storageService.getSuperClusterContent(provider, region, superCluster);
@@ -60,7 +55,7 @@ public class KubernetesService {
 
       return null;
     } catch (Exception e) {
-      kubernetesLogger.error("Error while getting cloud instances from kubernetes buffer", e);
+      kubernetesLogger.error("Error while getting cloud instances desired from kubernetes buffer", e);
     }
     return 0;
   }
@@ -77,7 +72,7 @@ public class KubernetesService {
 
       return bufferingCount + bufferedCount;
     } catch (Exception e) {
-      kubernetesLogger.error("Error while getting cloud instances from kubernetes buffer", e);
+      kubernetesLogger.error("Error while getting cloud instances current from kubernetes buffer", e);
       return null;
     }
   }
@@ -93,19 +88,148 @@ public class KubernetesService {
 
   public String checkIfTypeNeedsBuffer(String provider, String region,
       String superCluster) {
-
+    System.out.println("enters types.");
     ArrayList<String> types = storageService.getSuperClusterBufferTypes(provider, region, superCluster);
+    System.out.println("types -> " + types);
     try {
       for (String type : types) {
+        System.out.println("type -> " + type);
         Integer desiredBufferCount = getDesiredBufferCountOfType(type, provider, region, superCluster);
+        System.out.println("desiredBufferCount -> " + desiredBufferCount);
         Integer currentBufferCount = getCurrentBufferCountOfType(type, provider, region, superCluster);
+        System.out.println("currentBufferCount -> " + currentBufferCount);
         if (desiredBufferCount > currentBufferCount) {
           return type;
         }
       }
       return "";
     } catch (Exception e) {
+      System.out.println("Error while checking if type needs buffer: " + e.getMessage());
       return null;
     }
   }
+
+  public PlainResponse providerExists(String provider) {
+    PlainResponse plainResponse = new PlainResponse();
+    try {
+      Boolean exists = kubernetesRepository.providerExists(provider);
+      if (exists) {
+        plainResponse.setSuccess(true);
+        plainResponse.setMessage("Not created. Provider already exists: " + exists);
+      } else {
+        plainResponse.setSuccess(false);
+        plainResponse.setMessage("Provider does not exist. Will be created now.");
+      }
+      return plainResponse;
+    } catch (Exception e) {
+      return plainResponse;
+    }
+  }
+
+  public PlainResponse regionExists(String provider, String region) {
+    PlainResponse plainResponse = new PlainResponse();
+    try {
+      Boolean exists = kubernetesRepository.regionExists(provider, region);
+      if (exists) {
+        plainResponse.setSuccess(true);
+        plainResponse.setMessage("Not created. Provider already exists: " + exists);
+      } else {
+        plainResponse.setSuccess(false);
+        plainResponse.setMessage("Provider does not exist. Will be created now.");
+      }
+      return plainResponse;
+    } catch (Exception e) {
+      return plainResponse;
+    }
+  }
+
+  public ResponseProviders getProviders() {
+    ResponseProviders responseProviders = new ResponseProviders();
+    try {
+      ArrayList<Provider> providers = kubernetesRepository.getProviders();
+      responseProviders.setData(providers);
+      responseProviders.setSuccess(true);
+      responseProviders.setMessage("Providers fetched successfully.");
+    } catch (Exception e) {
+      responseProviders.setSuccess(false);
+      responseProviders.setMessage("Error while fetching providers." + e.getMessage());
+    }
+    return responseProviders;
+
+  }
+
+  public ResponseRegions getRegions(String provider) {
+    ResponseRegions responseRegions = new ResponseRegions();
+    try {
+      ArrayList<RegionKubernetes> regions = kubernetesRepository.getRegions(provider);
+      responseRegions.setData(regions);
+      responseRegions.setSuccess(true);
+      responseRegions.setMessage("regions fetched successfully.");
+    } catch (Exception e) {
+      responseRegions.setSuccess(false);
+      responseRegions.setMessage("Error while fetching regions." + e.getMessage());
+    }
+    return responseRegions;
+  }
+
+  public ResponseSuperClusters getSuperClusters(String provider, String region) {
+    ResponseSuperClusters responseSuperClusters = new ResponseSuperClusters();
+    try {
+      ArrayList<SuperClusterKubernetes> superClusters = kubernetesRepository.getSuperClusters(provider, region);
+      responseSuperClusters.setData(superClusters);
+      responseSuperClusters.setSuccess(true);
+      responseSuperClusters.setMessage("regions fetched successfully.");
+    } catch (Exception e) {
+      responseSuperClusters.setSuccess(false);
+      responseSuperClusters.setMessage("Error while fetching regions." + e.getMessage());
+    }
+    return responseSuperClusters;
+  }
+
+  public ResponseRoboticsClouds getRoboticsCloudsOrganization(Organization organization) {
+    ResponseRoboticsClouds responseRoboticsClouds = new ResponseRoboticsClouds();
+    try {
+      ArrayList<RoboticsCloudKubernetes> roboticsClouds = kubernetesRepository
+          .getRoboticsCloudsOrganization(organization);
+      responseRoboticsClouds.setData(roboticsClouds);
+      responseRoboticsClouds.setSuccess(true);
+      responseRoboticsClouds.setMessage("RoboticsClouds fetched successfully.");
+    } catch (Exception e) {
+      responseRoboticsClouds.setSuccess(false);
+      responseRoboticsClouds.setMessage("Error while fetching RoboticsClouds." + e.getMessage());
+    }
+    return responseRoboticsClouds;
+  }
+
+  public ResponseRoboticsClouds getRoboticsCloudsTeam(Organization organization, String teamId) {
+    ResponseRoboticsClouds responseRoboticsClouds = new ResponseRoboticsClouds();
+    try {
+      ArrayList<RoboticsCloudKubernetes> roboticsClouds = kubernetesRepository
+          .getRoboticsCloudsTeam(organization, teamId);
+      responseRoboticsClouds.setData(roboticsClouds);
+      responseRoboticsClouds.setSuccess(true);
+      responseRoboticsClouds.setMessage("RoboticsClouds fetched successfully.");
+    } catch (Exception e) {
+      responseRoboticsClouds.setSuccess(false);
+      responseRoboticsClouds.setMessage("Error while fetching RoboticsClouds." + e.getMessage());
+    }
+    return responseRoboticsClouds;
+  }
+
+  public ResponseRoboticsClouds getRoboticsCloudsUser(Organization organization, String teamId) {
+    ResponseRoboticsClouds responseRoboticsClouds = new ResponseRoboticsClouds();
+    String username = jwt.getClaim("preferred_username");
+    try {
+      ArrayList<RoboticsCloudKubernetes> roboticsClouds = kubernetesRepository
+          .getRoboticsCloudsUser(organization, teamId, username);
+      responseRoboticsClouds.setData(roboticsClouds);
+      responseRoboticsClouds.setSuccess(true);
+      responseRoboticsClouds.setMessage("RoboticsClouds fetched successfully.");
+    } catch (Exception e) {
+      responseRoboticsClouds.setSuccess(false);
+      responseRoboticsClouds.setMessage("Error while fetching RoboticsClouds." + e.getMessage());
+    }
+    return responseRoboticsClouds;
+  }
+
 }

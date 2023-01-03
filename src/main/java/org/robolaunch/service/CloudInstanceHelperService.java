@@ -65,23 +65,16 @@ public class CloudInstanceHelperService {
       throws IOException, ApiException, InterruptedException, InvalidKeyException, NoSuchAlgorithmException,
       IllegalArgumentException, MinioException {
     ApiClient apiClient = cloudInstanceHelperRepository.adminApiClient(provider, region, superCluster);
-
+    System.out.println("bforganization: " + organization.getName());
+    System.out.println("bfteamId: " + teamId);
+    System.out.println("bfcloudInstanceName: " + cloudInstanceName);
     DynamicKubernetesApi vcApi = new DynamicKubernetesApi("tenancy.x-k8s.io", "v1alpha1",
         "virtualclusters", apiClient);
     ListOptions listOptions = new ListOptions();
     listOptions.setLabelSelector("robolaunch.io/organization=" + organization.getName() + ",robolaunch.io/team="
         + teamId + ",robolaunch.io/cloud-instance=" + cloudInstanceName);
-
-    return vcApi.list(listOptions).getObject().getItems().get(0).getMetadata().getName()
-        .split("-")[1];
-  }
-
-  public void CIOperationCall(String processId, String operation, String provider, String region, String superCluster) {
-    try {
-      cloudInstanceHelperRepository.CIOperationCall(processId, operation, provider, region, superCluster);
-    } catch (Exception e) {
-      cloudInstanceHelperLogger.error("Error while calling CIOperationCall: " + e.getMessage());
-    }
+    String vcName = vcApi.list(listOptions).getObject().getItems().get(0).getMetadata().getName();
+    return vcName;
   }
 
   public String getProcessId(Organization organization, String teamId) {
@@ -147,8 +140,8 @@ public class CloudInstanceHelperService {
       Boolean isReady = cloudInstanceHelperRepository.isVirtualClusterReady(bufferName, provider, region, superCluster);
       return isReady;
     } catch (Exception e) {
-      cloudInstanceHelperLogger.error("Error while creating virtual cluster.", e);
-      return null;
+      cloudInstanceHelperLogger.error("Error while checking if virtual cluster ready.", e);
+      return false;
     }
   }
 
@@ -464,7 +457,6 @@ public class CloudInstanceHelperService {
   public void connectAdminClient(String provider, String region, String superCluster) {
     try {
       ApiClient myApiCl = apiClientManager.getAdminApiClient(provider, region, superCluster);
-      System.out.println("GOT THE CLIENT HERE!");
       CoreV1Api api = new CoreV1Api(myApiCl);
       for (V1Namespace ns : api.listNamespace(null, null, null, null, null, null, null, null, null, null).getItems()) {
         System.out.println("MY NSSS: " + ns.getMetadata().getName());

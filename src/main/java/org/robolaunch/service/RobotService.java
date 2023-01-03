@@ -119,8 +119,6 @@ public class RobotService {
     } catch (ApiException e) {
       System.out.println("got apiexc");
       System.out.println(e.getResponseBody());
-      System.out.println(e.getCode());
-      System.out.println(e.getCause());
     } catch (Exception e) {
       robotLogger.error("Error occured while creating robot", e);
       plainResponse.setSuccess(false);

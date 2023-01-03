@@ -1,11 +1,6 @@
 package org.robolaunch.repository.concretes;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -86,8 +81,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   private DynamicGraphQLClient graphqlClient;
   public static Integer VCCreated = 0;
 
-  @ConfigProperty(name = "backend.url")
-  String backendUrl;
   @ConfigProperty(name = "dns.zone")
   String dnsZoneName;
   @ConfigProperty(name = "kogito.dataindex.http.url")
@@ -159,29 +152,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   public String generateBufferName() {
     RandomGenerator randomGenerator = new RandomGeneratorImpl();
     String randomString = randomGenerator.generateRandomString(8);
-    return randomString.toLowerCase();
-  }
-
-  @Override
-  public void CIOperationCall(String processId, String operation, String provider, String region, String superCluster)
-      throws IOException {
-    URL url = new URL(backendUrl + "/roboticsCloud/" + processId + "/operation");
-    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-    connection.setRequestMethod("POST");
-    connection.setRequestProperty("Content-Type", "application/json");
-    connection.setDoOutput(true);
-
-    DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-    String jsonInputString = "{\"operation\": \"" + operation + "\"}";
-    wr.write(jsonInputString.getBytes());
-
-    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-    String line;
-    String result = "";
-    while ((line = bufferedReader.readLine()) != null) {
-      result += line;
-    }
-    wr.close();
+    return "vc-" + randomString.toLowerCase();
   }
 
   @Override
@@ -248,15 +219,14 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
       throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException, ApiException,
       InterruptedException, MinioException {
     DynamicKubernetesApi virtualClustersApi = apiClientManager.getVirtualClusterApi(provider, region, superCluster);
-    String cloudInstanceName = "vc-" + bufferName;
-
     ListOptions listOptions = new ListOptions();
     listOptions.setLabelSelector("robolaunch.io/buffer-instance=" + bufferName);
     var vcs = virtualClustersApi.list(listOptions);
+    System.out.println("vc count: " + vcs.getObject().getItems().size());
     for (var vc : vcs.getObject().getItems()) {
       Optional<String> vcName = Optional.ofNullable(vc).map(DynamicKubernetesObject::getMetadata)
           .map(m -> m.getName());
-      if (vcName.get().equals(cloudInstanceName)) {
+      if (vcName.get().equals(bufferName)) {
         if (vc.getRaw().get("status").getAsJsonObject().get("phase").getAsString()
             .equals("Running")) {
           return true;
@@ -285,6 +255,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
         .map(m -> m.getLabels());
     String bufferName = labels.get()
         .get("robolaunch.io/buffer-instance");
+    System.out.println("picked bn: " + bufferName);
     return bufferName;
 
   }
@@ -648,7 +619,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
         "virtualclusters", true,
         V1VirtualCluster.class);
     Kubectl.delete(V1VirtualCluster.class).apiClient(apiClient).namespace("default")
-        .name("vc-" + bufferName).execute();
+        .name(bufferName).execute();
 
   }
 
@@ -796,9 +767,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
     System.out.println("ExternalIP: " + "https://" + masterIP + ":" + nodePort);
 
-    String generatedcloudInstanceName = "vc-" + bufferName;
-
-    while (!virtualClustersApi.get("default", generatedcloudInstanceName).getObject().getRaw().get("status")
+    while (!virtualClustersApi.get("default", bufferName).getObject().getRaw().get("status")
         .getAsJsonObject()
         .get("phase").getAsString().equals("Running")) {
       Thread.sleep(3000);
@@ -898,9 +867,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
     System.out.println("ExternalIP: " + "https://" + masterIP + ":" + nodePort);
 
-    String generatedcloudInstanceName = "vc-" + bufferName;
-
-    while (!virtualClustersApi.get("default", generatedcloudInstanceName).getObject().getRaw().get("status")
+    while (!virtualClustersApi.get("default", bufferName).getObject().getRaw().get("status")
         .getAsJsonObject()
         .get("phase").getAsString().equals("Running")) {
       Thread.sleep(3000);

@@ -3,20 +3,14 @@ package org.robolaunch.models.response;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import org.robolaunch.models.GroupMember;
+import org.robolaunch.models.SuperClusterKubernetes;
 
-public class ResponseTeamMembers implements Serializable {
+public class ResponseSuperClusters implements Serializable {
    private String message;
    private Boolean success;
-   private ArrayList<GroupMember> data;
+   private ArrayList<SuperClusterKubernetes> data;
 
-   public ResponseTeamMembers() {
-   }
-
-   public ResponseTeamMembers(String message, Boolean success, ArrayList<GroupMember> data) {
-      this.message = message;
-      this.success = success;
-      this.data = data;
+   public ResponseSuperClusters() {
    }
 
    public String getMessage() {
@@ -35,11 +29,11 @@ public class ResponseTeamMembers implements Serializable {
       this.success = success;
    }
 
-   public ArrayList<GroupMember> getData() {
+   public ArrayList<SuperClusterKubernetes> getData() {
       return data;
    }
 
-   public void setData(ArrayList<GroupMember> data) {
+   public void setData(ArrayList<SuperClusterKubernetes> data) {
       this.data = data;
    }
 

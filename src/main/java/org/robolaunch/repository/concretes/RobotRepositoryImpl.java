@@ -224,7 +224,6 @@ public class RobotRepositoryImpl implements RobotRepository {
                 Gson gson = new Gson();
 
                 String bufferName = requestCreateRobot.getBufferName();
-                System.out.println("Buffername: " + bufferName);
 
                 ApiClient robotsApi = cloudInstanceHelperRepository.userApiClient(bufferName, token, provider, region,
                                 superCluster);
@@ -263,7 +262,7 @@ public class RobotRepositoryImpl implements RobotRepository {
 
                 object.get("spec").getAsJsonObject().get("discoveryServerTemplate").getAsJsonObject().addProperty(
                                 "cluster",
-                                "vc-" + requestCreateRobot.getBufferName());
+                                requestCreateRobot.getBufferName());
 
                 //// NEED FIX - ROS BRIDGE
                 if (requestCreateRobot.getRobotInfo().isRobotRos1Bridge()) {
@@ -374,7 +373,6 @@ public class RobotRepositoryImpl implements RobotRepository {
                 }
                 object.get("spec").getAsJsonObject().add("workspaces", workspacesArray);
 
-                System.out.println("Our object: " + gson.toJson(object));
                 customObjectsApi.createNamespacedCustomObject("robot.roboscale.io", "v1alpha1", "robot-system",
                                 "robots", object, null, null, null);
 
