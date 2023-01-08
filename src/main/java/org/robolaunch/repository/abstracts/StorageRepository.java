@@ -2,15 +2,15 @@ package org.robolaunch.repository.abstracts;
 
 import java.io.IOException;
 
+import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.robolaunch.exception.ApplicationException;
 import org.robolaunch.models.Artifact;
 import org.robolaunch.models.Cluster;
-import org.robolaunch.models.request.RequestCreateProvider;
-import org.robolaunch.models.request.RequestCreateRegion;
-import org.robolaunch.models.request.RequestCreateSuperCluster;
+import org.robolaunch.models.Organization;
 
 import com.google.gson.JsonObject;
 
+import io.minio.errors.BucketPolicyTooLargeException;
 import io.minio.errors.ErrorResponseException;
 import io.minio.errors.InsufficientDataException;
 import io.minio.errors.InternalException;
@@ -59,4 +59,22 @@ public interface StorageRepository {
                         throws InvalidKeyException, ErrorResponseException, InsufficientDataException,
                         InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
                         XmlParserException, IllegalArgumentException, IOException;
+
+        void createTemporaryBucketForRobot(String provider, String region, String superCluster,
+                        Organization organization, String teamId, String physicalInstanceName)
+                        throws InvalidKeyException, ErrorResponseException, InsufficientDataException,
+                        InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
+                        XmlParserException, IllegalArgumentException, IOException;
+
+        void createBucketPolicyForRobotBucket(String provider, String region, String superCluster,
+                        Organization organization, String teamId, String physicalInstanceName)
+                        throws InvalidKeyException, ErrorResponseException, InsufficientDataException,
+                        InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
+                        XmlParserException, IllegalArgumentException, IOException;
+
+        void minioTest() throws InvalidKeyException, ErrorResponseException, InsufficientDataException,
+                        InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
+                        XmlParserException, IllegalArgumentException, IOException, BucketPolicyTooLargeException,
+                        InvalidCipherTextException;
+
 }

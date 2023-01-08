@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.kubernetes.client.extended.kubectl.exception.KubectlException;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
+import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesObject;
 import io.minio.errors.ErrorResponseException;
 import io.minio.errors.InsufficientDataException;
 import io.minio.errors.InternalException;
@@ -162,4 +163,7 @@ public interface CloudInstanceHelperRepository {
                         throws IOException, ApiException, InterruptedException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException;
 
+        public String getAvailableCIDRBlock(String provider, String region, String superClutser)
+                        throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
+                        ApiException, InterruptedException, MinioException;
 }

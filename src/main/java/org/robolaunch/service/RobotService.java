@@ -5,7 +5,7 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
-import org.robolaunch.models.Response;
+import org.robolaunch.models.Organization;
 import org.robolaunch.models.request.RequestCreateRobot;
 import org.robolaunch.models.request.RobotBuildManager;
 import org.robolaunch.models.request.RobotDevSuite;
@@ -125,6 +125,21 @@ public class RobotService {
       plainResponse.setMessage("Error occured while creating robot.");
     }
     return plainResponse;
+  }
+
+  public String hybridRobotScript(String provider, String region, String superCluster, Organization organization,
+      String teamId, String bufferName,
+      String cloudInstanceName, String physicalInstanceName) {
+    try {
+      String script = robotRepository.hybridRobotScript(provider, region, superCluster, organization, teamId,
+          bufferName,
+          cloudInstanceName, physicalInstanceName);
+      robotLogger.info("Hybrid robot script created");
+      return script;
+    } catch (Exception e) {
+      robotLogger.error("Error occured while creating hybrid robot script", e);
+      return null;
+    }
   }
 
 }

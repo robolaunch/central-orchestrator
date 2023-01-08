@@ -644,4 +644,15 @@ public class DepartmentService {
     }
     return plainResponse;
   }
+
+  public String getTeamNameFromTeamId(String teamId) {
+    try {
+      String teamName = groupAdminRepository.getGroupDescription(teamId);
+      departmentLogger.info("Team name sent.");
+      return teamName;
+    } catch (Exception e) {
+      departmentLogger.error("Error sending team name.");
+      return null;
+    }
+  }
 }

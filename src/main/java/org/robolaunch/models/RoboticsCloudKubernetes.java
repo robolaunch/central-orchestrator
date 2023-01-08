@@ -11,6 +11,7 @@ public class RoboticsCloudKubernetes implements Serializable {
    private String regionName;
    private String organization;
    private String team;
+   private String teamName;
    private String bufferName;
 
    public RoboticsCloudKubernetes() {
@@ -86,6 +87,14 @@ public class RoboticsCloudKubernetes implements Serializable {
 
    public void setBufferName(String bufferName) {
       this.bufferName = bufferName;
+   }
+
+   public String getTeamName() {
+      return teamName;
+   }
+
+   public void setTeamName(String teamName) {
+      this.teamName = teamName;
    }
 
 }

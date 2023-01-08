@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.robolaunch.models.Artifact;
+import org.robolaunch.models.Organization;
 import org.robolaunch.models.Repository;
 import org.robolaunch.models.Workspace;
 import org.robolaunch.models.request.RequestCreateRobot;
@@ -378,4 +379,45 @@ public class RobotRepositoryImpl implements RobotRepository {
 
         }
 
+        public String hybridRobotScript(String provider, String region, String superCluster, Organization organization,
+                        String teamId, String bufferName,
+                        String cloudInstanceName, String physicalInstanceName)
+                        throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
+                        ApiException, InterruptedException, MinioException {
+
+                String machineName = cloudInstanceHelperRepository.getGeneratedMachineName(bufferName, provider, region,
+                                superCluster);
+                String nodeName = cloudInstanceHelperRepository.getNodeName(machineName, provider, region,
+                                superCluster);
+
+                String k3sVersion = "v1.19.16+k3s1";
+                String clusterCIDR = "";
+                String serviceCIDR = "";
+                String clusterDomain = "";
+                String script = "";
+
+                String k3s = "curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION="
+                                + k3sVersion
+                                + " K3S_KUBECONFIG_MODE=\"644\" INSTALL_K3S_EXEC=\"--cluster-cidr=" + clusterCIDR
+                                + " --service-cidr=" + serviceCIDR
+                                + " --cluster-domain=" + clusterDomain
+                                + " --disable-network-policy --disable=traefik\" sh -";
+
+                script.concat(k3s + "\n");
+
+                String label = "kubectl label node " + nodeName
+                                + " robolaunch.io/organization=" + organization.getName()
+                                + " robolaunch.io/team=" + teamId
+                                + " robolaunch.io/region=" + region
+                                + " robolaunch.io/buffer-instance=" + bufferName
+                                + " robolaunch.io/cloud-instance=" + cloudInstanceName
+                                + " robolaunch.io/physical-instance= " + physicalInstanceName;
+
+                script.concat(label + "\n");
+
+                String connectionHubOperator = "kubectl apply -f https://github.com/robolaunch/connection-hub-operator/releases/download/v0.1.2/connection_hub_operator.yaml";
+
+                return script;
+
+        }
 }

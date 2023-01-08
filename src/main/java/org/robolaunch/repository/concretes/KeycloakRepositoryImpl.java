@@ -124,6 +124,7 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
         LoginResponseWithIPA loginResponseWithIPA = new LoginResponseWithIPA();
         loginResponseWithIPA.setLoginResponse(response);
         loginResponseWithIPA.setCookies(newCookies);
+
         return loginResponseWithIPA;
     }
 
@@ -280,6 +281,7 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
                     loginResponse.setExpiresIn(httpResponse.bodyAsJsonObject().getString("expires_in"));
                     loginResponse.setRefreshExpiresIn(
                             httpResponse.bodyAsJsonObject().getString("refresh_expires_in"));
+                    loginResponse.setOrganization(loginRefreshTokenOrganization.getOrganization());
                     loginResponse.setIdToken(httpResponse.bodyAsJsonObject().getString("id_token"));
                     loginResponse.setRefreshToken(httpResponse.bodyAsJsonObject().getString("refresh_token"));
                     response.complete(loginResponse);

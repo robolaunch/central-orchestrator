@@ -285,6 +285,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         String superCluster)
                         throws IOException, KubectlException, InterruptedException, ApiException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException {
+                System.out.println("BufferName: " + bufferName);
                 ModelMapper.addModelMap("tenancy.x-k8s.io", "v1alpha1", "VirtualCluster",
                                 "virtualclusters", true,
                                 V1VirtualCluster.class);
@@ -467,24 +468,12 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
                                 "robolaunch.io/region",
                                 region);
-                var subnets = subnetsApi.list();
-                int counter = 1;
-                while (true) {
-                        String subnetIP = "10.10." + counter + ".0/24";
-                        if (subnets.getObject().getItems().stream()
-                                        .anyMatch(subnet -> subnet.getRaw().get("spec").getAsJsonObject()
-                                                        .get("cidrBlock").getAsString().equals(subnetIP))) {
-                                counter++;
-                        } else {
-                                break;
-                        }
-                }
-
-                String mySubnetIP = "10.10." + counter + ".0/24";
+                String mySubnetIP = cloudInstanceHelperRepository.getAvailableCIDRBlock(provider, region, superCluster);
+                String blockId = mySubnetIP.split("\\.")[2];
                 object.get("spec").getAsJsonObject().addProperty("cidrBlock", mySubnetIP);
                 object.get("spec").getAsJsonObject().get("excludeIps").getAsJsonArray().remove(0);
                 object.get("spec").getAsJsonObject().get("excludeIps").getAsJsonArray()
-                                .add("10.10." + counter + ".1");
+                                .add("10.10." + blockId + ".1");
                 object.get("spec").getAsJsonObject().get("acls").getAsJsonArray().get(0).getAsJsonObject().addProperty(
                                 "match",
                                 "ip4.src==" + mySubnetIP + " && " + "ip4.dst==" + mySubnetIP);

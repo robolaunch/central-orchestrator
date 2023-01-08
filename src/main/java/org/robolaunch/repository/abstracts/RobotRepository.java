@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
+import org.robolaunch.models.Organization;
 import org.robolaunch.models.request.RequestCreateRobot;
 import org.robolaunch.models.request.RobotBuildManager;
 import org.robolaunch.models.request.RobotDevSuite;
@@ -41,4 +42,11 @@ public interface RobotRepository {
         public void makeRobotsActive(String bufferName, String provider, String region, String superCluster)
                         throws IOException, ApiException, InterruptedException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException;
+
+        public String hybridRobotScript(String provider, String region, String superCluster, Organization organization,
+                        String teamId, String bufferName,
+                        String cloudInstanceName, String physicalInstanceName)
+                        throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
+                        ApiException, InterruptedException, MinioException;
+
 }

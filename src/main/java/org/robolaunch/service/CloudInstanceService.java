@@ -71,6 +71,7 @@ public class CloudInstanceService {
       cloudInstanceRepository.createVirtualCluster(bufferName, provider, region, superCluster);
       cloudInstanceLogger.info("Virtual cluster created");
       plainResponse.setSuccess(true);
+      Thread.sleep(5000);
     } catch (Exception e) {
       cloudInstanceLogger.error("Error while creating virtual cluster.", e);
       plainResponse.setSuccess(false);

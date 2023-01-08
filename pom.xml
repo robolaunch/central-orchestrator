@@ -164,10 +164,11 @@
     </dependency>
 
     <dependency>
-      <groupId>io.quarkiverse.minio</groupId>
-      <artifactId>quarkus-minio</artifactId>
-      <version>2.9.2</version>
+      <groupId>io.minio</groupId>
+      <artifactId>minio</artifactId>
+      <version>8.4.6</version>
     </dependency>
+
     <dependency>
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>ec2</artifactId>

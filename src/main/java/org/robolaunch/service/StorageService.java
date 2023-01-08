@@ -1,9 +1,6 @@
 package org.robolaunch.service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -106,7 +103,7 @@ public class StorageService {
             return storageRepository.getSuperClusterContent(provider, region, superCluster);
         } catch (Exception e) {
             storageLogger.error("Get content operation is failed: " + e);
-            throw new ApplicationException("Get content operation is failed: " + e);
+            return null;
         }
     }
 
@@ -124,6 +121,44 @@ public class StorageService {
             return list;
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    public PlainResponse createTemporaryBucketForRobot(String provider, String region, String superCluster,
+            Organization organization, String teamId, String physicalInstanceName) {
+        PlainResponse plainResponse = new PlainResponse();
+        try {
+            storageRepository.createTemporaryBucketForRobot(provider, region, superCluster, organization, teamId,
+                    physicalInstanceName);
+            plainResponse.setMessage("Bucket is created: " + organization.getName());
+            plainResponse.setSuccess(true);
+        } catch (Exception e) {
+            plainResponse.setMessage("Create bucket operation is failed.");
+            plainResponse.setSuccess(false);
+        }
+        return plainResponse;
+    }
+
+    public PlainResponse createBucketPolicyForRobotBucket(String provider, String region, String superCluster,
+            Organization organization, String teamId, String physicalInstanceName) {
+        PlainResponse plainResponse = new PlainResponse();
+        try {
+            storageRepository.createBucketPolicyForRobotBucket(provider, region, superCluster, organization, teamId,
+                    physicalInstanceName);
+            plainResponse.setMessage("Bucket policy is created: " + organization.getName());
+            plainResponse.setSuccess(true);
+        } catch (Exception e) {
+            plainResponse.setMessage("Create bucket policy operation is failed.");
+            plainResponse.setSuccess(false);
+        }
+        return plainResponse;
+    }
+
+    public void minioTest() {
+        try {
+            storageRepository.minioTest();
+        } catch (Exception e) {
+            System.out.println("Minio test is failed: " + e);
         }
     }
 

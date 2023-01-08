@@ -12,14 +12,19 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.bouncycastle.crypto.InvalidCipherTextException;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
 import org.robolaunch.exception.ApplicationException;
+import org.robolaunch.minio.MinioAdminClient;
 import org.robolaunch.models.Artifact;
 import org.robolaunch.models.Cluster;
+import org.robolaunch.models.Organization;
 import org.robolaunch.repository.abstracts.StorageRepository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,7 +38,9 @@ import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.RemoveObjectArgs;
 import io.minio.Result;
+import io.minio.SetBucketPolicyArgs;
 import io.minio.UploadObjectArgs;
+import io.minio.errors.BucketPolicyTooLargeException;
 import io.minio.errors.ErrorResponseException;
 import io.minio.errors.InsufficientDataException;
 import io.minio.errors.InternalException;
@@ -47,14 +54,35 @@ import io.quarkus.infinispan.client.Remote;
 
 @ApplicationScoped
 public class StorageRepositoryImpl implements StorageRepository {
-    @Inject
-    MinioClient minioClient;
+    private MinioClient minioClient;
+
     @Inject
     RemoteCacheManager remoteCacheManager;
 
     @Inject
     @Remote("test_domain")
     RemoteCache<String, Object> cache;
+
+    @ConfigProperty(name = "quarkus.minio.url")
+    String minioURL;
+
+    @ConfigProperty(name = "quarkus.minio.access-key")
+    String accessKey;
+
+    @ConfigProperty(name = "quarkus.minio.secret-key")
+    String secretKey;
+
+    @ConfigProperty(name = "quarkus.minio.admin.api.url")
+    String minioAdminApiURL;
+
+    @PostConstruct
+    public void init() {
+        try {
+            minioClient = MinioClient.builder().endpoint(minioURL).credentials(accessKey, secretKey).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     /* Send objects from local computer */
     @Override
@@ -83,6 +111,7 @@ public class StorageRepositoryImpl implements StorageRepository {
         while ((line = bufferedReader.readLine()) != null) {
             data += line + "\n";
         }
+
         ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
         var object = yamlMapper.readValue(data, Object.class);
         ObjectMapper jsonMapper = new ObjectMapper();
@@ -193,4 +222,42 @@ public class StorageRepositoryImpl implements StorageRepository {
         return content;
     }
 
+    @Override
+    public void createTemporaryBucketForRobot(String provider, String region, String superCluster,
+            Organization organization, String teamId, String physicalInstanceName) throws InvalidKeyException,
+            ErrorResponseException, InsufficientDataException, InternalException, InvalidResponseException,
+            NoSuchAlgorithmException, ServerException, XmlParserException, IllegalArgumentException, IOException {
+        minioClient.makeBucket(MakeBucketArgs.builder().bucket(provider + "-" + region + "-" + superCluster + "-"
+                + organization.getName() + "-" + teamId + "-" + physicalInstanceName).build());
+
+    }
+
+    @Override
+    public void createBucketPolicyForRobotBucket(String provider, String region, String superCluster,
+            Organization organization, String teamId, String physicalInstanceName) throws InvalidKeyException,
+            ErrorResponseException, InsufficientDataException, InternalException, InvalidResponseException,
+            NoSuchAlgorithmException, ServerException, XmlParserException, IllegalArgumentException, IOException {
+        String bucketName = provider + "-" + region + "-" + superCluster + "-"
+                + organization.getName() + "-" + teamId + "-" + physicalInstanceName;
+
+        String policy = "{ \"Statement\": [{\"Action\": [\"s3:GetBucketLocation\", \"s3:ListBucket\" ], \"Effect\": \"Allow\", \"Principal\": \"AWS\": \"[\"*\"]\", \"Resource\": \"arn:aws:s3:::"
+                + bucketName
+                + "\" }, { \"Action\": \"s3:GetObject\", \"Effect\": \"Allow\", \"Principal\": \"*\", \"Resource\": \"arn:aws:s3:::"
+                + bucketName + "/*\" } ], \"Version\": \"2012-10-17\"}";
+
+        minioClient.setBucketPolicy(SetBucketPolicyArgs.builder().bucket(bucketName).config(policy).build());
+    }
+
+    @Override
+    public void minioTest() throws InvalidKeyException, ErrorResponseException, InsufficientDataException,
+            InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException, XmlParserException,
+            IllegalArgumentException, IOException, BucketPolicyTooLargeException, InvalidCipherTextException {
+
+        MinioAdminClient minioAdminClient = MinioAdminClient.builder()
+                .endpoint(minioAdminApiURL).credentials(accessKey,
+                        secretKey)
+                .build();
+
+        minioAdminClient.setPolicy("uid=mert,cn=users,cn=accounts,dc=robolaunch,dc=dev", false, "readwrite");
+    }
 }

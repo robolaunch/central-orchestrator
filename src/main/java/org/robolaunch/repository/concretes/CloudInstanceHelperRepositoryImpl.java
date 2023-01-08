@@ -69,6 +69,7 @@ import io.kubernetes.client.util.credentials.AccessTokenAuthentication;
 import io.kubernetes.client.util.credentials.ClientCertificateAuthentication;
 import io.kubernetes.client.util.generic.KubernetesApiResponse;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi;
+import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesListObject;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesObject;
 import io.kubernetes.client.util.generic.options.ListOptions;
 import io.minio.errors.MinioException;
@@ -222,7 +223,9 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     ListOptions listOptions = new ListOptions();
     listOptions.setLabelSelector("robolaunch.io/buffer-instance=" + bufferName);
     var vcs = virtualClustersApi.list(listOptions);
-    System.out.println("vc count: " + vcs.getObject().getItems().size());
+    if (vcs.getObject().getItems().size() == 0) {
+      return false;
+    }
     for (var vc : vcs.getObject().getItems()) {
       Optional<String> vcName = Optional.ofNullable(vc).map(DynamicKubernetesObject::getMetadata)
           .map(m -> m.getName());
@@ -937,4 +940,25 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     System.out.println("Returning new VC! --- " + VCCreated);
     return newClient;
   }
+
+  @Override
+  public String getAvailableCIDRBlock(String provider, String region, String superCluster)
+      throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException, ApiException,
+      InterruptedException, MinioException {
+    DynamicKubernetesApi subnetApi = apiClientManager.getSubnetApi(provider, region, superCluster);
+    List<DynamicKubernetesObject> subnetList = subnetApi.list().getObject().getItems();
+    int counter = 1;
+    while (counter < 255) {
+      String subnetIP = "10.10." + counter + ".0/24";
+      if (subnetList.stream()
+          .anyMatch(subnet -> subnet.getRaw().get("spec").getAsJsonObject()
+              .get("cidrBlock").getAsString().equals(subnetIP))) {
+        counter++;
+      } else {
+        return subnetIP;
+      }
+    }
+    return null;
+  }
+
 }

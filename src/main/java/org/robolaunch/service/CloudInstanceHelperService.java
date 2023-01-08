@@ -454,15 +454,13 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public void connectAdminClient(String provider, String region, String superCluster) {
+  public String getAvailableCIDRBlock(String provider, String region, String superCluster) {
     try {
-      ApiClient myApiCl = apiClientManager.getAdminApiClient(provider, region, superCluster);
-      CoreV1Api api = new CoreV1Api(myApiCl);
-      for (V1Namespace ns : api.listNamespace(null, null, null, null, null, null, null, null, null, null).getItems()) {
-        System.out.println("MY NSSS: " + ns.getMetadata().getName());
-      }
+      String availableCIDRBlock = cloudInstanceHelperRepository.getAvailableCIDRBlock(provider, region, superCluster);
+      return availableCIDRBlock;
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      cloudInstanceHelperLogger.error("Error while calling getAvailableCIDRBlock: " + e.getMessage());
+      return null;
     }
   }
 }
