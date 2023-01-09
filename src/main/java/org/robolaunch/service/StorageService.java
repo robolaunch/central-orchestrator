@@ -18,6 +18,8 @@ import org.robolaunch.repository.abstracts.GroupRepository;
 import org.robolaunch.repository.abstracts.StorageRepository;
 
 import io.quarkus.arc.log.LoggerName;
+
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
 
 @ApplicationScoped
@@ -34,6 +36,9 @@ public class StorageService {
 
     @LoggerName("storageService")
     Logger storageLogger;
+
+    @Inject
+    JsonWebToken jwt;
 
     public void listArtifacts() {
         try {
@@ -124,41 +129,53 @@ public class StorageService {
         }
     }
 
-    public PlainResponse createTemporaryBucketForRobot(String provider, String region, String superCluster,
-            Organization organization, String teamId, String physicalInstanceName) {
+    public PlainResponse createMinioFileForRobotScript(String provider, String region, String superCluster,
+            Organization organization, String teamId, String physicalInstanceName, String script, String username) {
         PlainResponse plainResponse = new PlainResponse();
         try {
-            storageRepository.createTemporaryBucketForRobot(provider, region, superCluster, organization, teamId,
-                    physicalInstanceName);
-            plainResponse.setMessage("Bucket is created: " + organization.getName());
+            storageRepository.createMinioFileForRobotScript(provider, region, superCluster, organization, teamId,
+                    physicalInstanceName, script, username);
+            plainResponse.setMessage("Minio file is created: " + organization.getName());
             plainResponse.setSuccess(true);
         } catch (Exception e) {
-            plainResponse.setMessage("Create bucket operation is failed.");
+            plainResponse.setMessage("Create file operation is failed.");
             plainResponse.setSuccess(false);
         }
         return plainResponse;
     }
 
-    public PlainResponse createBucketPolicyForRobotBucket(String provider, String region, String superCluster,
-            Organization organization, String teamId, String physicalInstanceName) {
+    public PlainResponse createPolicyForUser(String username) {
         PlainResponse plainResponse = new PlainResponse();
         try {
-            storageRepository.createBucketPolicyForRobotBucket(provider, region, superCluster, organization, teamId,
-                    physicalInstanceName);
-            plainResponse.setMessage("Bucket policy is created: " + organization.getName());
+            storageRepository.createPolicyForUser(username);
+            plainResponse.setMessage("Policy created");
             plainResponse.setSuccess(true);
         } catch (Exception e) {
-            plainResponse.setMessage("Create bucket policy operation is failed.");
+            plainResponse.setMessage("Policy cannot be created.");
             plainResponse.setSuccess(false);
         }
         return plainResponse;
     }
 
-    public void minioTest() {
+    public PlainResponse assignPolicyToUser(String username) {
+        PlainResponse plainResponse = new PlainResponse();
         try {
-            storageRepository.minioTest();
+            storageRepository.assignPolicyToUser(username);
+            plainResponse.setMessage("Policy assigned.");
+            plainResponse.setSuccess(true);
         } catch (Exception e) {
-            System.out.println("Minio test is failed: " + e);
+            plainResponse.setMessage("Policy cannot be assigned.");
+            plainResponse.setSuccess(false);
+        }
+        return plainResponse;
+    }
+
+    public String generateAuthCURL(String username) {
+        try {
+            String url = storageRepository.generateAuthCURL(username);
+            return url;
+        } catch (Exception e) {
+            return null;
         }
     }
 

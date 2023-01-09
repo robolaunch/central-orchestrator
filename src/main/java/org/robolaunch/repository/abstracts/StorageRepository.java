@@ -7,6 +7,7 @@ import org.robolaunch.exception.ApplicationException;
 import org.robolaunch.models.Artifact;
 import org.robolaunch.models.Cluster;
 import org.robolaunch.models.Organization;
+import org.robolaunch.models.response.PlainResponse;
 
 import com.google.gson.JsonObject;
 
@@ -60,21 +61,25 @@ public interface StorageRepository {
                         InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
                         XmlParserException, IllegalArgumentException, IOException;
 
-        void createTemporaryBucketForRobot(String provider, String region, String superCluster,
-                        Organization organization, String teamId, String physicalInstanceName)
+        void createMinioFileForRobotScript(String provider, String region, String superCluster,
+                        Organization organization, String teamId, String physicalInstanceName, String script,
+                        String username)
                         throws InvalidKeyException, ErrorResponseException, InsufficientDataException,
                         InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
                         XmlParserException, IllegalArgumentException, IOException;
 
-        void createBucketPolicyForRobotBucket(String provider, String region, String superCluster,
-                        Organization organization, String teamId, String physicalInstanceName)
+        void createPolicyForUser(String username)
                         throws InvalidKeyException, ErrorResponseException, InsufficientDataException,
                         InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
                         XmlParserException, IllegalArgumentException, IOException;
 
-        void minioTest() throws InvalidKeyException, ErrorResponseException, InsufficientDataException,
+        void assignPolicyToUser(String username)
+                        throws InvalidKeyException, ErrorResponseException, InsufficientDataException,
                         InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
-                        XmlParserException, IllegalArgumentException, IOException, BucketPolicyTooLargeException,
-                        InvalidCipherTextException;
+                        XmlParserException, IllegalArgumentException, IOException;
+
+        String generateAuthCURL(String username);
+
+        String generateSignatureCURL();
 
 }
