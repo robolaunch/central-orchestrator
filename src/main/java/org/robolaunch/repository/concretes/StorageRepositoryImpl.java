@@ -17,7 +17,6 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
@@ -40,9 +39,7 @@ import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
 import io.minio.Result;
-import io.minio.SetBucketPolicyArgs;
 import io.minio.UploadObjectArgs;
-import io.minio.errors.BucketPolicyTooLargeException;
 import io.minio.errors.ErrorResponseException;
 import io.minio.errors.InsufficientDataException;
 import io.minio.errors.InternalException;
@@ -265,23 +262,21 @@ public class StorageRepositoryImpl implements StorageRepository {
                 .endpoint(minioAdminApiURL).credentials(accessKey,
                         secretKey)
                 .build();
-        System.out.println("inside username: " + username);
         if (username != null) {
             minioAdminClient.setPolicy("uid=" + username + ",cn=users,cn=accounts,dc=robolaunch,dc=dev", false,
                     username);
         }
-
     }
 
     @Override
-    public String generateAuthCURL(String username) {
-        String url = "curl -X POST http://116.203.140.202:32401?Action=AssumeRoleWithLDAPIdentity&LDAPUsername="
-                + username + "&LDAPPassword=<password>.&Version=2011-06-15&DurationSeconds=7200";
-        return url;
-    }
-
-    @Override
-    public String generateSignatureCURL() {
+    public String generateUserScript(String provider, String region, String superCluster, Organization organization,
+            String teamId, String physicalInstanceName, String username) throws InvalidKeyException,
+            ErrorResponseException, InsufficientDataException, InternalException, InvalidResponseException,
+            NoSuchAlgorithmException, ServerException, XmlParserException, IllegalArgumentException, IOException {
+        Artifact artifact = new Artifact("template_script.sh", "");
+        String bucketName = "template-artifacts";
+        String scriptContent = getContent(artifact, bucketName);
+        System.out.println("script: " + scriptContent);
         return null;
     }
 

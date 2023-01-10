@@ -2,16 +2,13 @@ package org.robolaunch.repository.abstracts;
 
 import java.io.IOException;
 
-import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.robolaunch.exception.ApplicationException;
 import org.robolaunch.models.Artifact;
 import org.robolaunch.models.Cluster;
 import org.robolaunch.models.Organization;
-import org.robolaunch.models.response.PlainResponse;
 
 import com.google.gson.JsonObject;
 
-import io.minio.errors.BucketPolicyTooLargeException;
 import io.minio.errors.ErrorResponseException;
 import io.minio.errors.InsufficientDataException;
 import io.minio.errors.InternalException;
@@ -78,8 +75,9 @@ public interface StorageRepository {
                         InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
                         XmlParserException, IllegalArgumentException, IOException;
 
-        String generateAuthCURL(String username);
-
-        String generateSignatureCURL();
-
+        String generateUserScript(String provider, String region, String superCluster, Organization organization,
+                        String teamId, String physicalInstanceName, String username)
+                        throws InvalidKeyException, ErrorResponseException, InsufficientDataException,
+                        InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
+                        XmlParserException, IllegalArgumentException, IOException;
 }

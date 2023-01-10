@@ -258,7 +258,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
         .map(m -> m.getLabels());
     String bufferName = labels.get()
         .get("robolaunch.io/buffer-instance");
-    System.out.println("picked bn: " + bufferName);
     return bufferName;
 
   }
@@ -392,7 +391,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
       if (podName.get().startsWith("cert-manager")) {
         Optional<String> phase = Optional.ofNullable(pod).map(V1Pod::getStatus)
             .map(m -> m.getPhase());
-        System.out.println("phase: " + phase.get());
         if (!phase.get().equals("Running")) {
           podsReady = false;
         }
@@ -928,7 +926,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     String clientKeyData = kubernetesServerCkData;
     byte[] byteClientKeyData = Base64.getDecoder().decode(clientKeyData.getBytes("UTF-8"));
 
-    System.out.println("creating vc");
     /* Virtual Cluster Client */
     ApiClient newClient = new ClientBuilder().setBasePath(kubernetesServerUrl)
         .setAuthentication(new ClientCertificateAuthentication(byteClientCertData, byteClientKeyData))
@@ -937,7 +934,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
         .build();
 
     VCCreated++;
-    System.out.println("Returning new VC! --- " + VCCreated);
     return newClient;
   }
 

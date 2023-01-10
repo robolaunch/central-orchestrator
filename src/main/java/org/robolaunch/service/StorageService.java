@@ -170,10 +170,13 @@ public class StorageService {
         return plainResponse;
     }
 
-    public String generateAuthCURL(String username) {
+    public String generateUserScript(String provider, String region, String superCluster, Organization organization,
+            String teamId, String physicalInstanceName, String username) {
         try {
-            String url = storageRepository.generateAuthCURL(username);
-            return url;
+            String userScript = storageRepository.generateUserScript(provider, region, superCluster, organization,
+                    teamId,
+                    physicalInstanceName, username);
+            return userScript;
         } catch (Exception e) {
             return null;
         }
