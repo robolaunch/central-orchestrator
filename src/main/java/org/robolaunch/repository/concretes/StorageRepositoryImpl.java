@@ -1,6 +1,7 @@
 package org.robolaunch.repository.concretes;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -16,7 +17,6 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
@@ -36,11 +36,10 @@ import io.minio.GetObjectArgs;
 import io.minio.ListObjectsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
 import io.minio.Result;
-import io.minio.SetBucketPolicyArgs;
 import io.minio.UploadObjectArgs;
-import io.minio.errors.BucketPolicyTooLargeException;
 import io.minio.errors.ErrorResponseException;
 import io.minio.errors.InsufficientDataException;
 import io.minio.errors.InternalException;
@@ -84,7 +83,6 @@ public class StorageRepositoryImpl implements StorageRepository {
         }
     }
 
-    /* Send objects from local computer */
     @Override
     public void push(byte[] content, Artifact artifact, String bucket)
             throws MinioException, InvalidKeyException, NoSuchAlgorithmException,
@@ -223,41 +221,63 @@ public class StorageRepositoryImpl implements StorageRepository {
     }
 
     @Override
-    public void createTemporaryBucketForRobot(String provider, String region, String superCluster,
-            Organization organization, String teamId, String physicalInstanceName) throws InvalidKeyException,
+    public void createMinioFileForRobotScript(String provider, String region, String superCluster,
+            Organization organization, String teamId, String physicalInstanceName, String script, String username)
+            throws InvalidKeyException,
             ErrorResponseException, InsufficientDataException, InternalException, InvalidResponseException,
             NoSuchAlgorithmException, ServerException, XmlParserException, IllegalArgumentException, IOException {
-        minioClient.makeBucket(MakeBucketArgs.builder().bucket(provider + "-" + region + "-" + superCluster + "-"
-                + organization.getName() + "-" + teamId + "-" + physicalInstanceName).build());
 
+        String bucketName = "users";
+        String objectName = provider + "-" + region + "-" + superCluster + "-" + organization.getName()
+                + "-" + teamId + "-" + physicalInstanceName + ".sh";
+
+        Path tempFile = Files.createTempFile("temp", ".txt");
+        Files.write(tempFile, script.getBytes());
+        PutObjectArgs poa = PutObjectArgs.builder().bucket(bucketName).object(username + "/" + objectName)
+                .stream(new ByteArrayInputStream(script.getBytes()), script.getBytes().length, -1).build();
+        minioClient.putObject(poa);
     }
 
     @Override
-    public void createBucketPolicyForRobotBucket(String provider, String region, String superCluster,
-            Organization organization, String teamId, String physicalInstanceName) throws InvalidKeyException,
+    public void createPolicyForUser(String username) throws InvalidKeyException,
             ErrorResponseException, InsufficientDataException, InternalException, InvalidResponseException,
             NoSuchAlgorithmException, ServerException, XmlParserException, IllegalArgumentException, IOException {
-        String bucketName = provider + "-" + region + "-" + superCluster + "-"
-                + organization.getName() + "-" + teamId + "-" + physicalInstanceName;
-
-        String policy = "{ \"Statement\": [{\"Action\": [\"s3:GetBucketLocation\", \"s3:ListBucket\" ], \"Effect\": \"Allow\", \"Principal\": \"AWS\": \"[\"*\"]\", \"Resource\": \"arn:aws:s3:::"
-                + bucketName
-                + "\" }, { \"Action\": \"s3:GetObject\", \"Effect\": \"Allow\", \"Principal\": \"*\", \"Resource\": \"arn:aws:s3:::"
-                + bucketName + "/*\" } ], \"Version\": \"2012-10-17\"}";
-
-        minioClient.setBucketPolicy(SetBucketPolicyArgs.builder().bucket(bucketName).config(policy).build());
-    }
-
-    @Override
-    public void minioTest() throws InvalidKeyException, ErrorResponseException, InsufficientDataException,
-            InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException, XmlParserException,
-            IllegalArgumentException, IOException, BucketPolicyTooLargeException, InvalidCipherTextException {
-
         MinioAdminClient minioAdminClient = MinioAdminClient.builder()
                 .endpoint(minioAdminApiURL).credentials(accessKey,
                         secretKey)
                 .build();
+        String policy = "{\"Version\": \"2012-10-17\",\"Statement\": [{\"Effect\": \"Allow\",\"Action\": [\"s3:GetBucketLocation\",\"s3:GetObject\"],\"Resource\": [\"arn:aws:s3:::users/"
+                + username + "/*" + "/]}]}";
+        if (username != null) {
+            minioAdminClient.addCannedPolicy(username, policy);
+        }
 
-        minioAdminClient.setPolicy("uid=mert,cn=users,cn=accounts,dc=robolaunch,dc=dev", false, "readwrite");
     }
+
+    @Override
+    public void assignPolicyToUser(String username) throws InvalidKeyException,
+            ErrorResponseException, InsufficientDataException, InternalException, InvalidResponseException,
+            NoSuchAlgorithmException, ServerException, XmlParserException, IllegalArgumentException, IOException {
+        MinioAdminClient minioAdminClient = MinioAdminClient.builder()
+                .endpoint(minioAdminApiURL).credentials(accessKey,
+                        secretKey)
+                .build();
+        if (username != null) {
+            minioAdminClient.setPolicy("uid=" + username + ",cn=users,cn=accounts,dc=robolaunch,dc=dev", false,
+                    username);
+        }
+    }
+
+    @Override
+    public String generateUserScript(String provider, String region, String superCluster, Organization organization,
+            String teamId, String physicalInstanceName, String username) throws InvalidKeyException,
+            ErrorResponseException, InsufficientDataException, InternalException, InvalidResponseException,
+            NoSuchAlgorithmException, ServerException, XmlParserException, IllegalArgumentException, IOException {
+        Artifact artifact = new Artifact("template_script.sh", "");
+        String bucketName = "template-artifacts";
+        String scriptContent = getContent(artifact, bucketName);
+        System.out.println("script: " + scriptContent);
+        return null;
+    }
+
 }
