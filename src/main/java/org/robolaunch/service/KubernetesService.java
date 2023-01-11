@@ -69,7 +69,6 @@ public class KubernetesService {
       // Get buffering count
       Integer bufferingCount = kubernetesRepository.getCurrentBufferingCountOfType(instanceType, provider, region,
           superCluster);
-      System.out.println("current buffer count: " + bufferingCount + bufferedCount);
       return bufferingCount + bufferedCount;
     } catch (Exception e) {
       kubernetesLogger.error("Error while getting cloud instances current from kubernetes buffer", e);
@@ -79,13 +78,12 @@ public class KubernetesService {
 
   public Integer getReadyBufferCount(String instanceType, String provider, String region, String superCluster) {
     try {
-      System.out.println("waiting for buffer.");
       // Get buffering count
       Integer bufferedCount = kubernetesRepository.getCurrentBufferedCountOfType(instanceType, provider, region,
           superCluster);
       return bufferedCount;
     } catch (Exception e) {
-      kubernetesLogger.error("Error while getting cloud instances current from kubernetes buffer", e);
+      kubernetesLogger.error("Error while getting cloud instances ready from kubernetes buffer", e);
       return null;
     }
   }
@@ -112,7 +110,6 @@ public class KubernetesService {
       }
       return "";
     } catch (Exception e) {
-      System.out.println("Error while checking if type needs buffer: " + e.getMessage());
       return null;
     }
   }

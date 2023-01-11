@@ -448,13 +448,9 @@ public class CloudInstanceService {
       cloudInstanceLogger.info("Connection hub operator created");
       plainResponse.setSuccess(true);
     } catch (ApiException e) {
-      System.out.println("Error while creating connection hub operator." + e.getResponseBody());
-      System.out.println(e.getMessage());
-      System.out.println(e.getCode());
       cloudInstanceLogger.error("Error while creating connection hub operator.", e);
       plainResponse.setSuccess(false);
     } catch (Exception e) {
-      System.out.println("Error while creating connection hub operator." + e.getMessage());
       cloudInstanceLogger.error("Error while creating connection hub operator.", e);
       plainResponse.setSuccess(false);
     }

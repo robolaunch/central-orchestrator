@@ -30,7 +30,6 @@ public class DownloadFile extends HttpServlet {
       try (FileOutputStream fileOut = new FileOutputStream(tempFile)) {
          fileOut.write(tempFile.getName().getBytes());
       }
-      System.out.println("downloaded the file!");
       // delete the temporary file
       tempFile.delete();
    }

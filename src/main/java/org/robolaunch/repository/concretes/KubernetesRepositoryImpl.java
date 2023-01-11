@@ -134,7 +134,6 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
       String superCluster)
       throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException, JsonMappingException,
       JsonProcessingException {
-    System.out.println("inside buffering");
     Integer counter = 0;
     String processId = getSuperClusterProcessId(provider, region, superCluster);
     String queryStr = "query{ProcessInstances(where: {id: {equal:\"" + processId
@@ -147,6 +146,9 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
 
     ObjectMapper mapper = new ObjectMapper();
     if (processInstances != null) {
+      if (processInstances.size() == 0) {
+        return 0;
+      }
       JsonArray childProcessInstances = processInstances.getJsonObject(0).getJsonArray("childProcessInstances");
 
       for (int i = 0; i < childProcessInstances.size(); i++) {
@@ -169,7 +171,6 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
       String superCluster) throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
       ApiException, InterruptedException, MinioException {
     DynamicKubernetesApi virtualClustersApi = apiClientManager.getVirtualClusterApi(provider, region, superCluster);
-    System.out.println("inside buffered");
     ListOptions listOptions = new ListOptions();
     listOptions.setLabelSelector(
         "buffered=true, !robolaunch.io/organization, robolaunch.io/instance-type=" + instanceType);
@@ -230,7 +231,6 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
             childNode = mapper.readTree(childProcessInstances.getJsonObject(j).getString("variables"));
             if (childNode.get("providerName").asText().equals(provider)
                 && childNode.get("regionName").asText().equals(region)) {
-              System.out.println("region found");
               return true;
             }
           } catch (JsonProcessingException e) {
@@ -239,7 +239,6 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
         }
       }
     }
-    System.out.println("region not found");
     return false;
   }
 
@@ -271,7 +270,6 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
   public ArrayList<RegionKubernetes> getRegions(String provider)
       throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException {
     String providerId = getProviderId(provider);
-    System.out.println("providerId: " + providerId);
     String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\"" + providerId
         + "\"}}, {state: {equal: ACTIVE}}]}){id state childProcessInstances{id processName state variables}}}";
     Response response = graphqlClient.executeSync(queryStr);
@@ -305,7 +303,6 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
   public ArrayList<SuperClusterKubernetes> getSuperClusters(String provider, String region)
       throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException {
     String regionId = getRegionId(provider, region);
-    System.out.println("regionId: " + regionId);
     String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\"" + regionId
         + "\"}}, {state: {equal: ACTIVE}}]}){id state childProcessInstances{id processName state variables}}}";
 
@@ -349,7 +346,6 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
         ArrayList<SuperClusterKubernetes> superClusters = getSuperClusters(providers.get(i).getName(),
             regions.get(j).getName());
         for (int k = 0; k < superClusters.size(); k++) {
-          System.out.println("sc id: " + superClusters.get(k).getProcessId());
           ArrayList<RoboticsCloudKubernetes> rcs = getRoboticsCloudsSuperClusterOrganization(organization,
               superClusters.get(k).getProcessId());
           rcs.forEach(rc -> {
@@ -387,16 +383,13 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
 
         JsonNode organizationNode = childNode.get("organization");
         if (organizationNode.get("name").asText().equals(organization.getName())) {
-          System.out.println("enters once.");
           RoboticsCloudKubernetes singleRoboticsCloud = new RoboticsCloudKubernetes();
           singleRoboticsCloud.setName(childNode.get("cloudInstanceName").asText());
           singleRoboticsCloud.setInstanceType(childNode.get("instanceType").asText());
           if (childNode.get("bufferName") != null) {
             singleRoboticsCloud.setBufferName(childNode.get("bufferName").asText());
           }
-          if (childNode.get("teamName") != null) {
-            singleRoboticsCloud.setBufferName(childNode.get("teamName").asText());
-          }
+          singleRoboticsCloud.setTeamName(childNode.get("teamName").asText());
           singleRoboticsCloud.setOrganization(organizationNode.get("name").asText());
           singleRoboticsCloud.setRegionName(childNode.get("regionName").asText());
           singleRoboticsCloud.setUserStage(childNode.get("userStage").asText());
@@ -443,9 +436,7 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
           if (childNode.get("bufferName") != null) {
             singleRoboticsCloud.setBufferName(childNode.get("bufferName").asText());
           }
-          if (childNode.get("teamName") != null) {
-            singleRoboticsCloud.setBufferName(childNode.get("teamName").asText());
-          }
+          singleRoboticsCloud.setTeamName(childNode.get("teamName").asText());
           singleRoboticsCloud.setOrganization(organizationNode.get("name").asText());
           singleRoboticsCloud.setRegionName(childNode.get("regionName").asText());
           singleRoboticsCloud.setUserStage(childNode.get("userStage").asText());
@@ -493,9 +484,7 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
           if (childNode.get("bufferName") != null) {
             singleRoboticsCloud.setBufferName(childNode.get("bufferName").asText());
           }
-          if (childNode.get("teamName") != null) {
-            singleRoboticsCloud.setBufferName(childNode.get("teamName").asText());
-          }
+          singleRoboticsCloud.setTeamName(childNode.get("teamName").asText());
           singleRoboticsCloud.setOrganization(organizationNode.get("name").asText());
           singleRoboticsCloud.setRegionName(childNode.get("regionName").asText());
           singleRoboticsCloud.setTeam(childNode.get("teamId").asText());

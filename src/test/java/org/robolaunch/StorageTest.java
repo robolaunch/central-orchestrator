@@ -4,8 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.robolaunch.models.Organization;
 import org.robolaunch.service.StorageService;
 
-import com.google.inject.Inject;
-
+import javax.inject.Inject;
 import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest

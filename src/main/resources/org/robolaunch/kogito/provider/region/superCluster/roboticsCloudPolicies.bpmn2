@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_hDoDoG0EEDuclfKDRKOb6w" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_Mdr3oHPZEDu90rEJWLLXog" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_usernameItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_organizationItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="_plainResponseItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
@@ -99,8 +99,8 @@
   <bpmn2:interface id="_7B4B3AD8-DBAC-448F-9994-3F882C55B574_ServiceInterface" name="org.robolaunch.service.ErrorService" implementationRef="org.robolaunch.service.ErrorService">
     <bpmn2:operation id="_7B4B3AD8-DBAC-448F-9994-3F882C55B574_ServiceOperation" name="plainResponseTemplate" implementationRef="plainResponseTemplate"/>
   </bpmn2:interface>
-  <bpmn2:collaboration id="_FB0B5F71-251C-4620-B6B7-746744851F58" name="Default Collaboration">
-    <bpmn2:participant id="_5307EF20-DFD8-4D67-B532-DFA9E39C77AE" name="Pool Participant" processRef="roboticsCloudPolicies"/>
+  <bpmn2:collaboration id="_5E98AF88-E561-47C0-897D-9BE9E55A5BBF" name="Default Collaboration">
+    <bpmn2:participant id="_68E8A7F8-A6A2-45D8-809C-4BD6A1466A19" name="Pool Participant" processRef="roboticsCloudPolicies"/>
   </bpmn2:collaboration>
   <bpmn2:process id="roboticsCloudPolicies" drools:packageName="org.robolaunch.kogito.provider" drools:version="1.0" drools:adHoc="false" name="policies" isExecutable="true" processType="Public">
     <bpmn2:property id="username" itemSubjectRef="_usernameItem" name="username"/>
@@ -404,7 +404,7 @@ exist]]></drools:metaValue>
       <bpmn2:dataInputAssociation>
         <bpmn2:targetRef>_C6280BE3-9380-4528-9DCF-5790EA4D0362_messageInputX</bpmn2:targetRef>
         <bpmn2:assignment>
-          <bpmn2:from xsi:type="bpmn2:tFormalExpression"><![CDATA[A Cloud Instance with this name does not exist.]]></bpmn2:from>
+          <bpmn2:from xsi:type="bpmn2:tFormalExpression"><![CDATA[You are not authenticated.]]></bpmn2:from>
           <bpmn2:to xsi:type="bpmn2:tFormalExpression"><![CDATA[_C6280BE3-9380-4528-9DCF-5790EA4D0362_messageInputX]]></bpmn2:to>
         </bpmn2:assignment>
       </bpmn2:dataInputAssociation>
@@ -1413,7 +1413,7 @@ exist]]></drools:metaValue>
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_hDoDoG0EEDuclfKDRKOb6w</bpmn2:source>
-    <bpmn2:target>_hDoDoG0EEDuclfKDRKOb6w</bpmn2:target>
+    <bpmn2:source>_Mdr3oHPZEDu90rEJWLLXog</bpmn2:source>
+    <bpmn2:target>_Mdr3oHPZEDu90rEJWLLXog</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>

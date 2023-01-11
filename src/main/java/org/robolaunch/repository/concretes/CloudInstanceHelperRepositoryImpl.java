@@ -88,6 +88,8 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   String kogitoDataIndexUrl;
   @ConfigProperty(name = "master.node.name")
   String masterNodeName;
+  @ConfigProperty(name = "sc.vc.ip")
+  String scvcIp;
 
   @Inject
   KubernetesRepository kubernetesRepository;
@@ -766,8 +768,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
       }
     }
 
-    System.out.println("ExternalIP: " + "https://" + masterIP + ":" + nodePort);
-
     while (!virtualClustersApi.get("default", bufferName).getObject().getRaw().get("status")
         .getAsJsonObject()
         .get("phase").getAsString().equals("Running")) {
@@ -798,6 +798,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     byte[] byteCertificateAuthData = Base64.getDecoder().decode(certificateAuthorityData.getBytes("UTF-8"));
 
     String basePath = "https://" + masterIP + ":" + nodePort;
+    System.out.println("Base path: " + basePath);
     /* Virtual Cluster Client */
     ApiClient newClient = new ClientBuilder().setBasePath(basePath)
         .setAuthentication(new ClientCertificateAuthentication(byteClientCertData,
@@ -835,7 +836,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     CoreV1Api coreV1Api = apiClientManager.getCoreApi(provider, region, superCluster);
     DynamicKubernetesApi virtualClustersApi = apiClientManager.getVirtualClusterApi(provider, region, superCluster);
     String namespaceName = getNamespaceNameWithBufferName(bufferName, provider, region, superCluster);
-    System.out.println("Namespace Name: " + namespaceName);
     V1Secret sc = coreV1Api.readNamespacedSecret("admin-kubeconfig", namespaceName, null);
     Optional<Map<String, byte[]>> optionalData = Optional.ofNullable(sc.getData());
     var certData = optionalData.get().get("admin-kubeconfig");
@@ -866,8 +866,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
       }
     }
 
-    System.out.println("ExternalIP: " + "https://" + masterIP + ":" + nodePort);
-
     while (!virtualClustersApi.get("default", bufferName).getObject().getRaw().get("status")
         .getAsJsonObject()
         .get("phase").getAsString().equals("Running")) {
@@ -886,7 +884,8 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
     byte[] byteCertificateAuthData = Base64.getDecoder().decode(certificateAuthorityData.getBytes("UTF-8"));
 
-    String basePath = "https://" + masterIP + ":" + nodePort;
+    String basePath = "https://" + scvcIp + ":" + nodePort;
+    System.out.println("basepath: " + basePath);
     /* Virtual Cluster Client */
     ApiClient newClient = new ClientBuilder().setBasePath(basePath)
         .setAuthentication(new AccessTokenAuthentication(token))

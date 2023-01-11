@@ -26,6 +26,7 @@ public class ApiClientManager {
    CloudInstanceHelperRepository cloudInstanceHelperRepository;
 
    private Map<String, ApiClient> apiClientMap = new ConcurrentHashMap<>();
+   private Map<String, ApiClient> userApiClientMap = new ConcurrentHashMap<>();
    private Map<String, CoreV1Api> coreApiMap = new ConcurrentHashMap<>();
    private Map<String, AppsV1Api> appsApiMap = new ConcurrentHashMap<>();
 
@@ -35,6 +36,9 @@ public class ApiClientManager {
    private Map<String, DynamicKubernetesApi> subnetApiMap = new ConcurrentHashMap<>();
    private Map<String, DynamicKubernetesApi> machineApiMap = new ConcurrentHashMap<>();
 
+   // Virtual Cluster
+   private Map<String, DynamicKubernetesApi> robotApiMap = new ConcurrentHashMap<>();
+
    @Unremovable
    public ApiClient getAdminApiClient(String provider, String region, String superCluster)
          throws InvalidKeyException, NoSuchAlgorithmException,
@@ -43,6 +47,20 @@ public class ApiClientManager {
       if (apiClient == null) {
          apiClient = cloudInstanceHelperRepository.adminApiClient(provider, region, superCluster);
          apiClientMap.put(provider + "/" + region + "/" + superCluster, apiClient);
+      }
+      return apiClient;
+   }
+
+   @Unremovable
+   public ApiClient getUserApiClient(String bufferName, String token, String provider, String region,
+         String superCluster)
+         throws InvalidKeyException, NoSuchAlgorithmException,
+         IllegalArgumentException, IOException, ApiException, InterruptedException, MinioException {
+      ApiClient apiClient = userApiClientMap.get(provider + "/" + region + "/" + superCluster + "/" + token);
+      if (apiClient == null) {
+         apiClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName, provider,
+               region, superCluster);
+         userApiClientMap.put(provider + "/" + region + "/" + superCluster + "/" + token, apiClient);
       }
       return apiClient;
    }
@@ -146,4 +164,5 @@ public class ApiClientManager {
       }
       return machineApi;
    }
+
 }

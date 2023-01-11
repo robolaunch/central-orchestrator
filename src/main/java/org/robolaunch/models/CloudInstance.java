@@ -84,4 +84,12 @@ public class CloudInstance implements Serializable {
         + ", instanceType=" + instanceType + ", region=" + region + "]";
   }
 
+  public String getBufferName() {
+    return bufferName;
+  }
+
+  public void setBufferName(String bufferName) {
+    this.bufferName = bufferName;
+  }
+
 }

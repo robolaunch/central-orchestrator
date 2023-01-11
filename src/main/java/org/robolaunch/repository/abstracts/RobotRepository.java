@@ -3,20 +3,22 @@ package org.robolaunch.repository.abstracts;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 
 import org.robolaunch.models.Organization;
-import org.robolaunch.models.request.RequestCreateRobot;
+import org.robolaunch.models.Robot;
+import org.robolaunch.models.request.RequestRobot;
 import org.robolaunch.models.request.RobotBuildManager;
 import org.robolaunch.models.request.RobotDevSuite;
 import org.robolaunch.models.request.RobotLaunchManager;
+import org.robolaunch.models.response.ResponseRobots;
 
 import io.kubernetes.client.openapi.ApiException;
 import io.minio.errors.MinioException;
 
 public interface RobotRepository {
 
-        public void createRobot(RequestCreateRobot requestCreateRobot, String token, String provider, String region,
-                        String superCluster)
+        public void createRobot(RequestRobot requestRobot, String token)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException;
 
@@ -48,5 +50,7 @@ public interface RobotRepository {
                         String cloudInstanceName, String physicalInstanceName)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
                         ApiException, InterruptedException, MinioException;
+
+        public ArrayList<Robot> getRobotsOrganization(Organization organization);
 
 }
