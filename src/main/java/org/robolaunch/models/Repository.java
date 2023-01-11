@@ -10,14 +10,6 @@ public class Repository implements Serializable {
   public Repository() {
   }
 
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
   public String getUrl() {
     return url;
   }
@@ -32,6 +24,14 @@ public class Repository implements Serializable {
 
   public void setBranch(String branch) {
     this.branch = branch;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
 }

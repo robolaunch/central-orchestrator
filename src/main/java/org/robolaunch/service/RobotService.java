@@ -5,8 +5,8 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
-import org.robolaunch.models.Response;
-import org.robolaunch.models.request.RequestCreateRobot;
+import org.robolaunch.models.Organization;
+import org.robolaunch.models.request.RequestRobot;
 import org.robolaunch.models.request.RobotBuildManager;
 import org.robolaunch.models.request.RobotDevSuite;
 import org.robolaunch.models.request.RobotLaunchManager;
@@ -106,25 +106,36 @@ public class RobotService {
     return plainResponse;
   }
 
-  public PlainResponse createRobot(RequestCreateRobot requestCreateRobot) {
+  public PlainResponse createRobot(RequestRobot requestRobot) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      Gson gson = new Gson();
-      System.out.println("GOSN: " + gson.toJson(requestCreateRobot));
       String token = jwt.getRawToken();
-      robotRepository.createRobot(requestCreateRobot, token, "p", "r", "s");
+      robotRepository.createRobot(requestRobot, token);
       robotLogger.info("Robot created");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Robot created.");
     } catch (ApiException e) {
-      System.out.println("got apiexc");
-      System.out.println(e.getResponseBody());
     } catch (Exception e) {
       robotLogger.error("Error occured while creating robot", e);
       plainResponse.setSuccess(false);
       plainResponse.setMessage("Error occured while creating robot.");
     }
     return plainResponse;
+  }
+
+  public String hybridRobotScript(String provider, String region, String superCluster, Organization organization,
+      String teamId, String bufferName,
+      String cloudInstanceName, String physicalInstanceName) {
+    try {
+      String script = robotRepository.hybridRobotScript(provider, region, superCluster, organization, teamId,
+          bufferName,
+          cloudInstanceName, physicalInstanceName);
+      robotLogger.info("Hybrid robot script created");
+      return script;
+    } catch (Exception e) {
+      robotLogger.error("Error occured while creating hybrid robot script", e);
+      return null;
+    }
   }
 
 }

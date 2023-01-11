@@ -562,15 +562,12 @@ public class DepartmentService {
       team.setName(teamId);
       JsonNode members = groupAdminRepository.getGroupField(team, "membermanager_user");
       Gson gson = new Gson();
-      System.out.println("members: " + gson.toJson(members));
       for (int i = 0; i < members.size(); i++) {
         teamManagers.add(userAdminRepository.getUserByUsername(members.get(i).asText()));
       }
       departmentLogger.info("Team managers sent");
       return teamManagers;
     } catch (Exception e) {
-      System.out.println(e.getMessage());
-      System.out.println(e.getCause());
       departmentLogger.error("Error sending managers.");
       return null;
     }
@@ -643,5 +640,16 @@ public class DepartmentService {
       plainResponse.setMessage("Error happened when adding founder to managers group " + e.getMessage());
     }
     return plainResponse;
+  }
+
+  public String getTeamNameFromTeamId(String teamId) {
+    try {
+      String teamName = groupAdminRepository.getGroupDescription(teamId);
+      departmentLogger.info("Team name sent.");
+      return teamName;
+    } catch (Exception e) {
+      departmentLogger.error("Error sending team name.");
+      return null;
+    }
   }
 }

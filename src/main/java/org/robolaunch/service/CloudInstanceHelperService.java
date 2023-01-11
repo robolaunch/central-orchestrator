@@ -17,8 +17,6 @@ import org.robolaunch.repository.abstracts.CloudInstanceHelperRepository;
 
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
-import io.kubernetes.client.openapi.apis.CoreV1Api;
-import io.kubernetes.client.openapi.models.V1Namespace;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi;
 import io.kubernetes.client.util.generic.options.ListOptions;
 import io.minio.errors.MinioException;
@@ -65,9 +63,6 @@ public class CloudInstanceHelperService {
       throws IOException, ApiException, InterruptedException, InvalidKeyException, NoSuchAlgorithmException,
       IllegalArgumentException, MinioException {
     ApiClient apiClient = cloudInstanceHelperRepository.adminApiClient(provider, region, superCluster);
-    System.out.println("bforganization: " + organization.getName());
-    System.out.println("bfteamId: " + teamId);
-    System.out.println("bfcloudInstanceName: " + cloudInstanceName);
     DynamicKubernetesApi vcApi = new DynamicKubernetesApi("tenancy.x-k8s.io", "v1alpha1",
         "virtualclusters", apiClient);
     ListOptions listOptions = new ListOptions();
@@ -97,7 +92,9 @@ public class CloudInstanceHelperService {
 
   public String generateBufferName() {
     try {
-      return cloudInstanceHelperRepository.generateBufferName();
+      String generatedBufferName = cloudInstanceHelperRepository.generateBufferName();
+      cloudInstanceHelperLogger.info("Buffer name generated: " + generatedBufferName);
+      return generatedBufferName;
     } catch (Exception e) {
       return null;
     }
@@ -447,6 +444,7 @@ public class CloudInstanceHelperService {
     try {
       Boolean doesCloudInstanceExist = cloudInstanceHelperRepository.doesCloudInstanceExist(organization, teamId,
           cloudInstanceName, provider, region, superCluster);
+      System.out.println("Cloud instance exist: " + doesCloudInstanceExist);
       return doesCloudInstanceExist;
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while calling doesCloudInstanceExist: " + e.getMessage());
@@ -454,15 +452,13 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public void connectAdminClient(String provider, String region, String superCluster) {
+  public String getAvailableCIDRBlock(String provider, String region, String superCluster) {
     try {
-      ApiClient myApiCl = apiClientManager.getAdminApiClient(provider, region, superCluster);
-      CoreV1Api api = new CoreV1Api(myApiCl);
-      for (V1Namespace ns : api.listNamespace(null, null, null, null, null, null, null, null, null, null).getItems()) {
-        System.out.println("MY NSSS: " + ns.getMetadata().getName());
-      }
+      String availableCIDRBlock = cloudInstanceHelperRepository.getAvailableCIDRBlock(provider, region, superCluster);
+      return availableCIDRBlock;
     } catch (Exception e) {
-      System.out.println(e.getMessage());
+      cloudInstanceHelperLogger.error("Error while calling getAvailableCIDRBlock: " + e.getMessage());
+      return null;
     }
   }
 }

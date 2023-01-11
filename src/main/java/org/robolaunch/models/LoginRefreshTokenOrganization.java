@@ -3,7 +3,6 @@ package org.robolaunch.models;
 import java.io.Serializable;
 
 public class LoginRefreshTokenOrganization implements Serializable {
-
   private String refreshToken;
   private String organization;
 

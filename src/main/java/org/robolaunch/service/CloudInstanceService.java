@@ -71,6 +71,7 @@ public class CloudInstanceService {
       cloudInstanceRepository.createVirtualCluster(bufferName, provider, region, superCluster);
       cloudInstanceLogger.info("Virtual cluster created");
       plainResponse.setSuccess(true);
+      Thread.sleep(5000);
     } catch (Exception e) {
       cloudInstanceLogger.error("Error while creating virtual cluster.", e);
       plainResponse.setSuccess(false);
@@ -447,13 +448,9 @@ public class CloudInstanceService {
       cloudInstanceLogger.info("Connection hub operator created");
       plainResponse.setSuccess(true);
     } catch (ApiException e) {
-      System.out.println("Error while creating connection hub operator." + e.getResponseBody());
-      System.out.println(e.getMessage());
-      System.out.println(e.getCode());
       cloudInstanceLogger.error("Error while creating connection hub operator.", e);
       plainResponse.setSuccess(false);
     } catch (Exception e) {
-      System.out.println("Error while creating connection hub operator." + e.getMessage());
       cloudInstanceLogger.error("Error while creating connection hub operator.", e);
       plainResponse.setSuccess(false);
     }

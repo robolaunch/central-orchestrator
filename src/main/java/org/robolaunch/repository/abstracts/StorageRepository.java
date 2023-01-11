@@ -5,9 +5,7 @@ import java.io.IOException;
 import org.robolaunch.exception.ApplicationException;
 import org.robolaunch.models.Artifact;
 import org.robolaunch.models.Cluster;
-import org.robolaunch.models.request.RequestCreateProvider;
-import org.robolaunch.models.request.RequestCreateRegion;
-import org.robolaunch.models.request.RequestCreateSuperCluster;
+import org.robolaunch.models.Organization;
 
 import com.google.gson.JsonObject;
 
@@ -56,6 +54,29 @@ public interface StorageRepository {
                         XmlParserException, IllegalArgumentException, IOException;
 
         String getSuperClusterContent(String provider, String region, String superCluster)
+                        throws InvalidKeyException, ErrorResponseException, InsufficientDataException,
+                        InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
+                        XmlParserException, IllegalArgumentException, IOException;
+
+        void createMinioFileForRobotScript(String provider, String region, String superCluster,
+                        Organization organization, String teamId, String physicalInstanceName, String script,
+                        String username)
+                        throws InvalidKeyException, ErrorResponseException, InsufficientDataException,
+                        InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
+                        XmlParserException, IllegalArgumentException, IOException;
+
+        void createPolicyForUser(String username)
+                        throws InvalidKeyException, ErrorResponseException, InsufficientDataException,
+                        InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
+                        XmlParserException, IllegalArgumentException, IOException;
+
+        void assignPolicyToUser(String username)
+                        throws InvalidKeyException, ErrorResponseException, InsufficientDataException,
+                        InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
+                        XmlParserException, IllegalArgumentException, IOException;
+
+        String generateUserScript(String provider, String region, String superCluster, Organization organization,
+                        String teamId, String physicalInstanceName, String username)
                         throws InvalidKeyException, ErrorResponseException, InsufficientDataException,
                         InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
                         XmlParserException, IllegalArgumentException, IOException;

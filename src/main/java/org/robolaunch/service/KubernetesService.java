@@ -62,17 +62,28 @@ public class KubernetesService {
 
   public Integer getCurrentBufferCountOfType(String instanceType, String provider, String region, String superCluster) {
     try {
-      // Get buffering count
-      Integer bufferingCount = kubernetesRepository.getCurrentBufferedCountOfType(instanceType, provider, region,
-          superCluster);
-
       // Get buffered count
-      Integer bufferedCount = kubernetesRepository.getCurrentBufferingCountOfType(instanceType, provider, region,
+      Integer bufferedCount = kubernetesRepository.getCurrentBufferedCountOfType(instanceType, provider, region,
           superCluster);
 
+      // Get buffering count
+      Integer bufferingCount = kubernetesRepository.getCurrentBufferingCountOfType(instanceType, provider, region,
+          superCluster);
       return bufferingCount + bufferedCount;
     } catch (Exception e) {
       kubernetesLogger.error("Error while getting cloud instances current from kubernetes buffer", e);
+      return null;
+    }
+  }
+
+  public Integer getReadyBufferCount(String instanceType, String provider, String region, String superCluster) {
+    try {
+      // Get buffering count
+      Integer bufferedCount = kubernetesRepository.getCurrentBufferedCountOfType(instanceType, provider, region,
+          superCluster);
+      return bufferedCount;
+    } catch (Exception e) {
+      kubernetesLogger.error("Error while getting cloud instances ready from kubernetes buffer", e);
       return null;
     }
   }
@@ -88,23 +99,17 @@ public class KubernetesService {
 
   public String checkIfTypeNeedsBuffer(String provider, String region,
       String superCluster) {
-    System.out.println("enters types.");
     ArrayList<String> types = storageService.getSuperClusterBufferTypes(provider, region, superCluster);
-    System.out.println("types -> " + types);
     try {
       for (String type : types) {
-        System.out.println("type -> " + type);
         Integer desiredBufferCount = getDesiredBufferCountOfType(type, provider, region, superCluster);
-        System.out.println("desiredBufferCount -> " + desiredBufferCount);
         Integer currentBufferCount = getCurrentBufferCountOfType(type, provider, region, superCluster);
-        System.out.println("currentBufferCount -> " + currentBufferCount);
         if (desiredBufferCount > currentBufferCount) {
           return type;
         }
       }
       return "";
     } catch (Exception e) {
-      System.out.println("Error while checking if type needs buffer: " + e.getMessage());
       return null;
     }
   }

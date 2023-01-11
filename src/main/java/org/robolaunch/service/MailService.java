@@ -112,11 +112,9 @@ public class MailService {
     public void sendMailToManagersOperation(Organization organization, String teamId, String cloudInstanceName,
             String operation) {
         try {
-            System.out.println("TeamID " + teamId);
             MailModel mail = new MailModel();
             ArrayList<User> teamManagers = departmentService.getTeamManagers(organization, teamId);
             String teamName = groupAdminRepository.getGroupDescription(teamId);
-            System.out.println("Team name: " + teamName);
             for (User user : teamManagers) {
                 mail.setTo(user.getEmail());
                 mail.setSubject("Robolaunch Robotics Cloud Instance " + operation);
@@ -131,8 +129,6 @@ public class MailService {
             }
             mailLogger.info("Informative mail sent to all managers.");
         } catch (Exception e) {
-            System.out.println(e.getMessage());
-            System.out.println(e.getCause());
             mailLogger.error("Failed to send mail.");
         }
     }

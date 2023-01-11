@@ -1,9 +1,6 @@
 package org.robolaunch.service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -21,6 +18,8 @@ import org.robolaunch.repository.abstracts.GroupRepository;
 import org.robolaunch.repository.abstracts.StorageRepository;
 
 import io.quarkus.arc.log.LoggerName;
+
+import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
 
 @ApplicationScoped
@@ -37,6 +36,9 @@ public class StorageService {
 
     @LoggerName("storageService")
     Logger storageLogger;
+
+    @Inject
+    JsonWebToken jwt;
 
     public void listArtifacts() {
         try {
@@ -106,7 +108,7 @@ public class StorageService {
             return storageRepository.getSuperClusterContent(provider, region, superCluster);
         } catch (Exception e) {
             storageLogger.error("Get content operation is failed: " + e);
-            throw new ApplicationException("Get content operation is failed: " + e);
+            return null;
         }
     }
 
@@ -122,6 +124,59 @@ public class StorageService {
                 list.add(type);
             }
             return list;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public PlainResponse createMinioFileForRobotScript(String provider, String region, String superCluster,
+            Organization organization, String teamId, String physicalInstanceName, String script, String username) {
+        PlainResponse plainResponse = new PlainResponse();
+        try {
+            storageRepository.createMinioFileForRobotScript(provider, region, superCluster, organization, teamId,
+                    physicalInstanceName, script, username);
+            plainResponse.setMessage("Minio file is created: " + organization.getName());
+            plainResponse.setSuccess(true);
+        } catch (Exception e) {
+            plainResponse.setMessage("Create file operation is failed.");
+            plainResponse.setSuccess(false);
+        }
+        return plainResponse;
+    }
+
+    public PlainResponse createPolicyForUser(String username) {
+        PlainResponse plainResponse = new PlainResponse();
+        try {
+            storageRepository.createPolicyForUser(username);
+            plainResponse.setMessage("Policy created");
+            plainResponse.setSuccess(true);
+        } catch (Exception e) {
+            plainResponse.setMessage("Policy cannot be created.");
+            plainResponse.setSuccess(false);
+        }
+        return plainResponse;
+    }
+
+    public PlainResponse assignPolicyToUser(String username) {
+        PlainResponse plainResponse = new PlainResponse();
+        try {
+            storageRepository.assignPolicyToUser(username);
+            plainResponse.setMessage("Policy assigned.");
+            plainResponse.setSuccess(true);
+        } catch (Exception e) {
+            plainResponse.setMessage("Policy cannot be assigned.");
+            plainResponse.setSuccess(false);
+        }
+        return plainResponse;
+    }
+
+    public String generateUserScript(String provider, String region, String superCluster, Organization organization,
+            String teamId, String physicalInstanceName, String username) {
+        try {
+            String userScript = storageRepository.generateUserScript(provider, region, superCluster, organization,
+                    teamId,
+                    physicalInstanceName, username);
+            return userScript;
         } catch (Exception e) {
             return null;
         }

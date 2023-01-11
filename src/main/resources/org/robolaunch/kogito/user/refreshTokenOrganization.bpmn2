@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_hjQ_wF0bEDuQCrgW_brPlQ" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_krOXEW9iEDuu5esgVb8FuA" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_loginRequestItem" structureRef="org.robolaunch.models.LoginRefreshTokenOrganization"/>
   <bpmn2:itemDefinition id="_responseRefreshTokenItem" structureRef="org.robolaunch.models.response.ResponseRefreshToken"/>
   <bpmn2:itemDefinition id="__8758DF08-E34E-42C0-BF60-F67799D37A0F_loginRequestInputXItem" structureRef="org.robolaunch.models.LoginRefreshTokenOrganization"/>
@@ -7,8 +7,8 @@
   <bpmn2:interface id="_8758DF08-E34E-42C0-BF60-F67799D37A0F_ServiceInterface" name="org.robolaunch.service.AccountService" implementationRef="org.robolaunch.service.AccountService">
     <bpmn2:operation id="_8758DF08-E34E-42C0-BF60-F67799D37A0F_ServiceOperation" name="refreshResponseOrganization" implementationRef="refreshResponseOrganization"/>
   </bpmn2:interface>
-  <bpmn2:collaboration id="_CB7785F9-F1FC-4E7B-8246-A414E690128D" name="Default Collaboration">
-    <bpmn2:participant id="_0E6D50D0-F97A-4EA9-A981-E88115898EE7" name="Pool Participant" processRef="refreshTokenOrganization"/>
+  <bpmn2:collaboration id="_B9A7A218-AA67-4184-9F54-C35728EB4289" name="Default Collaboration">
+    <bpmn2:participant id="_F2FEC775-6362-46BD-B631-12747CCC1254" name="Pool Participant" processRef="refreshTokenOrganization"/>
   </bpmn2:collaboration>
   <bpmn2:process id="refreshTokenOrganization" drools:packageName="org.robolaunch.kogito.user" drools:version="1.0" drools:adHoc="false" name="refreshTokenOrganization" isExecutable="true" processType="Public">
     <bpmn2:property id="loginRequest" itemSubjectRef="_loginRequestItem" name="loginRequest">
@@ -76,21 +76,21 @@
   <bpmndi:BPMNDiagram>
     <bpmndi:BPMNPlane bpmnElement="refreshTokenOrganization">
       <bpmndi:BPMNShape id="shape__58ECA43D-BD0F-4F10-A4B0-FC4FF2369890" bpmnElement="_58ECA43D-BD0F-4F10-A4B0-FC4FF2369890">
-        <dc:Bounds height="56" width="56" x="157" y="423"/>
+        <dc:Bounds height="56" width="56" x="397" y="481"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__8758DF08-E34E-42C0-BF60-F67799D37A0F" bpmnElement="_8758DF08-E34E-42C0-BF60-F67799D37A0F">
-        <dc:Bounds height="102" width="154" x="261" y="400"/>
+        <dc:Bounds height="102" width="154" x="501" y="458"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__F5D3A3AD-3AEF-48A2-89B2-6A98138314D7" bpmnElement="_F5D3A3AD-3AEF-48A2-89B2-6A98138314D7">
-        <dc:Bounds height="56" width="56" x="463" y="423"/>
+        <dc:Bounds height="56" width="56" x="703" y="481"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="edge_shape__58ECA43D-BD0F-4F10-A4B0-FC4FF2369890_to_shape__8758DF08-E34E-42C0-BF60-F67799D37A0F" bpmnElement="_6B663295-AA86-49A2-8E19-E607707EE3F2">
-        <di:waypoint x="185" y="451"/>
-        <di:waypoint x="261" y="451"/>
+        <di:waypoint x="425" y="509"/>
+        <di:waypoint x="501" y="509"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__8758DF08-E34E-42C0-BF60-F67799D37A0F_to_shape__F5D3A3AD-3AEF-48A2-89B2-6A98138314D7" bpmnElement="_E5F10D9C-6A96-45EC-94CC-F8094D22A3B9">
-        <di:waypoint x="338" y="451"/>
-        <di:waypoint x="463" y="451"/>
+        <di:waypoint x="578" y="509"/>
+        <di:waypoint x="703" y="509"/>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
@@ -129,7 +129,7 @@
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_hjQ_wF0bEDuQCrgW_brPlQ</bpmn2:source>
-    <bpmn2:target>_hjQ_wF0bEDuQCrgW_brPlQ</bpmn2:target>
+    <bpmn2:source>_krOXEW9iEDuu5esgVb8FuA</bpmn2:source>
+    <bpmn2:target>_krOXEW9iEDuu5esgVb8FuA</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>

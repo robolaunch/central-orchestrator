@@ -1,6 +1,7 @@
 package org.robolaunch.repository.concretes;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,14 +13,18 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
 import org.robolaunch.exception.ApplicationException;
+import org.robolaunch.minio.MinioAdminClient;
 import org.robolaunch.models.Artifact;
 import org.robolaunch.models.Cluster;
+import org.robolaunch.models.Organization;
 import org.robolaunch.repository.abstracts.StorageRepository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,6 +36,7 @@ import io.minio.GetObjectArgs;
 import io.minio.ListObjectsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
 import io.minio.Result;
 import io.minio.UploadObjectArgs;
@@ -47,8 +53,8 @@ import io.quarkus.infinispan.client.Remote;
 
 @ApplicationScoped
 public class StorageRepositoryImpl implements StorageRepository {
-    @Inject
-    MinioClient minioClient;
+    private MinioClient minioClient;
+
     @Inject
     RemoteCacheManager remoteCacheManager;
 
@@ -56,7 +62,27 @@ public class StorageRepositoryImpl implements StorageRepository {
     @Remote("test_domain")
     RemoteCache<String, Object> cache;
 
-    /* Send objects from local computer */
+    @ConfigProperty(name = "quarkus.minio.url")
+    String minioURL;
+
+    @ConfigProperty(name = "quarkus.minio.access-key")
+    String accessKey;
+
+    @ConfigProperty(name = "quarkus.minio.secret-key")
+    String secretKey;
+
+    @ConfigProperty(name = "quarkus.minio.admin.api.url")
+    String minioAdminApiURL;
+
+    @PostConstruct
+    public void init() {
+        try {
+            minioClient = MinioClient.builder().endpoint(minioURL).credentials(accessKey, secretKey).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void push(byte[] content, Artifact artifact, String bucket)
             throws MinioException, InvalidKeyException, NoSuchAlgorithmException,
@@ -83,6 +109,7 @@ public class StorageRepositoryImpl implements StorageRepository {
         while ((line = bufferedReader.readLine()) != null) {
             data += line + "\n";
         }
+
         ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
         var object = yamlMapper.readValue(data, Object.class);
         ObjectMapper jsonMapper = new ObjectMapper();
@@ -191,6 +218,66 @@ public class StorageRepositoryImpl implements StorageRepository {
         stream.close();
 
         return content;
+    }
+
+    @Override
+    public void createMinioFileForRobotScript(String provider, String region, String superCluster,
+            Organization organization, String teamId, String physicalInstanceName, String script, String username)
+            throws InvalidKeyException,
+            ErrorResponseException, InsufficientDataException, InternalException, InvalidResponseException,
+            NoSuchAlgorithmException, ServerException, XmlParserException, IllegalArgumentException, IOException {
+
+        String bucketName = "users";
+        String objectName = provider + "-" + region + "-" + superCluster + "-" + organization.getName()
+                + "-" + teamId + "-" + physicalInstanceName + ".sh";
+
+        Path tempFile = Files.createTempFile("temp", ".txt");
+        Files.write(tempFile, script.getBytes());
+        PutObjectArgs poa = PutObjectArgs.builder().bucket(bucketName).object(username + "/" + objectName)
+                .stream(new ByteArrayInputStream(script.getBytes()), script.getBytes().length, -1).build();
+        minioClient.putObject(poa);
+    }
+
+    @Override
+    public void createPolicyForUser(String username) throws InvalidKeyException,
+            ErrorResponseException, InsufficientDataException, InternalException, InvalidResponseException,
+            NoSuchAlgorithmException, ServerException, XmlParserException, IllegalArgumentException, IOException {
+        MinioAdminClient minioAdminClient = MinioAdminClient.builder()
+                .endpoint(minioAdminApiURL).credentials(accessKey,
+                        secretKey)
+                .build();
+        String policy = "{\"Version\": \"2012-10-17\",\"Statement\": [{\"Effect\": \"Allow\",\"Action\": [\"s3:GetBucketLocation\",\"s3:GetObject\"],\"Resource\": [\"arn:aws:s3:::users/"
+                + username + "/*" + "/]}]}";
+        if (username != null) {
+            minioAdminClient.addCannedPolicy(username, policy);
+        }
+
+    }
+
+    @Override
+    public void assignPolicyToUser(String username) throws InvalidKeyException,
+            ErrorResponseException, InsufficientDataException, InternalException, InvalidResponseException,
+            NoSuchAlgorithmException, ServerException, XmlParserException, IllegalArgumentException, IOException {
+        MinioAdminClient minioAdminClient = MinioAdminClient.builder()
+                .endpoint(minioAdminApiURL).credentials(accessKey,
+                        secretKey)
+                .build();
+        if (username != null) {
+            minioAdminClient.setPolicy("uid=" + username + ",cn=users,cn=accounts,dc=robolaunch,dc=dev", false,
+                    username);
+        }
+    }
+
+    @Override
+    public String generateUserScript(String provider, String region, String superCluster, Organization organization,
+            String teamId, String physicalInstanceName, String username) throws InvalidKeyException,
+            ErrorResponseException, InsufficientDataException, InternalException, InvalidResponseException,
+            NoSuchAlgorithmException, ServerException, XmlParserException, IllegalArgumentException, IOException {
+        Artifact artifact = new Artifact("template_script.sh", "");
+        String bucketName = "template-artifacts";
+        String scriptContent = getContent(artifact, bucketName);
+        System.out.println("script  content: " + scriptContent);
+        return null;
     }
 
 }

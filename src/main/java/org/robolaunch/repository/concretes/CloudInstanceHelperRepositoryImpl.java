@@ -69,6 +69,7 @@ import io.kubernetes.client.util.credentials.AccessTokenAuthentication;
 import io.kubernetes.client.util.credentials.ClientCertificateAuthentication;
 import io.kubernetes.client.util.generic.KubernetesApiResponse;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi;
+import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesListObject;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesObject;
 import io.kubernetes.client.util.generic.options.ListOptions;
 import io.minio.errors.MinioException;
@@ -87,6 +88,8 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   String kogitoDataIndexUrl;
   @ConfigProperty(name = "master.node.name")
   String masterNodeName;
+  @ConfigProperty(name = "sc.vc.ip")
+  String scvcIp;
 
   @Inject
   KubernetesRepository kubernetesRepository;
@@ -222,7 +225,9 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     ListOptions listOptions = new ListOptions();
     listOptions.setLabelSelector("robolaunch.io/buffer-instance=" + bufferName);
     var vcs = virtualClustersApi.list(listOptions);
-    System.out.println("vc count: " + vcs.getObject().getItems().size());
+    if (vcs.getObject().getItems().size() == 0) {
+      return false;
+    }
     for (var vc : vcs.getObject().getItems()) {
       Optional<String> vcName = Optional.ofNullable(vc).map(DynamicKubernetesObject::getMetadata)
           .map(m -> m.getName());
@@ -255,7 +260,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
         .map(m -> m.getLabels());
     String bufferName = labels.get()
         .get("robolaunch.io/buffer-instance");
-    System.out.println("picked bn: " + bufferName);
     return bufferName;
 
   }
@@ -389,7 +393,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
       if (podName.get().startsWith("cert-manager")) {
         Optional<String> phase = Optional.ofNullable(pod).map(V1Pod::getStatus)
             .map(m -> m.getPhase());
-        System.out.println("phase: " + phase.get());
         if (!phase.get().equals("Running")) {
           podsReady = false;
         }
@@ -765,8 +768,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
       }
     }
 
-    System.out.println("ExternalIP: " + "https://" + masterIP + ":" + nodePort);
-
     while (!virtualClustersApi.get("default", bufferName).getObject().getRaw().get("status")
         .getAsJsonObject()
         .get("phase").getAsString().equals("Running")) {
@@ -797,6 +798,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     byte[] byteCertificateAuthData = Base64.getDecoder().decode(certificateAuthorityData.getBytes("UTF-8"));
 
     String basePath = "https://" + masterIP + ":" + nodePort;
+    System.out.println("Base path: " + basePath);
     /* Virtual Cluster Client */
     ApiClient newClient = new ClientBuilder().setBasePath(basePath)
         .setAuthentication(new ClientCertificateAuthentication(byteClientCertData,
@@ -834,7 +836,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     CoreV1Api coreV1Api = apiClientManager.getCoreApi(provider, region, superCluster);
     DynamicKubernetesApi virtualClustersApi = apiClientManager.getVirtualClusterApi(provider, region, superCluster);
     String namespaceName = getNamespaceNameWithBufferName(bufferName, provider, region, superCluster);
-    System.out.println("Namespace Name: " + namespaceName);
     V1Secret sc = coreV1Api.readNamespacedSecret("admin-kubeconfig", namespaceName, null);
     Optional<Map<String, byte[]>> optionalData = Optional.ofNullable(sc.getData());
     var certData = optionalData.get().get("admin-kubeconfig");
@@ -865,8 +866,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
       }
     }
 
-    System.out.println("ExternalIP: " + "https://" + masterIP + ":" + nodePort);
-
     while (!virtualClustersApi.get("default", bufferName).getObject().getRaw().get("status")
         .getAsJsonObject()
         .get("phase").getAsString().equals("Running")) {
@@ -885,7 +884,8 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
     byte[] byteCertificateAuthData = Base64.getDecoder().decode(certificateAuthorityData.getBytes("UTF-8"));
 
-    String basePath = "https://" + masterIP + ":" + nodePort;
+    String basePath = "https://" + scvcIp + ":" + nodePort;
+    System.out.println("basepath: " + basePath);
     /* Virtual Cluster Client */
     ApiClient newClient = new ClientBuilder().setBasePath(basePath)
         .setAuthentication(new AccessTokenAuthentication(token))
@@ -925,7 +925,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     String clientKeyData = kubernetesServerCkData;
     byte[] byteClientKeyData = Base64.getDecoder().decode(clientKeyData.getBytes("UTF-8"));
 
-    System.out.println("creating vc");
     /* Virtual Cluster Client */
     ApiClient newClient = new ClientBuilder().setBasePath(kubernetesServerUrl)
         .setAuthentication(new ClientCertificateAuthentication(byteClientCertData, byteClientKeyData))
@@ -934,7 +933,27 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
         .build();
 
     VCCreated++;
-    System.out.println("Returning new VC! --- " + VCCreated);
     return newClient;
   }
+
+  @Override
+  public String getAvailableCIDRBlock(String provider, String region, String superCluster)
+      throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException, ApiException,
+      InterruptedException, MinioException {
+    DynamicKubernetesApi subnetApi = apiClientManager.getSubnetApi(provider, region, superCluster);
+    List<DynamicKubernetesObject> subnetList = subnetApi.list().getObject().getItems();
+    int counter = 1;
+    while (counter < 255) {
+      String subnetIP = "10.10." + counter + ".0/24";
+      if (subnetList.stream()
+          .anyMatch(subnet -> subnet.getRaw().get("spec").getAsJsonObject()
+              .get("cidrBlock").getAsString().equals(subnetIP))) {
+        counter++;
+      } else {
+        return subnetIP;
+      }
+    }
+    return null;
+  }
+
 }

@@ -16,20 +16,20 @@ public class Workspace implements Serializable {
     this.name = name;
   }
 
-  public List<Repository> getRepositories() {
-    return repositories;
-  }
-
-  public void setRepositories(List<Repository> repositories) {
-    this.repositories = repositories;
-  }
-
   public String getDistro() {
     return distro;
   }
 
   public void setDistro(String distro) {
     this.distro = distro;
+  }
+
+  public List<Repository> getRepositories() {
+    return repositories;
+  }
+
+  public void setRepositories(List<Repository> repositories) {
+    this.repositories = repositories;
   }
 
 }
