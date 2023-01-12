@@ -1,5 +1,7 @@
 package org.robolaunch.service;
 
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -18,6 +20,9 @@ import org.robolaunch.models.response.ResponseRegions;
 import org.robolaunch.models.response.ResponseRoboticsClouds;
 import org.robolaunch.models.response.ResponseSuperClusters;
 import org.robolaunch.repository.abstracts.KubernetesRepository;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import io.quarkus.arc.log.LoggerName;
 
@@ -235,6 +240,39 @@ public class KubernetesService {
       responseRoboticsClouds.setMessage("Error while fetching RoboticsClouds." + e.getMessage());
     }
     return responseRoboticsClouds;
+  }
+
+  public String readPlatformContent(String version, String resource) {
+    try {
+      String platformContent = kubernetesRepository.readPlatformContent(version, resource);
+      kubernetesLogger.info("Platform Content is read successfully.");
+      return platformContent;
+    } catch (Exception e) {
+      kubernetesLogger.error("Error while reading Platform Content: " + e.getMessage());
+      return null;
+    }
+  }
+
+  public JsonObject readPlatformContentAsJsonObject(String version, String resource) {
+    try {
+      JsonObject platformContent = kubernetesRepository.readPlatformContentAsJsonObject(version, resource);
+      kubernetesLogger.info("Platform Object is read successfully.");
+      return platformContent;
+    } catch (Exception e) {
+      kubernetesLogger.error("Error while reading Platform Object: " + e.getMessage());
+      return null;
+    }
+  }
+
+  public String getLatestPlatformVersion() {
+    try {
+      String platformVersion = kubernetesRepository.getLatestPlatformVersion();
+      kubernetesLogger.info("Latest platform version: " + platformVersion);
+      return platformVersion;
+    } catch (Exception e) {
+      kubernetesLogger.error("Cannot fetch platform version.");
+      return null;
+    }
   }
 
 }
