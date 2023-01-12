@@ -153,7 +153,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 .addProperty("diskSize", diskSize);
 
                 object.get("metadata").getAsJsonObject().get("labels")
-                                .getAsJsonObject().addProperty("robolaunch.io/buffer-instance", bufferName);
+                                .getAsJsonObject().addProperty("robolaunch.io/cloud-instance", bufferName);
 
                 machineDeploymentApi.create(new DynamicKubernetesObject(object));
         }
@@ -167,7 +167,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 Kubectl.label(V1Node.class).apiClient(adminApiClient)
                                 .name(
                                                 nodeName)
-                                .addLabel("robolaunch.io/buffer-instance", bufferName)
+                                .addLabel("robolaunch.io/cloud-instance", bufferName)
                                 .execute();
                 Kubectl.label(V1Node.class).apiClient(adminApiClient)
                                 .name(
@@ -194,19 +194,19 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 .get("spec")
                                 .getAsJsonObject()
                                 .get("nodeSelector").getAsJsonObject()
-                                .addProperty("robolaunch.io/buffer-instance", bufferName);
+                                .addProperty("robolaunch.io/cloud-instance", bufferName);
                 object.get("spec").getAsJsonObject().get("apiServer").getAsJsonObject().get("statefulset")
                                 .getAsJsonObject().get("spec").getAsJsonObject().get("template").getAsJsonObject()
                                 .get("spec")
                                 .getAsJsonObject()
                                 .get("nodeSelector").getAsJsonObject()
-                                .addProperty("robolaunch.io/buffer-instance", bufferName);
+                                .addProperty("robolaunch.io/cloud-instance", bufferName);
                 object.get("spec").getAsJsonObject().get("controllerManager").getAsJsonObject().get("statefulset")
                                 .getAsJsonObject().get("spec").getAsJsonObject().get("template").getAsJsonObject()
                                 .get("spec")
                                 .getAsJsonObject()
                                 .get("nodeSelector").getAsJsonObject()
-                                .addProperty("robolaunch.io/buffer-instance", bufferName);
+                                .addProperty("robolaunch.io/cloud-instance", bufferName);
                 object.get("spec").getAsJsonObject().get("apiServer")
                                 .getAsJsonObject().get("statefulset").getAsJsonObject()
                                 .get("spec").getAsJsonObject().get("template").getAsJsonObject()
@@ -234,7 +234,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 bufferName + ".local");
                 object.get("spec").getAsJsonObject().addProperty("clusterVersionName", "cv-" + bufferName);
                 object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject()
-                                .addProperty("robolaunch.io/buffer-instance", bufferName);
+                                .addProperty("robolaunch.io/cloud-instance", bufferName);
                 virtualClustersApi.create(new DynamicKubernetesObject(object)).throwsApiException();
         }
 
@@ -293,22 +293,22 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                         .skipDiscovery()
                                         .namespace("default")
                                         .name(bufferName)
-                                        .addLabel("robolaunch.io/buffer-instance", bufferName)
+                                        .addLabel("robolaunch.io/cloud-instance", bufferName)
                                         .addLabel("robolaunch.io/organization", organization.getName())
                                         .addLabel("robolaunch.io/team", teamId)
                                         .addLabel("robolaunch.io/region", region)
-                                        .addLabel("robolaunch.io/cloud-instance", cloudInstanceName)
+                                        .addLabel("robolaunch.io/cloud-instance-alias", cloudInstanceName)
                                         .execute();
                 } else {
                         Kubectl.label(V1VirtualCluster.class).apiClient(client)
                                         .skipDiscovery()
                                         .namespace("default")
                                         .name(bufferName)
-                                        .addLabel("robolaunch.io/buffer-instance", bufferName)
+                                        .addLabel("robolaunch.io/cloud-instance", bufferName)
                                         .addLabel("robolaunch.io/organization", organization.getName())
                                         .addLabel("robolaunch.io/team", teamId)
                                         .addLabel("robolaunch.io/region", region)
-                                        .addLabel("robolaunch.io/cloud-instance", cloudInstanceName)
+                                        .addLabel("robolaunch.io/cloud-instance-alias", cloudInstanceName)
                                         .addLabel("submariner.io/gateway", "4490")
                                         .execute();
                 }
@@ -326,7 +326,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         Kubectl.label(V1Node.class).apiClient(adminApiClient)
                                         .name(nodeName)
                                         .addLabel("robolaunch.io/organization", organization.getName())
-                                        .addLabel("robolaunch.io/cloud-instance", cloudInstanceName)
+                                        .addLabel("robolaunch.io/cloud-instance-alias", cloudInstanceName)
                                         .addLabel("robolaunch.io/team", teamId)
                                         .addLabel("robolaunch.io/region", region)
                                         .execute();
@@ -334,7 +334,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         Kubectl.label(V1Node.class).apiClient(adminApiClient)
                                         .name(nodeName)
                                         .addLabel("robolaunch.io/organization", organization.getName())
-                                        .addLabel("robolaunch.io/cloud-instance", cloudInstanceName)
+                                        .addLabel("robolaunch.io/cloud-instance-alias", cloudInstanceName)
                                         .addLabel("robolaunch.io/team", teamId)
                                         .addLabel("robolaunch.io/region", region)
                                         .addLabel("submariner.io/gateway", "4490")
@@ -359,11 +359,11 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                         + organization.getName()
                                         + "\"}, {\"op\":\"add\",\"path\":\"/spec/template/spec/nodeSelector/robolaunch.io~1team\",\"value\": \""
                                         + teamId
-                                        + "\"}, {\"op\":\"add\",\"path\":\"/spec/template/spec/nodeSelector/robolaunch.io~1cloud-instance\",\"value\": \""
+                                        + "\"}, {\"op\":\"add\",\"path\":\"/spec/template/spec/nodeSelector/robolaunch.io~1cloud-instance-alias\",\"value\": \""
                                         + cloudInstanceName
                                         + "\"}, {\"op\":\"add\",\"path\":\"/spec/template/spec/nodeSelector/robolaunch.io~1region\",\"value\": \""
                                         + region
-                                        + "\"}, {\"op\":\"add\",\"path\":\"/spec/template/spec/nodeSelector/robolaunch.io~1buffer-instance\",\"value\": \""
+                                        + "\"}, {\"op\":\"add\",\"path\":\"/spec/template/spec/nodeSelector/robolaunch.io~1cloud-instance\",\"value\": \""
                                         + bufferName + "\"}]";
                         Optional<String> statefulSetName = Optional.ofNullable(statefulset)
                                         .map(V1StatefulSet::getMetadata)
@@ -454,7 +454,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 object.get("metadata").getAsJsonObject().addProperty("name",
                                 "subnet-" + namespaceName);
                 object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
-                                "robolaunch.io/cloud-instance",
+                                "robolaunch.io/cloud-instance-alias",
                                 cloudInstanceName);
                 object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
                                 "robolaunch.io/team",
@@ -519,7 +519,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 metadata.get().setNamespace("default");
                 Map<String, String> nodeSelectors = new HashMap<>();
                 nodeSelectors.put("robolaunch.io/organization", organization.getName());
-                nodeSelectors.put("robolaunch.io/cloud-instance", cloudInstanceName);
+                nodeSelectors.put("robolaunch.io/cloud-instance-alias", cloudInstanceName);
                 nodeSelectors.put("robolaunch.io/team", teamId);
                 nodeSelectors.put("robolaunch.io/region", region);
                 Optional<V1PodSpec> podSpec = Optional.ofNullable(job).map(V1Job::getSpec).map(m -> m.getTemplate())
@@ -689,10 +689,10 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 V1Deployment deployment = (V1Deployment) obj;
                                 Map<String, String> nodeSelectors = new HashMap<>();
                                 nodeSelectors.put("robolaunch.io/organization", organization.getName());
-                                nodeSelectors.put("robolaunch.io/cloud-instance", cloudInstanceName);
+                                nodeSelectors.put("robolaunch.io/cloud-instance-alias", cloudInstanceName);
                                 nodeSelectors.put("robolaunch.io/team", teamId);
                                 nodeSelectors.put("robolaunch.io/region", region);
-                                nodeSelectors.put("robolaunch.io/buffer-instance", bufferName);
+                                nodeSelectors.put("robolaunch.io/cloud-instance", bufferName);
                                 Optional<V1PodSpec> podSpec = Optional.ofNullable(deployment.getSpec())
                                                 .map(V1DeploymentSpec::getTemplate)
                                                 .map(V1PodTemplateSpec::getSpec);
@@ -860,8 +860,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 Map<String, String> nodeSelectors = new HashMap<>();
                                 nodeSelectors.put("robolaunch.io/organization", organization.getName());
                                 nodeSelectors.put("robolaunch.io/team", teamId);
-                                nodeSelectors.put("robolaunch.io/cloud-instance", cloudInstanceName);
-                                nodeSelectors.put("robolaunch.io/buffer-instance", bufferName);
+                                nodeSelectors.put("robolaunch.io/cloud-instance-alias", cloudInstanceName);
+                                nodeSelectors.put("robolaunch.io/cloud-instance", bufferName);
                                 nodeSelectors.put("robolaunch.io/region", region);
 
                                 V1Deployment deployment = (V1Deployment) obj;
@@ -896,8 +896,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                         .name(
                                                         nodeName)
                                         .addLabel("robolaunch.io/organization", organization.getName())
-                                        .addLabel("robolaunch.io/buffer-instance", bufferName)
-                                        .addLabel("robolaunch.io/cloud-instance", cloudInstanceName)
+                                        .addLabel("robolaunch.io/cloud-instance", bufferName)
+                                        .addLabel("robolaunch.io/cloud-instance-alias", cloudInstanceName)
                                         .addLabel("robolaunch.io/team", teamId)
                                         .addLabel("robolaunch.io/region",
                                                         region)
@@ -907,8 +907,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                         .name(
                                                         nodeName)
                                         .addLabel("robolaunch.io/organization", organization.getName())
-                                        .addLabel("robolaunch.io/buffer-instance", bufferName)
-                                        .addLabel("robolaunch.io/cloud-instance", cloudInstanceName)
+                                        .addLabel("robolaunch.io/cloud-instance", bufferName)
+                                        .addLabel("robolaunch.io/cloud-instance-alias", cloudInstanceName)
                                         .addLabel("robolaunch.io/team", teamId)
                                         .addLabel("robolaunch.io/region",
                                                         region)
@@ -1037,10 +1037,10 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 V1Deployment deployment = (V1Deployment) obj;
                                 Map<String, String> nodeSelectors = new HashMap<>();
                                 nodeSelectors.put("robolaunch.io/organization", organization.getName());
-                                nodeSelectors.put("robolaunch.io/cloud-instance", cloudInstanceName);
+                                nodeSelectors.put("robolaunch.io/cloud-instance-alias", cloudInstanceName);
                                 nodeSelectors.put("robolaunch.io/team", teamId);
                                 nodeSelectors.put("robolaunch.io/region", region);
-                                nodeSelectors.put("robolaunch.io/buffer-instance", bufferName);
+                                nodeSelectors.put("robolaunch.io/cloud-instance", bufferName);
                                 Optional<V1PodSpec> podSpec = Optional.ofNullable(deployment).map(V1Deployment::getSpec)
                                                 .map(V1DeploymentSpec::getTemplate).map(V1PodTemplateSpec::getSpec);
                                 podSpec.get().setNodeSelector(nodeSelectors);
@@ -1204,7 +1204,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 V1Deployment deployment = (V1Deployment) obj;
                                 Map<String, String> nodeSelectors = new HashMap<>();
                                 nodeSelectors.put("robolaunch.io/organization", organization.getName());
-                                nodeSelectors.put("robolaunch.io/cloud-instance", cloudInstanceName);
+                                nodeSelectors.put("robolaunch.io/cloud-instance-alias", cloudInstanceName);
                                 nodeSelectors.put("robolaunch.io/team", teamId);
                                 Optional<V1PodSpec> podSpec = Optional.ofNullable(deployment).map(V1Deployment::getSpec)
                                                 .map(V1DeploymentSpec::getTemplate).map(V1PodTemplateSpec::getSpec);
@@ -1280,7 +1280,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 labels.put("robolaunch.io/cloud-instance", cloudInstanceName);
                 var subnet = subnetsApi.get("subnet-" + namespaceName);
                 object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
-                                "robolaunch.io/cloud-instance",
+                                "robolaunch.io/cloud-instance-alias",
                                 cloudInstanceName);
                 object.get("spec").getAsJsonObject().get("federationSpec").getAsJsonObject().get("helmRepository")
                                 .getAsJsonObject()
@@ -1439,7 +1439,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                                         .map(V1PodTemplateSpec::getSpec).map(m -> m.getNodeSelector());
                                         nodeSelectors.get()
                                                         .put(
-                                                                        "robolaunch.io/buffer-instance",
+                                                                        "robolaunch.io/cloud-instance",
                                                                         bufferName);
                                         nodeSelectors.get()
                                                         .put(
@@ -1447,7 +1447,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                                                         organization.getName());
                                         nodeSelectors.get()
                                                         .put(
-                                                                        "robolaunch.io/cloud-instance",
+                                                                        "robolaunch.io/cloud-instance-alias",
                                                                         cloudInstanceName);
                                         nodeSelectors.get()
                                                         .put(
@@ -1467,7 +1467,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                         yamlString += "---";
                                 }
                                 if (type.equals("V1alpha2Certificate")) {
-                                        Thread.sleep(5000);
+                                        // Thread.sleep(5000);
                                         customObjectsApi.createNamespacedCustomObject("cert-manager.io",
                                                         "v1",
                                                         "robot-system", "certificates", object,
@@ -1686,7 +1686,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         throws IOException, KubectlException, ApiException, InterruptedException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException {
                 ApiClient apiClient = apiClientManager.getAdminApiClient(provider, region, superCluster);
-                String patchString = "[{ \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1buffer-instance\" }]";
+                String patchString = "[{ \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1cloud-instance\" }]";
                 V1Patch patch = new V1Patch(patchString);
                 Kubectl.patch(V1Node.class).apiClient(apiClient).name(nodeName).patchContent(patch).execute();
         }
