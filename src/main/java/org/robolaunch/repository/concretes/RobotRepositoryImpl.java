@@ -265,10 +265,10 @@ public class RobotRepositoryImpl implements RobotRepository {
                                 .getAsJsonObject().addProperty("robolaunch.io/region",
                                                 requestRobot.getRegion());
                 robotObject.get("robot").getAsJsonObject().get("metadata").getAsJsonObject().get("labels")
-                                .getAsJsonObject().addProperty("robolaunch.io/buffer-instance",
+                                .getAsJsonObject().addProperty("robolaunch.io/cloud-instance",
                                                 requestRobot.getBufferName());
                 robotObject.get("robot").getAsJsonObject().get("metadata").getAsJsonObject().get("labels")
-                                .getAsJsonObject().addProperty("robolaunch.io/cloud-instance",
+                                .getAsJsonObject().addProperty("robolaunch.io/cloud-instance-alias",
                                                 requestRobot.getCloudInstanceName());
 
                 if (requestRobot.getRobot().getSpec().getRobotDevSuiteTemplate().isVdiEnabled()) {
@@ -354,8 +354,8 @@ public class RobotRepositoryImpl implements RobotRepository {
                                 + " robolaunch.io/organization=" + organization.getName()
                                 + " robolaunch.io/team=" + teamId
                                 + " robolaunch.io/region=" + region
-                                + " robolaunch.io/buffer-instance=" + bufferName
-                                + " robolaunch.io/cloud-instance=" + cloudInstanceName
+                                + " robolaunch.io/cloud-instancee=" + bufferName
+                                + " robolaunch.io/cloud-instance-alias=" + cloudInstanceName
                                 + " robolaunch.io/physical-instance= " + physicalInstanceName;
 
                 script.concat(label + "\n");
