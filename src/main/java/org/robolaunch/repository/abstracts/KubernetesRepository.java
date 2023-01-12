@@ -1,6 +1,7 @@
 package org.robolaunch.repository.abstracts;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import org.robolaunch.models.SuperClusterKubernetes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.google.gson.JsonObject;
 
 import io.kubernetes.client.openapi.ApiException;
 import io.minio.errors.MinioException;
@@ -83,4 +85,10 @@ public interface KubernetesRepository {
                         throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
                         JsonProcessingException;
 
+        public String readPlatformContent(String version, String resource) throws MalformedURLException, IOException;
+
+        public com.google.gson.JsonObject readPlatformContentAsJsonObject(String version, String resource)
+                        throws IOException;
+
+        public String getLatestPlatformVersion() throws IOException;
 }
