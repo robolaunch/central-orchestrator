@@ -1,5 +1,7 @@
 package org.robolaunch.service;
 
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -18,6 +20,9 @@ import org.robolaunch.models.response.ResponseRegions;
 import org.robolaunch.models.response.ResponseRoboticsClouds;
 import org.robolaunch.models.response.ResponseSuperClusters;
 import org.robolaunch.repository.abstracts.KubernetesRepository;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import io.quarkus.arc.log.LoggerName;
 
@@ -235,6 +240,27 @@ public class KubernetesService {
       responseRoboticsClouds.setMessage("Error while fetching RoboticsClouds." + e.getMessage());
     }
     return responseRoboticsClouds;
+  }
+
+  public String readRobotOperatorContent(String version) {
+    try {
+      String robotOperatorContent = kubernetesRepository.getRobotOperatorContent("platform-v0.1.0-prerelease");
+      kubernetesLogger.info("Robot Operator Content is read successfully.");
+      return robotOperatorContent;
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  public String readCertManagerContent(String version) {
+    try {
+      String certManagerContent = kubernetesRepository.getCertManagerContent("platform-v0.1.0-prerelease");
+      System.out.println(certManagerContent.substring(0, 600));
+      kubernetesLogger.info("Robot Operator Content is read successfully.");
+      return certManagerContent;
+    } catch (Exception e) {
+      return null;
+    }
   }
 
 }

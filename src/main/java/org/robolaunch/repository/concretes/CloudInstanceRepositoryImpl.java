@@ -32,6 +32,7 @@ import org.robolaunch.repository.abstracts.KubernetesRepository;
 import org.robolaunch.repository.abstracts.CloudInstanceRepository;
 import org.robolaunch.repository.abstracts.StorageRepository;
 import org.robolaunch.service.ApiClientManager;
+import org.robolaunch.service.KubernetesService;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -110,6 +111,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         JsonWebToken jwt;
         @Inject
         ApiClientManager apiClientManager;
+        @Inject
+        KubernetesService kubernetesService;
 
         @ConfigProperty(name = "quarkus.oidc.client.id")
         String clientId;
@@ -927,10 +930,9 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
                                 provider, region, superCluster);
                 String yamlString = "";
-                Artifact artifact = new Artifact();
-                artifact.setName("certManager.yaml");
-                String bucket = "template-artifacts";
-                String yaml = storageRepository.getContent(artifact, bucket);
+
+                // This version will be dynamic.
+                String yaml = kubernetesService.readCertManagerContent("platform-v0.1.0-prerelease");
                 List<Object> list = Yaml.loadAll(yaml);
                 CoreV1Api coreApi = new CoreV1Api(vcClient);
                 AppsV1Api appsApi = new AppsV1Api(vcClient);
@@ -1307,10 +1309,11 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         ApiClient vcClient = cloudInstanceHelperRepository
                                         .getVirtualClusterClientWithBufferName(bufferName, provider, region,
                                                         superCluster);
-                        Artifact artifact = new Artifact();
-                        artifact.setName("robotOperator.yaml");
                         String bucket = "template-artifacts";
-                        String yaml = storageRepository.getContent(artifact, bucket);
+
+                        // This version will be dynamic.
+                        String yaml = kubernetesService.readRobotOperatorContent("platform-v0.1.0-prerelease");
+
                         ModelMapper.addModelMap("cert-manager.io", "v1", "Certificate", "certificates",
                                         V1alpha2Certificate.class,
                                         V1alpha2CertificateList.class);

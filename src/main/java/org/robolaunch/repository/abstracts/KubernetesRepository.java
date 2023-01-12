@@ -1,6 +1,7 @@
 package org.robolaunch.repository.abstracts;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import org.robolaunch.models.SuperClusterKubernetes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.google.gson.JsonObject;
 
 import io.kubernetes.client.openapi.ApiException;
 import io.minio.errors.MinioException;
@@ -82,5 +84,9 @@ public interface KubernetesRepository {
                         String superClusterProcessId)
                         throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
                         JsonProcessingException;
+
+        public String getRobotOperatorContent(String version) throws MalformedURLException, IOException;
+
+        public String getCertManagerContent(String version) throws MalformedURLException, IOException;
 
 }
