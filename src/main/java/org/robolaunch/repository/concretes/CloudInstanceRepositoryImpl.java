@@ -931,8 +931,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 provider, region, superCluster);
                 String yamlString = "";
 
-                // This version will be dynamic.
-                String yaml = kubernetesService.readCertManagerContent("platform-v0.1.0-prerelease");
+                String version = kubernetesRepository.getLatestPlatformVersion();
+                String yaml = kubernetesService.readPlatformContent(version, "certManager");
                 List<Object> list = Yaml.loadAll(yaml);
                 CoreV1Api coreApi = new CoreV1Api(vcClient);
                 AppsV1Api appsApi = new AppsV1Api(vcClient);
@@ -1095,14 +1095,17 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
                                 provider, region, superCluster);
                 String yamlString = "";
-                Artifact artifact = new Artifact();
-                artifact.setName("connectionHubOperator.yaml");
+
+                String version = kubernetesRepository.getLatestPlatformVersion();
+                String yaml = kubernetesService.readPlatformContent(version, "connectionHub");
                 String bucket = "template-artifacts";
+
                 Artifact artifact2 = new Artifact();
                 artifact2.setName("certificateConnectionHub.yaml");
                 JsonObject object = storageRepository.getYamlTemplate(artifact2, bucket);
                 Artifact artifact4 = new Artifact();
                 artifact4.setName("issuerConnectionHub.yaml");
+
                 JsonObject objectIssuer = storageRepository.getYamlTemplate(artifact4, bucket);
                 ModelMapper.addModelMap("cert-manager.io", "v1", "Certificate", "certificates",
                                 V1alpha2Certificate.class,
@@ -1110,7 +1113,6 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 ModelMapper.addModelMap("cert-manager.io", "v1", "Issuer", "issuers",
                                 V1alpha2Issuer.class,
                                 V1alpha2IssuerList.class);
-                String yaml = storageRepository.getContent(artifact, bucket);
                 List<Object> list = Yaml.loadAll(yaml);
                 CoreV1Api coreApi = new CoreV1Api(vcClient);
                 AppsV1Api appsApi = new AppsV1Api(vcClient);
@@ -1270,14 +1272,14 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
                                 provider, region, superCluster);
                 DynamicKubernetesApi subnetsApi = apiClientManager.getSubnetApi(provider, region, superCluster);
-                Artifact artifact = new Artifact();
-                artifact.setName("connectionHubCloudInstance.yaml");
-                String bucket = "template-artifacts";
+                String version = kubernetesRepository.getLatestPlatformVersion();
+                JsonObject object = kubernetesService.readPlatformContentAsJsonObject(version,
+                                "connectionHubCloud");
+
                 DynamicKubernetesApi connectionHubApi = new DynamicKubernetesApi(
                                 "connection-hub.roboscale.io", "v1alpha1",
                                 "connectionhubs",
                                 vcClient);
-                JsonObject object = storageRepository.getYamlTemplate(artifact, bucket);
                 Map<String, String> labels = new HashMap<>();
                 labels.put("robolaunch.io/cloud-instance", cloudInstanceName);
                 var subnet = subnetsApi.get("subnet-" + namespaceName);
@@ -1311,8 +1313,10 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                                         superCluster);
                         String bucket = "template-artifacts";
 
-                        // This version will be dynamic.
-                        String yaml = kubernetesService.readRobotOperatorContent("platform-v0.1.0-prerelease");
+                        String version = kubernetesRepository.getLatestPlatformVersion();
+
+                        String yaml = kubernetesService.readPlatformContent(version,
+                                        "robotOperator");
 
                         ModelMapper.addModelMap("cert-manager.io", "v1", "Certificate", "certificates",
                                         V1alpha2Certificate.class,

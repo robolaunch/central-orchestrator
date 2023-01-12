@@ -242,23 +242,35 @@ public class KubernetesService {
     return responseRoboticsClouds;
   }
 
-  public String readRobotOperatorContent(String version) {
+  public String readPlatformContent(String version, String resource) {
     try {
-      String robotOperatorContent = kubernetesRepository.getRobotOperatorContent("platform-v0.1.0-prerelease");
-      kubernetesLogger.info("Robot Operator Content is read successfully.");
-      return robotOperatorContent;
+      String platformContent = kubernetesRepository.readPlatformContent(version, resource);
+      kubernetesLogger.info("Platform Content is read successfully.");
+      return platformContent;
     } catch (Exception e) {
+      kubernetesLogger.error("Error while reading Platform Content: " + e.getMessage());
       return null;
     }
   }
 
-  public String readCertManagerContent(String version) {
+  public JsonObject readPlatformContentAsJsonObject(String version, String resource) {
     try {
-      String certManagerContent = kubernetesRepository.getCertManagerContent("platform-v0.1.0-prerelease");
-      System.out.println(certManagerContent.substring(0, 600));
-      kubernetesLogger.info("Robot Operator Content is read successfully.");
-      return certManagerContent;
+      JsonObject platformContent = kubernetesRepository.readPlatformContentAsJsonObject(version, resource);
+      kubernetesLogger.info("Platform Object is read successfully.");
+      return platformContent;
     } catch (Exception e) {
+      kubernetesLogger.error("Error while reading Platform Object: " + e.getMessage());
+      return null;
+    }
+  }
+
+  public String getLatestPlatformVersion() {
+    try {
+      String platformVersion = kubernetesRepository.getLatestPlatformVersion();
+      kubernetesLogger.info("Latest platform version: " + platformVersion);
+      return platformVersion;
+    } catch (Exception e) {
+      kubernetesLogger.error("Cannot fetch platform version.");
       return null;
     }
   }

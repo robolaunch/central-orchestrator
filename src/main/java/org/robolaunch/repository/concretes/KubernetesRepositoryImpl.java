@@ -29,6 +29,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.gson.Gson;
 
 import io.kubernetes.client.openapi.ApiException;
@@ -503,6 +504,7 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
     return roboticsClouds;
   }
 
+  @Override
   public ArrayList<RoboticsCloudKubernetes> getRoboticsCloudsTeam(Organization organization, String teamId)
       throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException,
       JsonMappingException, JsonProcessingException {
@@ -527,6 +529,7 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
     return roboticsClouds;
   }
 
+  @Override
   public ArrayList<RoboticsCloudKubernetes> getRoboticsCloudsUser(Organization organization, String teamId,
       String username)
       throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException,
@@ -553,7 +556,8 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
     return roboticsClouds;
   }
 
-  public String getRobotOperatorContent(String version) throws IOException {
+  @Override
+  public String readPlatformContent(String version, String resource) throws IOException {
     URL url = new URL("https://raw.githubusercontent.com/robolaunch/robolaunch/main/platform.json");
     InputStreamReader reader = new InputStreamReader(url.openStream());
     Gson gson = new Gson();
@@ -562,53 +566,88 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
     String yamlString = "";
     for (int i = 0; i < versions.size(); i++) {
       com.google.gson.JsonObject versionObj = versions.get(i).getAsJsonObject();
+      String innerURL = "";
       if (versionObj.get("version").getAsString().equals(version)) {
-        String robotOperatorURL = versionObj.get("roboticsCloud").getAsJsonObject().get("kubernetes").getAsJsonObject()
-            .get("operators").getAsJsonObject()
-            .get("robot")
-            .getAsJsonObject().get("release").getAsString();
 
-        URL robotOperatorConnection = new URL(robotOperatorURL);
-        InputStreamReader robotOperatorReader = new InputStreamReader(robotOperatorConnection.openStream());
-        BufferedReader br = new BufferedReader(robotOperatorReader);
+        if (resource.equals("certManager")) {
+          innerURL = versionObj.get("roboticsCloud").getAsJsonObject().get("kubernetes").getAsJsonObject()
+              .get("operators").getAsJsonObject().get("cert-manager").getAsJsonObject().get("release").getAsString();
+        } else if (resource.equals("robotOperator")) {
+          innerURL = versionObj.get("roboticsCloud").getAsJsonObject().get("kubernetes").getAsJsonObject()
+              .get("operators").getAsJsonObject()
+              .get("robot")
+              .getAsJsonObject().get("release").getAsString();
+        } else if (resource.equals("connectionHub")) {
+          innerURL = versionObj.get("roboticsCloud").getAsJsonObject().get("kubernetes")
+              .getAsJsonObject()
+              .get("operators").getAsJsonObject().get("connectionHub").getAsJsonObject().get("release").getAsString();
+        }
+
+        URL innerConnection = new URL(innerURL);
+        InputStreamReader innerReader = new InputStreamReader(innerConnection.openStream());
+        BufferedReader br = new BufferedReader(innerReader);
 
         String line;
         while ((line = br.readLine()) != null) {
           yamlString += line + "\n";
         }
         br.close();
-        robotOperatorReader.close();
+        innerReader.close();
       }
     }
     return yamlString;
   }
 
-  public String getCertManagerContent(String version) throws IOException {
+  @Override
+  public com.google.gson.JsonObject readPlatformContentAsJsonObject(String version, String resource)
+      throws IOException {
     URL url = new URL("https://raw.githubusercontent.com/robolaunch/robolaunch/main/platform.json");
     InputStreamReader reader = new InputStreamReader(url.openStream());
     Gson gson = new Gson();
     com.google.gson.JsonObject wholeObject = gson.fromJson(reader, com.google.gson.JsonObject.class);
     com.google.gson.JsonArray versions = wholeObject.getAsJsonArray("versions");
     String yamlString = "";
+    com.google.gson.JsonObject resultingJson = new com.google.gson.JsonObject();
     for (int i = 0; i < versions.size(); i++) {
       com.google.gson.JsonObject versionObj = versions.get(i).getAsJsonObject();
+      String innerURL = "";
       if (versionObj.get("version").getAsString().equals(version)) {
-        String certManagerURL = versionObj.get("roboticsCloud").getAsJsonObject().get("kubernetes").getAsJsonObject()
-            .get("operators").getAsJsonObject().get("cert-manager").getAsJsonObject().get("release").getAsString();
 
-        URL certManagerConnection = new URL(certManagerURL);
-        InputStreamReader certManagerReader = new InputStreamReader(certManagerConnection.openStream());
-        BufferedReader br = new BufferedReader(certManagerReader);
+        if (resource.equals("connectionHubCloud")) {
+          innerURL = versionObj.get("roboticsCloud").getAsJsonObject().get("kubernetes").getAsJsonObject()
+              .get("operators").getAsJsonObject().get("connectionHub").getAsJsonObject().get("subresources")
+              .getAsJsonObject().get("cloudInstance").getAsString();
+        }
+
+        URL innerConnection = new URL(innerURL);
+        InputStreamReader innerReader = new InputStreamReader(innerConnection.openStream());
+        BufferedReader br = new BufferedReader(innerReader);
 
         String line;
         while ((line = br.readLine()) != null) {
           yamlString += line + "\n";
         }
         br.close();
-        certManagerReader.close();
+
+        ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
+        var object = yamlMapper.readValue(yamlString, Object.class);
+        ObjectMapper jsonMapper = new ObjectMapper();
+        var jsonString = jsonMapper.writeValueAsString(object);
+
+        resultingJson = new Gson().fromJson(jsonString, com.google.gson.JsonObject.class);
       }
     }
-    return yamlString;
+    return resultingJson;
+  }
+
+  public String getLatestPlatformVersion() throws IOException {
+    URL url = new URL("https://raw.githubusercontent.com/robolaunch/robolaunch/main/platform.json");
+    InputStreamReader reader = new InputStreamReader(url.openStream());
+    Gson gson = new Gson();
+    com.google.gson.JsonObject wholeObject = gson.fromJson(reader, com.google.gson.JsonObject.class);
+    com.google.gson.JsonArray versions = wholeObject.getAsJsonArray("versions");
+
+    return versions.get(0).getAsJsonObject().get("version").getAsString();
   }
 
 }

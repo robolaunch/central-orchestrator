@@ -85,8 +85,10 @@ public interface KubernetesRepository {
                         throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
                         JsonProcessingException;
 
-        public String getRobotOperatorContent(String version) throws MalformedURLException, IOException;
+        public String readPlatformContent(String version, String resource) throws MalformedURLException, IOException;
 
-        public String getCertManagerContent(String version) throws MalformedURLException, IOException;
+        public com.google.gson.JsonObject readPlatformContentAsJsonObject(String version, String resource)
+                        throws IOException;
 
+        public String getLatestPlatformVersion() throws IOException;
 }
