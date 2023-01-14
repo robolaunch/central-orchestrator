@@ -10,7 +10,8 @@ import io.kubernetes.client.openapi.ApiException;
 import io.minio.errors.MinioException;
 
 public interface FleetRepository {
-   public void createFleet(RequestFleet requestFleet, String token)
-         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException, ApiException,
-         InterruptedException, MinioException;
+      public void createFleet(RequestFleet requestFleet, String token)
+                  throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
+                  ApiException,
+                  InterruptedException, MinioException;
 }

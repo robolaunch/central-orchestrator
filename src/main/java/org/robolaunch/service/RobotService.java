@@ -56,7 +56,7 @@ public class RobotService {
     return plainResponse;
   }
 
-  public PlainResponse createRobotBuildManager(RobotBuildManager robotBuildManager, String bufferName, String provider,
+  public PlainResponse createBuildManager(RobotBuildManager robotBuildManager, String bufferName, String provider,
       String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
@@ -72,7 +72,7 @@ public class RobotService {
     return plainResponse;
   }
 
-  public PlainResponse createRobotLaunchManager(RobotLaunchManager robotLaunchManager, String bufferName,
+  public PlainResponse createLaunchManager(RobotLaunchManager robotLaunchManager, String bufferName,
       String provider, String region, String superCluster) {
     PlainResponse plainResponse = new PlainResponse();
     try {
@@ -84,22 +84,6 @@ public class RobotService {
     } catch (Exception e) {
       plainResponse.setSuccess(false);
       plainResponse.setMessage("Error occured while creating robot launch manager.");
-    }
-    return plainResponse;
-  }
-
-  public PlainResponse createRobotDevSuite(RobotDevSuite robotDevSuite, String bufferName, String provider,
-      String region, String superCluster) {
-    PlainResponse plainResponse = new PlainResponse();
-    try {
-      String token = jwt.getRawToken();
-      robotRepository.createRobotDevelopmentSuite(robotDevSuite, bufferName, token, provider, region, superCluster);
-      robotLogger.info("Robot development suite created");
-      plainResponse.setSuccess(true);
-      plainResponse.setMessage("Robot development suite created.");
-    } catch (Exception e) {
-      plainResponse.setSuccess(false);
-      plainResponse.setMessage("Error occured while creating robot development suite.");
     }
     return plainResponse;
   }

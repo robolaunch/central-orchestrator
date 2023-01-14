@@ -16,6 +16,7 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.robolaunch.models.Fleet;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.Provider;
 import org.robolaunch.models.RegionKubernetes;
@@ -634,7 +635,7 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
           JsonNode robotNode = requestRobotNode.get("robot");
           if (organizationNode.get("name").asText().equals(organization.getName())) {
             Robot singleRobot = new Robot();
-
+            singleRobot.setProcessId(childProcessInstances.getJsonObject(k).getString("id"));
             // Set Name
             JsonNode metadataNode = robotNode.get("metadata");
             singleRobot.setName(metadataNode.get("name").asText());
@@ -867,6 +868,151 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
     }
     return robots;
 
+  }
+
+  @Override
+  public ArrayList<Fleet> getFleetsOrganization(Organization organization)
+      throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
+      JsonProcessingException, ExecutionException {
+    ArrayList<RoboticsCloudKubernetes> rcso = getRoboticsCloudsOrganization(organization);
+
+    ArrayList<Fleet> fleets = new ArrayList<Fleet>();
+    for (RoboticsCloudKubernetes rcs : rcso) {
+      ArrayList<Fleet> insideFleets = getFleetsRoboticsCloudOrganization(organization, rcs.getProcessId());
+      for (Fleet fleet : insideFleets) {
+        fleets.add(fleet);
+      }
+    }
+    return fleets;
+  }
+
+  public ArrayList<Fleet> getFleetsRoboticsCloudOrganization(Organization organization,
+      String roboticsCloudProcessId) throws java.util.concurrent.ExecutionException, InterruptedException,
+      JsonMappingException, JsonProcessingException {
+    String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\"" + roboticsCloudProcessId
+        + "\"}}, {state: {equal: ACTIVE}}]}){id state childProcessInstances{id processName state variables}}}";
+
+    Response response = graphqlClient.executeSync(queryStr);
+    JsonObject data = response.getData();
+    JsonArray processInstances = data.getJsonArray("ProcessInstances");
+    ArrayList<Fleet> fleets = new ArrayList<Fleet>();
+
+    ObjectMapper mapper = new ObjectMapper();
+    JsonArray childProcessInstances = processInstances.getJsonObject(0).getJsonArray("childProcessInstances");
+
+    for (int i = 0; i < childProcessInstances.size(); i++) {
+      if (childProcessInstances.getJsonObject(i).getString("processName").equals("fleet")) {
+        JsonNode childNode = mapper.readTree(childProcessInstances.getJsonObject(i).getString("variables"));
+        // check if childnode has organization node
+        if (childNode.get("organization") == null) {
+          continue;
+        }
+        JsonNode requestFleetNode = childNode.get("requestFleet");
+        JsonNode fleetNode = requestFleetNode.get("fleet");
+
+        JsonNode organizationNode = childNode.get("organization");
+        if (organizationNode.get("name").asText().equals(organization.getName())) {
+          Fleet fleet = new Fleet();
+
+          // Set Name
+          JsonNode metadataNode = fleetNode.get("metadata");
+          fleet.setName(metadataNode.get("name").asText());
+          fleets.add(fleet);
+        }
+      }
+    }
+
+    return fleets;
+  }
+
+  @Override
+  public ArrayList<Fleet> getFleetsTeam(Organization organization, String teamId)
+      throws java.util.concurrent.ExecutionException, InterruptedException, ExecutionException, InvalidKeyException,
+      NoSuchAlgorithmException, IllegalArgumentException, IOException, ApiException, MinioException {
+    ArrayList<RoboticsCloudKubernetes> rcso = getRoboticsCloudsTeam(organization, teamId);
+
+    ArrayList<Fleet> fleets = new ArrayList<Fleet>();
+    for (RoboticsCloudKubernetes rcs : rcso) {
+      ArrayList<Fleet> insideFleets = getFleetsRoboticsCloudTeam(organization, teamId, rcs.getProcessId());
+      for (Fleet fleet : insideFleets) {
+        fleets.add(fleet);
+      }
+    }
+    return fleets;
+  }
+
+  public ArrayList<Fleet> getFleetsRoboticsCloudTeam(Organization organization, String teamId,
+      String roboticsCloudProcessId) throws java.util.concurrent.ExecutionException, InterruptedException,
+      JsonMappingException, JsonProcessingException {
+    String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\"" + roboticsCloudProcessId
+        + "\"}}, {state: {equal: ACTIVE}}]}){id state childProcessInstances{id processName state variables}}}";
+
+    Response response = graphqlClient.executeSync(queryStr);
+    JsonObject data = response.getData();
+    JsonArray processInstances = data.getJsonArray("ProcessInstances");
+    ArrayList<Fleet> fleets = new ArrayList<Fleet>();
+
+    ObjectMapper mapper = new ObjectMapper();
+    JsonArray childProcessInstances = processInstances.getJsonObject(0).getJsonArray("childProcessInstances");
+
+    for (int i = 0; i < childProcessInstances.size(); i++) {
+      if (childProcessInstances.getJsonObject(i).getString("processName").equals("fleet")) {
+        JsonNode childNode = mapper.readTree(childProcessInstances.getJsonObject(i).getString("variables"));
+        // check if childnode has organization node
+        if (childNode.get("organization") == null) {
+          continue;
+        }
+        JsonNode requestFleetNode = childNode.get("requestFleet");
+        JsonNode fleetNode = requestFleetNode.get("fleet");
+
+        JsonNode organizationNode = childNode.get("organization");
+        if (organizationNode.get("name").asText().equals(organization.getName())
+            && childNode.get("teamId").asText().equals(teamId)) {
+          Fleet fleet = new Fleet();
+
+          // Set Name
+          JsonNode metadataNode = fleetNode.get("metadata");
+          fleet.setName(metadataNode.get("name").asText());
+          fleets.add(fleet);
+        }
+      }
+    }
+
+    return fleets;
+  }
+
+  @Override
+  public ArrayList<Fleet> getFleetsRoboticsCloud(String roboticsCloudProcessId)
+      throws java.util.concurrent.ExecutionException, InterruptedException, ExecutionException, InvalidKeyException,
+      NoSuchAlgorithmException, IllegalArgumentException, IOException, ApiException, MinioException {
+
+    String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\"" + roboticsCloudProcessId
+        + "\"}}, {state: {equal: ACTIVE}}]}){id state childProcessInstances{id processName state variables}}}";
+
+    Response response = graphqlClient.executeSync(queryStr);
+    JsonObject data = response.getData();
+    JsonArray processInstances = data.getJsonArray("ProcessInstances");
+    ArrayList<Fleet> fleets = new ArrayList<Fleet>();
+
+    ObjectMapper mapper = new ObjectMapper();
+    JsonArray childProcessInstances = processInstances.getJsonObject(0).getJsonArray("childProcessInstances");
+
+    for (int i = 0; i < childProcessInstances.size(); i++) {
+      if (childProcessInstances.getJsonObject(i).getString("processName").equals("fleet")) {
+        JsonNode childNode = mapper.readTree(childProcessInstances.getJsonObject(i).getString("variables"));
+
+        JsonNode requestFleetNode = childNode.get("requestFleet");
+        JsonNode fleetNode = requestFleetNode.get("fleet");
+
+        Fleet fleet = new Fleet();
+        // Set Name
+        JsonNode metadataNode = fleetNode.get("metadata");
+        fleet.setName(metadataNode.get("name").asText());
+        fleets.add(fleet);
+      }
+    }
+
+    return fleets;
   }
 
   @Override

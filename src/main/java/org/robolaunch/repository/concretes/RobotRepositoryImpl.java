@@ -106,29 +106,6 @@ public class RobotRepositoryImpl implements RobotRepository {
                                 superCluster);
                 DynamicKubernetesApi robotBuildManagerApi = new DynamicKubernetesApi("robot.roboscale.io", "v1alpha1",
                                 "buildmanagers", robotsApi);
-                // Get template RobotBuildManager YAML from MINIO.
-                Artifact artifact = new Artifact();
-                artifact.setName("robotBuildManager.yaml");
-                String bucket = "template-artifacts";
-                JsonObject object = storageRepository.getYamlTemplate(artifact, bucket);
-
-                object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
-                                "robolaunch.io/target-robot",
-                                robotBuildManager.getTargetRobot());
-
-                for (RobotBuildManagerStep step : robotBuildManager.getSteps()) {
-                        JsonObject stepObject = new JsonObject();
-                        stepObject.addProperty("name", step.getName());
-                        stepObject.addProperty("workspace", step.getWorkspace());
-                        if (step.getCodeType().equals("command")) {
-                                stepObject.addProperty("command", step.getCode());
-                        }
-                        if (step.getCodeType().equals("script")) {
-                                stepObject.addProperty("script", step.getCode());
-                        }
-
-                        object.get("spec").getAsJsonObject().get("steps").getAsJsonArray().add(stepObject);
-                }
 
                 robotBuildManagerApi.create(new DynamicKubernetesObject(object));
 
@@ -143,83 +120,6 @@ public class RobotRepositoryImpl implements RobotRepository {
                                 superCluster);
                 DynamicKubernetesApi robotBuildManagerApi = new DynamicKubernetesApi("robot.roboscale.io", "v1alpha1",
                                 "launchmanagers", robotsApi);
-                // Get template RobotLaunchManager YAML from MINIO.
-                Artifact artifact = new Artifact();
-                artifact.setName("robotLaunchManager.yaml");
-                String bucket = "template-artifacts";
-                JsonObject object = storageRepository.getYamlTemplate(artifact, bucket);
-
-                object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
-                                "robolaunch.io/target-robot",
-                                robotLaunchManager.getTargetRobot());
-
-                object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
-                                "robolaunch.io/target-vdi",
-                                robotLaunchManager.getTargetVDI());
-
-                for (RobotLaunchManagerLaunchItem item : robotLaunchManager.getLaunchItems()) {
-                        JsonObject itemObject = new JsonObject();
-                        JsonObject selectors = new JsonObject();
-                        if (item.getCluster().equals("cloud")) {
-                                selectors.addProperty("robolaunch.io/cloud-instance", item.getClusterName());
-                        } else if (item.getCluster().equals("physical")) {
-                                selectors.addProperty("robolaunch.io/physical-instance", item.getClusterName());
-                        }
-                        itemObject.add("selector", selectors);
-                        itemObject.addProperty("workspace", item.getWorkspace());
-                        itemObject.addProperty("repository", item.getRepository());
-                        itemObject.addProperty("namespacing", item.isNamespacing());
-                        itemObject.addProperty("launchFilePath", item.getLaunchFilePath());
-
-                        object.get("spec").getAsJsonObject().get("launch").getAsJsonObject().add(item.getName(),
-                                        itemObject);
-                }
-
-                robotBuildManagerApi.create(new DynamicKubernetesObject(object));
-
-        }
-
-        @Override
-        public void createRobotDevelopmentSuite(RobotDevSuite robotDevSuite, String bufferName, String token,
-                        String provider, String region, String superCluster)
-                        throws InvalidKeyException, NoSuchAlgorithmException,
-                        IllegalArgumentException, MinioException, IOException, ApiException, InterruptedException {
-                ApiClient robotsApi = cloudInstanceHelperRepository.userApiClient(bufferName, token, provider, region,
-                                superCluster);
-                DynamicKubernetesApi robotBuildManagerApi = new DynamicKubernetesApi("robot.roboscale.io", "v1alpha1",
-                                "robotdevsuites", robotsApi);
-
-                // Get template RobotDevelopmentSuite YAML from MINIO.
-                Artifact artifact = new Artifact();
-                artifact.setName("robotDevelopmentSuite.yaml");
-                String bucket = "template-artifacts";
-                JsonObject object = storageRepository.getYamlTemplate(artifact, bucket);
-
-                object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
-                                "robolaunch.io/target-robot",
-                                robotDevSuite.getTargetRobot());
-                object.get("metadata").getAsJsonObject().addProperty("name", robotDevSuite.getName());
-
-                object.get("spec").getAsJsonObject().addProperty("vdiEnabled", robotDevSuite.isVdiEnabled());
-                object.get("spec").getAsJsonObject().addProperty("ideEnabled", robotDevSuite.isIdeEnabled());
-
-                if (robotDevSuite.isVdiEnabled()) {
-                        JsonObject vdiObject = new JsonObject();
-                        vdiObject.addProperty("serviceType", robotDevSuite.getVdiTemplate().getServiceType());
-                        vdiObject.addProperty("ingress", robotDevSuite.getVdiTemplate().isIngress());
-                        vdiObject.addProperty("privileged", robotDevSuite.getVdiTemplate().isPrivileged());
-
-                        String webRTCPorts = robotHelperRepository.getAvailablePortRange(3, provider, region,
-                                        superCluster);
-                        vdiObject.addProperty("webrtcPortRange", webRTCPorts);
-                }
-
-                if (robotDevSuite.isIdeEnabled()) {
-                        JsonObject ideObject = new JsonObject();
-                        ideObject.addProperty("serviceType", robotDevSuite.getIdeTemplate().getServiceType());
-                        ideObject.addProperty("ingress", robotDevSuite.getIdeTemplate().isIngress());
-                        ideObject.addProperty("privileged", robotDevSuite.getIdeTemplate().isPrivileged());
-                }
 
                 robotBuildManagerApi.create(new DynamicKubernetesObject(object));
 
