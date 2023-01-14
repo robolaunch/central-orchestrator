@@ -14,7 +14,7 @@ public class RoboticsCloudKubernetes implements Serializable {
    private String teamName;
    private String bufferName;
    private Integer diskSize;
-   private Integer vCPU;
+   private Integer VCPU;
    private Integer GPU;
    private Integer memory;
    private Integer fleets;
@@ -111,12 +111,12 @@ public class RoboticsCloudKubernetes implements Serializable {
       this.diskSize = diskSize;
    }
 
-   public Integer getvCPU() {
-      return vCPU;
+   public Integer getVCPU() {
+      return VCPU;
    }
 
-   public void setvCPU(Integer vCPU) {
-      this.vCPU = vCPU;
+   public void setVCPU(Integer VCPU) {
+      this.VCPU = VCPU;
    }
 
    public Integer getMemory() {
@@ -131,8 +131,8 @@ public class RoboticsCloudKubernetes implements Serializable {
       return GPU;
    }
 
-   public void setGPU(Integer gPU) {
-      GPU = gPU;
+   public void setGPU(Integer GPU) {
+      this.GPU = GPU;
    }
 
    public Integer getFleets() {

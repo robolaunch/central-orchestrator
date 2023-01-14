@@ -198,27 +198,29 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
   }
 
   @Override
-  public Boolean providerExists(String provider) throws java.util.concurrent.ExecutionException, InterruptedException {
-    String queryStr = "query{ProcessInstances(where: {processName: {equal:\"provider\"}}){id variables}}";
+  public Boolean providerExists(String provider) throws java.util.concurrent.ExecutionException, InterruptedException,
+      JsonMappingException, JsonProcessingException {
+    System.out.println("in");
+    String queryStr = "query{ProcessInstances(where: {and: [{processName: {equal:\"provider\"}}, {state: {equal: ACTIVE}}]}){id variables}}";
 
     Response response = graphqlClient.executeSync(queryStr);
     JsonObject data = response.getData();
+    System.out.println("response: " + data);
 
     JsonArray processInstances = data.getJsonArray("ProcessInstances");
 
     // Iterate over processInstances and check if providerName is equal to provider
     for (int i = 0; i < processInstances.size(); i++) {
+      System.out.println("INNNN");
       ObjectMapper mapper = new ObjectMapper();
-      JsonNode childNode;
-      try {
-        childNode = mapper.readTree(processInstances.getJsonObject(i).getString("variables"));
-        if (childNode.get("providerName").asText().equals(provider)) {
-          return true;
-        }
-      } catch (JsonProcessingException e) {
-        e.printStackTrace();
+      JsonNode childNode = mapper.readTree(processInstances.getJsonObject(i).getString("variables"));
+      System.out.println("childnode: " + childNode);
+      if (childNode.get("providerName").asText().equals(provider)) {
+        System.out.println("out2");
+        return true;
       }
     }
+    System.out.println("ou2t");
 
     return false;
   }
@@ -522,12 +524,12 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
           // Set CPU and MEMORY
           if (childNode.get("instanceType").asText().equals("t3a.xlarge")
               && childNode.get("providerName").asText().equals("aws")) {
-            singleRoboticsCloud.setvCPU(4);
+            singleRoboticsCloud.setVCPU(4);
             singleRoboticsCloud.setMemory(16);
             singleRoboticsCloud.setGPU(0);
           } else if (childNode.get("instanceType").asText().equals("t2.medium")
               && childNode.get("providerName").asText().equals("aws")) {
-            singleRoboticsCloud.setvCPU(2);
+            singleRoboticsCloud.setVCPU(2);
             singleRoboticsCloud.setMemory(4);
             singleRoboticsCloud.setGPU(0);
           }

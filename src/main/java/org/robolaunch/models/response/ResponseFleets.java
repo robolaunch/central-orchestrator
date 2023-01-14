@@ -20,7 +20,7 @@ public class ResponseFleets {
       this.message = message;
    }
 
-   public Boolean getSuccess() {
+   public Boolean isSuccess() {
       return success;
    }
 

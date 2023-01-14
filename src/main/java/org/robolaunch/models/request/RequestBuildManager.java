@@ -1,13 +1,18 @@
 package org.robolaunch.models.request;
 
+import java.io.Serializable;
+
 import org.robolaunch.models.Organization;
 
-public class RequestBuildManager {
+public class RequestBuildManager implements Serializable {
    private RequestCreateBuildManager buildManager;
    private String robotProcessId;
    private String targetRobot;
    private Organization organization;
    private String teamId;
+
+   public RequestBuildManager() {
+   }
 
    public RequestCreateBuildManager getBuildManager() {
       return buildManager;

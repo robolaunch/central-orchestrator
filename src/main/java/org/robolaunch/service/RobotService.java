@@ -6,6 +6,8 @@ import javax.inject.Inject;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
 import org.robolaunch.models.Organization;
+import org.robolaunch.models.request.RequestBuildManager;
+import org.robolaunch.models.request.RequestLaunchManager;
 import org.robolaunch.models.request.RequestRobot;
 import org.robolaunch.models.request.RobotBuildManager;
 import org.robolaunch.models.request.RobotDevSuite;
@@ -56,12 +58,11 @@ public class RobotService {
     return plainResponse;
   }
 
-  public PlainResponse createBuildManager(RobotBuildManager robotBuildManager, String bufferName, String provider,
-      String region, String superCluster) {
+  public PlainResponse createBuildManager(RequestBuildManager robotBuildManager) {
     PlainResponse plainResponse = new PlainResponse();
     try {
       String token = jwt.getRawToken();
-      robotRepository.createRobotBuildManager(robotBuildManager, bufferName, token, provider, region, superCluster);
+      robotRepository.createRobotBuildManager(robotBuildManager, token);
       robotLogger.info("Robot build manager created");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Robot build manager created.");
@@ -72,12 +73,11 @@ public class RobotService {
     return plainResponse;
   }
 
-  public PlainResponse createLaunchManager(RobotLaunchManager robotLaunchManager, String bufferName,
-      String provider, String region, String superCluster) {
+  public PlainResponse createLaunchManager(RequestLaunchManager robotLaunchManager) {
     PlainResponse plainResponse = new PlainResponse();
     try {
       String token = jwt.getRawToken();
-      robotRepository.createRobotLaunchManager(robotLaunchManager, bufferName, token, provider, region, superCluster);
+      robotRepository.createRobotLaunchManager(robotLaunchManager, token);
       robotLogger.info("Robot launch manager created");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Robot launch manager created.");

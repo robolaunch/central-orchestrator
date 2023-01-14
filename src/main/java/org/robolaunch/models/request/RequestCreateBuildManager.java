@@ -1,10 +1,16 @@
 package org.robolaunch.models.request;
 
-public class RequestCreateBuildManager {
+import java.io.Serializable;
+import java.util.ArrayList;
+
+public class RequestCreateBuildManager implements Serializable {
    private String apiVersion;
    private String kind;
    private RequestCloudRobotMetadata metadata;
-   private RequestBuildManagerSpec spec;
+   private ArrayList<BuildManagerStep> steps;
+
+   public RequestCreateBuildManager() {
+   }
 
    public String getApiVersion() {
       return apiVersion;
@@ -30,12 +36,12 @@ public class RequestCreateBuildManager {
       this.metadata = metadata;
    }
 
-   public RequestBuildManagerSpec getSpec() {
-      return spec;
+   public ArrayList<BuildManagerStep> getSteps() {
+      return steps;
    }
 
-   public void setSpec(RequestBuildManagerSpec spec) {
-      this.spec = spec;
+   public void setSteps(ArrayList<BuildManagerStep> steps) {
+      this.steps = steps;
    }
 
 }

@@ -127,6 +127,7 @@ public class KubernetesService {
   public PlainResponse providerExists(String provider) {
     PlainResponse plainResponse = new PlainResponse();
     try {
+      System.out.println("Checking if provider exists: " + provider);
       Boolean exists = kubernetesRepository.providerExists(provider);
       if (exists) {
         plainResponse.setSuccess(true);
@@ -137,7 +138,7 @@ public class KubernetesService {
       }
       return plainResponse;
     } catch (Exception e) {
-      return plainResponse;
+      return null;
     }
   }
 

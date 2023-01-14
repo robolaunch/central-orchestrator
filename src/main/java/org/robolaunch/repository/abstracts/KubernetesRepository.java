@@ -42,7 +42,8 @@ public interface KubernetesRepository {
                         IllegalArgumentException, IOException, ApiException, MinioException;
 
         public Boolean providerExists(String provider)
-                        throws java.util.concurrent.ExecutionException, InterruptedException;
+                        throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
+                        JsonProcessingException;
 
         public Boolean regionExists(String provider, String region)
                         throws java.util.concurrent.ExecutionException, InterruptedException;

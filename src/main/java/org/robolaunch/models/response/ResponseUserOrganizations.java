@@ -1,10 +1,11 @@
 package org.robolaunch.models.response;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.robolaunch.models.Organization;
 
-public class ResponseUserOrganizations {
+public class ResponseUserOrganizations implements Serializable {
    private String message;
    private Boolean success;
    private ArrayList<Organization> data;

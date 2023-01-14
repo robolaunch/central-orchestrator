@@ -284,6 +284,16 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         String superCluster)
                         throws IOException, KubectlException, InterruptedException, ApiException, InvalidKeyException,
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException {
+                System.out.println("labelVirtualCluster");
+                System.out.println("bufferName: " + bufferName);
+                System.out.println("organization: " + organization.getName());
+                System.out.println("teamId: " + teamId);
+                System.out.println("cloudInstanceName: " + cloudInstanceName);
+                System.out.println("connectionHub: " + connectionHub);
+                System.out.println("provider: " + provider);
+                System.out.println("region: " + region);
+                System.out.println("superCluster: " + superCluster);
+
                 ModelMapper.addModelMap("tenancy.x-k8s.io", "v1alpha1", "VirtualCluster",
                                 "virtualclusters", true,
                                 V1VirtualCluster.class);
