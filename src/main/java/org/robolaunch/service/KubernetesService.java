@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
+import org.robolaunch.models.Fleet;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.Provider;
 import org.robolaunch.models.RegionKubernetes;
@@ -14,6 +15,7 @@ import org.robolaunch.models.Robot;
 import org.robolaunch.models.RoboticsCloudKubernetes;
 import org.robolaunch.models.SuperClusterKubernetes;
 import org.robolaunch.models.response.PlainResponse;
+import org.robolaunch.models.response.ResponseFleets;
 import org.robolaunch.models.response.ResponseProviders;
 import org.robolaunch.models.response.ResponseRegions;
 import org.robolaunch.models.response.ResponseRoboticsClouds;
@@ -333,6 +335,51 @@ public class KubernetesService {
       responseRobots.setMessage("Error while fetching Robots." + e.getMessage());
     }
     return responseRobots;
+  }
+
+  public ResponseFleets getFleetsOrganization(Organization organization) {
+    ResponseFleets responseFleets = new ResponseFleets();
+    try {
+      ArrayList<Fleet> fleets = kubernetesRepository
+          .getFleetsOrganization(organization);
+      responseFleets.setData(fleets);
+      responseFleets.setSuccess(true);
+      responseFleets.setMessage("Fleets fetched successfully.");
+    } catch (Exception e) {
+      responseFleets.setSuccess(false);
+      responseFleets.setMessage("Error while fetching Fleets." + e.getMessage());
+    }
+    return responseFleets;
+  }
+
+  public ResponseFleets getFleetsTeam(Organization organization, String teamId) {
+    ResponseFleets responseFleets = new ResponseFleets();
+    try {
+      ArrayList<Fleet> fleets = kubernetesRepository
+          .getFleetsTeam(organization, teamId);
+      responseFleets.setData(fleets);
+      responseFleets.setSuccess(true);
+      responseFleets.setMessage("Fleets fetched successfully.");
+    } catch (Exception e) {
+      responseFleets.setSuccess(false);
+      responseFleets.setMessage("Error while fetching Fleets." + e.getMessage());
+    }
+    return responseFleets;
+  }
+
+  public ResponseFleets getFleetsRoboticsCloud(String roboticsCloudProcessId) {
+    ResponseFleets responseFleets = new ResponseFleets();
+    try {
+      ArrayList<Fleet> fleets = kubernetesRepository
+          .getFleetsRoboticsCloud(roboticsCloudProcessId);
+      responseFleets.setData(fleets);
+      responseFleets.setSuccess(true);
+      responseFleets.setMessage("Fleets fetched successfully.");
+    } catch (Exception e) {
+      responseFleets.setSuccess(false);
+      responseFleets.setMessage("Error while fetching Fleets." + e.getMessage());
+    }
+    return responseFleets;
   }
 
 }

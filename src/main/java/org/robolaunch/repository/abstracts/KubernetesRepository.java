@@ -6,6 +6,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
+import org.robolaunch.models.Fleet;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.Provider;
 import org.robolaunch.models.RegionKubernetes;
@@ -83,6 +84,20 @@ public interface KubernetesRepository {
         public ArrayList<Robot> getRobotsRoboticsCloud(String roboticsCloudProcessId)
                         throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
                         JsonProcessingException, ExecutionException;
+
+        public ArrayList<Fleet> getFleetsOrganization(Organization organization)
+                        throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
+                        JsonProcessingException, ExecutionException;
+
+        public ArrayList<Fleet> getFleetsTeam(Organization organization, String teamId)
+                        throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
+                        JsonProcessingException, ExecutionException, InvalidKeyException, NoSuchAlgorithmException,
+                        IllegalArgumentException, IOException, ApiException, MinioException;
+
+        public ArrayList<Fleet> getFleetsRoboticsCloud(String roboticsCloudProcessId)
+                        throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
+                        JsonProcessingException, ExecutionException, InvalidKeyException, NoSuchAlgorithmException,
+                        IllegalArgumentException, IOException, ApiException, MinioException;
 
         public String readPlatformContent(String version, String resource) throws MalformedURLException, IOException;
 

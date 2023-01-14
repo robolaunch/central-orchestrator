@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 public class Robot implements Serializable {
+   private String processId;
    private String name;
    private String type;
    private String status;
@@ -114,6 +115,14 @@ public class Robot implements Serializable {
 
    public void setWorkspaces(List<Workspace> workspaces) {
       this.workspaces = workspaces;
+   }
+
+   public String getProcessId() {
+      return processId;
+   }
+
+   public void setProcessId(String processId) {
+      this.processId = processId;
    }
 
 }

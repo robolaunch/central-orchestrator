@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.robolaunch.models.request.RequestFleet;
 import org.robolaunch.repository.abstracts.CloudInstanceHelperRepository;
 import org.robolaunch.repository.abstracts.FleetRepository;
@@ -23,7 +25,6 @@ import io.minio.errors.MinioException;
 
 @ApplicationScoped
 public class FleetRepositoryImpl implements FleetRepository {
-
       @Inject
       CloudInstanceHelperRepository cloudInstanceHelperRepository;
 
@@ -75,4 +76,5 @@ public class FleetRepositoryImpl implements FleetRepository {
                         null,
                         null, null);
       }
+
 }
