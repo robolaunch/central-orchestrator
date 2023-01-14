@@ -438,6 +438,25 @@ public class CloudInstanceService {
     return plainResponse;
   }
 
+  public PlainResponse createFleetOperator(String namespaceName, String cloudInstanceName,
+      String teamId, Organization organization, String bufferName, String provider, String region,
+      String superCluster) {
+    PlainResponse plainResponse = new PlainResponse();
+    try {
+      cloudInstanceRepository.createFleetOperator(namespaceName, cloudInstanceName,
+          teamId, organization, bufferName, provider, region, superCluster);
+      cloudInstanceLogger.info("fleet operator created");
+      plainResponse.setSuccess(true);
+    } catch (ApiException e) {
+      cloudInstanceLogger.error("Error while creating fleet operator.", e);
+      plainResponse.setSuccess(false);
+    } catch (Exception e) {
+      cloudInstanceLogger.error("Error while creating fleet operator.", e);
+      plainResponse.setSuccess(false);
+    }
+    return plainResponse;
+  }
+
   public PlainResponse createConnectionHubOperator(String namespaceName, String cloudInstanceName,
       String teamId, Organization organization, String bufferName, String provider, String region,
       String superCluster) {

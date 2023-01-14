@@ -1089,6 +1089,224 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         }
 
         @Override
+        public void createFleetOperator(String namespaceName, String cloudInstanceName,
+                        String teamId, Organization organization,
+                        String bufferName, String provider, String region, String superCluster)
+                        throws IOException, ApiException, InterruptedException, InvalidKeyException,
+                        NoSuchAlgorithmException, IllegalArgumentException,
+                        KubectlException, MinioException {
+                ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
+                                provider, region, superCluster);
+
+                String yamlString = "";
+
+                String version = kubernetesRepository.getLatestPlatformVersion();
+                String yaml = kubernetesService.readPlatformContent(version, "fleetOperator");
+                String bucket = "template-artifacts";
+
+                Artifact artifact2 = new Artifact();
+                artifact2.setName("certificateConnectionHub.yaml");
+                JsonObject object = storageRepository.getYamlTemplate(artifact2, bucket);
+                Artifact artifact4 = new Artifact();
+                artifact4.setName("issuerConnectionHub.yaml");
+
+                JsonObject objectIssuer = storageRepository.getYamlTemplate(artifact4, bucket);
+                ModelMapper.addModelMap("cert-manager.io", "v1", "Certificate", "certificates",
+                                V1alpha2Certificate.class,
+                                V1alpha2CertificateList.class);
+                ModelMapper.addModelMap("cert-manager.io", "v1", "Issuer", "issuers",
+                                V1alpha2Issuer.class,
+                                V1alpha2IssuerList.class);
+                List<Object> list = Yaml.loadAll(yaml);
+                CoreV1Api coreApi = new CoreV1Api(vcClient);
+                AppsV1Api appsApi = new AppsV1Api(vcClient);
+                RbacAuthorizationV1Api rbacApi = new RbacAuthorizationV1Api(vcClient);
+                AdmissionregistrationV1Api admissionApi = new AdmissionregistrationV1Api(vcClient);
+                CustomObjectsApi customObjectsApi = new CustomObjectsApi(vcClient);
+                for (int i = 0; i < list.size(); i++) {
+                        Object obj = list.get(i);
+                        String type = obj.getClass().getSimpleName();
+
+                        if (type.equals("V1Namespace")) {
+                                V1Namespace namespace = (V1Namespace) obj;
+                                coreApi.createNamespace(namespace, null, null, null, null);
+                                String jsonInString = new Gson().toJson(obj);
+                                JSONObject mJSONObject = new JSONObject(jsonInString);
+                                yamlString += cloudInstanceHelperRepository
+                                                .convertJsonStringToYamlString(mJSONObject.toString());
+                                yamlString += "---";
+                        }
+
+                        if (type.equals("V1CustomResourceDefinition")) {
+                                V1CustomResourceDefinition crd = (V1CustomResourceDefinition) obj;
+                                Kubectl.apply(V1CustomResourceDefinition.class)
+                                                .forceConflict(true)
+                                                .resource(crd).apiClient(vcClient).execute();
+                        }
+
+                        if (type.equals("V1ServiceAccount")) {
+                                V1ServiceAccount serviceAccount = (V1ServiceAccount) obj;
+                                coreApi.createNamespacedServiceAccount("fleet-system",
+                                                serviceAccount, null,
+                                                null, null, null);
+                                String jsonInString = new Gson().toJson(obj);
+                                JSONObject mJSONObject = new JSONObject(jsonInString);
+                                yamlString += cloudInstanceHelperRepository
+                                                .convertJsonStringToYamlString(mJSONObject.toString());
+                                yamlString += "---";
+                        }
+                        if (type.equals("V1ConfigMap")) {
+                                V1ConfigMap configMap = (V1ConfigMap) obj;
+                                coreApi.createNamespacedConfigMap("fleet-system", configMap,
+                                                null, null,
+                                                null, null);
+                                String jsonInString = new Gson().toJson(obj);
+                                JSONObject mJSONObject = new JSONObject(jsonInString);
+                                yamlString += cloudInstanceHelperRepository
+                                                .convertJsonStringToYamlString(mJSONObject.toString());
+                                yamlString += "---";
+                        }
+                        if (type.equals("V1ClusterRole")) {
+                                V1ClusterRole clusterRole = (V1ClusterRole) obj;
+                                rbacApi.createClusterRole(clusterRole, null, null, null, null);
+                                String jsonInString = new Gson().toJson(obj);
+                                JSONObject mJSONObject = new JSONObject(jsonInString);
+                                yamlString += cloudInstanceHelperRepository
+                                                .convertJsonStringToYamlString(mJSONObject.toString());
+                                yamlString += "---";
+                        }
+
+                        if (type.equals("V1ClusterRoleBinding")) {
+                                V1ClusterRoleBinding clusterRoleBinding = (V1ClusterRoleBinding) obj;
+                                rbacApi.createClusterRoleBinding(clusterRoleBinding, null, null,
+                                                null, null);
+                                String jsonInString = new Gson().toJson(obj);
+                                JSONObject mJSONObject = new JSONObject(jsonInString);
+                                yamlString += cloudInstanceHelperRepository
+                                                .convertJsonStringToYamlString(mJSONObject.toString());
+                                yamlString += "---";
+                        }
+                        if (type.equals("V1Role")) {
+                                V1Role role = (V1Role) obj;
+                                rbacApi.createNamespacedRole("fleet-system", role, null, null,
+                                                null, null);
+                                String jsonInString = new Gson().toJson(obj);
+                                JSONObject mJSONObject = new JSONObject(jsonInString);
+                                yamlString += cloudInstanceHelperRepository
+                                                .convertJsonStringToYamlString(mJSONObject.toString());
+                                yamlString += "---";
+                        }
+
+                        if (type.equals("V1RoleBinding")) {
+                                V1RoleBinding roleBinding = (V1RoleBinding) obj;
+                                rbacApi.createNamespacedRoleBinding("fleet-system", roleBinding,
+                                                null, null,
+                                                null, null);
+
+                                String jsonInString = new Gson().toJson(obj);
+                                JSONObject mJSONObject = new JSONObject(jsonInString);
+                                yamlString += cloudInstanceHelperRepository
+                                                .convertJsonStringToYamlString(mJSONObject.toString());
+                                yamlString += "---";
+
+                        }
+
+                        if (type.equals("V1Service")) {
+                                V1Service service = (V1Service) obj;
+                                coreApi.createNamespacedService("fleet-system", service, null,
+                                                null, null,
+                                                null);
+                                String jsonInString = new Gson().toJson(obj);
+                                JSONObject mJSONObject = new JSONObject(jsonInString);
+                                yamlString += cloudInstanceHelperRepository
+                                                .convertJsonStringToYamlString(mJSONObject.toString());
+                                yamlString += "---";
+                        }
+                        if (type.equals("V1Deployment")) {
+                                V1Deployment deployment = (V1Deployment) obj;
+                                Optional<Map<String, String>> nodeSelectors = Optional
+                                                .ofNullable(deployment).map(V1Deployment::getSpec)
+                                                .map(V1DeploymentSpec::getTemplate)
+                                                .map(V1PodTemplateSpec::getSpec).map(m -> m.getNodeSelector());
+                                nodeSelectors.get()
+                                                .put(
+                                                                "robolaunch.io/cloud-instance",
+                                                                bufferName);
+                                nodeSelectors.get()
+                                                .put(
+                                                                "robolaunch.io/organization",
+                                                                organization.getName());
+                                nodeSelectors.get()
+                                                .put(
+                                                                "robolaunch.io/cloud-instance-alias",
+                                                                cloudInstanceName);
+                                nodeSelectors.get()
+                                                .put(
+                                                                "robolaunch.io/team",
+                                                                teamId);
+                                nodeSelectors.get()
+                                                .put(
+                                                                "robolaunch.io/region",
+                                                                region);
+                                appsApi.createNamespacedDeployment("fleet-system", deployment,
+                                                null, null,
+                                                null, null);
+                                String jsonInString = new Gson().toJson(obj);
+                                JSONObject mJSONObject = new JSONObject(jsonInString);
+                                yamlString += cloudInstanceHelperRepository
+                                                .convertJsonStringToYamlString(mJSONObject.toString());
+                                yamlString += "---";
+                        }
+                        if (type.equals("V1alpha2Certificate")) {
+                                customObjectsApi.createNamespacedCustomObject("cert-manager.io",
+                                                "v1",
+                                                "fleet-system", "certificates", object,
+                                                null, null, null);
+
+                        }
+
+                        if (type.equals("V1alpha2Issuer")) {
+                                customObjectsApi.createNamespacedCustomObject("cert-manager.io",
+                                                "v1",
+                                                "fleet-system", "issuers",
+                                                objectIssuer,
+                                                null, null, null);
+
+                        }
+
+                        if (type.equals("V1MutatingWebhookConfiguration")) {
+                                V1MutatingWebhookConfiguration mutatingWebhookConf = (V1MutatingWebhookConfiguration) obj;
+                                admissionApi.createMutatingWebhookConfiguration(
+                                                mutatingWebhookConf, null,
+                                                null, null, null);
+                                String jsonInString = new Gson().toJson(obj);
+                                JSONObject mJSONObject = new JSONObject(jsonInString);
+                                yamlString += cloudInstanceHelperRepository
+                                                .convertJsonStringToYamlString(mJSONObject.toString());
+                                yamlString += "---";
+                        }
+
+                        if (type.equals("V1ValidatingWebhookConfiguration")) {
+                                V1ValidatingWebhookConfiguration validatingWebhookConf = (V1ValidatingWebhookConfiguration) obj;
+                                admissionApi.createValidatingWebhookConfiguration(
+                                                validatingWebhookConf,
+                                                null, null, null, null);
+                                String jsonInString = new Gson().toJson(obj);
+                                JSONObject mJSONObject = new JSONObject(jsonInString);
+                                yamlString += cloudInstanceHelperRepository
+                                                .convertJsonStringToYamlString(mJSONObject.toString());
+                                yamlString += "---";
+                        }
+                }
+
+                Artifact artifact3 = new Artifact();
+                artifact3.setClusterName(cloudInstanceName);
+                artifact3.setName("fleetOperator.yaml");
+                storageRepository.push(yamlString.getBytes(StandardCharsets.UTF_8), artifact3,
+                                organization.getName());
+        }
+
+        @Override
         public void createConnectionHubOperator(String namespaceName, String cloudInstanceName,
                         String teamId, Organization organization,
                         String bufferName, String provider, String region, String superCluster)

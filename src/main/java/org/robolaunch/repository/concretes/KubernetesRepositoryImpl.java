@@ -863,6 +863,10 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
           innerURL = versionObj.get("roboticsCloud").getAsJsonObject().get("kubernetes")
               .getAsJsonObject()
               .get("operators").getAsJsonObject().get("connectionHub").getAsJsonObject().get("release").getAsString();
+        } else if (resource.equals("fleetOperator")) {
+          innerURL = versionObj.get("roboticsCloud").getAsJsonObject().get("kubernetes")
+              .getAsJsonObject()
+              .get("operators").getAsJsonObject().get("fleet").getAsJsonObject().get("release").getAsString();
         }
 
         URL innerConnection = new URL(innerURL);
