@@ -1,8 +1,10 @@
 package org.robolaunch.models.response;
 
+import java.io.Serializable;
+
 import org.robolaunch.models.CurrentUser;
 
-public class ResponseCurrentUser {
+public class ResponseCurrentUser implements Serializable {
    private String message;
    private Boolean success;
    private CurrentUser user;

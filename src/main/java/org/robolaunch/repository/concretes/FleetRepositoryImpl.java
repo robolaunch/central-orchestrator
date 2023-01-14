@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.robolaunch.models.request.RequestFleet;
 import org.robolaunch.repository.abstracts.CloudInstanceHelperRepository;
 import org.robolaunch.repository.abstracts.FleetRepository;
@@ -65,6 +63,13 @@ public class FleetRepositoryImpl implements FleetRepository {
             fleetObject.get("fleet").getAsJsonObject().get("metadata").getAsJsonObject().get("labels")
                         .getAsJsonObject().addProperty("robolaunch.io/cloud-instance-alias",
                                     requestFleet.getCloudInstanceName());
+
+            JsonObject specObject = new JsonObject();
+            specObject.add("discoveryServerTemplate",
+                        fleetObject.get("fleet").getAsJsonObject().get("discoveryServerTemplate").getAsJsonObject());
+
+            fleetObject.add("spec", specObject);
+            fleetObject.remove("discoveryServerTemplate");
 
             fleetObject.get("fleet").getAsJsonObject().get("spec").getAsJsonObject().get("discoveryServerTemplate")
                         .getAsJsonObject().addProperty("cluster", requestFleet.getBufferName());

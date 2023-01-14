@@ -258,8 +258,11 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     Optional<Map<String, String>> labels = Optional.ofNullable(vcs.getObject().getItems().get(randomInteger))
         .map(DynamicKubernetesObject::getMetadata)
         .map(m -> m.getLabels());
+
     String bufferName = labels.get()
         .get("robolaunch.io/cloud-instance");
+
+    System.out.println("bufferName: " + bufferName);
     return bufferName;
 
   }

@@ -1,10 +1,15 @@
 package org.robolaunch.models.request;
 
-public class BuildManagerStep {
+import java.io.Serializable;
+
+public class BuildManagerStep implements Serializable {
    private String name;
    private String workspace;
    private String command;
    private String script;
+
+   public BuildManagerStep() {
+   }
 
    public String getName() {
       return name;

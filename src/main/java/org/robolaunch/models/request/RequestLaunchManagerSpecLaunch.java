@@ -1,13 +1,18 @@
 package org.robolaunch.models.request;
 
-public class RequestLaunchManagerSpecLaunch {
+import java.io.Serializable;
+
+public class RequestLaunchManagerSpecLaunch implements Serializable {
    private String name;
    private String physicalInstance;
    private String cloudInstance;
    private String workspace;
    private String repository;
-   private Boolean isNamespacing;
+   private Boolean namespacing;
    private String launchFilePath;
+
+   public RequestLaunchManagerSpecLaunch() {
+   }
 
    public String getName() {
       return name;
@@ -49,20 +54,24 @@ public class RequestLaunchManagerSpecLaunch {
       this.repository = repository;
    }
 
-   public Boolean getIsNamespacing() {
-      return isNamespacing;
-   }
-
-   public void setIsNamespacing(Boolean isNamespacing) {
-      this.isNamespacing = isNamespacing;
-   }
-
    public String getLaunchFilePath() {
       return launchFilePath;
    }
 
    public void setLaunchFilePath(String launchFilePath) {
       this.launchFilePath = launchFilePath;
+   }
+
+   public Boolean isNamespacing() {
+      return namespacing;
+   }
+
+   public void setNamespacing(Boolean namespacing) {
+      this.namespacing = namespacing;
+   }
+
+   public Boolean getNamespacing() {
+      return namespacing;
    }
 
 }

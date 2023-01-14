@@ -1,8 +1,10 @@
 package org.robolaunch.models.request;
 
+import java.io.Serializable;
+
 import org.robolaunch.models.Organization;
 
-public class RequestFleet {
+public class RequestFleet implements Serializable {
    private RequestCreateFleet fleet;
    private Organization organization;
    private String teamId;

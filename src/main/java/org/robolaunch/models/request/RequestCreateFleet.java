@@ -6,7 +6,7 @@ public class RequestCreateFleet implements Serializable {
    private String apiVersion;
    private String kind;
    private RequestCloudRobotMetadata metadata;
-   private RequestFleetSpec spec;
+   private RequestCloudRobotSpecDiscoveryServer discoveryServerTemplate;
 
    public String getApiVersion() {
       return apiVersion;
@@ -32,12 +32,12 @@ public class RequestCreateFleet implements Serializable {
       this.metadata = metadata;
    }
 
-   public RequestFleetSpec getSpec() {
-      return spec;
+   public RequestCloudRobotSpecDiscoveryServer getDiscoveryServerTemplate() {
+      return discoveryServerTemplate;
    }
 
-   public void setSpec(RequestFleetSpec spec) {
-      this.spec = spec;
+   public void setDiscoveryServerTemplate(RequestCloudRobotSpecDiscoveryServer discoveryServerTemplate) {
+      this.discoveryServerTemplate = discoveryServerTemplate;
    }
 
 }

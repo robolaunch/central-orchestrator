@@ -21,7 +21,7 @@ public class ResponseRobots implements Serializable {
       this.message = message;
    }
 
-   public Boolean getSuccess() {
+   public Boolean isSuccess() {
       return success;
    }
 

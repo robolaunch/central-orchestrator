@@ -1,11 +1,16 @@
 package org.robolaunch.models.request;
 
-public class RequestLaunchManager {
+import java.io.Serializable;
+
+public class RequestLaunchManager implements Serializable {
    private RequestCreateLaunchManager launchManager;
    private String robotProcessId;
    private String targetRobot;
    private String organization;
    private String teamId;
+
+   public RequestLaunchManager() {
+   }
 
    public RequestCreateLaunchManager getLaunchManager() {
       return launchManager;
