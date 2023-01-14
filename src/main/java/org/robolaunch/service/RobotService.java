@@ -13,8 +13,6 @@ import org.robolaunch.models.request.RobotLaunchManager;
 import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.repository.abstracts.RobotRepository;
 
-import com.google.gson.Gson;
-
 import io.kubernetes.client.openapi.ApiException;
 import io.quarkus.arc.log.LoggerName;
 

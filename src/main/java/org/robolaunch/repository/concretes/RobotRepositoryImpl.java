@@ -61,6 +61,7 @@ public class RobotRepositoryImpl implements RobotRepository {
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
                                 provider, region, superCluster);
+
                 DynamicKubernetesApi robotsApi = new DynamicKubernetesApi("robot.roboscale.io", "v1alpha1",
                                 "robots",
                                 vcClient);

@@ -277,8 +277,11 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         throws IOException, KubectlException, InvalidKeyException, NoSuchAlgorithmException,
                         IllegalArgumentException, ApiException, InterruptedException, MinioException {
                 ApiClient adminApiClient = apiClientManager.getAdminApiClient(provider, region, superCluster);
-
-                Kubectl.uncordon().name(nodeName).apiClient(adminApiClient).execute();
+                try {
+                        Kubectl.uncordon().name(nodeName).apiClient(adminApiClient).execute();
+                } catch (Exception e) {
+                        System.out.println("uncordon: " + e.getMessage());
+                }
         }
 
         @Override

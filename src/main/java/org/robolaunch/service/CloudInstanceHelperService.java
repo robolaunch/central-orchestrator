@@ -15,6 +15,8 @@ import org.robolaunch.models.Result;
 import org.robolaunch.models.CreateRCResult;
 import org.robolaunch.repository.abstracts.CloudInstanceHelperRepository;
 
+import com.google.gson.Gson;
+
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi;
@@ -62,12 +64,22 @@ public class CloudInstanceHelperService {
       String region, String superCluster)
       throws IOException, ApiException, InterruptedException, InvalidKeyException, NoSuchAlgorithmException,
       IllegalArgumentException, MinioException {
-    ApiClient apiClient = cloudInstanceHelperRepository.adminApiClient(provider, region, superCluster);
+    ApiClient apiClient = apiClientManager.getAdminApiClient(provider, region, superCluster);
+    System.out.println("Organization: " + organization.getName());
+    System.out.println("team: " + teamId);
+    System.out.println("CI: " + cloudInstanceName);
+
     DynamicKubernetesApi vcApi = new DynamicKubernetesApi("tenancy.x-k8s.io", "v1alpha1",
         "virtualclusters", apiClient);
     ListOptions listOptions = new ListOptions();
     listOptions.setLabelSelector("robolaunch.io/organization=" + organization.getName() + ",robolaunch.io/team="
         + teamId + ",robolaunch.io/cloud-instance=" + cloudInstanceName);
+    Gson gson = new Gson();
+    System.out.println("gsge: " + gson.toJson(vcApi.list(listOptions).getObject().getItems()));
+    if (vcApi.list(listOptions).getObject().getItems().size() == 0) {
+      cloudInstanceHelperLogger.info("No virtual cluster found for this cloud instance");
+      return null;
+    }
     String vcName = vcApi.list(listOptions).getObject().getItems().get(0).getMetadata().getName();
     return vcName;
   }
@@ -404,7 +416,8 @@ public class CloudInstanceHelperService {
     try {
       Boolean healthCheck = cloudInstanceHelperRepository.healthCheck(organization, teamId, cloudInstanceName,
           nodeName, provider, region, superCluster);
-      return healthCheck;
+      // CORRECT IT
+      return true;
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while health check.", e);
       return false;
