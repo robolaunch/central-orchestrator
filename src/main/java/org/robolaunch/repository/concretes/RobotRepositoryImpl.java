@@ -61,6 +61,7 @@ public class RobotRepositoryImpl implements RobotRepository {
                         NoSuchAlgorithmException, IllegalArgumentException, MinioException {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
                                 provider, region, superCluster);
+
                 DynamicKubernetesApi robotsApi = new DynamicKubernetesApi("robot.roboscale.io", "v1alpha1",
                                 "robots",
                                 vcClient);
@@ -314,13 +315,10 @@ public class RobotRepositoryImpl implements RobotRepository {
                                 });
 
                 JsonObject finalRobotObject = robotObject.get("robot").getAsJsonObject();
-                System.out.println("robot object: " + finalRobotObject);
                 CustomObjectsApi customObjectsApi = new CustomObjectsApi(robotsApi);
-                System.out.println("CLIENT CRTD");
                 customObjectsApi.createNamespacedCustomObject("robot.roboscale.io",
                                 "v1alpha1", "default",
                                 "robots", finalRobotObject, null, null, null);
-                System.out.println("robot created");
 
         }
 

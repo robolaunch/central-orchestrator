@@ -9,12 +9,12 @@ import java.util.ArrayList;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.Provider;
 import org.robolaunch.models.RegionKubernetes;
+import org.robolaunch.models.Robot;
 import org.robolaunch.models.RoboticsCloudKubernetes;
 import org.robolaunch.models.SuperClusterKubernetes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.google.gson.JsonObject;
 
 import io.kubernetes.client.openapi.ApiException;
 import io.minio.errors.MinioException;
@@ -55,6 +55,9 @@ public interface KubernetesRepository {
         public ArrayList<SuperClusterKubernetes> getSuperClusters(String provider, String region)
                         throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException;
 
+        public ArrayList<String> getSuperClusterProcesses()
+                        throws java.util.concurrent.ExecutionException, InterruptedException;
+
         public ArrayList<RoboticsCloudKubernetes> getRoboticsCloudsOrganization(Organization organization)
                         throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException,
                         JsonMappingException, JsonProcessingException;
@@ -68,22 +71,17 @@ public interface KubernetesRepository {
                         throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException,
                         JsonMappingException, JsonProcessingException;
 
-        public ArrayList<RoboticsCloudKubernetes> getRoboticsCloudsSuperClusterOrganization(Organization organization,
-                        String superClusterProcessId)
+        public ArrayList<Robot> getRobotsOrganization(Organization organization)
                         throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
-                        JsonProcessingException;
+                        JsonProcessingException, ExecutionException;
 
-        public ArrayList<RoboticsCloudKubernetes> getRoboticsCloudsSuperClusterTeam(Organization organization,
-                        String teamId,
-                        String superClusterProcessId)
+        public ArrayList<Robot> getRobotsTeam(Organization organization, String teamId)
                         throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
-                        JsonProcessingException;
+                        JsonProcessingException, ExecutionException;
 
-        public ArrayList<RoboticsCloudKubernetes> getRoboticsCloudsSuperClusterUser(Organization organization,
-                        String teamId, String username,
-                        String superClusterProcessId)
+        public ArrayList<Robot> getRobotsRoboticsCloud(String roboticsCloudProcessId)
                         throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
-                        JsonProcessingException;
+                        JsonProcessingException, ExecutionException;
 
         public String readPlatformContent(String version, String resource) throws MalformedURLException, IOException;
 
@@ -91,4 +89,7 @@ public interface KubernetesRepository {
                         throws IOException;
 
         public String getLatestPlatformVersion() throws IOException;
+
+        public Boolean isAuthorizedRoboticsCloud(Organization organization, String teamId, String username)
+                        throws InternalError, IOException;
 }

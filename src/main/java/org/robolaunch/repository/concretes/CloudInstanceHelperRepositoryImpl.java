@@ -654,7 +654,8 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
       throws IOException, KubectlException, ApiException, InterruptedException, InvalidKeyException,
       NoSuchAlgorithmException, IllegalArgumentException, MinioException {
     ApiClient apiClient = apiClientManager.getAdminApiClient(provider, region, superCluster);
-    String patchString = "[{ \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1cloud-instance\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1organization\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1teamId\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1cloud-instance-alias\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1region\" }]";
+    String patchString = "[{ \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1cloud-instance\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1organization\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1team\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1cloud-instance-alias\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1region\" }]";
+
     V1Patch patch = new V1Patch(patchString);
     Kubectl.patch(V1Node.class).apiClient(apiClient).name(nodeName).patchContent(patch).execute();
   }
@@ -798,7 +799,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     byte[] byteCertificateAuthData = Base64.getDecoder().decode(certificateAuthorityData.getBytes("UTF-8"));
 
     String basePath = "https://" + masterIP + ":" + nodePort;
-    System.out.println("Base path: " + basePath);
     /* Virtual Cluster Client */
     ApiClient newClient = new ClientBuilder().setBasePath(basePath)
         .setAuthentication(new ClientCertificateAuthentication(byteClientCertData,
