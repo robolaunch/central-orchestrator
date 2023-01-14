@@ -64,7 +64,8 @@ public interface KubernetesRepository {
 
         public ArrayList<RoboticsCloudKubernetes> getRoboticsCloudsTeam(Organization organization, String teamId)
                         throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException,
-                        JsonMappingException, JsonProcessingException;
+                        JsonMappingException, JsonProcessingException, InvalidKeyException, NoSuchAlgorithmException,
+                        IllegalArgumentException, IOException, ApiException, MinioException;
 
         public ArrayList<RoboticsCloudKubernetes> getRoboticsCloudsUser(Organization organization, String teamId,
                         String username)
