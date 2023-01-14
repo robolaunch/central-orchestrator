@@ -384,7 +384,8 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
   @Override
   public ArrayList<RoboticsCloudKubernetes> getRoboticsCloudsTeam(Organization organization, String teamId)
       throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException,
-      JsonMappingException, JsonProcessingException {
+      InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException, ApiException,
+      MinioException {
     ArrayList<RoboticsCloudKubernetes> roboticsClouds = new ArrayList<RoboticsCloudKubernetes>();
     ArrayList<String> superClusters = getSuperClusterProcesses();
 
@@ -464,7 +465,8 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
 
   public ArrayList<RoboticsCloudKubernetes> getRoboticsCloudsSuperClusterTeam(Organization organization, String teamId,
       String superClusterProcessId) throws java.util.concurrent.ExecutionException, InterruptedException,
-      JsonMappingException, JsonProcessingException {
+      InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException, ApiException,
+      MinioException {
 
     String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\"" + superClusterProcessId
         + "\"}}, {state: {equal: ACTIVE}}]}){id state childProcessInstances{id processName state variables}}}";
@@ -473,8 +475,12 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
     JsonObject data = response.getData();
     JsonArray processInstances = data.getJsonArray("ProcessInstances");
     ArrayList<RoboticsCloudKubernetes> roboticsClouds = new ArrayList<RoboticsCloudKubernetes>();
-
     ObjectMapper mapper = new ObjectMapper();
+    JsonNode childNodeSC = mapper.readTree(processInstances.getJsonObject(0).getString("variables"));
+    String providerName = childNodeSC.get("providerName").asText();
+    String regionName = childNodeSC.get("regionName").asText();
+    String superClusterName = childNodeSC.get("superClusterName").asText();
+
     JsonArray childProcessInstances = processInstances.getJsonObject(0).getJsonArray("childProcessInstances");
 
     for (int i = 0; i < childProcessInstances.size(); i++) {
@@ -484,6 +490,9 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
         if (childNode.get("organization") == null) {
           continue;
         }
+
+        DynamicKubernetesApi machineDeploymentApi = apiClientManager.getMachineDeploymentApi(providerName, regionName,
+            superClusterName);
 
         JsonNode organizationNode = childNode.get("organization");
         if (organizationNode.get("name").asText().equals(organization.getName()) && childNode.get("teamId").asText()
@@ -500,6 +509,28 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
           singleRoboticsCloud.setUserStage(childNode.get("userStage").asText());
           singleRoboticsCloud.setTeam(childNode.get("teamId").asText());
           singleRoboticsCloud.setProcessId(childProcessInstances.getJsonObject(i).getString("id"));
+          var machineDeployment = machineDeploymentApi.get("kube-system", "md-" + childNode.get("bufferName").asText());
+
+          Integer diskSize = machineDeployment.getObject().getRaw().getAsJsonObject().get("spec").getAsJsonObject()
+              .get("template").getAsJsonObject().get("spec").getAsJsonObject()
+              .get("providerSpec").getAsJsonObject().get("value")
+              .getAsJsonObject().get("cloudProviderSpec").getAsJsonObject().get("diskSize").getAsInt();
+
+          System.out.println("disk size found: " + diskSize);
+
+          // Set CPU and MEMORY
+          if (childNode.get("instanceType").asText().equals("t3a.xlarge")
+              && childNode.get("providerName").asText().equals("aws")) {
+            singleRoboticsCloud.setvCPU(4);
+            singleRoboticsCloud.setMemory(16);
+            singleRoboticsCloud.setGPU(0);
+          } else if (childNode.get("instanceType").asText().equals("t2.medium")
+              && childNode.get("providerName").asText().equals("aws")) {
+            singleRoboticsCloud.setvCPU(2);
+            singleRoboticsCloud.setMemory(4);
+            singleRoboticsCloud.setGPU(0);
+          }
+          singleRoboticsCloud.setDiskSize(diskSize);
           roboticsClouds.add(singleRoboticsCloud);
         }
       }

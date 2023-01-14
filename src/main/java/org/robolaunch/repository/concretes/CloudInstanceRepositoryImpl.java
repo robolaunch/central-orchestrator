@@ -136,7 +136,6 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         IOException, ApiException, InterruptedException {
                 DynamicKubernetesApi machineDeploymentApi = apiClientManager.getMachineDeploymentApi(provider, region,
                                 superCluster);
-                Integer diskSize = 50;
                 Artifact artifact = new Artifact();
 
                 artifact.setName(provider + "/" + region + "/" + superCluster + "/" + "machineDeployment.yaml");
@@ -149,11 +148,6 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 .get("providerSpec").getAsJsonObject().get("value").getAsJsonObject()
                                 .get("cloudProviderSpec").getAsJsonObject()
                                 .addProperty("instanceType", instanceType);
-
-                object.get("spec").getAsJsonObject().get("template").getAsJsonObject().get("spec").getAsJsonObject()
-                                .get("providerSpec").getAsJsonObject().get("value").getAsJsonObject()
-                                .get("cloudProviderSpec").getAsJsonObject()
-                                .addProperty("diskSize", diskSize);
 
                 object.get("metadata").getAsJsonObject().get("labels")
                                 .getAsJsonObject().addProperty("robolaunch.io/cloud-instance", bufferName);
