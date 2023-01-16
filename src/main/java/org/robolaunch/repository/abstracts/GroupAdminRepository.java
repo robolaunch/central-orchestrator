@@ -75,4 +75,7 @@ public interface GroupAdminRepository {
         String getGroupDescription(Organization group)
                         throws InternalError, IOException;
 
+        void addSubgroupToGroup(Organization organization, String teamName)
+                        throws InternalError, IOException;
+
 }

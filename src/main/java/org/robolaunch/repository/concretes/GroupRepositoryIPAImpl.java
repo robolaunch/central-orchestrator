@@ -59,7 +59,6 @@ public class GroupRepositoryIPAImpl implements GroupRepository {
         }
         wr.close();
         ObjectMapper mapper = new ObjectMapper();
-        wr.close();
         if (!result.contains("\"error\": null")) {
             JsonNode rootNode = mapper.readTree(result);
             throw new ApplicationException(rootNode.get("error").get("message").asText());

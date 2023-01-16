@@ -276,7 +276,6 @@ public class StorageRepositoryImpl implements StorageRepository {
         Artifact artifact = new Artifact("template_script.sh", "");
         String bucketName = "template-artifacts";
         String scriptContent = getContent(artifact, bucketName);
-        System.out.println("script  content: " + scriptContent);
         return null;
     }
 

@@ -5,13 +5,11 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
+import org.robolaunch.exception.ApplicationException;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.request.RequestBuildManager;
 import org.robolaunch.models.request.RequestLaunchManager;
 import org.robolaunch.models.request.RequestRobot;
-import org.robolaunch.models.request.RobotBuildManager;
-import org.robolaunch.models.request.RobotDevSuite;
-import org.robolaunch.models.request.RobotLaunchManager;
 import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.repository.abstracts.RobotRepository;
 
@@ -96,7 +94,10 @@ public class RobotService {
       robotLogger.info("Robot created");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Robot created.");
-    } catch (ApiException e) {
+    } catch (ApplicationException e) {
+      robotLogger.error("Error occured while creating robot: ", e);
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("An error occured creating robot. Please try again.");
     } catch (Exception e) {
       robotLogger.error("Error occured while creating robot", e);
       plainResponse.setSuccess(false);

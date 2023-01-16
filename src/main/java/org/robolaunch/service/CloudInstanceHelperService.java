@@ -65,9 +65,6 @@ public class CloudInstanceHelperService {
       throws IOException, ApiException, InterruptedException, InvalidKeyException, NoSuchAlgorithmException,
       IllegalArgumentException, MinioException {
     ApiClient apiClient = apiClientManager.getAdminApiClient(provider, region, superCluster);
-    System.out.println("Organization: " + organization.getName());
-    System.out.println("team: " + teamId);
-    System.out.println("CI: " + cloudInstanceName);
 
     DynamicKubernetesApi vcApi = new DynamicKubernetesApi("tenancy.x-k8s.io", "v1alpha1",
         "virtualclusters", apiClient);

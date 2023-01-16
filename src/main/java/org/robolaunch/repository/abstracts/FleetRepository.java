@@ -3,6 +3,7 @@ package org.robolaunch.repository.abstracts;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.ExecutionException;
 
 import org.robolaunch.models.request.RequestFleet;
 
@@ -13,5 +14,10 @@ public interface FleetRepository {
       public void createFleet(RequestFleet requestFleet, String token)
                   throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
                   ApiException,
-                  InterruptedException, MinioException;
+                  InterruptedException, MinioException, ExecutionException;
+
+      public void createFederatedFleet(RequestFleet requestFleet, String token)
+                  throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
+                  ApiException,
+                  InterruptedException, MinioException, ExecutionException;
 }

@@ -9,6 +9,8 @@ import org.robolaunch.models.request.RequestFleet;
 import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.repository.abstracts.FleetRepository;
 
+import com.google.gson.Gson;
+
 import io.quarkus.arc.log.LoggerName;
 
 @ApplicationScoped
@@ -28,14 +30,20 @@ public class FleetService {
    public PlainResponse createFleet(RequestFleet requestFleet) {
       PlainResponse plainResponse = new PlainResponse();
       try {
+         Gson gson = new Gson();
          String token = jwt.getRawToken();
-         fleetRepository.createFleet(requestFleet, token);
+         if (!requestFleet.isFederated()) {
+            System.out.println("Fleet is not federated: " + gson.toJson(requestFleet));
+            fleetRepository.createFleet(requestFleet, token);
+         } else {
+            System.out.println("Fleet is federated: " + gson.toJson(requestFleet));
+            fleetRepository.createFederatedFleet(requestFleet, token);
+         }
          fleetLogger.info("Fleet created");
          plainResponse.setMessage("Fleet created");
          plainResponse.setSuccess(true);
          return plainResponse;
       } catch (Exception e) {
-         System.out.println(e.getMessage());
          plainResponse.setMessage("Fleet could not be created");
          plainResponse.setSuccess(false);
          fleetLogger.error("Fleet could not be created");

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_2M0skHZoEDuSvc57IKquxg" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_Mwc_gHfzEDuVApe2uz9WGg" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_requestCreateSuperClusterItem" structureRef="org.robolaunch.models.request.RequestCreateSuperCluster"/>
   <bpmn2:itemDefinition id="_requestCreateRegionItem" structureRef="org.robolaunch.models.request.RequestCreateRegion"/>
   <bpmn2:itemDefinition id="_requestCreateRoboticsCloudItem" structureRef="org.robolaunch.models.request.RequestCreateRoboticsCloud"/>
@@ -49,8 +49,8 @@
   <bpmn2:interface id="_C59BAEEB-A71F-4719-894E-4FB2D4CF0EB6_ServiceInterface" name="org.robolaunch.service.StorageService" implementationRef="org.robolaunch.service.StorageService">
     <bpmn2:operation id="_C59BAEEB-A71F-4719-894E-4FB2D4CF0EB6_ServiceOperation" name="createRegion" implementationRef="createRegion"/>
   </bpmn2:interface>
-  <bpmn2:collaboration id="_44290FD2-EF2A-4694-AD98-E395BF381101" name="Default Collaboration">
-    <bpmn2:participant id="_FD54BE54-2FF3-4127-BA80-788006026622" name="Pool Participant" processRef="region"/>
+  <bpmn2:collaboration id="_B6E5B81F-3346-4EA4-A549-2681FC864677" name="Default Collaboration">
+    <bpmn2:participant id="_08BCCBD2-8607-4679-AF7D-10D7A6A62034" name="Pool Participant" processRef="region"/>
   </bpmn2:collaboration>
   <bpmn2:process id="region" drools:packageName="org.robolaunch.kogito.provider" drools:version="1.0" drools:adHoc="false" name="region" isExecutable="true" processType="Public">
     <bpmn2:property id="requestCreateSuperCluster" itemSubjectRef="_requestCreateSuperClusterItem" name="requestCreateSuperCluster"/>
@@ -477,7 +477,7 @@ kcontext.setVariable("regionName", requestCreateRegion.getName());</bpmn2:script
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_2M0skHZoEDuSvc57IKquxg</bpmn2:source>
-    <bpmn2:target>_2M0skHZoEDuSvc57IKquxg</bpmn2:target>
+    <bpmn2:source>_Mwc_gHfzEDuVApe2uz9WGg</bpmn2:source>
+    <bpmn2:target>_Mwc_gHfzEDuVApe2uz9WGg</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>

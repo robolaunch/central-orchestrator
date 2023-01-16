@@ -84,7 +84,12 @@ public interface KubernetesRepository {
 
         public ArrayList<Robot> getRobotsRoboticsCloud(String roboticsCloudProcessId)
                         throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
-                        JsonProcessingException, ExecutionException;
+                        JsonProcessingException, ExecutionException, InvalidKeyException, NoSuchAlgorithmException,
+                        IllegalArgumentException, IOException, ApiException, MinioException;
+
+        public ArrayList<Robot> getRobotsFleet(String fleetProcessId)
+                        throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
+                        JsonProcessingException;
 
         public ArrayList<Fleet> getFleetsOrganization(Organization organization)
                         throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,

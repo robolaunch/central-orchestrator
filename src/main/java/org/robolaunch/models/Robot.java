@@ -17,6 +17,9 @@ public class Robot implements Serializable {
    private Integer vdiSessionCount;
    private String workspacesPath;
    private List<Workspace> workspaces;
+   private String rosBridgeUrl;
+   private String vdiUrl;
+   private String ideUrl;
 
    public Robot() {
    }
@@ -123,6 +126,30 @@ public class Robot implements Serializable {
 
    public void setProcessId(String processId) {
       this.processId = processId;
+   }
+
+   public String getRosBridgeUrl() {
+      return rosBridgeUrl;
+   }
+
+   public void setRosBridgeUrl(String rosBridgeUrl) {
+      this.rosBridgeUrl = rosBridgeUrl;
+   }
+
+   public String getVdiUrl() {
+      return vdiUrl;
+   }
+
+   public void setVdiUrl(String vdiUrl) {
+      this.vdiUrl = vdiUrl;
+   }
+
+   public String getIdeUrl() {
+      return ideUrl;
+   }
+
+   public void setIdeUrl(String ideUrl) {
+      this.ideUrl = ideUrl;
    }
 
 }

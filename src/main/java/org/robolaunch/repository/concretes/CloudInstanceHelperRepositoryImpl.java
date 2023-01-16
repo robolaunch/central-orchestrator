@@ -69,7 +69,6 @@ import io.kubernetes.client.util.credentials.AccessTokenAuthentication;
 import io.kubernetes.client.util.credentials.ClientCertificateAuthentication;
 import io.kubernetes.client.util.generic.KubernetesApiResponse;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi;
-import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesListObject;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesObject;
 import io.kubernetes.client.util.generic.options.ListOptions;
 import io.minio.errors.MinioException;
@@ -88,8 +87,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   String kogitoDataIndexUrl;
   @ConfigProperty(name = "master.node.name")
   String masterNodeName;
-  @ConfigProperty(name = "sc.vc.ip")
-  String scvcIp;
 
   @Inject
   KubernetesRepository kubernetesRepository;
@@ -262,7 +259,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     String bufferName = labels.get()
         .get("robolaunch.io/cloud-instance");
 
-    System.out.println("bufferName: " + bufferName);
     return bufferName;
 
   }
@@ -412,6 +408,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
       }
 
     }
+
     return podsReady && svcReady;
   }
 
@@ -887,7 +884,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
     byte[] byteCertificateAuthData = Base64.getDecoder().decode(certificateAuthorityData.getBytes("UTF-8"));
 
-    String basePath = "https://" + scvcIp + ":" + nodePort;
+    String basePath = "https://" + masterIP + ":" + nodePort;
     System.out.println("basepath: " + basePath);
     /* Virtual Cluster Client */
     ApiClient newClient = new ClientBuilder().setBasePath(basePath)

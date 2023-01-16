@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.robolaunch.models.Department;
-import org.robolaunch.models.DepartmentBasic;
 import org.robolaunch.models.GroupMember;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.User;

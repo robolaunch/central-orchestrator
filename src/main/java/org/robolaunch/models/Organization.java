@@ -10,7 +10,6 @@ public class Organization implements Serializable {
     @NotBlank
     @Pattern(regexp = "^[a-zA-Z0-9]+$")
     private String name;
-
     private Boolean enterprise;
 
     public Organization() {

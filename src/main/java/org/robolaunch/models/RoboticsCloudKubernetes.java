@@ -14,11 +14,12 @@ public class RoboticsCloudKubernetes implements Serializable {
    private String teamName;
    private String bufferName;
    private Integer diskSize;
-   private Integer VCPU;
-   private Integer GPU;
+   private Integer cpu;
+   private Integer gpu;
    private Integer memory;
    private Integer fleets;
    private Integer robots;
+   private Boolean connectionHub;
 
    public RoboticsCloudKubernetes() {
    }
@@ -111,28 +112,12 @@ public class RoboticsCloudKubernetes implements Serializable {
       this.diskSize = diskSize;
    }
 
-   public Integer getVCPU() {
-      return VCPU;
-   }
-
-   public void setVCPU(Integer VCPU) {
-      this.VCPU = VCPU;
-   }
-
    public Integer getMemory() {
       return memory;
    }
 
    public void setMemory(Integer memory) {
       this.memory = memory;
-   }
-
-   public Integer getGPU() {
-      return GPU;
-   }
-
-   public void setGPU(Integer GPU) {
-      this.GPU = GPU;
    }
 
    public Integer getFleets() {
@@ -149,6 +134,30 @@ public class RoboticsCloudKubernetes implements Serializable {
 
    public void setRobots(Integer robots) {
       this.robots = robots;
+   }
+
+   public Integer getCpu() {
+      return cpu;
+   }
+
+   public void setCpu(Integer cpu) {
+      this.cpu = cpu;
+   }
+
+   public Integer getGpu() {
+      return gpu;
+   }
+
+   public void setGpu(Integer gpu) {
+      this.gpu = gpu;
+   }
+
+   public Boolean isConnectionHub() {
+      return connectionHub;
+   }
+
+   public void setConnectionHub(Boolean connectionHub) {
+      this.connectionHub = connectionHub;
    }
 
 }

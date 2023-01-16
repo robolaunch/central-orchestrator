@@ -2,17 +2,11 @@ package org.robolaunch.models.request;
 
 import java.io.Serializable;
 
-import org.robolaunch.models.Organization;
-
 public class RequestFleet implements Serializable {
    private RequestCreateFleet fleet;
-   private Organization organization;
-   private String teamId;
-   private String region;
-   private String bufferName;
-   private String provider;
-   private String superCluster;
-   private String cloudInstanceName;
+   private String roboticsCloudProcessId;
+   private RequestCreateFederatedFleet federatedFleet;
+   private Boolean federated;
 
    public RequestFleet() {
    }
@@ -25,60 +19,28 @@ public class RequestFleet implements Serializable {
       this.fleet = fleet;
    }
 
-   public Organization getOrganization() {
-      return organization;
+   public String getRoboticsCloudProcessId() {
+      return roboticsCloudProcessId;
    }
 
-   public void setOrganization(Organization organization) {
-      this.organization = organization;
+   public void setRoboticsCloudProcessId(String roboticsCloudProcessId) {
+      this.roboticsCloudProcessId = roboticsCloudProcessId;
    }
 
-   public String getTeamId() {
-      return teamId;
+   public RequestCreateFederatedFleet getFederatedFleet() {
+      return federatedFleet;
    }
 
-   public void setTeamId(String teamId) {
-      this.teamId = teamId;
+   public void setFederatedFleet(RequestCreateFederatedFleet federatedFleet) {
+      this.federatedFleet = federatedFleet;
    }
 
-   public String getRegion() {
-      return region;
+   public Boolean isFederated() {
+      return federated;
    }
 
-   public void setRegion(String region) {
-      this.region = region;
-   }
-
-   public String getBufferName() {
-      return bufferName;
-   }
-
-   public void setBufferName(String bufferName) {
-      this.bufferName = bufferName;
-   }
-
-   public String getCloudInstanceName() {
-      return cloudInstanceName;
-   }
-
-   public void setCloudInstanceName(String cloudInstanceName) {
-      this.cloudInstanceName = cloudInstanceName;
-   }
-
-   public String getSuperCluster() {
-      return superCluster;
-   }
-
-   public void setSuperCluster(String superCluster) {
-      this.superCluster = superCluster;
-   }
-
-   public String getProvider() {
-      return provider;
-   }
-
-   public void setProvider(String provider) {
-      this.provider = provider;
+   public void setFederated(Boolean federated) {
+      this.federated = federated;
    }
 
 }
