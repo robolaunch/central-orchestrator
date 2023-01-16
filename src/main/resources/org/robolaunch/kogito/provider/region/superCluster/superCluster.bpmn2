@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_ihnW8HPbEDuBE55IZlQhbA" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_KQBqIXfzEDuRo8sZ0Aa5bg" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_requestCreateRoboticsCloudItem" structureRef="org.robolaunch.models.request.RequestCreateRoboticsCloud"/>
   <bpmn2:itemDefinition id="_requestCreateSuperClusterItem" structureRef="org.robolaunch.models.request.RequestCreateSuperCluster"/>
   <bpmn2:itemDefinition id="_regionNameItem" structureRef="String"/>
@@ -32,6 +32,9 @@
   <bpmn2:itemDefinition id="_isThingReadyItem" structureRef="Boolean"/>
   <bpmn2:itemDefinition id="_neededInstanceTypeItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_teamNameItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_requestFleetItem" structureRef="org.robolaunch.models.request.RequestFleet"/>
+  <bpmn2:itemDefinition id="_requestBuildManagerItem" structureRef="org.robolaunch.models.request.RequestBuildManager"/>
+  <bpmn2:itemDefinition id="_requestLaunchManagerItem" structureRef="org.robolaunch.models.request.RequestLaunchManager"/>
   <bpmn2:itemDefinition id="__E3A1DF6A-4C67-45CE-B94D-C6E052594EE4_requestCreateRoboticsCloudOutputXItem" structureRef="org.robolaunch.models.request.RequestCreateRoboticsCloud"/>
   <bpmn2:itemDefinition id="__AE16EECA-483F-4B73-B7E4-26A44E2C58EE_requestCreateSuperClusterInputXItem" structureRef="org.robolaunch.models.request.RequestCreateSuperCluster"/>
   <bpmn2:itemDefinition id="__AE16EECA-483F-4B73-B7E4-26A44E2C58EE_regionNameInputXItem" structureRef="String"/>
@@ -87,8 +90,8 @@
   <bpmn2:interface id="_E5658ED7-6F6D-4752-84D5-9CDC4188C312_ServiceInterface" name="org.robolaunch.service.KubernetesService" implementationRef="org.robolaunch.service.KubernetesService">
     <bpmn2:operation id="_E5658ED7-6F6D-4752-84D5-9CDC4188C312_ServiceOperation" name="checkIfTypeNeedsBuffer" implementationRef="checkIfTypeNeedsBuffer"/>
   </bpmn2:interface>
-  <bpmn2:collaboration id="_80D9D046-D79B-43A0-8570-D0339659B034" name="Default Collaboration">
-    <bpmn2:participant id="_73B6C2A9-4670-412C-A3CF-41C0B534EF03" name="Pool Participant" processRef="superCluster"/>
+  <bpmn2:collaboration id="_1185CFC4-3DF5-4D4E-855E-F7F425A23446" name="Default Collaboration">
+    <bpmn2:participant id="_A12B98DC-13DE-4C75-B53A-60315512BAD5" name="Pool Participant" processRef="superCluster"/>
   </bpmn2:collaboration>
   <bpmn2:process id="superCluster" drools:packageName="org.robolaunch.kogito.provider" drools:version="1.0" drools:adHoc="false" name="superCluster" isExecutable="true" processType="Public">
     <bpmn2:property id="requestCreateRoboticsCloud" itemSubjectRef="_requestCreateRoboticsCloudItem" name="requestCreateRoboticsCloud"/>
@@ -147,6 +150,9 @@
     <bpmn2:property id="isThingReady" itemSubjectRef="_isThingReadyItem" name="isThingReady"/>
     <bpmn2:property id="neededInstanceType" itemSubjectRef="_neededInstanceTypeItem" name="neededInstanceType"/>
     <bpmn2:property id="teamName" itemSubjectRef="_teamNameItem" name="teamName"/>
+    <bpmn2:property id="requestFleet" itemSubjectRef="_requestFleetItem" name="requestFleet"/>
+    <bpmn2:property id="requestBuildManager" itemSubjectRef="_requestBuildManagerItem" name="requestBuildManager"/>
+    <bpmn2:property id="requestLaunchManager" itemSubjectRef="_requestLaunchManagerItem" name="requestLaunchManager"/>
     <bpmn2:sequenceFlow id="_966BF42C-5672-4A44-BA04-15FB100AE752" sourceRef="_1C2CCA1A-F15A-408F-B70C-3AD839C34848" targetRef="_987034BC-F018-4807-8C56-1D4E7E71BD9E"/>
     <bpmn2:sequenceFlow id="_8EAD0A20-2663-41D5-A1D5-F921650A03F2" sourceRef="_9F9CFEB0-F497-4CC6-AAE6-C840B69F8152" targetRef="_1C2CCA1A-F15A-408F-B70C-3AD839C34848">
       <bpmn2:extensionElements>
@@ -211,13 +217,7 @@
       </bpmn2:extensionElements>
       <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return plainResponse.isSuccess() == true;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
-    <bpmn2:sequenceFlow id="_2A4DE011-6959-479F-8F1F-605BB495F129" sourceRef="_51DC0C22-5C48-4A59-82A8-A6F52BC01A33" targetRef="_100183F9-37D7-49FA-9AEF-5779CE348947">
-      <bpmn2:extensionElements>
-        <drools:metaData name="isAutoConnection.target">
-          <drools:metaValue><![CDATA[true]]></drools:metaValue>
-        </drools:metaData>
-      </bpmn2:extensionElements>
-    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="_2A4DE011-6959-479F-8F1F-605BB495F129" sourceRef="_51DC0C22-5C48-4A59-82A8-A6F52BC01A33" targetRef="_8623AA0B-4620-4B80-937B-65EA343157D2"/>
     <bpmn2:sequenceFlow id="_AFEC68BC-CBFF-45A9-B295-97DC52108D2D" sourceRef="_A39313AD-0381-48E0-B74D-AD32DE4D6F7C" targetRef="_51DC0C22-5C48-4A59-82A8-A6F52BC01A33"/>
     <bpmn2:sequenceFlow id="_7BE19338-889A-4BE6-91E2-0D758CC3E70E" name="Policies failed" sourceRef="_04704836-CCA6-48E8-9CFA-2FF21A399B75" targetRef="_51DC0C22-5C48-4A59-82A8-A6F52BC01A33">
       <bpmn2:extensionElements>
@@ -272,7 +272,7 @@
         </drools:metaData>
       </bpmn2:extensionElements>
     </bpmn2:sequenceFlow>
-    <bpmn2:sequenceFlow id="_2E67C613-4E9C-44AA-815D-C44FA2755E5F" sourceRef="_14FC988E-BDC4-45F6-9A75-5B508E391F40" targetRef="_6FAE9678-E252-4E41-9089-8B509797BCB3"/>
+    <bpmn2:sequenceFlow id="_2E67C613-4E9C-44AA-815D-C44FA2755E5F" sourceRef="_14FC988E-BDC4-45F6-9A75-5B508E391F40" targetRef="_660D27A4-4F6C-48BF-BC2D-DDDE5F5B99AB"/>
     <bpmn2:sequenceFlow id="_8E546575-C04E-4DBF-B4C4-B1CC79D99382" sourceRef="_01CF58FF-5A5C-47D1-986E-684734597E87" targetRef="_14FC988E-BDC4-45F6-9A75-5B508E391F40">
       <bpmn2:extensionElements>
         <drools:metaData name="isAutoConnection.target">
@@ -301,15 +301,14 @@
         </drools:metaData>
       </bpmn2:extensionElements>
     </bpmn2:sequenceFlow>
-    <bpmn2:endEvent id="_100183F9-37D7-49FA-9AEF-5779CE348947">
+    <bpmn2:endEvent id="_8623AA0B-4620-4B80-937B-65EA343157D2">
       <bpmn2:incoming>_2A4DE011-6959-479F-8F1F-605BB495F129</bpmn2:incoming>
+    </bpmn2:endEvent>
+    <bpmn2:endEvent id="_660D27A4-4F6C-48BF-BC2D-DDDE5F5B99AB">
+      <bpmn2:incoming>_2E67C613-4E9C-44AA-815D-C44FA2755E5F</bpmn2:incoming>
     </bpmn2:endEvent>
     <bpmn2:endEvent id="_21272285-8B54-43C2-8132-3800855B699F">
       <bpmn2:incoming>_30D23818-2A9C-4A87-94E9-80324E23A800</bpmn2:incoming>
-      <bpmn2:terminateEventDefinition/>
-    </bpmn2:endEvent>
-    <bpmn2:endEvent id="_6FAE9678-E252-4E41-9089-8B509797BCB3">
-      <bpmn2:incoming>_2E67C613-4E9C-44AA-815D-C44FA2755E5F</bpmn2:incoming>
       <bpmn2:terminateEventDefinition/>
     </bpmn2:endEvent>
     <bpmn2:inclusiveGateway id="_9F9CFEB0-F497-4CC6-AAE6-C840B69F8152" gatewayDirection="Converging">
@@ -382,6 +381,9 @@
       <bpmn2:extensionElements>
         <drools:metaData name="elementname">
           <drools:metaValue><![CDATA[Buffer Cloud Instance]]></drools:metaValue>
+        </drools:metaData>
+        <drools:metaData name="customAsync">
+          <drools:metaValue><![CDATA[true]]></drools:metaValue>
         </drools:metaData>
       </bpmn2:extensionElements>
       <bpmn2:incoming>_A86FDDBF-0C03-4989-9BCA-D946F2D3619F</bpmn2:incoming>
@@ -759,9 +761,6 @@ kcontext.setVariable("superClusterName", requestCreateSuperCluster.getName());</
         <drools:metaData name="elementname">
           <drools:metaValue><![CDATA[Health Check]]></drools:metaValue>
         </drools:metaData>
-        <drools:metaData name="customAsync">
-          <drools:metaValue><![CDATA[true]]></drools:metaValue>
-        </drools:metaData>
       </bpmn2:extensionElements>
       <bpmn2:incoming>_8E546575-C04E-4DBF-B4C4-B1CC79D99382</bpmn2:incoming>
       <bpmn2:outgoing>_2E67C613-4E9C-44AA-815D-C44FA2755E5F</bpmn2:outgoing>
@@ -814,7 +813,7 @@ kcontext.setVariable("superClusterName", requestCreateSuperCluster.getName());</
         <dc:Bounds height="56" width="56" x="1097" y="484"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__884DCD63-591B-400D-8F3E-1308267F99E2" bpmnElement="_884DCD63-591B-400D-8F3E-1308267F99E2">
-        <dc:Bounds height="50" width="113" x="1069" y="392"/>
+        <dc:Bounds height="50" width="113" x="1068" y="394"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__D0C0357F-C03A-4298-A0C7-7EFAC3367CA6" bpmnElement="_D0C0357F-C03A-4298-A0C7-7EFAC3367CA6">
         <dc:Bounds height="52" width="114" x="1214" y="486"/>
@@ -858,14 +857,14 @@ kcontext.setVariable("superClusterName", requestCreateSuperCluster.getName());</
       <bpmndi:BPMNShape id="shape__9F9CFEB0-F497-4CC6-AAE6-C840B69F8152" bpmnElement="_9F9CFEB0-F497-4CC6-AAE6-C840B69F8152">
         <dc:Bounds height="56" width="56" x="1905" y="380"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="shape__6FAE9678-E252-4E41-9089-8B509797BCB3" bpmnElement="_6FAE9678-E252-4E41-9089-8B509797BCB3">
-        <dc:Bounds height="56" width="56" x="1775" y="486"/>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__21272285-8B54-43C2-8132-3800855B699F" bpmnElement="_21272285-8B54-43C2-8132-3800855B699F">
         <dc:Bounds height="56" width="56" x="1097" y="307"/>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="shape__100183F9-37D7-49FA-9AEF-5779CE348947" bpmnElement="_100183F9-37D7-49FA-9AEF-5779CE348947">
-        <dc:Bounds height="56" width="56" x="1494" y="785.4000000000003"/>
+      <bpmndi:BPMNShape id="shape__660D27A4-4F6C-48BF-BC2D-DDDE5F5B99AB" bpmnElement="_660D27A4-4F6C-48BF-BC2D-DDDE5F5B99AB">
+        <dc:Bounds height="56" width="56" x="1765" y="482"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="shape__8623AA0B-4620-4B80-937B-65EA343157D2" bpmnElement="_8623AA0B-4620-4B80-937B-65EA343157D2">
+        <dc:Bounds height="56" width="56" x="1492" y="792"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="edge_shape__E3A1DF6A-4C67-45CE-B94D-C6E052594EE4_to_shape__DECFFDFC-87D3-4780-8FB3-F8C4440FCF12" bpmnElement="_31D105BA-B35A-46A5-9DBD-5E9CAF639AD3">
         <di:waypoint x="1703.7525773195875" y="562"/>
@@ -885,9 +884,9 @@ kcontext.setVariable("superClusterName", requestCreateSuperCluster.getName());</
         <di:waypoint x="1435" y="512"/>
         <di:waypoint x="1583" y="511.5"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__14FC988E-BDC4-45F6-9A75-5B508E391F40_to_shape__6FAE9678-E252-4E41-9089-8B509797BCB3" bpmnElement="_2E67C613-4E9C-44AA-815D-C44FA2755E5F">
+      <bpmndi:BPMNEdge id="edge_shape__14FC988E-BDC4-45F6-9A75-5B508E391F40_to_shape__660D27A4-4F6C-48BF-BC2D-DDDE5F5B99AB" bpmnElement="_2E67C613-4E9C-44AA-815D-C44FA2755E5F">
         <di:waypoint x="1659.5" y="511.5"/>
-        <di:waypoint x="1803" y="514"/>
+        <di:waypoint x="1793" y="510"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__AE16EECA-483F-4B73-B7E4-26A44E2C58EE_to_shape__192F92C6-1E21-4B48-B31C-4AA70B8D219E" bpmnElement="_27614346-A72E-443D-AF66-E5CB2DAAE73D">
         <di:waypoint x="981.9999999999999" y="460"/>
@@ -899,10 +898,10 @@ kcontext.setVariable("superClusterName", requestCreateSuperCluster.getName());</
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__192F92C6-1E21-4B48-B31C-4AA70B8D219E_to_shape__884DCD63-591B-400D-8F3E-1308267F99E2" bpmnElement="_EB8C86B6-E473-4A36-A8AA-EBB971D31239">
         <di:waypoint x="1125" y="512"/>
-        <di:waypoint x="1125.5" y="442"/>
+        <di:waypoint x="1124.5" y="444"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__884DCD63-591B-400D-8F3E-1308267F99E2_to_shape__21272285-8B54-43C2-8132-3800855B699F" bpmnElement="_30D23818-2A9C-4A87-94E9-80324E23A800">
-        <di:waypoint x="1125.5" y="417"/>
+        <di:waypoint x="1124.5" y="419"/>
         <di:waypoint x="1125" y="363"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__D0C0357F-C03A-4298-A0C7-7EFAC3367CA6_to_shape__01CF58FF-5A5C-47D1-986E-684734597E87" bpmnElement="_E8297C45-30BA-404A-8FD8-449C772D1EF6">
@@ -928,9 +927,9 @@ kcontext.setVariable("superClusterName", requestCreateSuperCluster.getName());</
         <di:waypoint x="1520" y="1060.14199892806"/>
         <di:waypoint x="1520" y="904.5890954253737"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__51DC0C22-5C48-4A59-82A8-A6F52BC01A33_to_shape__100183F9-37D7-49FA-9AEF-5779CE348947" bpmnElement="_2A4DE011-6959-479F-8F1F-605BB495F129">
+      <bpmndi:BPMNEdge id="edge_shape__51DC0C22-5C48-4A59-82A8-A6F52BC01A33_to_shape__8623AA0B-4620-4B80-937B-65EA343157D2" bpmnElement="_2A4DE011-6959-479F-8F1F-605BB495F129">
         <di:waypoint x="1520" y="904.5890954253737"/>
-        <di:waypoint x="1522" y="841.4000000000003"/>
+        <di:waypoint x="1520" y="820"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__04704836-CCA6-48E8-9CFA-2FF21A399B75_to_shape__A39313AD-0381-48E0-B74D-AD32DE4D6F7C" bpmnElement="_5B34F859-7EB1-488D-A3F0-23C5B9460CEF">
         <di:waypoint x="1856" y="907"/>
@@ -1170,7 +1169,7 @@ kcontext.setVariable("superClusterName", requestCreateSuperCluster.getName());</
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_ihnW8HPbEDuBE55IZlQhbA</bpmn2:source>
-    <bpmn2:target>_ihnW8HPbEDuBE55IZlQhbA</bpmn2:target>
+    <bpmn2:source>_KQBqIXfzEDuRo8sZ0Aa5bg</bpmn2:source>
+    <bpmn2:target>_KQBqIXfzEDuRo8sZ0Aa5bg</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>

@@ -166,6 +166,33 @@ public class DepartmentService {
    * department.
    * HELPER FUNCTION
    */
+  public Boolean isUserManagerTeam(User user, String teamId)
+      throws ApplicationException {
+    try {
+      Organization dept = new Organization();
+      dept.setName(teamId);
+
+      // Get Team Member managers, check if user is admin.
+      Set<User> teamMemberManagers = groupRepository.getUsers(dept, "membermanager_user");
+      Iterator<User> ite = teamMemberManagers.iterator();
+      while (ite.hasNext()) {
+        User manager = ite.next();
+        if (manager.getUsername().equals(user.getUsername())) {
+          return true;
+        }
+      }
+      return false;
+
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  /*
+   * Checks if the current user(taken from jwt) is the manager of given
+   * department.
+   * HELPER FUNCTION
+   */
   public Boolean isCurrentUserManagerTeam(String teamId)
       throws ApplicationException {
     try {
@@ -561,7 +588,6 @@ public class DepartmentService {
       Organization team = new Organization();
       team.setName(teamId);
       JsonNode members = groupAdminRepository.getGroupField(team, "membermanager_user");
-      Gson gson = new Gson();
       for (int i = 0; i < members.size(); i++) {
         teamManagers.add(userAdminRepository.getUserByUsername(members.get(i).asText()));
       }
@@ -576,7 +602,7 @@ public class DepartmentService {
   public Response addCreatedIPAGroupAsMember(Organization organization, String teamName)
       throws ApplicationException {
     try {
-      groupRepository.addSubgroupToGroup(organization, teamName);
+      groupAdminRepository.addSubgroupToGroup(organization, teamName);
       departmentLogger.info("IPA Group for department added as member to organization.");
       return new Response(true, UUID.randomUUID().toString());
     } catch (Exception e) {
@@ -589,7 +615,7 @@ public class DepartmentService {
   public Response addIPAGroupAsMember(Organization organization, String teamName)
       throws ApplicationException {
     try {
-      groupRepository.addSubgroupToGroup(organization, teamName);
+      groupAdminRepository.addSubgroupToGroup(organization, teamName);
       departmentLogger.info("IPA Group for department added as member to organization.");
       return new Response(true, UUID.randomUUID().toString());
     } catch (Exception e) {

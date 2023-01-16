@@ -1,10 +1,11 @@
 package org.robolaunch.models.response;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.robolaunch.models.CloudInstance;
 
-public class ResponseCloudInstances {
+public class ResponseCloudInstances implements Serializable {
    private String message;
    private Boolean success;
    private ArrayList<CloudInstance> data;
@@ -20,7 +21,7 @@ public class ResponseCloudInstances {
       this.message = message;
    }
 
-   public Boolean getSuccess() {
+   public Boolean isSuccess() {
       return success;
    }
 

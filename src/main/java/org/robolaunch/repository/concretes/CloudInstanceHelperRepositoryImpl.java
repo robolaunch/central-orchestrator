@@ -69,7 +69,6 @@ import io.kubernetes.client.util.credentials.AccessTokenAuthentication;
 import io.kubernetes.client.util.credentials.ClientCertificateAuthentication;
 import io.kubernetes.client.util.generic.KubernetesApiResponse;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi;
-import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesListObject;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesObject;
 import io.kubernetes.client.util.generic.options.ListOptions;
 import io.minio.errors.MinioException;
@@ -88,8 +87,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   String kogitoDataIndexUrl;
   @ConfigProperty(name = "master.node.name")
   String masterNodeName;
-  @ConfigProperty(name = "sc.vc.ip")
-  String scvcIp;
 
   @Inject
   KubernetesRepository kubernetesRepository;
@@ -223,7 +220,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
       InterruptedException, MinioException {
     DynamicKubernetesApi virtualClustersApi = apiClientManager.getVirtualClusterApi(provider, region, superCluster);
     ListOptions listOptions = new ListOptions();
-    listOptions.setLabelSelector("robolaunch.io/buffer-instance=" + bufferName);
+    listOptions.setLabelSelector("robolaunch.io/cloud-instance=" + bufferName);
     var vcs = virtualClustersApi.list(listOptions);
     if (vcs.getObject().getItems().size() == 0) {
       return false;
@@ -258,8 +255,10 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     Optional<Map<String, String>> labels = Optional.ofNullable(vcs.getObject().getItems().get(randomInteger))
         .map(DynamicKubernetesObject::getMetadata)
         .map(m -> m.getLabels());
+
     String bufferName = labels.get()
-        .get("robolaunch.io/buffer-instance");
+        .get("robolaunch.io/cloud-instance");
+
     return bufferName;
 
   }
@@ -409,6 +408,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
       }
 
     }
+
     return podsReady && svcReady;
   }
 
@@ -420,7 +420,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     ApiClient apiClient = apiClientManager.getAdminApiClient(provider, region, superCluster);
     while (true) {
       V1NodeList nodeList = coreV1Api.listNode(null, null, null, null,
-          "!node-role.kubernetes.io/master, !robolaunch.io/buffer-instance, node-role.kubernetes.io/worker=worker",
+          "!node-role.kubernetes.io/master, !robolaunch.io/cloud-instance, node-role.kubernetes.io/worker=worker",
           null, null, null, null, null);
       for (V1Node node : nodeList.getItems()) {
         Optional<V1ObjectMeta> nodeMetadata = Optional.ofNullable(node).map(V1Node::getMetadata);
@@ -431,7 +431,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
             Kubectl.label(V1Node.class).name(nodeMetadata.get().getName())
                 .apiClient(apiClient)
-                .addLabel("robolaunch.io/buffer-instance", bufferName)
+                .addLabel("robolaunch.io/cloud-instance", bufferName)
                 .execute();
             return nodeMetadata.get().getName();
           }
@@ -654,7 +654,8 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
       throws IOException, KubectlException, ApiException, InterruptedException, InvalidKeyException,
       NoSuchAlgorithmException, IllegalArgumentException, MinioException {
     ApiClient apiClient = apiClientManager.getAdminApiClient(provider, region, superCluster);
-    String patchString = "[{ \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1buffer-instance\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1organization\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1teamId\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1cloud-instance\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1region\" }]";
+    String patchString = "[{ \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1cloud-instance\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1organization\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1team\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1cloud-instance-alias\" }, { \"op\": \"remove\", \"path\": \"/metadata/labels/robolaunch.io~1region\" }]";
+
     V1Patch patch = new V1Patch(patchString);
     Kubectl.patch(V1Node.class).apiClient(apiClient).name(nodeName).patchContent(patch).execute();
   }
@@ -798,7 +799,6 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     byte[] byteCertificateAuthData = Base64.getDecoder().decode(certificateAuthorityData.getBytes("UTF-8"));
 
     String basePath = "https://" + masterIP + ":" + nodePort;
-    System.out.println("Base path: " + basePath);
     /* Virtual Cluster Client */
     ApiClient newClient = new ClientBuilder().setBasePath(basePath)
         .setAuthentication(new ClientCertificateAuthentication(byteClientCertData,
@@ -884,7 +884,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
 
     byte[] byteCertificateAuthData = Base64.getDecoder().decode(certificateAuthorityData.getBytes("UTF-8"));
 
-    String basePath = "https://" + scvcIp + ":" + nodePort;
+    String basePath = "https://" + masterIP + ":" + nodePort;
     System.out.println("basepath: " + basePath);
     /* Virtual Cluster Client */
     ApiClient newClient = new ClientBuilder().setBasePath(basePath)

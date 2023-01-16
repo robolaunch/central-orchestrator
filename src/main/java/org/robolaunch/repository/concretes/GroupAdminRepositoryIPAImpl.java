@@ -405,4 +405,15 @@ public class GroupAdminRepositoryIPAImpl implements GroupAdminRepository {
     return null;
   }
 
+  @Override
+  public void addSubgroupToGroup(Organization organization, String teamName)
+      throws InternalError, IOException {
+    DepartmentBasic departmentBasic = new DepartmentBasic();
+    departmentBasic.setName(teamName);
+    String groupRequest = groupAdapter.toAssignSubgroup(organization, departmentBasic);
+    String addRequest = String.format("{\"id\": 0, \"method\": \"group_add_member/1\", \"params\": %s}",
+        groupRequest);
+    makeRequest(addRequest);
+  }
+
 }

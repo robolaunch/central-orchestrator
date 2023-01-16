@@ -45,6 +45,7 @@ public class ApiClientManager {
          IllegalArgumentException, IOException, ApiException, InterruptedException, MinioException {
       ApiClient apiClient = apiClientMap.get(provider + "/" + region + "/" + superCluster);
       if (apiClient == null) {
+         System.out.println("Creating admin api client for " + provider + "/" + region + "/" + superCluster);
          apiClient = cloudInstanceHelperRepository.adminApiClient(provider, region, superCluster);
          apiClientMap.put(provider + "/" + region + "/" + superCluster, apiClient);
       }

@@ -13,6 +13,13 @@ public class RoboticsCloudKubernetes implements Serializable {
    private String team;
    private String teamName;
    private String bufferName;
+   private Integer diskSize;
+   private Integer cpu;
+   private Integer gpu;
+   private Integer memory;
+   private Integer fleets;
+   private Integer robots;
+   private Boolean connectionHub;
 
    public RoboticsCloudKubernetes() {
    }
@@ -95,6 +102,62 @@ public class RoboticsCloudKubernetes implements Serializable {
 
    public void setTeamName(String teamName) {
       this.teamName = teamName;
+   }
+
+   public Integer getDiskSize() {
+      return diskSize;
+   }
+
+   public void setDiskSize(Integer diskSize) {
+      this.diskSize = diskSize;
+   }
+
+   public Integer getMemory() {
+      return memory;
+   }
+
+   public void setMemory(Integer memory) {
+      this.memory = memory;
+   }
+
+   public Integer getFleets() {
+      return fleets;
+   }
+
+   public void setFleets(Integer fleets) {
+      this.fleets = fleets;
+   }
+
+   public Integer getRobots() {
+      return robots;
+   }
+
+   public void setRobots(Integer robots) {
+      this.robots = robots;
+   }
+
+   public Integer getCpu() {
+      return cpu;
+   }
+
+   public void setCpu(Integer cpu) {
+      this.cpu = cpu;
+   }
+
+   public Integer getGpu() {
+      return gpu;
+   }
+
+   public void setGpu(Integer gpu) {
+      this.gpu = gpu;
+   }
+
+   public Boolean isConnectionHub() {
+      return connectionHub;
+   }
+
+   public void setConnectionHub(Boolean connectionHub) {
+      this.connectionHub = connectionHub;
    }
 
 }

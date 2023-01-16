@@ -22,19 +22,12 @@ import io.minio.errors.XmlParserException;
 public interface CloudInstanceRepository {
 
         public void createMachineDeployment(String bufferName, String instanceType, String provider, String region,
-                        String superCluster)
-                        throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
-                        IOException, ApiException, InterruptedException;
+                        String superCluster);
 
         public void claimTheSuperClusterNode(String nodeName, String bufferName, String provider, String region,
-                        String superCluster)
-                        throws IOException, KubectlException, ApiException, InvalidKeyException,
-                        NoSuchAlgorithmException, IllegalArgumentException, InterruptedException, MinioException;
+                        String superCluster);
 
-        public void createClusterVersion(String bufferName, String provider, String region, String superCluster)
-                        throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
-                        IOException,
-                        ApiException, InterruptedException;
+        public void createClusterVersion(String bufferName, String provider, String region, String superCluster);
 
         public void createVirtualCluster(String bufferName, String provider, String region, String superCluster)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
@@ -143,6 +136,12 @@ public interface CloudInstanceRepository {
                         NoSuchAlgorithmException, ServerException, XmlParserException, IllegalArgumentException,
                         KubectlException, MinioException;
 
+        public void createFleetOperator(String namespaceName, String cloudInstanceName,
+                        String teamId, Organization organization,
+                        String bufferName, String provider, String region, String superCluster)
+                        throws IOException, ApiException, InterruptedException, InvalidKeyException,
+                        NoSuchAlgorithmException, IllegalArgumentException, KubectlException, MinioException;
+
         public void createConnectionHub(String bufferName, Organization organization, String teamId,
                         String cloudInstanceName,
                         String serverIP,
@@ -200,4 +199,5 @@ public interface CloudInstanceRepository {
                         InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException,
                         XmlParserException, IllegalArgumentException, IOException, ApiException, InterruptedException,
                         MinioException;
+
 }

@@ -7,17 +7,23 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
+import org.robolaunch.models.Fleet;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.Provider;
 import org.robolaunch.models.RegionKubernetes;
+import org.robolaunch.models.Robot;
 import org.robolaunch.models.RoboticsCloudKubernetes;
 import org.robolaunch.models.SuperClusterKubernetes;
 import org.robolaunch.models.response.PlainResponse;
+import org.robolaunch.models.response.ResponseFleets;
 import org.robolaunch.models.response.ResponseProviders;
 import org.robolaunch.models.response.ResponseRegions;
 import org.robolaunch.models.response.ResponseRoboticsClouds;
+import org.robolaunch.models.response.ResponseRobots;
 import org.robolaunch.models.response.ResponseSuperClusters;
 import org.robolaunch.repository.abstracts.KubernetesRepository;
+
+import com.google.gson.JsonObject;
 
 import io.quarkus.arc.log.LoggerName;
 
@@ -104,13 +110,17 @@ public class KubernetesService {
       for (String type : types) {
         Integer desiredBufferCount = getDesiredBufferCountOfType(type, provider, region, superCluster);
         Integer currentBufferCount = getCurrentBufferCountOfType(type, provider, region, superCluster);
+        kubernetesLogger
+            .info("Checking if type needs buffer: " + type + " desired: " + desiredBufferCount + " current: "
+                + currentBufferCount + "");
         if (desiredBufferCount > currentBufferCount) {
           return type;
         }
       }
       return "";
     } catch (Exception e) {
-      return null;
+      kubernetesLogger.error("Error checking if needs buffer.");
+      return "";
     }
   }
 
@@ -127,7 +137,7 @@ public class KubernetesService {
       }
       return plainResponse;
     } catch (Exception e) {
-      return plainResponse;
+      return null;
     }
   }
 
@@ -235,6 +245,141 @@ public class KubernetesService {
       responseRoboticsClouds.setMessage("Error while fetching RoboticsClouds." + e.getMessage());
     }
     return responseRoboticsClouds;
+  }
+
+  public String readPlatformContent(String version, String resource) {
+    try {
+      String platformContent = kubernetesRepository.readPlatformContent(version, resource);
+      kubernetesLogger.info("Platform Content is read successfully.");
+      return platformContent;
+    } catch (Exception e) {
+      kubernetesLogger.error("Error while reading Platform Content: " + e.getMessage());
+      return null;
+    }
+  }
+
+  public JsonObject readPlatformContentAsJsonObject(String version, String resource) {
+    try {
+      JsonObject platformContent = kubernetesRepository.readPlatformContentAsJsonObject(version, resource);
+      kubernetesLogger.info("Platform Object is read successfully.");
+      return platformContent;
+    } catch (Exception e) {
+      kubernetesLogger.error("Error while reading Platform Object: " + e.getMessage());
+      return null;
+    }
+  }
+
+  public String getLatestPlatformVersion() {
+    try {
+      String platformVersion = kubernetesRepository.getLatestPlatformVersion();
+      kubernetesLogger.info("Latest platform version: " + platformVersion);
+      return platformVersion;
+    } catch (Exception e) {
+      kubernetesLogger.error("Cannot fetch platform version.");
+      return null;
+    }
+  }
+
+  public Boolean isAuthorizedRoboticsCloud(Organization organization, String teamId) {
+    try {
+      String username = jwt.getClaim("preferred_username");
+      Boolean isAuthorized = kubernetesRepository.isAuthorizedRoboticsCloud(organization, teamId, username);
+      kubernetesLogger.info("Checked if user is authorized.");
+      return isAuthorized;
+    } catch (Exception e) {
+      kubernetesLogger.error("Cannot check if authorized.");
+      return null;
+    }
+  }
+
+  public ResponseRobots getRobotsOrganization(Organization organization) {
+    ResponseRobots responseRobots = new ResponseRobots();
+    try {
+      ArrayList<Robot> robots = kubernetesRepository
+          .getRobotsOrganization(organization);
+      responseRobots.setData(robots);
+      responseRobots.setSuccess(true);
+      responseRobots.setMessage("Robots fetched successfully.");
+    } catch (Exception e) {
+      responseRobots.setSuccess(false);
+      responseRobots.setMessage("Error while fetching Robots." + e.getMessage());
+    }
+    return responseRobots;
+  }
+
+  public ResponseRobots getRobotsTeam(Organization organization, String teamId) {
+    ResponseRobots responseRobots = new ResponseRobots();
+    try {
+      ArrayList<Robot> robots = kubernetesRepository
+          .getRobotsTeam(organization, teamId);
+      responseRobots.setData(robots);
+      responseRobots.setSuccess(true);
+      responseRobots.setMessage("Robots fetched successfully.");
+    } catch (Exception e) {
+      responseRobots.setSuccess(false);
+      responseRobots.setMessage("Error while fetching Robots." + e.getMessage());
+    }
+    return responseRobots;
+  }
+
+  public ResponseRobots getRobotsRoboticsCloud(String roboticsCloudProcessId) {
+    ResponseRobots responseRobots = new ResponseRobots();
+    try {
+      ArrayList<Robot> robots = kubernetesRepository
+          .getRobotsRoboticsCloud(roboticsCloudProcessId);
+      responseRobots.setData(robots);
+      responseRobots.setSuccess(true);
+      responseRobots.setMessage("Robots fetched successfully.");
+    } catch (Exception e) {
+      responseRobots.setSuccess(false);
+      responseRobots.setMessage("Error while fetching Robots." + e.getMessage());
+    }
+    return responseRobots;
+  }
+
+  public ResponseFleets getFleetsOrganization(Organization organization) {
+    ResponseFleets responseFleets = new ResponseFleets();
+    try {
+      ArrayList<Fleet> fleets = kubernetesRepository
+          .getFleetsOrganization(organization);
+      responseFleets.setData(fleets);
+      responseFleets.setSuccess(true);
+      responseFleets.setMessage("Fleets fetched successfully.");
+    } catch (Exception e) {
+      responseFleets.setSuccess(false);
+      responseFleets.setMessage("Error while fetching Fleets." + e.getMessage());
+    }
+    return responseFleets;
+  }
+
+  public ResponseFleets getFleetsTeam(Organization organization, String teamId) {
+    ResponseFleets responseFleets = new ResponseFleets();
+    try {
+      ArrayList<Fleet> fleets = kubernetesRepository
+          .getFleetsTeam(organization, teamId);
+      responseFleets.setData(fleets);
+      responseFleets.setSuccess(true);
+      responseFleets.setMessage("Fleets fetched successfully.");
+    } catch (Exception e) {
+      responseFleets.setSuccess(false);
+      responseFleets.setMessage("Error while fetching Fleets." + e.getMessage());
+    }
+    return responseFleets;
+  }
+
+  public ResponseFleets getFleetsRoboticsCloud(String roboticsCloudProcessId) {
+    ResponseFleets responseFleets = new ResponseFleets();
+    try {
+      ArrayList<Fleet> fleets = kubernetesRepository
+          .getFleetsRoboticsCloud(roboticsCloudProcessId);
+      responseFleets.setData(fleets);
+      responseFleets.setSuccess(true);
+      responseFleets.setMessage("Fleets fetched successfully.");
+    } catch (Exception e) {
+      responseFleets.setSuccess(false);
+      responseFleets.setMessage("Error while fetching Fleets." + e.getMessage());
+    }
+    return responseFleets;
   }
 
 }

@@ -3,6 +3,7 @@ package org.robolaunch.service;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.jboss.logging.Logger;
+import org.robolaunch.exception.ApplicationException;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.repository.abstracts.CloudInstanceRepository;
@@ -31,8 +32,8 @@ public class CloudInstanceService {
       cloudInstanceLogger.info("Machine deployment created -> " + bufferName);
       cloudInstanceRepository.createMachineDeployment(bufferName, instanceType, provider, region, superCluster);
       plainResponse.setSuccess(true);
-    } catch (Exception e) {
-      cloudInstanceLogger.error("Error while creating machine deployment", e);
+    } catch (ApplicationException e) {
+      cloudInstanceLogger.error(e.getMessage());
       plainResponse.setSuccess(false);
     }
     return plainResponse;
@@ -45,8 +46,8 @@ public class CloudInstanceService {
       cloudInstanceRepository.claimTheSuperClusterNode(nodeName, bufferName, provider, region, superCluster);
       cloudInstanceLogger.info("Label added to node");
       plainResponse.setSuccess(true);
-    } catch (Exception e) {
-      cloudInstanceLogger.error("Error while adding label to node - exception", e);
+    } catch (ApplicationException e) {
+      cloudInstanceLogger.error(e.getMessage());
       plainResponse.setSuccess(false);
     }
     return plainResponse;
@@ -58,8 +59,8 @@ public class CloudInstanceService {
       cloudInstanceRepository.createClusterVersion(bufferName, provider, region, superCluster);
       cloudInstanceLogger.info("Cluster version created");
       plainResponse.setSuccess(true);
-    } catch (Exception e) {
-      cloudInstanceLogger.error("Error while creating cluster version.", e);
+    } catch (ApplicationException e) {
+      cloudInstanceLogger.error(e.getMessage());
       plainResponse.setSuccess(false);
     }
     return plainResponse;
@@ -207,6 +208,9 @@ public class CloudInstanceService {
           namespaceName, bufferName, provider, region, superCluster);
       plainResponse.setSuccess(true);
       cloudInstanceLogger.info("OAuth2 proxy resources created");
+    } catch (ApiException e) {
+      cloudInstanceLogger.error("Error while creating OAuth2 proxy resources.", e);
+      plainResponse.setSuccess(false);
     } catch (Exception e) {
       cloudInstanceLogger.error("Error while creating OAuth2 proxy resources.", e);
       plainResponse.setSuccess(false);
@@ -433,6 +437,27 @@ public class CloudInstanceService {
       plainResponse.setSuccess(true);
     } catch (Exception e) {
       cloudInstanceLogger.error("Error while creating virtual link.", e);
+      plainResponse.setSuccess(false);
+    }
+    return plainResponse;
+  }
+
+  public PlainResponse createFleetOperator(String namespaceName, String cloudInstanceName,
+      String teamId, Organization organization, String bufferName, String provider, String region,
+      String superCluster) {
+    PlainResponse plainResponse = new PlainResponse();
+    try {
+      cloudInstanceRepository.createFleetOperator(namespaceName, cloudInstanceName,
+          teamId, organization, bufferName, provider, region, superCluster);
+      cloudInstanceLogger.info("fleet operator created");
+      plainResponse.setSuccess(true);
+    } catch (ApiException e) {
+      cloudInstanceLogger.error("Error while creating fleet operator.", e);
+      System.out.println(e.getResponseBody());
+      System.out.println(e.getCode());
+      plainResponse.setSuccess(false);
+    } catch (Exception e) {
+      cloudInstanceLogger.error("Error while creating fleet operator.", e);
       plainResponse.setSuccess(false);
     }
     return plainResponse;
