@@ -25,6 +25,8 @@ import org.robolaunch.repository.abstracts.RobotRepository;
 import org.robolaunch.repository.abstracts.StorageRepository;
 import org.robolaunch.service.ApiClientManager;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -254,12 +256,12 @@ public class RobotRepositoryImpl implements RobotRepository {
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException {
                 try {
+                        System.out.println("Creating robot: " + requestRobot.getFleetProcessId());
                         Gson gson = new Gson();
                         // GET Robotics cloud instance
                         String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\""
                                         + requestRobot.getFleetProcessId()
                                         + "\"}}, {state: {equal: ACTIVE}}]}){id state variables}}";
-
                         Response response;
                         try {
                                 response = graphqlClient.executeSync(queryStr);
@@ -274,9 +276,9 @@ public class RobotRepositoryImpl implements RobotRepository {
                                                 "No process instance found with id: "
                                                                 + requestRobot.getFleetProcessId());
                         }
-
+                        System.out.println("Process Instances: " + processInstances);
                         JsonNode variables = mapper.readTree(processInstances.getJsonObject(0).getString("variables"));
-
+                        System.out.println("Variables: " + variables);
                         JsonNode innerFleetNode = variables.get("requestFleet");
 
                         // GET Robotics Cloud's variables
@@ -294,6 +296,8 @@ public class RobotRepositoryImpl implements RobotRepository {
                         JsonArray roboticsCloudInstances = responseRC.getJsonArray("ProcessInstances");
                         JsonNode roboticsCloudVariables = mapper
                                         .readTree(roboticsCloudInstances.getJsonObject(0).getString("variables"));
+
+                        System.out.println("Robotics Cloud Variables: " + roboticsCloudVariables);
                         String bufferName = roboticsCloudVariables.get("bufferName").asText();
                         String providerName = roboticsCloudVariables.get("providerName").asText();
                         String regionName = roboticsCloudVariables.get("regionName").asText();
@@ -303,9 +307,18 @@ public class RobotRepositoryImpl implements RobotRepository {
                         String teamId = roboticsCloudVariables.get("teamId").asText();
                         String cloudInstanceName = roboticsCloudVariables.get("cloudInstanceName").asText();
 
-                        ApiClient robotsApi = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(
-                                        bufferName,
-                                        providerName, regionName, superClusterName);
+                        String fleetName;
+                        System.out.println("innerFleetNode: " + innerFleetNode);
+                        if (innerFleetNode.get("fleet").asText() == "null") {
+                                JsonNode federatedFleetNode = innerFleetNode.get("federatedFleet");
+                                fleetName = federatedFleetNode.get("name").asText();
+                        } else if (innerFleetNode.get("federatedFleet").asText() == "null") {
+                                JsonNode fleetNode = innerFleetNode.get("fleet");
+                                fleetName = fleetNode.get("name").asText();
+                        } else {
+                                System.out.println("fefe: " + innerFleetNode.get("fleet").asText());
+                                throw new ApplicationException("Fleet and federated fleet cannot be both present.");
+                        }
 
                         // Parse Robot Object
                         String json = mapper.writeValueAsString(requestRobot);
@@ -313,7 +326,12 @@ public class RobotRepositoryImpl implements RobotRepository {
                         JsonObject labelsObject = new JsonObject();
                         robotObject.get("robot").getAsJsonObject().get("metadata").getAsJsonObject().add("labels",
                                         labelsObject);
+                        JsonObject referenceObject = new JsonObject();
+                        referenceObject.addProperty("name", fleetName + "-discovery");
+                        referenceObject.addProperty("namespace", fleetName);
 
+                        robotObject.get("robot").getAsJsonObject().get("spec").getAsJsonObject().add("reference",
+                                        referenceObject);
                         ApiClient superClusterApi = apiClientManager.getAdminApiClient(providerName,
                                         regionName, superClusterName);
 
@@ -345,6 +363,9 @@ public class RobotRepositoryImpl implements RobotRepository {
                         robotObject.get("robot").getAsJsonObject().get("metadata").getAsJsonObject().get("labels")
                                         .getAsJsonObject().addProperty("robolaunch.io/cloud-instance-alias",
                                                         cloudInstanceName);
+                        robotObject.get("robot").getAsJsonObject().get("metadata").getAsJsonObject().get("labels")
+                                        .getAsJsonObject().addProperty("robolaunch.io/fleet",
+                                                        fleetName);
 
                         if (requestRobot.getRobot().getSpec().getRobotDevSuiteTemplate().isVdiEnabled()) {
                                 Integer sessionCount = requestRobot.getRobot().getSpec().getRobotDevSuiteTemplate()
@@ -392,6 +413,11 @@ public class RobotRepositoryImpl implements RobotRepository {
                                                 workspace.getAsJsonObject().add("repositories", repositoriesObject);
                                         });
                         JsonObject finalRobotObject = robotObject.get("robot").getAsJsonObject();
+
+                        ApiClient robotsApi = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(
+                                        bufferName,
+                                        providerName, regionName, superClusterName);
+
                         CustomObjectsApi customObjectsApi = new CustomObjectsApi(robotsApi);
                         customObjectsApi.createNamespacedCustomObject("robot.roboscale.io",
                                         "v1alpha1", "default",
@@ -444,6 +470,83 @@ public class RobotRepositoryImpl implements RobotRepository {
 
                 return script;
 
+        }
+
+        public String getRobotStatus(String fleetProcessId, String robotName)
+                        throws InterruptedException, JsonMappingException, JsonProcessingException {
+                String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\""
+                                + fleetProcessId
+                                + "\"}}, {state: {equal: ACTIVE}}]}){id parentProcessInstanceId state variables}}";
+
+                Response response;
+                try {
+                        response = graphqlClient.executeSync(queryStr);
+                } catch (ExecutionException e) {
+                        throw new ApplicationException("Error while executing request on graphql.");
+                }
+                javax.json.JsonObject data = response.getData();
+                JsonArray processInstances = data.getJsonArray("ProcessInstances");
+                ObjectMapper mapper = new ObjectMapper();
+                if (processInstances.size() == 0) {
+                        throw new ApplicationException(
+                                        "No process instance found with id: "
+                                                        + fleetProcessId);
+                }
+                System.out.println("milestone 1: " + processInstances);
+
+                JsonNode variables = mapper.readTree(processInstances.getJsonObject(0).getString("variables"));
+
+                // GET Robotics cloud instance
+                String roboticsCloudRequest = "query{ProcessInstances(where: {and: [{id: {equal:\""
+                                + processInstances.getJsonObject(0).getString("parentProcessInstanceId")
+                                + "\"}}, {state: {equal: ACTIVE}}]}){id parentProcessInstanceId state variables}}";
+                Response responseRoboticsCloud;
+                try {
+                        responseRoboticsCloud = graphqlClient.executeSync(roboticsCloudRequest);
+                } catch (ExecutionException e) {
+                        throw new ApplicationException("Error while executing request on graphql.");
+                }
+                javax.json.JsonObject dataRoboticsCloud = responseRoboticsCloud.getData();
+                JsonArray processInstancesRoboticsCloud = dataRoboticsCloud.getJsonArray("ProcessInstances");
+                if (processInstances.size() == 0) {
+                        throw new ApplicationException(
+                                        "No process instance found with id: "
+                                                        + fleetProcessId);
+                }
+                System.out.println(
+                                "milestone 2" + processInstancesRoboticsCloud);
+
+                JsonNode roboticsCloudVariables = mapper
+                                .readTree(processInstancesRoboticsCloud.getJsonObject(0).getString("variables"));
+                String bufferName = roboticsCloudVariables.get("bufferName").asText();
+                String provider = roboticsCloudVariables.get("providerName").asText();
+                String region = roboticsCloudVariables.get("regionName").asText();
+                String superCluster = roboticsCloudVariables.get("superClusterName").asText();
+                System.out.println(
+                                "milestone 3" + bufferName);
+                ApiClient vcClient;
+                try {
+                        vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(
+                                        bufferName,
+                                        provider, region, superCluster);
+                } catch (InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException | IOException
+                                | ApiException | MinioException e) {
+                        throw new ApplicationException("Error while getting virtual cluster client.");
+                }
+
+                DynamicKubernetesApi robotsClient = new DynamicKubernetesApi("robots.roboscale.io", "v1alpha1",
+                                "robots",
+                                vcClient);
+                System.out.println("milestone 4");
+
+                var robotList = robotsClient.list();
+                for (var robot : robotList.getObject().getItems()) {
+                        System.out.println("Robot: " + robot.getMetadata().getName());
+                }
+
+                System.out.println("milestone 4");
+
+                return "pspd";
         }
 
 }

@@ -962,21 +962,13 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
       JsonMappingException, JsonProcessingException {
     String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\"" + roboticsCloudProcessId
         + "\"}}, {state: {equal: ACTIVE}}]}){id state variables childProcessInstances{id processName state variables}}}";
-
+    ObjectMapper mapper = new ObjectMapper();
     Response response = graphqlClient.executeSync(queryStr);
     JsonObject data = response.getData();
     JsonArray processInstances = data.getJsonArray("ProcessInstances");
 
     ArrayList<Fleet> fleets = new ArrayList<Fleet>();
-    ObjectMapper mapper = new ObjectMapper();
     JsonNode mainNode = mapper.readTree(processInstances.getJsonObject(0).getString("variables"));
-
-    if (processInstances.size() == 0) {
-      return fleets;
-    }
-    if (processInstances.getJsonObject(0).getJsonArray("childProcessInstances").size() == 0) {
-      return fleets;
-    }
     JsonArray childProcessInstances = processInstances.getJsonObject(0).getJsonArray("childProcessInstances");
 
     for (int i = 0; i < childProcessInstances.size(); i++) {
@@ -985,7 +977,6 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
         JsonNode childNode = mapper.readTree(childProcessInstances.getJsonObject(i).getString("variables"));
         JsonNode organizationNode = childNode.get("organization");
         if (organizationNode.get("name").asText().equals(organization.getName())) {
-
           JsonNode requestFleetNode = childNode.get("requestFleet");
           JsonNode fleetNode;
           if (requestFleetNode.get("fleet") != null) {
@@ -995,16 +986,19 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
           } else {
             continue;
           }
+
           Fleet fleet = new Fleet();
           fleet.setName(fleetNode.get("name").asText());
           fleet.setTeamName(mainNode.get("teamName").asText());
           fleet.setRoboticsCloudName(mainNode.get("cloudInstanceName").asText());
           fleet.setProcessId(childProcessInstances.getJsonObject(i).getString("id"));
+
           if (childNode.get("requestFleet").get("federated").asBoolean()) {
             fleet.setType("federated");
           } else {
             fleet.setType("normal");
           }
+
           fleets.add(fleet);
         }
       }
@@ -1033,20 +1027,22 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
       JsonMappingException, JsonProcessingException {
     String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\"" + roboticsCloudProcessId
         + "\"}}, {state: {equal: ACTIVE}}]}){id state variables childProcessInstances{id processName state variables}}}";
+    ObjectMapper mapper = new ObjectMapper();
 
     Response response = graphqlClient.executeSync(queryStr);
     JsonObject data = response.getData();
     JsonArray processInstances = data.getJsonArray("ProcessInstances");
-    ArrayList<Fleet> fleets = new ArrayList<Fleet>();
-    ObjectMapper mapper = new ObjectMapper();
-    JsonNode mainNode = mapper.readTree(processInstances.getJsonObject(0).getString("variables"));
 
+    ArrayList<Fleet> fleets = new ArrayList<Fleet>();
     if (processInstances.size() == 0) {
       return fleets;
     }
     if (processInstances.getJsonObject(0).getJsonArray("childProcessInstances").size() == 0) {
       return fleets;
     }
+
+    JsonNode mainNode = mapper.readTree(processInstances.getJsonObject(0).getString("variables"));
+
     JsonArray childProcessInstances = processInstances.getJsonObject(0).getJsonArray("childProcessInstances");
     for (int i = 0; i < childProcessInstances.size(); i++) {
       if (childProcessInstances.getJsonObject(i).getString("processName").equals("fleet") && childProcessInstances
@@ -1095,12 +1091,13 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
       NoSuchAlgorithmException, IllegalArgumentException, IOException, ApiException, MinioException {
     String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\"" + roboticsCloudProcessId
         + "\"}}, {state: {equal: ACTIVE}}]}){id state variables childProcessInstances{id processName state variables}}}";
+    ObjectMapper mapper = new ObjectMapper();
 
     Response response = graphqlClient.executeSync(queryStr);
     JsonObject data = response.getData();
     JsonArray processInstances = data.getJsonArray("ProcessInstances");
+
     ArrayList<Fleet> fleets = new ArrayList<Fleet>();
-    ObjectMapper mapper = new ObjectMapper();
     if (processInstances.size() == 0) {
       return fleets;
     }
@@ -1109,10 +1106,6 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
     }
 
     JsonNode mainNode = mapper.readTree(processInstances.getJsonObject(0).getString("variables"));
-    String bufferName = mainNode.get("bufferName").asText();
-    String provider = mainNode.get("providerName").asText();
-    String region = mainNode.get("regionName").asText();
-    String superCluster = mainNode.get("superClusterName").asText();
     JsonArray childProcessInstances = processInstances.getJsonObject(0).getJsonArray("childProcessInstances");
 
     for (int i = 0; i < childProcessInstances.size(); i++) {

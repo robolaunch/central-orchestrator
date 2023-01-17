@@ -121,4 +121,16 @@ public class RobotService {
     }
   }
 
+  public String getRobotStatus(String fleetProcessId, String robotName) {
+    try {
+      String robotStatus = robotRepository.getRobotStatus(fleetProcessId,
+          robotName);
+      robotLogger.info("Got robot status");
+      return robotStatus;
+    } catch (Exception e) {
+      robotLogger.error("Error occured while getting robot status", e);
+      return null;
+    }
+  }
+
 }

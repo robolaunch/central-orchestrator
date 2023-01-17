@@ -53,6 +53,7 @@ public class FleetRepositoryImpl implements FleetRepository {
       public void createFleet(RequestFleet requestFleet, String token)
                   throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
                   ApiException, InterruptedException, MinioException, ExecutionException {
+            System.out.println("createFleet rc pid: " + requestFleet.getRoboticsCloudProcessId());
             String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\""
                         + requestFleet.getRoboticsCloudProcessId()
                         + "\"}}, {state: {equal: ACTIVE}}]}){id state variables childProcessInstances{id processName state variables}}}";
@@ -67,6 +68,7 @@ public class FleetRepositoryImpl implements FleetRepository {
                                           + requestFleet.getRoboticsCloudProcessId());
             }
             JsonNode childNode = mapper.readTree(processInstances.getJsonObject(0).getString("variables"));
+            System.out.println("childNode: " + childNode);
             String bufferName = childNode.get("bufferName").asText();
             String provider = childNode.get("providerName").asText();
             String region = childNode.get("regionName").asText();
@@ -100,6 +102,7 @@ public class FleetRepositoryImpl implements FleetRepository {
             metadataObject.add("labels", labelsObject);
 
             fleetObject.add("metadata", metadataObject);
+            System.out.println("metadata 1.");
 
             JsonObject specObject = new JsonObject();
             JsonObject specDiscoveryServerObject = new JsonObject();
@@ -109,6 +112,7 @@ public class FleetRepositoryImpl implements FleetRepository {
             specObject.addProperty("subdomain", "yyy");
             specObject.add("discoveryServerTemplate", specDiscoveryServerObject);
             fleetObject.add("spec", specObject);
+            System.out.println("metadata 2.");
 
             // CREATE VIRTUAL CLUSTER API
             ApiClient vcApi = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
@@ -127,6 +131,7 @@ public class FleetRepositoryImpl implements FleetRepository {
                   throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
                   ApiException,
                   InterruptedException, MinioException, ExecutionException {
+            System.out.println("createFederatedFleet rc pid: " + requestFleet.getRoboticsCloudProcessId());
             // GET ROBOTICS CLOUD PROCESS INSTANCE VARIABLE
             String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\""
                         + requestFleet.getRoboticsCloudProcessId()
@@ -144,7 +149,7 @@ public class FleetRepositoryImpl implements FleetRepository {
             String teamId = childNode.get("teamId").asText();
             String cloudInstanceName = childNode.get("cloudInstanceName").asText();
             JsonNode organizationNode = childNode.get("organization");
-
+            System.out.println("childnode: " + childNode);
             // CREATE OBJECT
             JsonObject federatedFleetObject = new JsonObject();
             federatedFleetObject.addProperty("apiVersion", "types.kubefed.io/v1beta1");

@@ -9,6 +9,10 @@ import org.robolaunch.models.Organization;
 import org.robolaunch.models.request.RequestBuildManager;
 import org.robolaunch.models.request.RequestLaunchManager;
 import org.robolaunch.models.request.RequestRobot;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
 import io.kubernetes.client.openapi.ApiException;
 import io.minio.errors.MinioException;
 
@@ -39,5 +43,8 @@ public interface RobotRepository {
                         String cloudInstanceName, String physicalInstanceName)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
                         ApiException, InterruptedException, MinioException;
+
+        public String getRobotStatus(String fleetProcessId, String robotName)
+                        throws InterruptedException, JsonMappingException, JsonProcessingException;
 
 }
