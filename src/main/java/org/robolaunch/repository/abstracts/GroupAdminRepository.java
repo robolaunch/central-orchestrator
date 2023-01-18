@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.robolaunch.exception.ApplicationException;
+import org.robolaunch.models.Department;
 import org.robolaunch.models.DepartmentBasic;
 import org.robolaunch.models.GroupMember;
 import org.robolaunch.models.Organization;
@@ -32,7 +33,13 @@ public interface GroupAdminRepository {
                         throws InternalError,
                         IOException, ApplicationException;
 
+        void removeUserFromGroup(User user, Organization organization)
+                        throws InternalError, IOException;
+
         String getGroupDescription(String groupName) throws InternalError, IOException;
+
+        public ArrayList<Department> getTeams(Organization group, String fieldName)
+                        throws InternalError, IOException;
 
         Boolean doesGroupExist(Organization group) throws InternalError, IOException;
 
@@ -61,6 +68,9 @@ public interface GroupAdminRepository {
                         throws InternalError, IOException, ApplicationException;
 
         Boolean isGroupManager(User user, Organization group)
+                        throws InternalError, IOException;
+
+        Boolean isGroupMemberByEmail(String email, Organization group)
                         throws InternalError, IOException;
 
         Boolean isGroupMember(User user, Organization group)

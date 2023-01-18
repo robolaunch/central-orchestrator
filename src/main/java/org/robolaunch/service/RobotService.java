@@ -13,7 +13,8 @@ import org.robolaunch.models.request.RequestRobot;
 import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.repository.abstracts.RobotRepository;
 
-import io.kubernetes.client.openapi.ApiException;
+import com.google.gson.Gson;
+
 import io.quarkus.arc.log.LoggerName;
 
 @ApplicationScoped
@@ -60,7 +61,11 @@ public class RobotService {
     PlainResponse plainResponse = new PlainResponse();
     try {
       String token = jwt.getRawToken();
-      robotRepository.createRobotBuildManager(robotBuildManager, token);
+      if (robotBuildManager.isFederated()) {
+        robotRepository.createFederatedRobotBuildManager(robotBuildManager, token);
+      } else {
+        robotRepository.createRobotBuildManager(robotBuildManager, token);
+      }
       robotLogger.info("Robot build manager created");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Robot build manager created.");
@@ -75,7 +80,11 @@ public class RobotService {
     PlainResponse plainResponse = new PlainResponse();
     try {
       String token = jwt.getRawToken();
-      robotRepository.createRobotLaunchManager(robotLaunchManager, token);
+      if (robotLaunchManager.isFederated()) {
+        robotRepository.createFederatedRobotLaunchManager(robotLaunchManager, token);
+      } else {
+        robotRepository.createRobotLaunchManager(robotLaunchManager, token);
+      }
       robotLogger.info("Robot launch manager created");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Robot launch manager created.");
@@ -88,9 +97,19 @@ public class RobotService {
 
   public PlainResponse createRobot(RequestRobot requestRobot) {
     PlainResponse plainResponse = new PlainResponse();
+    Gson gson = new Gson();
     try {
       String token = jwt.getRawToken();
-      robotRepository.createRobot(requestRobot, token);
+      if (!requestRobot.isFederated()) {
+        System.out.println("Robot is not federated: " + gson.toJson(requestRobot));
+        System.out.println("------------------------------>");
+        robotRepository.createRobot(requestRobot, token);
+
+      } else {
+        System.out.println("Robot is federated: " + gson.toJson(requestRobot));
+        System.out.println("------------------------------>");
+        robotRepository.createFederatedRobot(requestRobot, token);
+      }
       robotLogger.info("Robot created");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Robot created.");

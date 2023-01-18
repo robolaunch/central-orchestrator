@@ -18,10 +18,10 @@ import javax.json.JsonObject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
-import org.jboss.resteasy.spi.ApplicationException;
 import org.robolaunch.core.abstracts.GroupAdapter;
 import org.robolaunch.core.abstracts.RandomGenerator;
 import org.robolaunch.core.concretes.RandomGeneratorImpl;
+import org.robolaunch.exception.ApplicationException;
 import org.robolaunch.models.Artifact;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.kubernetes.V1MachineDeployment;
@@ -515,6 +515,37 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   }
 
   @Override
+  public Boolean isConnectionHubOperatorReady(String bufferName, String provider, String region, String superCluster,
+      String namespaceName) {
+    ApiClient apiClient;
+    try {
+      apiClient = apiClientManager.getAdminApiClient(provider, region, superCluster);
+    } catch (InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException | IOException | ApiException
+        | InterruptedException | MinioException e) {
+      throw new ApplicationException("error getting virtual cluster client");
+    }
+
+    CoreV1Api coreV1Api = new CoreV1Api(apiClient);
+    V1PodList pods;
+    try {
+      pods = coreV1Api.listNamespacedPod(namespaceName + "-connection-hub-system", null, null, null, null,
+          null,
+          null, null, null, null, null);
+    } catch (ApiException e) {
+      throw new ApplicationException(
+          "error getting pods: " + e.getResponseBody() + " : " + e.getCode());
+    }
+
+    for (var pod : pods.getItems()) {
+      if (pod.getStatus().getPhase().equals("Running")) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  @Override
   public Boolean healthCheck(Organization organization, String teamId, String cloudInstanceName,
       String nodeName, String provider, String region, String superCluster) {
     Boolean isInstanceHealthy = amazonRepository.isRunning(nodeName, provider, region, superCluster);
@@ -524,7 +555,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   @Override
   public void deleteDNSRecord(Organization organization, String nodeName, String provider, String region,
       String superCluster)
-      throws ApiException, InternalError, ApplicationException, IOException, InvalidKeyException,
+      throws ApiException, InternalError, IOException, InvalidKeyException,
       NoSuchAlgorithmException, IllegalArgumentException, InterruptedException, MinioException {
     CoreV1Api coreV1Api = apiClientManager.getCoreApi(provider, region, superCluster);
     String externalIP = "";

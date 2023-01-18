@@ -247,7 +247,7 @@ public class AccountService {
             returnedUser.setEmail(jwt.getClaim("email"));
             returnedUser.setFirstName(jwt.getClaim("given_name"));
             returnedUser.setLastName(jwt.getClaim("family_name"));
-            returnedUser.setAdmin(groupRepository.isGroupManager(user, organization));
+            returnedUser.setAdmin(groupAdminRepository.isGroupManager(user, organization));
             accountLogger.info("Current user: " + returnedUser);
             return returnedUser;
         } catch (Exception e) {
@@ -279,18 +279,18 @@ public class AccountService {
             currentUser.setFirstName(jwt.getClaim("given_name"));
             currentUser.setLastName(jwt.getClaim("family_name"));
 
-            currentUser.setAdmin(groupRepository.isGroupManager(user, organization));
-            List<Department> departments = groupRepository.getTeams(organization, "member_group");
+            currentUser.setAdmin(groupAdminRepository.isGroupManager(user, organization));
+            List<Department> departments = groupAdminRepository.getTeams(organization, "member_group");
             Iterator<Department> it = departments.iterator();
             ArrayList<RegisteredDepartment> depts = new ArrayList<RegisteredDepartment>();
             while (it.hasNext()) {
                 Department d = it.next();
                 Organization org = new Organization();
                 org.setName(d.getId());
-                if (groupRepository.isGroupMember(user, org)) {
+                if (groupAdminRepository.isGroupMember(user, org)) {
                     RegisteredDepartment rdept = new RegisteredDepartment();
-                    rdept.setName(groupRepository.getGroupDescription(org));
-                    if (groupRepository.isGroupManager(user, org)) {
+                    rdept.setName(groupAdminRepository.getGroupDescription(org));
+                    if (groupAdminRepository.isGroupManager(user, org)) {
                         rdept.setAdmin(true);
                     } else {
                         rdept.setAdmin(false);
@@ -359,12 +359,13 @@ public class AccountService {
         PlainResponse plainResponse = new PlainResponse();
         try {
             userAdminRepository.createUserWithPassword(user);
-            accountLogger.info("User " + user.getUsername() + " created");
             plainResponse.setSuccess(true);
             plainResponse.setMessage("User created successfully.");
+            accountLogger.info("User " + user.getUsername() + " created");
         } catch (ApplicationException e) {
             plainResponse.setSuccess(false);
             plainResponse.setMessage("Error registering user with password.");
+            accountLogger.error("Error registering user with password.");
         }
         return plainResponse;
     }
@@ -381,16 +382,18 @@ public class AccountService {
     public Boolean doesEmailExistWithEmail(String email) throws ApplicationException {
         try {
             Boolean doesEmailExists = userRepository.doesEmailExist(email);
+            accountLogger.info("Email " + email + " exists: " + doesEmailExists);
             return doesEmailExists;
         } catch (Exception e) {
-            throw new ApplicationException("Error while checking if the email exists.");
+            accountLogger.error("Error checking if email exists.");
+            return null;
         }
     }
 
     public Boolean isMemberCurrentOrganizationWithEmail(Organization organization, String email)
             throws ApplicationException {
         try {
-            return groupRepository.isGroupMemberByEmail(email, organization);
+            return groupAdminRepository.isGroupMemberByEmail(email, organization);
         } catch (Exception e) {
             throw new ApplicationException(
                     "Error happened while checking if the user is a member of the organization.");

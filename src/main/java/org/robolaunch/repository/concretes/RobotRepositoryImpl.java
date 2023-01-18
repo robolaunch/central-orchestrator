@@ -170,6 +170,11 @@ public class RobotRepositoryImpl implements RobotRepository {
         }
 
         @Override
+        public void createFederatedRobotBuildManager(RequestBuildManager robotBuildManager, String token) {
+
+        }
+
+        @Override
         public void createRobotLaunchManager(RequestLaunchManager robotLaunchManager, String token)
                         throws InvalidKeyException, NoSuchAlgorithmException,
                         IllegalArgumentException, MinioException, IOException, ApiException, InterruptedException,
@@ -252,180 +257,586 @@ public class RobotRepositoryImpl implements RobotRepository {
                                 launchManagerObject.get("launchManager"), null, null, null);
         }
 
+        @Override
+        public void createFederatedRobotLaunchManager(RequestLaunchManager robotLaunchManager, String token) {
+
+        }
+
+        @Override
         public void createRobot(RequestRobot requestRobot, String token)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException {
+                Gson gson = new Gson();
+                String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\""
+                                + requestRobot.getFleetProcessId()
+                                + "\"}}, {state: {equal: ACTIVE}}]}){id state variables}}";
+                Response response;
                 try {
-                        System.out.println("Creating robot: " + requestRobot.getFleetProcessId());
-                        Gson gson = new Gson();
-                        // GET Robotics cloud instance
-                        String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\""
-                                        + requestRobot.getFleetProcessId()
-                                        + "\"}}, {state: {equal: ACTIVE}}]}){id state variables}}";
-                        Response response;
-                        try {
-                                response = graphqlClient.executeSync(queryStr);
-                        } catch (ExecutionException e) {
-                                throw new ApplicationException("Error while executing request on graphql.");
-                        }
-                        javax.json.JsonObject data = response.getData();
-                        JsonArray processInstances = data.getJsonArray("ProcessInstances");
-                        ObjectMapper mapper = new ObjectMapper();
-                        if (processInstances.size() == 0) {
-                                throw new ApplicationException(
-                                                "No process instance found with id: "
-                                                                + requestRobot.getFleetProcessId());
-                        }
-                        System.out.println("Process Instances: " + processInstances);
-                        JsonNode variables = mapper.readTree(processInstances.getJsonObject(0).getString("variables"));
-                        System.out.println("Variables: " + variables);
-                        JsonNode innerFleetNode = variables.get("requestFleet");
-
-                        // GET Robotics Cloud's variables
-                        String roboticsCloud = "query{ProcessInstances(where: {and: [{id: {equal:\""
-                                        + innerFleetNode.get("roboticsCloudProcessId").asText()
-                                        + "\"}}, {state: {equal: ACTIVE}}]}){id state variables}}";
-
-                        Response responseRoboticsCloud;
-                        try {
-                                responseRoboticsCloud = graphqlClient.executeSync(roboticsCloud);
-                        } catch (ExecutionException e) {
-                                throw new ApplicationException("Error while executing request on graphql.");
-                        }
-                        javax.json.JsonObject responseRC = responseRoboticsCloud.getData();
-                        JsonArray roboticsCloudInstances = responseRC.getJsonArray("ProcessInstances");
-                        JsonNode roboticsCloudVariables = mapper
-                                        .readTree(roboticsCloudInstances.getJsonObject(0).getString("variables"));
-
-                        System.out.println("Robotics Cloud Variables: " + roboticsCloudVariables);
-                        String bufferName = roboticsCloudVariables.get("bufferName").asText();
-                        String providerName = roboticsCloudVariables.get("providerName").asText();
-                        String regionName = roboticsCloudVariables.get("regionName").asText();
-                        String superClusterName = roboticsCloudVariables.get("superClusterName").asText();
-                        JsonNode organizationNode = roboticsCloudVariables.get("organization");
-                        String organization = organizationNode.get("name").asText();
-                        String teamId = roboticsCloudVariables.get("teamId").asText();
-                        String cloudInstanceName = roboticsCloudVariables.get("cloudInstanceName").asText();
-
-                        String fleetName;
-                        System.out.println("innerFleetNode: " + innerFleetNode);
-                        if (innerFleetNode.get("fleet").asText() == "null") {
-                                JsonNode federatedFleetNode = innerFleetNode.get("federatedFleet");
-                                fleetName = federatedFleetNode.get("name").asText();
-                        } else if (innerFleetNode.get("federatedFleet").asText() == "null") {
-                                JsonNode fleetNode = innerFleetNode.get("fleet");
-                                fleetName = fleetNode.get("name").asText();
-                        } else {
-                                System.out.println("fefe: " + innerFleetNode.get("fleet").asText());
-                                throw new ApplicationException("Fleet and federated fleet cannot be both present.");
-                        }
-
-                        // Parse Robot Object
-                        String json = mapper.writeValueAsString(requestRobot);
-                        JsonObject robotObject = gson.fromJson(json, JsonObject.class);
-                        JsonObject labelsObject = new JsonObject();
-                        robotObject.get("robot").getAsJsonObject().get("metadata").getAsJsonObject().add("labels",
-                                        labelsObject);
-                        JsonObject referenceObject = new JsonObject();
-                        referenceObject.addProperty("name", fleetName + "-discovery");
-                        referenceObject.addProperty("namespace", fleetName);
-
-                        robotObject.get("robot").getAsJsonObject().get("spec").getAsJsonObject().add("reference",
-                                        referenceObject);
-                        ApiClient superClusterApi = apiClientManager.getAdminApiClient(providerName,
-                                        regionName, superClusterName);
-
-                        StorageV1Api storageV1Api = new StorageV1Api(superClusterApi);
-                        V1StorageClassList storageClassList = storageV1Api.listStorageClass(null, null, null, null,
-                                        null, null,
-                                        null, null, null, null);
-
-                        robotObject.get("robot").getAsJsonObject().get("spec").getAsJsonObject().get("storage")
-                                        .getAsJsonObject().get("storageClassConfig")
-                                        .getAsJsonObject()
-                                        .addProperty("name",
-                                                        storageClassList.getItems().get(0).getMetadata().getName());
-
-                        // Update Labels
-                        robotObject.get("robot").getAsJsonObject().get("metadata").getAsJsonObject()
-                                        .get("labels")
-                                        .getAsJsonObject().addProperty("robolaunch.io/organization",
-                                                        organization);
-                        robotObject.get("robot").getAsJsonObject().get("metadata").getAsJsonObject().get("labels")
-                                        .getAsJsonObject().addProperty("robolaunch.io/team",
-                                                        teamId);
-                        robotObject.get("robot").getAsJsonObject().get("metadata").getAsJsonObject().get("labels")
-                                        .getAsJsonObject().addProperty("robolaunch.io/region",
-                                                        regionName);
-                        robotObject.get("robot").getAsJsonObject().get("metadata").getAsJsonObject().get("labels")
-                                        .getAsJsonObject().addProperty("robolaunch.io/cloud-instance",
-                                                        bufferName);
-                        robotObject.get("robot").getAsJsonObject().get("metadata").getAsJsonObject().get("labels")
-                                        .getAsJsonObject().addProperty("robolaunch.io/cloud-instance-alias",
-                                                        cloudInstanceName);
-                        robotObject.get("robot").getAsJsonObject().get("metadata").getAsJsonObject().get("labels")
-                                        .getAsJsonObject().addProperty("robolaunch.io/fleet",
-                                                        fleetName);
-
-                        if (requestRobot.getRobot().getSpec().getRobotDevSuiteTemplate().isVdiEnabled()) {
-                                Integer sessionCount = requestRobot.getRobot().getSpec().getRobotDevSuiteTemplate()
-                                                .getRobotVDITemplate().getSessionCount();
-                                String webRTCPorts = robotHelperRepository.getAvailablePortRange(sessionCount,
-                                                providerName,
-                                                regionName, superClusterName);
-                                robotObject.get("robot").getAsJsonObject().get("spec").getAsJsonObject()
-                                                .get("robotDevSuiteTemplate")
-                                                .getAsJsonObject().get("robotVDITemplate").getAsJsonObject()
-                                                .remove("sessionCount");
-                                robotObject.get("robot").getAsJsonObject().get("spec").getAsJsonObject()
-                                                .get("robotDevSuiteTemplate")
-                                                .getAsJsonObject().get("robotVDITemplate").getAsJsonObject()
-                                                .addProperty("webrtcPortRange", webRTCPorts);
-                        } else {
-                                robotObject.get("robot").getAsJsonObject().get("spec").getAsJsonObject()
-                                                .get("robotDevSuiteTemplate")
-                                                .getAsJsonObject().get("robotVDITemplate").getAsJsonObject()
-                                                .remove("sessionCount");
-                        }
-
-                        // Update Repositories
-                        robotObject.get("robot").getAsJsonObject().get("spec").getAsJsonObject()
-                                        .get("workspaceManagerTemplate")
-                                        .getAsJsonObject().get("workspaces").getAsJsonArray().forEach(workspace -> {
-                                                JsonObject repositoriesObject = new JsonObject();
-                                                workspace.getAsJsonObject().get("repositories").getAsJsonArray()
-                                                                .forEach(repo -> {
-                                                                        JsonObject cloudRepoInside = new JsonObject();
-                                                                        cloudRepoInside.add("url",
-                                                                                        repo.getAsJsonObject()
-                                                                                                        .get("url"));
-                                                                        cloudRepoInside.add("branch",
-                                                                                        repo.getAsJsonObject()
-                                                                                                        .get("branch"));
-
-                                                                        repositoriesObject.add(
-                                                                                        repo.getAsJsonObject()
-                                                                                                        .get("name")
-                                                                                                        .getAsString(),
-                                                                                        cloudRepoInside);
-                                                                });
-                                                workspace.getAsJsonObject().remove("repositories");
-                                                workspace.getAsJsonObject().add("repositories", repositoriesObject);
-                                        });
-                        JsonObject finalRobotObject = robotObject.get("robot").getAsJsonObject();
-
-                        ApiClient robotsApi = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(
-                                        bufferName,
-                                        providerName, regionName, superClusterName);
-
-                        CustomObjectsApi customObjectsApi = new CustomObjectsApi(robotsApi);
-                        customObjectsApi.createNamespacedCustomObject("robot.roboscale.io",
-                                        "v1alpha1", "default",
-                                        "robots", finalRobotObject, null, null, null);
-                } catch (ApiException e) {
-                        System.out.println("g: " + e.getCode());
-                        System.out.println("g: " + e.getResponseBody());
+                        response = graphqlClient.executeSync(queryStr);
+                } catch (ExecutionException e) {
+                        throw new ApplicationException("Error while executing request on graphql.");
                 }
+                javax.json.JsonObject data = response.getData();
+                JsonArray processInstances = data.getJsonArray("ProcessInstances");
+                ObjectMapper mapper = new ObjectMapper();
+                if (processInstances.size() == 0) {
+                        throw new ApplicationException(
+                                        "No process instance found with id: "
+                                                        + requestRobot.getFleetProcessId());
+                }
+                JsonNode variables = mapper.readTree(processInstances.getJsonObject(0).getString("variables"));
+                JsonNode innerFleetNode = variables.get("requestFleet");
+
+                // GET Robotics Cloud's variables
+                String roboticsCloud = "query{ProcessInstances(where: {and: [{id: {equal:\""
+                                + innerFleetNode.get("roboticsCloudProcessId").asText()
+                                + "\"}}, {state: {equal: ACTIVE}}]}){id state variables}}";
+
+                Response responseRoboticsCloud;
+                try {
+                        responseRoboticsCloud = graphqlClient.executeSync(roboticsCloud);
+                } catch (ExecutionException e) {
+                        throw new ApplicationException("Error while executing request on graphql.");
+                }
+                javax.json.JsonObject responseRC = responseRoboticsCloud.getData();
+                JsonArray roboticsCloudInstances = responseRC.getJsonArray("ProcessInstances");
+                JsonNode roboticsCloudVariables = mapper
+                                .readTree(roboticsCloudInstances.getJsonObject(0).getString("variables"));
+
+                String bufferName = roboticsCloudVariables.get("bufferName").asText();
+                String providerName = roboticsCloudVariables.get("providerName").asText();
+                String regionName = roboticsCloudVariables.get("regionName").asText();
+                String superClusterName = roboticsCloudVariables.get("superClusterName").asText();
+                JsonNode organizationNode = roboticsCloudVariables.get("organization");
+                String organization = organizationNode.get("name").asText();
+                String teamId = roboticsCloudVariables.get("teamId").asText();
+                String cloudInstanceName = roboticsCloudVariables.get("cloudInstanceName").asText();
+
+                String fleetName;
+                if (innerFleetNode.get("fleet").asText() == "null") {
+                        JsonNode federatedFleetNode = innerFleetNode.get("federatedFleet");
+                        fleetName = federatedFleetNode.get("name").asText();
+                } else if (innerFleetNode.get("federatedFleet").asText() == "null") {
+                        JsonNode fleetNode = innerFleetNode.get("fleet");
+                        fleetName = fleetNode.get("name").asText();
+                } else {
+                        throw new ApplicationException("Fleet and federated fleet cannot be both present.");
+                }
+
+                // Parse Robot Object
+                String json = mapper.writeValueAsString(requestRobot);
+                JsonObject robotObject = gson.fromJson(json, JsonObject.class);
+                JsonObject labelsObject = new JsonObject();
+                robotObject.get("robot").getAsJsonObject().get("metadata").getAsJsonObject().add("labels",
+                                labelsObject);
+                JsonObject referenceObject = new JsonObject();
+                referenceObject.addProperty("name", fleetName + "-discovery");
+                referenceObject.addProperty("namespace", fleetName);
+
+                robotObject.get("robot").getAsJsonObject().get("spec").getAsJsonObject()
+                                .get("discoveryServerTemplate").getAsJsonObject()
+                                .add("reference", referenceObject);
+                ApiClient superClusterApi = apiClientManager.getAdminApiClient(providerName,
+                                regionName, superClusterName);
+
+                StorageV1Api storageV1Api = new StorageV1Api(superClusterApi);
+                V1StorageClassList storageClassList = storageV1Api.listStorageClass(null, null, null, null,
+                                null, null,
+                                null, null, null, null);
+
+                robotObject.get("robot").getAsJsonObject().get("spec").getAsJsonObject().get("storage")
+                                .getAsJsonObject().get("storageClassConfig")
+                                .getAsJsonObject()
+                                .addProperty("name",
+                                                storageClassList.getItems().get(0).getMetadata().getName());
+
+                // Update Labels
+                robotObject.get("robot").getAsJsonObject().get("metadata").getAsJsonObject()
+                                .get("labels")
+                                .getAsJsonObject().addProperty("robolaunch.io/organization",
+                                                organization);
+                robotObject.get("robot").getAsJsonObject().get("metadata").getAsJsonObject().get("labels")
+                                .getAsJsonObject().addProperty("robolaunch.io/team",
+                                                teamId);
+                robotObject.get("robot").getAsJsonObject().get("metadata").getAsJsonObject().get("labels")
+                                .getAsJsonObject().addProperty("robolaunch.io/region",
+                                                regionName);
+                robotObject.get("robot").getAsJsonObject().get("metadata").getAsJsonObject().get("labels")
+                                .getAsJsonObject().addProperty("robolaunch.io/cloud-instance",
+                                                bufferName);
+                robotObject.get("robot").getAsJsonObject().get("metadata").getAsJsonObject().get("labels")
+                                .getAsJsonObject().addProperty("robolaunch.io/cloud-instance-alias",
+                                                cloudInstanceName);
+                robotObject.get("robot").getAsJsonObject().get("metadata").getAsJsonObject().get("labels")
+                                .getAsJsonObject().addProperty("robolaunch.io/fleet",
+                                                fleetName);
+
+                if (requestRobot.getRobot().getSpec().getRobotDevSuiteTemplate().isVdiEnabled()) {
+                        Integer sessionCount = requestRobot.getRobot().getSpec().getRobotDevSuiteTemplate()
+                                        .getRobotVDITemplate().getSessionCount();
+                        String webRTCPorts = robotHelperRepository.getAvailablePortRange(sessionCount,
+                                        providerName,
+                                        regionName, superClusterName);
+                        robotObject.get("robot").getAsJsonObject().get("spec").getAsJsonObject()
+                                        .get("robotDevSuiteTemplate")
+                                        .getAsJsonObject().get("robotVDITemplate").getAsJsonObject()
+                                        .remove("sessionCount");
+                        robotObject.get("robot").getAsJsonObject().get("spec").getAsJsonObject()
+                                        .get("robotDevSuiteTemplate")
+                                        .getAsJsonObject().get("robotVDITemplate").getAsJsonObject()
+                                        .addProperty("webrtcPortRange", webRTCPorts);
+                } else {
+                        robotObject.get("robot").getAsJsonObject().get("spec").getAsJsonObject()
+                                        .get("robotDevSuiteTemplate")
+                                        .getAsJsonObject().get("robotVDITemplate").getAsJsonObject()
+                                        .remove("sessionCount");
+                }
+
+                if (requestRobot.getRobot().getSpec().getRobotDevSuiteTemplate().isIdeEnabled()) {
+                        if (requestRobot.getRobot().getSpec().getRobotDevSuiteTemplate().isVdiEnabled()) {
+                                robotObject.get("robot").getAsJsonObject().get("spec").getAsJsonObject()
+                                                .get("robotDevSuiteTemplate")
+                                                .getAsJsonObject().get("robotIDETemplate").getAsJsonObject()
+                                                .addProperty("display", true);
+                        } else {
+                                robotObject.get("robot").getAsJsonObject().get("spec").getAsJsonObject()
+                                                .get("robotDevSuiteTemplate")
+                                                .getAsJsonObject().get("robotIDETemplate").getAsJsonObject()
+                                                .addProperty("display", false);
+                        }
+
+                }
+
+                // Update Repositories
+                robotObject.get("robot").getAsJsonObject().get("spec").getAsJsonObject()
+                                .get("workspaceManagerTemplate")
+                                .getAsJsonObject().get("workspaces").getAsJsonArray().forEach(workspace -> {
+                                        JsonObject repositoriesObject = new JsonObject();
+                                        workspace.getAsJsonObject().get("repositories").getAsJsonArray()
+                                                        .forEach(repo -> {
+                                                                JsonObject cloudRepoInside = new JsonObject();
+                                                                cloudRepoInside.add("url",
+                                                                                repo.getAsJsonObject()
+                                                                                                .get("url"));
+                                                                cloudRepoInside.add("branch",
+                                                                                repo.getAsJsonObject()
+                                                                                                .get("branch"));
+
+                                                                repositoriesObject.add(
+                                                                                repo.getAsJsonObject()
+                                                                                                .get("name")
+                                                                                                .getAsString(),
+                                                                                cloudRepoInside);
+                                                        });
+                                        workspace.getAsJsonObject().remove("repositories");
+                                        workspace.getAsJsonObject().add("repositories", repositoriesObject);
+                                });
+                JsonObject finalRobotObject = robotObject.get("robot").getAsJsonObject();
+
+                ApiClient robotsApi = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(
+                                bufferName,
+                                providerName, regionName, superClusterName);
+
+                CustomObjectsApi customObjectsApi = new CustomObjectsApi(robotsApi);
+                customObjectsApi.createNamespacedCustomObject("robot.roboscale.io",
+                                "v1alpha1", "default",
+                                "robots", finalRobotObject, null, null, null);
+        }
+
+        // CREATE FEDERATED ROBOT
+        public void createFederatedRobot(RequestRobot requestRobot, String token)
+                        throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
+                        IOException, ApiException, InterruptedException {
+                System.out.println("Creating federated robot: " + requestRobot.getFleetProcessId());
+
+                Gson gson = new Gson();
+                // GET Robotics cloud instance
+                String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\""
+                                + requestRobot.getFleetProcessId()
+                                + "\"}}, {state: {equal: ACTIVE}}]}){id state variables}}";
+                Response response;
+                try {
+                        response = graphqlClient.executeSync(queryStr);
+                } catch (ExecutionException e) {
+                        throw new ApplicationException("Error while executing request on graphql.");
+                }
+                javax.json.JsonObject data = response.getData();
+                JsonArray processInstances = data.getJsonArray("ProcessInstances");
+                ObjectMapper mapper = new ObjectMapper();
+                if (processInstances.size() == 0) {
+                        throw new ApplicationException(
+                                        "No process instance found with id: "
+                                                        + requestRobot.getFleetProcessId());
+                }
+                JsonNode variables = mapper.readTree(processInstances.getJsonObject(0).getString("variables"));
+                JsonNode innerFleetNode = variables.get("requestFleet");
+
+                // GET Robotics Cloud's variables
+                String roboticsCloud = "query{ProcessInstances(where: {and: [{id: {equal:\""
+                                + innerFleetNode.get("roboticsCloudProcessId").asText()
+                                + "\"}}, {state: {equal: ACTIVE}}]}){id state variables}}";
+                System.out.println("bes");
+                Response responseRoboticsCloud;
+                try {
+                        responseRoboticsCloud = graphqlClient.executeSync(roboticsCloud);
+                } catch (ExecutionException e) {
+                        throw new ApplicationException("Error while executing request on graphql.");
+                }
+                javax.json.JsonObject responseRC = responseRoboticsCloud.getData();
+                JsonArray roboticsCloudInstances = responseRC.getJsonArray("ProcessInstances");
+                JsonNode roboticsCloudVariables = mapper
+                                .readTree(roboticsCloudInstances.getJsonObject(0).getString("variables"));
+
+                System.out.println("GOT Robotics Cloud Variables: " + roboticsCloudVariables);
+
+                // GET ROBOTICS CLOUD VARIABLES
+                String bufferName = roboticsCloudVariables.get("bufferName").asText();
+                String providerName = roboticsCloudVariables.get("providerName").asText();
+                String regionName = roboticsCloudVariables.get("regionName").asText();
+                String superClusterName = roboticsCloudVariables.get("superClusterName").asText();
+                JsonNode organizationNode = roboticsCloudVariables.get("organization");
+
+                String teamId = roboticsCloudVariables.get("teamId").asText();
+                String cloudInstanceName = roboticsCloudVariables.get("cloudInstanceName").asText();
+
+                String fleetName;
+                System.out.println("innerFleetNode: " + innerFleetNode);
+                System.out.println("innerFleetNode: " + innerFleetNode.get("fleet").asText());
+                if (innerFleetNode.get("fleet").asText() == "null") {
+                        JsonNode federatedFleetNode = innerFleetNode.get("federatedFleet");
+                        fleetName = federatedFleetNode.get("name").asText();
+                } else if (innerFleetNode.get("federatedFleet").asText() == "null") {
+                        JsonNode fleetNode = innerFleetNode.get("fleet");
+                        fleetName = fleetNode.get("name").asText();
+                } else {
+                        System.out.println("fefe: " + innerFleetNode.get("fleet").asText());
+                        throw new ApplicationException("Fleet and federated fleet cannot be both present.");
+                }
+                // Start Parsing Robot Object
+                String json = mapper.writeValueAsString(requestRobot);
+                JsonObject robotObject = gson.fromJson(json, JsonObject.class);
+                System.out.println("mile 4");
+                ApiClient superClusterApi = apiClientManager.getAdminApiClient(providerName,
+                                regionName, superClusterName);
+
+                StorageV1Api storageV1Api = new StorageV1Api(superClusterApi);
+                V1StorageClassList storageClassList = storageV1Api.listStorageClass(null, null, null, null,
+                                null, null,
+                                null, null, null, null);
+                System.out.println("mile 6");
+
+                JsonObject specTemplateObject = new JsonObject();
+                specTemplateObject.add("metadata", robotObject.get("federatedRobot").getAsJsonObject()
+                                .get("spec").getAsJsonObject().get("metadata"));
+                specTemplateObject.add("spec", robotObject.get("federatedRobot").getAsJsonObject().get("spec")
+                                .getAsJsonObject().get("spec"));
+                robotObject.get("federatedRobot").getAsJsonObject().get("spec").getAsJsonObject()
+                                .add("template", specTemplateObject);
+
+                robotObject.get("federatedRobot").getAsJsonObject().get("spec").getAsJsonObject().get("template")
+                                .getAsJsonObject().get("metadata")
+                                .getAsJsonObject()
+                                .addProperty("namespace", fleetName);
+                System.out.println("mile 10");
+
+                robotObject.get("federatedRobot").getAsJsonObject().get("spec").getAsJsonObject()
+                                .get("template").getAsJsonObject().get("spec").getAsJsonObject().get("storage")
+                                .getAsJsonObject().get("storageClassConfig")
+                                .getAsJsonObject()
+                                .addProperty("name",
+                                                storageClassList.getItems().get(0).getMetadata().getName());
+                System.out.println("mile 12");
+
+                robotObject.get("federatedRobot").getAsJsonObject().get("spec").getAsJsonObject()
+                                .remove("metadata");
+                robotObject.get("federatedRobot").getAsJsonObject().get("spec").getAsJsonObject()
+                                .remove("spec");
+
+                if (requestRobot.getFederatedRobot().getSpec().getSpec()
+                                .getRobotDevSuiteTemplate().isVdiEnabled()) {
+                        Integer sessionCount = requestRobot.getFederatedRobot().getSpec()
+                                        .getSpec().getRobotDevSuiteTemplate()
+                                        .getRobotVDITemplate().getSessionCount();
+                        String webRTCPorts = robotHelperRepository.getAvailablePortRange(sessionCount,
+                                        providerName,
+                                        regionName, superClusterName);
+                        robotObject.get("federatedRobot").getAsJsonObject().get("spec").getAsJsonObject()
+                                        .get("template").getAsJsonObject().get("spec").getAsJsonObject()
+                                        .get("robotDevSuiteTemplate")
+                                        .getAsJsonObject().get("robotVDITemplate").getAsJsonObject()
+                                        .remove("sessionCount");
+                        robotObject.get("federatedRobot").getAsJsonObject().get("spec").getAsJsonObject()
+                                        .get("template").getAsJsonObject().get("spec").getAsJsonObject()
+                                        .get("robotDevSuiteTemplate")
+                                        .getAsJsonObject().get("robotVDITemplate").getAsJsonObject()
+                                        .addProperty("webrtcPortRange", webRTCPorts);
+                        System.out.println("mile 12");
+
+                } else {
+                        robotObject.get("federatedRobot").getAsJsonObject().get("spec").getAsJsonObject()
+                                        .get("template").getAsJsonObject().get("spec").getAsJsonObject()
+                                        .get("robotDevSuiteTemplate")
+                                        .getAsJsonObject().get("robotVDITemplate").getAsJsonObject()
+                                        .remove("sessionCount");
+                }
+
+                if (requestRobot.getFederatedRobot().getSpec().getSpec().getRobotDevSuiteTemplate()
+                                .isIdeEnabled()) {
+                        if (requestRobot.getFederatedRobot().getSpec().getSpec().getRobotDevSuiteTemplate()
+                                        .isVdiEnabled()) {
+                                robotObject.get("federatedRobot").getAsJsonObject().get("spec")
+                                                .getAsJsonObject().get("template").getAsJsonObject().get("spec")
+                                                .getAsJsonObject()
+                                                .get("robotDevSuiteTemplate")
+                                                .getAsJsonObject().get("robotIDETemplate").getAsJsonObject()
+                                                .addProperty("display", true);
+                        } else {
+                                robotObject.get("federatedRobot").getAsJsonObject().get("spec")
+                                                .getAsJsonObject().get("template").getAsJsonObject().get("spec")
+                                                .getAsJsonObject()
+                                                .get("robotDevSuiteTemplate")
+                                                .getAsJsonObject().get("robotIDETemplate").getAsJsonObject()
+                                                .addProperty("display", false);
+                        }
+
+                }
+                System.out.println("milestone 15");
+
+                // Update Repositories
+                robotObject.get("federatedRobot").getAsJsonObject().get("spec").getAsJsonObject()
+                                .get("template").getAsJsonObject().get("spec").getAsJsonObject()
+                                .get("workspaceManagerTemplate")
+                                .getAsJsonObject().get("workspaces").getAsJsonArray().forEach(workspace -> {
+                                        JsonObject repositoriesObject = new JsonObject();
+                                        workspace.getAsJsonObject().get("repositories").getAsJsonArray()
+                                                        .forEach(repo -> {
+                                                                JsonObject cloudRepoInside = new JsonObject();
+                                                                cloudRepoInside.add("url",
+                                                                                repo.getAsJsonObject()
+                                                                                                .get("url"));
+                                                                cloudRepoInside.add("branch",
+                                                                                repo.getAsJsonObject()
+                                                                                                .get("branch"));
+
+                                                                repositoriesObject.add(
+                                                                                repo.getAsJsonObject()
+                                                                                                .get("name")
+                                                                                                .getAsString(),
+                                                                                cloudRepoInside);
+                                                        });
+                                        workspace.getAsJsonObject().remove("repositories");
+                                        workspace.getAsJsonObject().add("repositories", repositoriesObject);
+                                });
+
+                System.out.println("milestone 155");
+
+                // Add Placement
+                JsonObject placementObject = new JsonObject();
+                com.google.gson.JsonArray clustersArray = new com.google.gson.JsonArray();
+                com.google.gson.JsonArray objectClusters = robotObject.get("federatedRobot").getAsJsonObject()
+                                .get("spec").getAsJsonObject()
+                                .get("clusters")
+                                .getAsJsonArray();
+                for (int i = 0; i < objectClusters.size(); i++) {
+                        JsonObject clusterObject = new JsonObject();
+                        clusterObject.addProperty("name", objectClusters.get(i).getAsString());
+                        clustersArray.add(clusterObject);
+                }
+                robotObject.get("federatedRobot").getAsJsonObject().get("spec").getAsJsonObject()
+                                .add("placement", placementObject);
+                placementObject.add("clusters", clustersArray);
+
+                // Add Overrides
+                com.google.gson.JsonArray overridesArray = new com.google.gson.JsonArray();
+
+                for (int i = 0; i < objectClusters.size(); i++) {
+                        JsonObject overrideObject = new JsonObject();
+                        if (objectClusters.get(i).getAsString().startsWith("vc-") || objectClusters
+                                        .get(i).getAsString().equals("cluster")) {
+                                overrideObject.addProperty("clusterName", objectClusters.get(i).getAsString());
+                                com.google.gson.JsonArray clusterOverrides = new com.google.gson.JsonArray();
+                                JsonObject clusterOverrideObject = new JsonObject();
+                                clusterOverrideObject.addProperty("path", "/metadata/labels");
+                                clusterOverrideObject.addProperty("op", "add");
+                                JsonObject valueObject = new JsonObject();
+
+                                valueObject
+                                                .addProperty("robolaunch.io/organization",
+                                                                organizationNode.get("name").asText());
+                                valueObject.addProperty("robolaunch.io/team",
+                                                teamId);
+                                valueObject.addProperty("robolaunch.io/region",
+                                                regionName);
+                                valueObject.addProperty("robolaunch.io/cloud-instance",
+                                                bufferName);
+                                valueObject.addProperty("robolaunch.io/cloud-instance-alias",
+                                                cloudInstanceName);
+
+                                valueObject.addProperty("robolaunch.io/fleet",
+                                                fleetName);
+                                clusterOverrideObject.add("value", valueObject);
+                                clusterOverrides.add(clusterOverrideObject);
+
+                                JsonObject clusterOverrideObject2 = new JsonObject();
+                                clusterOverrideObject2.addProperty("path",
+                                                "/spec/storage/storageClassConfig/name");
+                                clusterOverrideObject2.addProperty("value",
+                                                storageClassList.getItems().get(0).getMetadata().getName());
+                                clusterOverrides.add(clusterOverrideObject2);
+
+                                // n. override ...
+                                JsonObject clusterOverrideObject3 = new JsonObject();
+                                clusterOverrideObject3.addProperty("path",
+                                                "/spec/rosBridgeTemplate/ros/enabled");
+                                clusterOverrideObject3.addProperty("value", robotObject.get("federatedRobot")
+                                                .getAsJsonObject().get("spec").getAsJsonObject()
+                                                .get("template").getAsJsonObject().get("spec")
+                                                .getAsJsonObject().get("rosBridgeTemplate")
+                                                .getAsJsonObject().get("ros")
+                                                .getAsJsonObject().get("enabled")
+                                                .getAsBoolean());
+                                clusterOverrides.add(clusterOverrideObject3);
+
+                                JsonObject clusterOverrideObject4 = new JsonObject();
+                                clusterOverrideObject4.addProperty("path",
+                                                "/spec/rosBridgeTemplate/ros2/enabled");
+                                clusterOverrideObject4.addProperty("value", robotObject.get("federatedRobot")
+                                                .getAsJsonObject().get("spec").getAsJsonObject()
+                                                .get("template").getAsJsonObject().get("spec")
+                                                .getAsJsonObject().get("rosBridgeTemplate")
+                                                .getAsJsonObject().get("ros2")
+                                                .getAsJsonObject().get("enabled")
+                                                .getAsBoolean());
+                                clusterOverrides.add(clusterOverrideObject4);
+
+                                JsonObject clusterOverrideObject5 = new JsonObject();
+                                clusterOverrideObject5.addProperty("path",
+                                                "/spec/robotDevSuiteTemplate/vdiEnabled");
+                                clusterOverrideObject5.addProperty("value", robotObject.get("federatedRobot")
+                                                .getAsJsonObject().get("spec").getAsJsonObject()
+                                                .get("template").getAsJsonObject().get("spec")
+                                                .getAsJsonObject().get("robotDevSuiteTemplate")
+                                                .getAsJsonObject().get("vdiEnabled")
+                                                .getAsBoolean());
+                                clusterOverrides.add(clusterOverrideObject5);
+
+                                JsonObject clusterOverrideObject6 = new JsonObject();
+                                clusterOverrideObject6.addProperty("path",
+                                                "/spec/robotDevSuiteTemplate/ideEnabled");
+                                clusterOverrideObject6.addProperty("value", robotObject.get("federatedRobot")
+                                                .getAsJsonObject().get("spec").getAsJsonObject()
+                                                .get("template").getAsJsonObject().get("spec")
+                                                .getAsJsonObject().get("robotDevSuiteTemplate")
+                                                .getAsJsonObject().get("ideEnabled")
+                                                .getAsBoolean());
+
+                                clusterOverrides.add(clusterOverrideObject6);
+
+                                overrideObject.add("clusterOverrides", clusterOverrides);
+                        } else {
+                                overrideObject.addProperty("clusterName", objectClusters.get(i).getAsString());
+                                com.google.gson.JsonArray clusterOverrides = new com.google.gson.JsonArray();
+                                // First Override
+                                JsonObject clusterOverrideObject = new JsonObject();
+                                clusterOverrideObject.addProperty("path", "/metadata/labels");
+                                clusterOverrideObject.addProperty("op", "add");
+                                JsonObject valueObject = new JsonObject();
+                                valueObject.addProperty("robolaunch.io/organization",
+                                                organizationNode.get("name").asText());
+                                valueObject.addProperty("robolaunch.io/team",
+                                                teamId);
+                                valueObject.addProperty("robolaunch.io/region",
+                                                regionName);
+                                valueObject.addProperty("robolaunch.io/cloud-instance",
+                                                bufferName);
+                                valueObject.addProperty("robolaunch.io/cloud-instance-alias",
+                                                cloudInstanceName);
+                                valueObject.addProperty("robolaunch.io/physical-instance",
+                                                objectClusters.get(i).getAsString());
+                                valueObject.addProperty("robolaunch.io/fleet",
+                                                fleetName);
+                                clusterOverrideObject.add("value", valueObject);
+                                clusterOverrides.add(clusterOverrideObject);
+
+                                JsonObject clusterOverrideObject2 = new JsonObject();
+                                clusterOverrideObject2.addProperty("path",
+                                                "/spec/storage/storageClassConfig/name");
+                                clusterOverrideObject2.addProperty("value", "openebs-hostpath");
+                                clusterOverrides.add(clusterOverrideObject2);
+
+                                JsonObject clusterOverrideObject3 = new JsonObject();
+                                clusterOverrideObject3.addProperty("path",
+                                                "/spec/rosBridgeTemplate/ros/enabled");
+                                clusterOverrideObject3.addProperty("value", robotObject.get("federatedRobot")
+                                                .getAsJsonObject().get("spec").getAsJsonObject()
+                                                .get("template").getAsJsonObject().get("spec")
+                                                .getAsJsonObject().get("rosBridgeTemplate")
+                                                .getAsJsonObject().get("ros")
+                                                .getAsJsonObject().get("enabled")
+                                                .getAsBoolean());
+                                clusterOverrides.add(clusterOverrideObject3);
+
+                                JsonObject clusterOverrideObject4 = new JsonObject();
+                                clusterOverrideObject4.addProperty("path",
+                                                "/spec/rosBridgeTemplate/ros2/enabled");
+                                clusterOverrideObject4.addProperty("value", robotObject.get("federatedRobot")
+                                                .getAsJsonObject().get("spec").getAsJsonObject()
+                                                .get("template").getAsJsonObject().get("spec")
+                                                .getAsJsonObject().get("rosBridgeTemplate")
+                                                .getAsJsonObject().get("ros2")
+                                                .getAsJsonObject().get("enabled")
+                                                .getAsBoolean());
+                                clusterOverrides.add(clusterOverrideObject4);
+                                System.out.println("milestone 267");
+
+                                JsonObject clusterOverrideObject5 = new JsonObject();
+                                clusterOverrideObject5.addProperty("path",
+                                                "/spec/robotDevSuiteTemplate/vdiEnabled");
+                                clusterOverrideObject5.addProperty("value", robotObject.get("federatedRobot")
+                                                .getAsJsonObject().get("spec").getAsJsonObject()
+                                                .get("template").getAsJsonObject().get("spec")
+                                                .getAsJsonObject().get("robotDevSuiteTemplate")
+                                                .getAsJsonObject().get("vdiEnabled")
+                                                .getAsBoolean());
+                                clusterOverrides.add(clusterOverrideObject5);
+
+                                JsonObject clusterOverrideObject6 = new JsonObject();
+                                clusterOverrideObject6.addProperty("path",
+                                                "/spec/robotDevSuiteTemplate/ideEnabled");
+                                clusterOverrideObject6.addProperty("value", robotObject.get("federatedRobot")
+                                                .getAsJsonObject().get("spec").getAsJsonObject()
+                                                .get("template").getAsJsonObject().get("spec")
+                                                .getAsJsonObject().get("robotDevSuiteTemplate")
+                                                .getAsJsonObject().get("ideEnabled")
+                                                .getAsBoolean());
+                                clusterOverrides.add(clusterOverrideObject6);
+                                overrideObject.add("clusterOverrides", clusterOverrides);
+
+                        }
+                        overridesArray.add(overrideObject);
+
+                }
+                robotObject.get("federatedRobot").getAsJsonObject().get("spec").getAsJsonObject()
+                                .add("overrides", overridesArray);
+
+                JsonObject finalRobotObject = robotObject.get("federatedRobot").getAsJsonObject();
+
+                ApiClient robotsApi = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(
+                                bufferName,
+                                providerName, regionName, superClusterName);
+
+                // Remove unnecessary lines.
+                robotObject.get("federatedRobot").getAsJsonObject().get("spec").getAsJsonObject()
+                                .remove("clusters");
+                robotObject.get("federatedRobot").getAsJsonObject().get("spec").getAsJsonObject()
+                                .get("template").getAsJsonObject().get("spec").getAsJsonObject()
+                                .remove("clusters");
+
+                System.out.println("final robot object: " + finalRobotObject);
+                CustomObjectsApi customObjectsApi = new CustomObjectsApi(robotsApi);
+                customObjectsApi.createNamespacedCustomObject("types.kubefed.io",
+                                "v1beta1", fleetName,
+                                "federatedrobots", finalRobotObject, null, null, null);
 
         }
 

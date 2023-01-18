@@ -17,7 +17,6 @@ import org.robolaunch.models.Organization;
 import org.robolaunch.models.Response;
 import org.robolaunch.models.User;
 import org.robolaunch.repository.abstracts.GroupAdminRepository;
-import org.robolaunch.repository.abstracts.GroupRepository;
 import org.robolaunch.repository.abstracts.KeycloakAdminRepository;
 import org.robolaunch.repository.abstracts.UserAdminRepository;
 import org.robolaunch.repository.abstracts.UserRepository;
@@ -28,9 +27,6 @@ import io.quarkus.arc.log.LoggerName;
 public class GroupService {
   @Inject
   Logger log;
-
-  @Inject
-  GroupRepository groupRepository;
 
   @Inject
   GroupAdminRepository groupAdminRepository;
@@ -67,6 +63,7 @@ public class GroupService {
     try {
       IPAAdmin adminLogin = new IPAAdminLogin();
       List<HttpCookie> cookies = adminLogin.login();
+      System.out.println("cs: " + cookies.size());
       cookies.forEach(cookie -> {
         groupAdminRepository.appendCookie(cookie);
         userAdminRepository.appendCookie(cookie);
@@ -125,7 +122,7 @@ public class GroupService {
       groupAdminRepository.addUserToGroup(user, organization);
       groupLogger.info("User " + user.getUsername() + " assigned to default group");
     } catch (ApplicationException e) {
-      throw new ApplicationException(e.getMessage());
+      groupLogger.error("Error happened when assigning user to default group " + e.getMessage());
     }
   }
 

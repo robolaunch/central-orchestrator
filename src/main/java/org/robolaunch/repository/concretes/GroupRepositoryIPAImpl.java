@@ -42,6 +42,8 @@ public class GroupRepositoryIPAImpl implements GroupRepository {
 
     /* Helper function to create request. */
     private void makeRequest(String body) throws IOException, InternalError {
+        System.out.println("make req: " + body);
+        System.out.println("cr ck: " + getCurrentCookies());
         URL url = new URL(this.freeIpaURL + "/ipa/session/json");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
@@ -68,6 +70,7 @@ public class GroupRepositoryIPAImpl implements GroupRepository {
     /* Helper function to get member managers request. */
     private JsonNode makeRequestForGroupField(String body, String fieldName)
             throws IOException, InternalError {
+        System.out.println("make req for gr f: " + body);
         URL url = new URL(this.freeIpaURL + "/ipa/session/json");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
@@ -98,6 +101,8 @@ public class GroupRepositoryIPAImpl implements GroupRepository {
     /* Helper function to get member managers request. */
     private JsonNode makeRequestForGroupMembers(String body)
             throws IOException, InternalError {
+        System.out.println("make req for gr mem: " + body);
+
         URL url = new URL(this.freeIpaURL + "/ipa/session/json");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");
@@ -128,6 +133,8 @@ public class GroupRepositoryIPAImpl implements GroupRepository {
     /* Helper function to get member managers request. */
     private JsonNode makeRequestForGroup(String body)
             throws IOException, InternalError {
+        System.out.println("make req for grr: " + body);
+
         URL url = new URL(this.freeIpaURL + "/ipa/session/json");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("POST");

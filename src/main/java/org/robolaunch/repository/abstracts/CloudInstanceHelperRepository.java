@@ -12,7 +12,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import io.kubernetes.client.extended.kubectl.exception.KubectlException;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
-import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesObject;
 import io.minio.errors.ErrorResponseException;
 import io.minio.errors.InsufficientDataException;
 import io.minio.errors.InternalException;
@@ -89,6 +88,9 @@ public interface CloudInstanceHelperRepository {
         public Boolean isMachineCreated(String bufferName, String provider, String region, String superCluster)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
                         ApiException, InterruptedException, MinioException;
+
+        public Boolean isConnectionHubOperatorReady(String bufferName, String provider, String region,
+                        String superCluster, String namespaceName);
 
         public Boolean healthCheck(Organization organization, String teamId, String cloudInstanceName,
                         String nodeName, String provider, String region, String superCluster);

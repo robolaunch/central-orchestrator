@@ -22,11 +22,23 @@ public interface RobotRepository {
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException;
 
+        public void createFederatedRobot(RequestRobot requestRobot, String token)
+                        throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
+                        IOException, ApiException, InterruptedException;
+
         public void createRobotBuildManager(RequestBuildManager robotBuildManager, String token)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException, ExecutionException;
 
+        public void createFederatedRobotBuildManager(RequestBuildManager robotBuildManager, String token)
+                        throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
+                        IOException, ApiException, InterruptedException, ExecutionException;
+
         public void createRobotLaunchManager(RequestLaunchManager robotLaunchManager, String token)
+                        throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
+                        IOException, ApiException, InterruptedException, ExecutionException;
+
+        public void createFederatedRobotLaunchManager(RequestLaunchManager robotLaunchManager, String token)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException, ExecutionException;
 

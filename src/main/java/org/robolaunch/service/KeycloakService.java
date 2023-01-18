@@ -16,7 +16,6 @@ import org.robolaunch.models.Response;
 import org.robolaunch.models.User;
 import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.repository.abstracts.GroupAdminRepository;
-import org.robolaunch.repository.abstracts.GroupRepository;
 import org.robolaunch.repository.abstracts.KeycloakAdminRepository;
 import org.robolaunch.repository.abstracts.KeycloakRepository;
 import org.robolaunch.repository.abstracts.UserAdminRepository;
@@ -34,9 +33,6 @@ public class KeycloakService {
 
   @Inject
   KeycloakRepository keycloakRepository;
-
-  @Inject
-  GroupRepository groupRepository;
 
   @Inject
   GroupAdminRepository groupAdminRepository;
@@ -141,13 +137,13 @@ public class KeycloakService {
     PlainResponse plainResponse = new PlainResponse();
     try {
       keycloakAdminRepository.addGroupMapper(organization);
-      keycloakAdminRepository.syncFederationMainRealm();
-      keycloakLogger.info("Group Mapper added for organization: " + organization.getName() + "");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Group Mapper added successfully.");
+      keycloakLogger.info("Group Mapper added for organization: " + organization.getName() + "");
     } catch (Exception e) {
       plainResponse.setSuccess(false);
       plainResponse.setMessage("Error adding group mapper for organization: " + organization.getName());
+      keycloakLogger.error("Error adding group mapper for organization: " + organization.getName());
     }
     return plainResponse;
   }
@@ -164,6 +160,7 @@ public class KeycloakService {
     } catch (Exception e) {
       plainResponse.setSuccess(false);
       plainResponse.setMessage("Error syncing IPA Groups in current keycloak realm.");
+      keycloakLogger.error("Error syncing IPA Groups in current keycloak realm.");
     }
     return plainResponse;
   }
@@ -204,12 +201,13 @@ public class KeycloakService {
     PlainResponse plainResponse = new PlainResponse();
     try {
       keycloakAdminRepository.syncFederationMainRealm();
-      keycloakLogger.info("Main user federation synced");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Main user federation synced");
+      keycloakLogger.info("Main user federation synced");
     } catch (Exception e) {
       plainResponse.setSuccess(false);
       plainResponse.setMessage("Error syncing main user federation");
+      keycloakLogger.error("Error syncing main user federation");
     }
     return plainResponse;
   }

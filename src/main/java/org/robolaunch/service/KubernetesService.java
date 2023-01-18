@@ -9,6 +9,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
 import org.robolaunch.models.Fleet;
 import org.robolaunch.models.Organization;
+import org.robolaunch.models.PhysicalInstanceKubernetes;
 import org.robolaunch.models.Provider;
 import org.robolaunch.models.RegionKubernetes;
 import org.robolaunch.models.Robot;
@@ -16,6 +17,7 @@ import org.robolaunch.models.RoboticsCloudKubernetes;
 import org.robolaunch.models.SuperClusterKubernetes;
 import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.models.response.ResponseFleets;
+import org.robolaunch.models.response.ResponsePhysicalInstances;
 import org.robolaunch.models.response.ResponseProviders;
 import org.robolaunch.models.response.ResponseRegions;
 import org.robolaunch.models.response.ResponseRoboticsClouds;
@@ -300,9 +302,11 @@ public class KubernetesService {
       responseRobots.setData(robots);
       responseRobots.setSuccess(true);
       responseRobots.setMessage("Robots fetched successfully.");
+      kubernetesLogger.info("Robots fetched successfully.");
     } catch (Exception e) {
       responseRobots.setSuccess(false);
-      responseRobots.setMessage("Error while fetching Robots." + e.getMessage());
+      responseRobots.setMessage("Error while fetching Robots.");
+      kubernetesLogger.error("Error while fetching Robots." + e.getMessage());
     }
     return responseRobots;
   }
@@ -315,9 +319,12 @@ public class KubernetesService {
       responseRobots.setData(robots);
       responseRobots.setSuccess(true);
       responseRobots.setMessage("Robots fetched successfully.");
+      kubernetesLogger.info("Robots fetched successfully.");
     } catch (Exception e) {
       responseRobots.setSuccess(false);
       responseRobots.setMessage("Error while fetching Robots." + e.getMessage());
+      kubernetesLogger.error("Error while fetching Robots." + e.getMessage());
+
     }
     return responseRobots;
   }
@@ -330,9 +337,29 @@ public class KubernetesService {
       responseRobots.setData(robots);
       responseRobots.setSuccess(true);
       responseRobots.setMessage("Robots fetched successfully.");
+      kubernetesLogger.info("Robots fetched successfully.");
+
     } catch (Exception e) {
       responseRobots.setSuccess(false);
       responseRobots.setMessage("Error while fetching Robots." + e.getMessage());
+      kubernetesLogger.error("Error while fetching Robots." + e.getMessage());
+    }
+    return responseRobots;
+  }
+
+  public ResponseRobots getRobotsFleet(String fleetProcessId) {
+    ResponseRobots responseRobots = new ResponseRobots();
+    try {
+      ArrayList<Robot> robots = kubernetesRepository
+          .getRobotsFleet(fleetProcessId);
+      responseRobots.setData(robots);
+      responseRobots.setSuccess(true);
+      responseRobots.setMessage("Robots fetched successfully.");
+      kubernetesLogger.info("Robots fetched successfully.");
+    } catch (Exception e) {
+      responseRobots.setSuccess(false);
+      responseRobots.setMessage("Error while fetching Robots." + e.getMessage());
+      kubernetesLogger.error("Error while fetching Robots." + e.getMessage());
     }
     return responseRobots;
   }
@@ -345,9 +372,11 @@ public class KubernetesService {
       responseFleets.setData(fleets);
       responseFleets.setSuccess(true);
       responseFleets.setMessage("Fleets fetched successfully.");
+      kubernetesLogger.info("Fleets fetched successfully.");
     } catch (Exception e) {
       responseFleets.setSuccess(false);
-      responseFleets.setMessage("Error while fetching Fleets." + e.getMessage());
+      responseFleets.setMessage("Error while fetching Fleets.");
+      kubernetesLogger.error("Error while fetching Fleets.");
     }
     return responseFleets;
   }
@@ -360,9 +389,11 @@ public class KubernetesService {
       responseFleets.setData(fleets);
       responseFleets.setSuccess(true);
       responseFleets.setMessage("Fleets fetched successfully.");
+      kubernetesLogger.info("Fleets fetched successfully.");
     } catch (Exception e) {
       responseFleets.setSuccess(false);
-      responseFleets.setMessage("Error while fetching Fleets." + e.getMessage());
+      responseFleets.setMessage("Error while fetching Fleets.");
+      kubernetesLogger.error("Error while fetching Fleets.");
     }
     return responseFleets;
   }
@@ -375,11 +406,31 @@ public class KubernetesService {
       responseFleets.setData(fleets);
       responseFleets.setSuccess(true);
       responseFleets.setMessage("Fleets fetched successfully.");
+      kubernetesLogger.info("Fleets fetched successfully.");
+
     } catch (Exception e) {
       responseFleets.setSuccess(false);
       responseFleets.setMessage("Error while fetching Fleets." + e.getMessage());
     }
     return responseFleets;
+  }
+
+  public ResponsePhysicalInstances getPhysicalInstancesRoboticsCloud(String roboticsCloudProcessId) {
+    ResponsePhysicalInstances responsePhysicalInstances = new ResponsePhysicalInstances();
+    try {
+      ArrayList<PhysicalInstanceKubernetes> physicalInstances = kubernetesRepository
+          .getPhysicalInstancesRoboticsCloud(roboticsCloudProcessId);
+      responsePhysicalInstances.setData(physicalInstances);
+      responsePhysicalInstances.setSuccess(true);
+      responsePhysicalInstances.setMessage("Physical Instances fetched successfully.");
+      kubernetesLogger.info("Got robot status");
+    } catch (Exception e) {
+      responsePhysicalInstances.setSuccess(false);
+      responsePhysicalInstances.setMessage("Error while fetching Physical Instances." + e.getMessage());
+      kubernetesLogger.error("Error occured while getting robot status", e);
+    }
+    return responsePhysicalInstances;
+
   }
 
 }

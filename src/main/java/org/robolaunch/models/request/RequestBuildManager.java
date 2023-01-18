@@ -10,6 +10,8 @@ public class RequestBuildManager implements Serializable {
    private String targetRobot;
    private Organization organization;
    private String teamId;
+   private Boolean federated;
+   // private RequestCreateFederatedBuildManager federatedBuildManager;
 
    public RequestBuildManager() {
    }
@@ -52,6 +54,14 @@ public class RequestBuildManager implements Serializable {
 
    public void setTeamId(String teamId) {
       this.teamId = teamId;
+   }
+
+   public Boolean isFederated() {
+      return federated;
+   }
+
+   public void setFederated(Boolean federated) {
+      this.federated = federated;
    }
 
 }

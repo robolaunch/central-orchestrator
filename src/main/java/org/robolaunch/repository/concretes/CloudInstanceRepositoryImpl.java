@@ -663,7 +663,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
 
                         if (type.equals("V1ServiceAccount")) {
                                 try {
-                                        Thread.sleep(7000);
+                                        Thread.sleep(14000);
                                 } catch (InterruptedException e1) {
                                         e1.printStackTrace();
                                 }
@@ -1527,11 +1527,6 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         public void createConnectionHub(String bufferName, Organization organization, String teamId,
                         String cloudInstanceName, String serverIP, String namespaceName, String provider, String region,
                         String superCluster) {
-                try {
-                        Thread.sleep(16000);
-                } catch (InterruptedException e) {
-                        e.printStackTrace();
-                }
                 System.out.println("buffer name: " + bufferName);
                 System.out.println("organization name: " + organization.getName());
                 System.out.println("team id: " + teamId);

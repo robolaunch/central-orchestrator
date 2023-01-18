@@ -8,6 +8,8 @@ public class RequestLaunchManager implements Serializable {
    private String targetRobot;
    private String organization;
    private String teamId;
+   private Boolean federated;
+   private RequestCreateFederatedLaunchManager federatedLaunchManager;
 
    public RequestLaunchManager() {
    }
@@ -50,6 +52,22 @@ public class RequestLaunchManager implements Serializable {
 
    public void setTeamId(String teamId) {
       this.teamId = teamId;
+   }
+
+   public Boolean isFederated() {
+      return federated;
+   }
+
+   public void setFederated(Boolean federated) {
+      this.federated = federated;
+   }
+
+   public RequestCreateFederatedLaunchManager getFederatedLaunchManager() {
+      return federatedLaunchManager;
+   }
+
+   public void setFederatedLaunchManager(RequestCreateFederatedLaunchManager federatedLaunchManager) {
+      this.federatedLaunchManager = federatedLaunchManager;
    }
 
 }

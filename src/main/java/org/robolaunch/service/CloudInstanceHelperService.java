@@ -99,6 +99,20 @@ public class CloudInstanceHelperService {
     }
   }
 
+  public Boolean isConnectionHubOperatorReady(String bufferName, String provider, String region, String superCluster,
+      String namespaceName) {
+    try {
+      Boolean isReady = cloudInstanceHelperRepository.isConnectionHubOperatorReady(bufferName, provider, region,
+          superCluster,
+          namespaceName);
+      cloudInstanceHelperLogger.info("Connection hub operator is ready: " + isReady);
+      return isReady;
+    } catch (Exception e) {
+      cloudInstanceHelperLogger.error("Error checking connection hub operator", e);
+      return false;
+    }
+  }
+
   public String generateBufferName() {
     try {
       String generatedBufferName = cloudInstanceHelperRepository.generateBufferName();

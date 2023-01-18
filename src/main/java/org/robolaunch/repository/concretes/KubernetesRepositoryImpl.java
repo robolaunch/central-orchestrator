@@ -16,8 +16,10 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.robolaunch.exception.ApplicationException;
 import org.robolaunch.models.Fleet;
 import org.robolaunch.models.Organization;
+import org.robolaunch.models.PhysicalInstanceKubernetes;
 import org.robolaunch.models.Provider;
 import org.robolaunch.models.RegionKubernetes;
 import org.robolaunch.models.Robot;
@@ -37,8 +39,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.gson.Gson;
 
+import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi;
+import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesListObject;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesObject;
 import io.kubernetes.client.util.generic.options.ListOptions;
 import io.minio.errors.MinioException;
@@ -580,14 +584,14 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
   // Get Robots Organization
   @Override
   public ArrayList<Robot> getRobotsOrganization(Organization organization)
-      throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
-      JsonProcessingException, ExecutionException {
+      throws java.util.concurrent.ExecutionException, InterruptedException, ExecutionException, InvalidKeyException,
+      NoSuchAlgorithmException, IllegalArgumentException, IOException, ApiException, MinioException {
     ArrayList<Robot> robots = new ArrayList<Robot>();
-    ArrayList<String> superClusters = getSuperClusterProcesses();
+    ArrayList<RoboticsCloudKubernetes> rkc = getRoboticsCloudsOrganization(organization);
 
-    for (int k = 0; k < superClusters.size(); k++) {
+    for (int k = 0; k < rkc.size(); k++) {
       ArrayList<Robot> scRobots = getRobotsSuperClusterOrganization(organization,
-          superClusters.get(k));
+          rkc.get(k).getProcessId());
       scRobots.forEach(rc -> {
         robots.add(rc);
       });
@@ -595,81 +599,107 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
     return robots;
   }
 
-  public ArrayList<Robot> getRobotsSuperClusterOrganization(Organization organization, String superClusterProcessId)
-      throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
-      JsonProcessingException, ExecutionException {
-    ArrayList<Fleet> flts = getFleetsOrganization(organization);
+  public ArrayList<Robot> getRobotsSuperClusterOrganization(Organization organization, String roboticsCloudProcessId)
+      throws java.util.concurrent.ExecutionException, InterruptedException, ExecutionException, InvalidKeyException,
+      NoSuchAlgorithmException, IllegalArgumentException, IOException, ApiException, MinioException {
+    ArrayList<Fleet> flts = getFleetsRoboticsCloud(roboticsCloudProcessId);
     ArrayList<Robot> robots = new ArrayList<Robot>();
 
     for (int i = 0; i < flts.size(); i++) {
+      System.out.println("fleet: " + flts.get(i).getProcessId());
       String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\"" + flts.get(i).getProcessId()
-          + "\"}}, {state: {equal: ACTIVE}}]}){id state childProcessInstances{id processName state variables}}}";
+          + "\"}}, {state:{equal: ACTIVE}}]}){id state variables childProcessInstances{id processName state variables}}}";
       Response response = graphqlClient.executeSync(queryStr);
       JsonObject data = response.getData();
       JsonArray processInstances = data.getJsonArray("ProcessInstances");
       ObjectMapper mapper = new ObjectMapper();
-      if (processInstances.getJsonObject(0).getJsonArray("childProcessInstances").size() == 0) {
-        continue;
-      }
+      System.out.println("m 1");
+      JsonNode mainNode = mapper.readTree(processInstances.getJsonObject(0).getString("variables"));
+      JsonNode organizationNode = mainNode.get("organization");
+      System.out.println("m 2");
+
       JsonArray childProcessInstances = processInstances.getJsonObject(0).getJsonArray("childProcessInstances");
-      for (int k = 0; k < childProcessInstances.size(); k++) {
-        if (childProcessInstances.getJsonObject(k).getString("processName").equals("robot")) {
-          JsonNode childNode = mapper.readTree(childProcessInstances.getJsonObject(k).getString("variables"));
-          // check if childnode has organization node
-          if (childNode.get("organization") == null) {
-            continue;
-          }
+      for (int j = 0; j < childProcessInstances.size(); j++) {
+        if (childProcessInstances.getJsonObject(j).getString("processName").equals("robot")
+            && organization.getName().equals(organizationNode.get("name").asText())) {
+
+          Robot singleRobot = new Robot();
+          JsonNode childNode = mapper.readTree(childProcessInstances.getJsonObject(j).getString("variables"));
 
           JsonNode requestRobotNode = childNode.get("requestRobot");
-          JsonNode organizationNode = requestRobotNode.get("organization");
-          JsonNode robotNode = requestRobotNode.get("robot");
-          if (organizationNode.get("name").asText().equals(organization.getName())) {
-            Robot singleRobot = new Robot();
-            singleRobot.setProcessId(childProcessInstances.getJsonObject(k).getString("id"));
-            // Set Name
-            JsonNode metadataNode = robotNode.get("metadata");
-            singleRobot.setName(metadataNode.get("name").asText());
+          System.out.println("m 3");
 
-            JsonNode specNode = robotNode.get("spec");
-            // Set Distributions
-            JsonNode distNode = specNode.get("distributions");
-            List<String> distros = new ArrayList<String>();
-            distNode.forEach(dist -> {
-              distros.add(dist.asText());
-            });
-            singleRobot.setDistributions(distros);
+          // ProcessId
+          singleRobot.setProcessId(childProcessInstances.getJsonObject(j).getString("id"));
 
-            // Set Storage
-            JsonNode storageNode = specNode.get("storage");
-            singleRobot.setStorage(storageNode.get("amount").asInt() / 1000);
-
-            // Set Bridge Enabled
-            JsonNode bridgeNode = specNode.get("rosBridgeTemplate");
-            JsonNode bridgeRosNode = bridgeNode.get("ros");
-            JsonNode bridgeRos2Node = bridgeNode.get("ros2");
-            singleRobot.setBridgeEnabled(bridgeRosNode.get("enabled").asBoolean()
-                || bridgeRos2Node.get("enabled").asBoolean());
-
-            // Set Image
-            singleRobot.setImage(bridgeNode.get("image").asText());
-
-            // Set VDI Enabled && IDE Enabled
-            JsonNode devSuiteNode = specNode.get("robotDevSuiteTemplate");
-            singleRobot.setVdiEnabled(devSuiteNode.get("vdiEnabled").asBoolean());
-            singleRobot.setIdeEnabled(devSuiteNode.get("ideEnabled").asBoolean());
-
-            // Set VDI Session count
-            if (devSuiteNode.get("vdiEnabled").asBoolean()) {
-              JsonNode vdiNode = devSuiteNode.get("robotVDITemplate");
-              singleRobot.setVdiSessionCount(vdiNode.get("sessionCount").asInt());
-            }
-
-            // Set Workspaces Path
-            JsonNode workspacesNode = specNode.get("workspaceManagerTemplate");
-            singleRobot.setWorkspacesPath(workspacesNode.get("workspacesPath").asText());
-
-            robots.add(singleRobot);
+          // Name
+          JsonNode robotNode;
+          if (requestRobotNode.get("robot").asText() != "null") {
+            robotNode = requestRobotNode.get("robot");
+          } else if (requestRobotNode.get("federatedRobot").asText() != "null") {
+            robotNode = requestRobotNode.get("federatedRobot");
+          } else {
+            throw new ApplicationException("Both federated and normal robot cannot be null.");
           }
+          System.out.println("m 5");
+
+          JsonNode metadataNode = robotNode.get("metadata");
+          singleRobot.setName(metadataNode.get("name").asText());
+
+          // Type
+          if (requestRobotNode.get("federated").asBoolean()) {
+            singleRobot.setType("federated");
+          } else {
+            singleRobot.setType("normal");
+          }
+          System.out.println("m 7");
+          JsonNode specNode;
+          // Distributions ( CAUTION )
+          if (requestRobotNode.get("robot").asText() != "null") {
+            specNode = robotNode.get("spec");
+          } else {
+            specNode = robotNode.get("spec").get("spec");
+          }
+          JsonNode distNode = specNode.get("distributions");
+          ArrayList<String> distros = new ArrayList<String>();
+          for (int k = 0; k < distNode.size(); k++) {
+            distros.add(distNode.get(k).asText());
+          }
+          singleRobot.setDistributions(distros);
+
+          // Storage
+          JsonNode storageNode = specNode.get("storage");
+          singleRobot.setStorage(storageNode.get("amount").asInt() / 1000);
+          System.out.println("m 9");
+
+          // Bridge Enabled
+          JsonNode bridgeNode = specNode.get("rosBridgeTemplate");
+          JsonNode bridgeRosNode = bridgeNode.get("ros");
+          JsonNode bridgeRos2Node = bridgeNode.get("ros2");
+          singleRobot.setBridgeEnabled(bridgeRosNode.get("enabled").asBoolean()
+              || bridgeRos2Node.get("enabled").asBoolean());
+
+          // Image
+          singleRobot.setImage(bridgeNode.get("image").asText());
+
+          // VDI Enabled && IDE Enabled
+          JsonNode devSuiteNode = specNode.get("robotDevSuiteTemplate");
+          singleRobot.setVdiEnabled(devSuiteNode.get("vdiEnabled").asBoolean());
+          singleRobot.setIdeEnabled(devSuiteNode.get("ideEnabled").asBoolean());
+          System.out.println("m 53");
+
+          // VDI Session count
+          if (devSuiteNode.get("vdiEnabled").asBoolean()) {
+            JsonNode vdiNode = devSuiteNode.get("robotVDITemplate");
+            singleRobot.setVdiSessionCount(vdiNode.get("sessionCount").asInt());
+          }
+          System.out.println("m 537");
+
+          // Workspaces Path
+          JsonNode workspacesNode = specNode.get("workspaceManagerTemplate");
+          singleRobot.setWorkspacesPath(workspacesNode.get("workspacesPath").asText());
+
+          robots.add(singleRobot);
         }
       }
 
@@ -681,14 +711,14 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
   // Get Robots Team
   @Override
   public ArrayList<Robot> getRobotsTeam(Organization organization, String teamId)
-      throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
-      JsonProcessingException, ExecutionException {
+      throws java.util.concurrent.ExecutionException, InterruptedException, ExecutionException, InvalidKeyException,
+      NoSuchAlgorithmException, IllegalArgumentException, IOException, ApiException, MinioException {
     ArrayList<Robot> robots = new ArrayList<Robot>();
-    ArrayList<String> superClusters = getSuperClusterProcesses();
+    ArrayList<RoboticsCloudKubernetes> rck = getRoboticsCloudsTeam(organization, teamId);
 
-    for (int k = 0; k < superClusters.size(); k++) {
+    for (int k = 0; k < rck.size(); k++) {
       ArrayList<Robot> scRobots = getRobotsSuperClusterTeam(organization, teamId,
-          superClusters.get(k));
+          rck.get(k).getProcessId());
       scRobots.forEach(rc -> {
         robots.add(rc);
       });
@@ -697,82 +727,95 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
   }
 
   public ArrayList<Robot> getRobotsSuperClusterTeam(Organization organization, String teamId,
-      String superClusterProcessId)
-      throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
-      JsonProcessingException, ExecutionException {
-    ArrayList<Fleet> flts = getFleetsOrganization(organization);
+      String roboticsCloudProcessId)
+      throws java.util.concurrent.ExecutionException, InterruptedException, ExecutionException, InvalidKeyException,
+      NoSuchAlgorithmException, IllegalArgumentException, IOException, ApiException, MinioException {
     ArrayList<Robot> robots = new ArrayList<Robot>();
-
+    ArrayList<Fleet> flts = getFleetsRoboticsCloud(roboticsCloudProcessId);
+    ObjectMapper mapper = new ObjectMapper();
     for (int i = 0; i < flts.size(); i++) {
       String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\"" + flts.get(i).getProcessId()
-          + "\"}}, {state: {equal: ACTIVE}}]}){id state childProcessInstances{id processName state variables}}}";
+          + "\"}}, {state:{equal: ACTIVE}}]}){id state variables childProcessInstances{id processName state variables}}}";
       Response response = graphqlClient.executeSync(queryStr);
       JsonObject data = response.getData();
       JsonArray processInstances = data.getJsonArray("ProcessInstances");
-      ObjectMapper mapper = new ObjectMapper();
-      if (processInstances.getJsonObject(0).getJsonArray("childProcessInstances").size() == 0) {
-        continue;
-      }
+
+      JsonNode mainNode = mapper.readTree(processInstances.getJsonObject(0).getString("variables"));
+      JsonNode organizationNode = mainNode.get("organization");
+
       JsonArray childProcessInstances = processInstances.getJsonObject(0).getJsonArray("childProcessInstances");
-      for (int k = 0; k < childProcessInstances.size(); k++) {
-        if (childProcessInstances.getJsonObject(k).getString("processName").equals("robot")) {
-          JsonNode childNode = mapper.readTree(childProcessInstances.getJsonObject(k).getString("variables"));
-          // check if childnode has organization node
-          if (childNode.get("organization") == null) {
-            continue;
-          }
+      for (int j = 0; j < childProcessInstances.size(); j++) {
+        if (childProcessInstances.getJsonObject(j).getString("processName").equals("robot")
+            && organization.getName().equals(organizationNode.get("name").asText())
+            && teamId.equals(mainNode.get("teamId").asText())) {
+
+          Robot singleRobot = new Robot();
+          JsonNode childNode = mapper.readTree(childProcessInstances.getJsonObject(j).getString("variables"));
 
           JsonNode requestRobotNode = childNode.get("requestRobot");
-          JsonNode organizationNode = requestRobotNode.get("organization");
-          JsonNode robotNode = requestRobotNode.get("robot");
-          if (organizationNode.get("name").asText().equals(organization.getName())
-              && requestRobotNode.get("teamId").asText().equals(teamId)) {
-            Robot singleRobot = new Robot();
 
-            // Set Name
-            JsonNode metadataNode = robotNode.get("metadata");
-            singleRobot.setName(metadataNode.get("name").asText());
+          // ProcessId
+          singleRobot.setProcessId(childProcessInstances.getJsonObject(j).getString("id"));
 
-            JsonNode specNode = robotNode.get("spec");
-            // Set Distributions
-            JsonNode distNode = specNode.get("distributions");
-            List<String> distros = new ArrayList<String>();
-            distNode.forEach(dist -> {
-              distros.add(dist.asText());
-            });
-            singleRobot.setDistributions(distros);
-
-            // Set Storage
-            JsonNode storageNode = specNode.get("storage");
-            singleRobot.setStorage(storageNode.get("amount").asInt() / 1000);
-
-            // Set Bridge Enabled
-            JsonNode bridgeNode = specNode.get("rosBridgeTemplate");
-            JsonNode bridgeRosNode = bridgeNode.get("ros");
-            JsonNode bridgeRos2Node = bridgeNode.get("ros2");
-            singleRobot.setBridgeEnabled(bridgeRosNode.get("enabled").asBoolean()
-                || bridgeRos2Node.get("enabled").asBoolean());
-
-            // Set Image
-            singleRobot.setImage(bridgeNode.get("image").asText());
-
-            // Set VDI Enabled && IDE Enabled
-            JsonNode devSuiteNode = specNode.get("robotDevSuiteTemplate");
-            singleRobot.setVdiEnabled(devSuiteNode.get("vdiEnabled").asBoolean());
-            singleRobot.setIdeEnabled(devSuiteNode.get("ideEnabled").asBoolean());
-
-            // Set VDI Session count
-            if (devSuiteNode.get("vdiEnabled").asBoolean()) {
-              JsonNode vdiNode = devSuiteNode.get("robotVDITemplate");
-              singleRobot.setVdiSessionCount(vdiNode.get("sessionCount").asInt());
-            }
-
-            // Set Workspaces Path
-            JsonNode workspacesNode = specNode.get("workspaceManagerTemplate");
-            singleRobot.setWorkspacesPath(workspacesNode.get("workspacesPath").asText());
-
-            robots.add(singleRobot);
+          // Name
+          JsonNode robotNode;
+          if (requestRobotNode.get("robot").asText() != "null") {
+            robotNode = requestRobotNode.get("robot");
+          } else if (requestRobotNode.get("federatedRobot").asText() != "null") {
+            robotNode = requestRobotNode.get("federatedRobot");
+          } else {
+            throw new ApplicationException("Both federated and normal robot cannot be null.");
           }
+
+          JsonNode metadataNode = robotNode.get("metadata");
+          singleRobot.setName(metadataNode.get("name").asText());
+
+          // Type
+          if (requestRobotNode.get("federated").asBoolean()) {
+            singleRobot.setType("federated");
+          } else {
+            singleRobot.setType("normal");
+          }
+
+          // Distributions ( CAUTION )
+          JsonNode specNode = robotNode.get("spec");
+          JsonNode distNode = specNode.get("distributions");
+          ArrayList<String> distros = new ArrayList<String>();
+          for (int k = 0; k < distNode.size(); k++) {
+            distros.add(distNode.get(k).asText());
+          }
+          singleRobot.setDistributions(distros);
+
+          // Storage
+          JsonNode storageNode = specNode.get("storage");
+          singleRobot.setStorage(storageNode.get("amount").asInt() / 1000);
+
+          // Bridge Enabled
+          JsonNode bridgeNode = specNode.get("rosBridgeTemplate");
+          JsonNode bridgeRosNode = bridgeNode.get("ros");
+          JsonNode bridgeRos2Node = bridgeNode.get("ros2");
+          singleRobot.setBridgeEnabled(bridgeRosNode.get("enabled").asBoolean()
+              || bridgeRos2Node.get("enabled").asBoolean());
+
+          // Image
+          singleRobot.setImage(bridgeNode.get("image").asText());
+
+          // VDI Enabled && IDE Enabled
+          JsonNode devSuiteNode = specNode.get("robotDevSuiteTemplate");
+          singleRobot.setVdiEnabled(devSuiteNode.get("vdiEnabled").asBoolean());
+          singleRobot.setIdeEnabled(devSuiteNode.get("ideEnabled").asBoolean());
+
+          // VDI Session count
+          if (devSuiteNode.get("vdiEnabled").asBoolean()) {
+            JsonNode vdiNode = devSuiteNode.get("robotVDITemplate");
+            singleRobot.setVdiSessionCount(vdiNode.get("sessionCount").asInt());
+          }
+
+          // Workspaces Path
+          JsonNode workspacesNode = specNode.get("workspaceManagerTemplate");
+          singleRobot.setWorkspacesPath(workspacesNode.get("workspacesPath").asText());
+
+          robots.add(singleRobot);
         }
       }
 
@@ -781,81 +824,93 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
     return robots;
   }
 
-  // TODO: CORRECT IT! LOOP FLEETS, GET ALL ROBOTS
   // Get Robots Robotics Clouds
   @Override
   public ArrayList<Robot> getRobotsRoboticsCloud(String roboticsCloudProcessId)
       throws java.util.concurrent.ExecutionException, InterruptedException, InvalidKeyException, ExecutionException,
       NoSuchAlgorithmException, IllegalArgumentException, IOException, ApiException, MinioException {
     ArrayList<Robot> robots = new ArrayList<Robot>();
-    ArrayList<Fleet> flts = getFleetsRoboticsCloud(roboticsCloudProcessId);
-
-    String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\"" + roboticsCloudProcessId
-        + "\"}}, {state: {equal: ACTIVE}}]}){id state childProcessInstances{id processName state variables}}}";
-    Response response = graphqlClient.executeSync(queryStr);
-    JsonObject data = response.getData();
-    JsonArray processInstances = data.getJsonArray("ProcessInstances");
+    ArrayList<Fleet> fleets = getFleetsRoboticsCloud(roboticsCloudProcessId);
     ObjectMapper mapper = new ObjectMapper();
-    if (processInstances.getJsonObject(0).getJsonArray("childProcessInstances").size() == 0) {
-      return robots;
-    }
-    JsonArray childProcessInstances = processInstances.getJsonObject(0).getJsonArray("childProcessInstances");
-    for (int k = 0; k < childProcessInstances.size(); k++) {
-      if (childProcessInstances.getJsonObject(k).getString("processName").equals("robot")) {
-        JsonNode childNode = mapper.readTree(childProcessInstances.getJsonObject(k).getString("variables"));
-        // check if childnode has organization node
-        if (childNode.get("organization") == null) {
-          continue;
+    for (int k = 0; k < fleets.size(); k++) {
+      String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\"" + fleets.get(k).getProcessId()
+          + "\"}}, {state: {equal: ACTIVE}}]}){id state childProcessInstances{id processName state variables}}}";
+
+      Response response = graphqlClient.executeSync(queryStr);
+      JsonObject data = response.getData();
+      JsonArray processInstances = data.getJsonArray("ProcessInstances");
+
+      JsonArray childProcessInstances = processInstances.getJsonObject(0).getJsonArray("childProcessInstances");
+      for (int i = 0; i < childProcessInstances.size(); i++) {
+        if (childProcessInstances.getJsonObject(i).getString("processName").equals("robot")) {
+          Robot singleRobot = new Robot();
+          JsonNode childNode = mapper.readTree(childProcessInstances.getJsonObject(i).getString("variables"));
+
+          JsonNode requestRobotNode = childNode.get("requestRobot");
+
+          // ProcessId
+          singleRobot.setProcessId(childProcessInstances.getJsonObject(i).getString("id"));
+
+          // Name
+          JsonNode robotNode;
+          if (requestRobotNode.get("robot").asText() != "null") {
+            robotNode = requestRobotNode.get("robot");
+          } else if (requestRobotNode.get("federatedRobot").asText() != "null") {
+            robotNode = requestRobotNode.get("federatedRobot");
+          } else {
+            throw new ApplicationException("Both federated and normal robot cannot be null.");
+          }
+
+          JsonNode metadataNode = robotNode.get("metadata");
+          singleRobot.setName(metadataNode.get("name").asText());
+
+          // Type
+          if (requestRobotNode.get("federated").asBoolean()) {
+            singleRobot.setType("federated");
+          } else {
+            singleRobot.setType("normal");
+          }
+
+          // Distributions ( CAUTION )
+          JsonNode specNode = robotNode.get("spec");
+          JsonNode distNode = specNode.get("distributions");
+          ArrayList<String> distros = new ArrayList<String>();
+          for (int j = 0; j < distNode.size(); j++) {
+            distros.add(distNode.get(j).asText());
+          }
+          singleRobot.setDistributions(distros);
+
+          // Storage
+          JsonNode storageNode = specNode.get("storage");
+          singleRobot.setStorage(storageNode.get("amount").asInt() / 1000);
+
+          // Bridge Enabled
+          JsonNode bridgeNode = specNode.get("rosBridgeTemplate");
+          JsonNode bridgeRosNode = bridgeNode.get("ros");
+          JsonNode bridgeRos2Node = bridgeNode.get("ros2");
+          singleRobot.setBridgeEnabled(bridgeRosNode.get("enabled").asBoolean()
+              || bridgeRos2Node.get("enabled").asBoolean());
+
+          // Image
+          singleRobot.setImage(bridgeNode.get("image").asText());
+
+          // VDI Enabled && IDE Enabled
+          JsonNode devSuiteNode = specNode.get("robotDevSuiteTemplate");
+          singleRobot.setVdiEnabled(devSuiteNode.get("vdiEnabled").asBoolean());
+          singleRobot.setIdeEnabled(devSuiteNode.get("ideEnabled").asBoolean());
+
+          // VDI Session count
+          if (devSuiteNode.get("vdiEnabled").asBoolean()) {
+            JsonNode vdiNode = devSuiteNode.get("robotVDITemplate");
+            singleRobot.setVdiSessionCount(vdiNode.get("sessionCount").asInt());
+          }
+
+          // Workspaces Path
+          JsonNode workspacesNode = specNode.get("workspaceManagerTemplate");
+          singleRobot.setWorkspacesPath(workspacesNode.get("workspacesPath").asText());
+
+          robots.add(singleRobot);
         }
-
-        JsonNode requestRobotNode = childNode.get("requestRobot");
-        JsonNode robotNode = requestRobotNode.get("robot");
-
-        Robot singleRobot = new Robot();
-
-        // Set Name
-        JsonNode metadataNode = robotNode.get("metadata");
-        singleRobot.setName(metadataNode.get("name").asText());
-
-        JsonNode specNode = robotNode.get("spec");
-        // Set Distributions
-        JsonNode distNode = specNode.get("distributions");
-        List<String> distros = new ArrayList<String>();
-        distNode.forEach(dist -> {
-          distros.add(dist.asText());
-        });
-        singleRobot.setDistributions(distros);
-
-        // Set Storage
-        JsonNode storageNode = specNode.get("storage");
-        singleRobot.setStorage(storageNode.get("amount").asInt() / 1000);
-
-        // Set Bridge Enabled
-        JsonNode bridgeNode = specNode.get("rosBridgeTemplate");
-        JsonNode bridgeRosNode = bridgeNode.get("ros");
-        JsonNode bridgeRos2Node = bridgeNode.get("ros2");
-        singleRobot.setBridgeEnabled(bridgeRosNode.get("enabled").asBoolean()
-            || bridgeRos2Node.get("enabled").asBoolean());
-
-        // Set Image
-        singleRobot.setImage(bridgeNode.get("image").asText());
-
-        // Set VDI Enabled && IDE Enabled
-        JsonNode devSuiteNode = specNode.get("robotDevSuiteTemplate");
-        singleRobot.setVdiEnabled(devSuiteNode.get("vdiEnabled").asBoolean());
-        singleRobot.setIdeEnabled(devSuiteNode.get("ideEnabled").asBoolean());
-
-        // Set VDI Session count
-        if (devSuiteNode.get("vdiEnabled").asBoolean()) {
-          JsonNode vdiNode = devSuiteNode.get("robotVDITemplate");
-          singleRobot.setVdiSessionCount(vdiNode.get("sessionCount").asInt());
-        }
-
-        // Set Workspaces Path
-        JsonNode workspacesNode = specNode.get("workspaceManagerTemplate");
-        singleRobot.setWorkspacesPath(workspacesNode.get("workspacesPath").asText());
-
-        robots.add(singleRobot);
       }
     }
     return robots;
@@ -867,71 +922,79 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
       throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
       JsonProcessingException {
     ArrayList<Robot> robots = new ArrayList<Robot>();
-
+    ObjectMapper mapper = new ObjectMapper();
     String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\"" + fleetProcessId
         + "\"}}, {state: {equal: ACTIVE}}]}){id state childProcessInstances{id processName state variables}}}";
 
     Response response = graphqlClient.executeSync(queryStr);
     JsonObject data = response.getData();
     JsonArray processInstances = data.getJsonArray("ProcessInstances");
-    ObjectMapper mapper = new ObjectMapper();
-    if (processInstances.getJsonObject(0).getJsonArray("childProcessInstances").size() == 0) {
-      return robots;
-    }
 
     JsonArray childProcessInstances = processInstances.getJsonObject(0).getJsonArray("childProcessInstances");
-    for (int k = 0; k < childProcessInstances.size(); k++) {
-      if (childProcessInstances.getJsonObject(k).getString("processName").equals("robot")) {
-        JsonNode childNode = mapper.readTree(childProcessInstances.getJsonObject(k).getString("variables"));
-        // check if childnode has organization node
-        if (childNode.get("organization") == null) {
-          continue;
-        }
+    for (int i = 0; i < childProcessInstances.size(); i++) {
+      if (childProcessInstances.getJsonObject(i).getString("processName").equals("robot")) {
+        Robot singleRobot = new Robot();
+        JsonNode childNode = mapper.readTree(childProcessInstances.getJsonObject(i).getString("variables"));
 
         JsonNode requestRobotNode = childNode.get("requestRobot");
-        JsonNode robotNode = requestRobotNode.get("robot");
 
-        Robot singleRobot = new Robot();
+        // ProcessId
+        singleRobot.setProcessId(childProcessInstances.getJsonObject(i).getString("id"));
 
-        // Set Name
+        // Name
+        JsonNode robotNode;
+        if (requestRobotNode.get("robot").asText() != "null") {
+          robotNode = requestRobotNode.get("robot");
+        } else if (requestRobotNode.get("federatedRobot").asText() != "null") {
+          robotNode = requestRobotNode.get("federatedRobot");
+        } else {
+          throw new ApplicationException("Both federated and normal robot cannot be null.");
+        }
         JsonNode metadataNode = robotNode.get("metadata");
         singleRobot.setName(metadataNode.get("name").asText());
 
+        // Type
+        if (requestRobotNode.get("federated").asBoolean()) {
+          singleRobot.setType("federated");
+        } else {
+          singleRobot.setType("normal");
+        }
+
+        // Distributions ( CAUTION )
         JsonNode specNode = robotNode.get("spec");
-        // Set Distributions
         JsonNode distNode = specNode.get("distributions");
-        List<String> distros = new ArrayList<String>();
-        distNode.forEach(dist -> {
-          distros.add(dist.asText());
-        });
+        ArrayList<String> distros = new ArrayList<String>();
+        for (int j = 0; j < distNode.size(); j++) {
+          distros.add(distNode.get(j).asText());
+        }
         singleRobot.setDistributions(distros);
 
-        // Set Storage
+        // Storage
         JsonNode storageNode = specNode.get("storage");
         singleRobot.setStorage(storageNode.get("amount").asInt() / 1000);
 
-        // Set Bridge Enabled
+        // Bridge Enabled
         JsonNode bridgeNode = specNode.get("rosBridgeTemplate");
         JsonNode bridgeRosNode = bridgeNode.get("ros");
         JsonNode bridgeRos2Node = bridgeNode.get("ros2");
         singleRobot.setBridgeEnabled(bridgeRosNode.get("enabled").asBoolean()
             || bridgeRos2Node.get("enabled").asBoolean());
 
-        // Set Image
+        // Image
         singleRobot.setImage(bridgeNode.get("image").asText());
 
-        // Set VDI Enabled && IDE Enabled
+        // VDI Enabled && IDE Enabled
         JsonNode devSuiteNode = specNode.get("robotDevSuiteTemplate");
         singleRobot.setVdiEnabled(devSuiteNode.get("vdiEnabled").asBoolean());
         singleRobot.setIdeEnabled(devSuiteNode.get("ideEnabled").asBoolean());
 
-        // Set VDI Session count
+        // VDI Session count
         if (devSuiteNode.get("vdiEnabled").asBoolean()) {
           JsonNode vdiNode = devSuiteNode.get("robotVDITemplate");
           singleRobot.setVdiSessionCount(vdiNode.get("sessionCount").asInt());
         }
 
-        // Set Workspaces Path
+        // Workspaces Path
         JsonNode workspacesNode = specNode.get("workspaceManagerTemplate");
         singleRobot.setWorkspacesPath(workspacesNode.get("workspacesPath").asText());
 
@@ -971,6 +1034,23 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
     JsonNode mainNode = mapper.readTree(processInstances.getJsonObject(0).getString("variables"));
     JsonArray childProcessInstances = processInstances.getJsonObject(0).getJsonArray("childProcessInstances");
 
+    String bufferName = mainNode.get("bufferName").asText();
+    String provider = mainNode.get("providerName").asText();
+    String region = mainNode.get("regionName").asText();
+    String superCluster = mainNode.get("superClusterName").asText();
+
+    ApiClient vcClient;
+    try {
+      vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName, provider,
+          region, superCluster);
+    } catch (InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException | IOException | ApiException
+        | MinioException e) {
+      throw new ApplicationException("Error while getting Virtual Cluster Client.");
+    }
+
+    // Get Fleets
+    DynamicKubernetesApi fleetsApi = new DynamicKubernetesApi("fleet.roboscale.io", "v1alpha1", "fleets", vcClient);
+
     for (int i = 0; i < childProcessInstances.size(); i++) {
       if (childProcessInstances.getJsonObject(i).getString("processName").equals("fleet") && childProcessInstances
           .getJsonObject(i).getString("state").equals("ACTIVE")) {
@@ -979,12 +1059,12 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
         if (organizationNode.get("name").asText().equals(organization.getName())) {
           JsonNode requestFleetNode = childNode.get("requestFleet");
           JsonNode fleetNode;
-          if (requestFleetNode.get("fleet") != null) {
+          if (requestFleetNode.get("fleet").asText() != "null") {
             fleetNode = requestFleetNode.get("fleet");
-          } else if (requestFleetNode.get("federatedFleet") != null) {
+          } else if (requestFleetNode.get("federatedFleet").asText() != "null") {
             fleetNode = requestFleetNode.get("federatedFleet");
           } else {
-            continue;
+            throw new ApplicationException("Both federated and normal fleet cannot be null.");
           }
 
           Fleet fleet = new Fleet();
@@ -992,7 +1072,11 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
           fleet.setTeamName(mainNode.get("teamName").asText());
           fleet.setRoboticsCloudName(mainNode.get("cloudInstanceName").asText());
           fleet.setProcessId(childProcessInstances.getJsonObject(i).getString("id"));
-
+          DynamicKubernetesObject singleFleet = fleetsApi.get(fleetNode.get("name").asText()).getObject();
+          if (singleFleet == null) {
+            continue;
+          }
+          fleet.setFleetStatus(singleFleet.getRaw().get("status").getAsJsonObject().get("phase").getAsString());
           if (childNode.get("requestFleet").get("federated").asBoolean()) {
             fleet.setType("federated");
           } else {
@@ -1014,6 +1098,7 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
     ArrayList<RoboticsCloudKubernetes> rcso = getRoboticsCloudsTeam(organization, teamId);
     ArrayList<Fleet> fleets = new ArrayList<Fleet>();
     for (RoboticsCloudKubernetes rcs : rcso) {
+      System.out.println("rcs.getProcessId() " + rcs.getProcessId());
       ArrayList<Fleet> insideFleets = getFleetsRoboticsCloudTeam(organization, teamId, rcs.getProcessId());
       for (Fleet fleet : insideFleets) {
         fleets.add(fleet);
@@ -1028,7 +1113,6 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
     String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\"" + roboticsCloudProcessId
         + "\"}}, {state: {equal: ACTIVE}}]}){id state variables childProcessInstances{id processName state variables}}}";
     ObjectMapper mapper = new ObjectMapper();
-
     Response response = graphqlClient.executeSync(queryStr);
     JsonObject data = response.getData();
     JsonArray processInstances = data.getJsonArray("ProcessInstances");
@@ -1043,23 +1127,36 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
 
     JsonNode mainNode = mapper.readTree(processInstances.getJsonObject(0).getString("variables"));
 
+    String bufferName = mainNode.get("bufferName").asText();
+    String provider = mainNode.get("providerName").asText();
+    String region = mainNode.get("regionName").asText();
+    String superCluster = mainNode.get("superClusterName").asText();
+
+    ApiClient vcClient;
+    try {
+      vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName, provider,
+          region, superCluster);
+    } catch (InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException | IOException | ApiException
+        | MinioException e) {
+      throw new ApplicationException("Error while getting Virtual Cluster Client.");
+    }
+
+    // Get Fleets
+    DynamicKubernetesApi fleetsApi = new DynamicKubernetesApi("fleet.roboscale.io", "v1alpha1", "fleets", vcClient);
+
     JsonArray childProcessInstances = processInstances.getJsonObject(0).getJsonArray("childProcessInstances");
     for (int i = 0; i < childProcessInstances.size(); i++) {
       if (childProcessInstances.getJsonObject(i).getString("processName").equals("fleet") && childProcessInstances
           .getJsonObject(i).getString("state").equals("ACTIVE")) {
         JsonNode childNode = mapper.readTree(childProcessInstances.getJsonObject(i).getString("variables"));
-        // check if childnode has organization node
-        if (childNode.get("organization") == null) {
-          continue;
-        }
         JsonNode requestFleetNode = childNode.get("requestFleet");
         JsonNode fleetNode;
-        if (requestFleetNode.get("fleet") != null) {
+        if (requestFleetNode.get("fleet").asText() != "null") {
           fleetNode = requestFleetNode.get("fleet");
-        } else if (requestFleetNode.get("federatedFleet") != null) {
+        } else if (requestFleetNode.get("federatedFleet").asText() != "null") {
           fleetNode = requestFleetNode.get("federatedFleet");
         } else {
-          continue;
+          throw new ApplicationException("Both federated and normal fleet cannot be null.");
         }
 
         JsonNode organizationNode = childNode.get("organization");
@@ -1072,6 +1169,12 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
           fleet.setTeamName(mainNode.get("teamName").asText());
           fleet.setRoboticsCloudName(mainNode.get("cloudInstanceName").asText());
           fleet.setProcessId(childProcessInstances.getJsonObject(i).getString("id"));
+
+          DynamicKubernetesObject singleFleet = fleetsApi.get(fleetNode.get("name").asText()).getObject();
+          if (singleFleet == null) {
+            continue;
+          }
+          fleet.setFleetStatus(singleFleet.getRaw().get("status").getAsJsonObject().get("phase").getAsString());
           if (childNode.get("requestFleet").get("federated").asBoolean()) {
             fleet.setType("federated");
           } else {
@@ -1106,29 +1209,50 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
     }
 
     JsonNode mainNode = mapper.readTree(processInstances.getJsonObject(0).getString("variables"));
-    JsonArray childProcessInstances = processInstances.getJsonObject(0).getJsonArray("childProcessInstances");
 
+    String bufferName = mainNode.get("bufferName").asText();
+    String provider = mainNode.get("providerName").asText();
+    String region = mainNode.get("regionName").asText();
+    String superCluster = mainNode.get("superClusterName").asText();
+
+    ApiClient vcClient;
+    try {
+      vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName, provider,
+          region, superCluster);
+    } catch (InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException | IOException | ApiException
+        | MinioException e) {
+      throw new ApplicationException("Error while getting Virtual Cluster Client.");
+    }
+
+    // Get Fleets
+    DynamicKubernetesApi fleetsApi = new DynamicKubernetesApi("fleet.roboscale.io", "v1alpha1", "fleets", vcClient);
+
+    JsonArray childProcessInstances = processInstances.getJsonObject(0).getJsonArray("childProcessInstances");
     for (int i = 0; i < childProcessInstances.size(); i++) {
       if (childProcessInstances.getJsonObject(i).getString("processName").equals("fleet") && childProcessInstances
           .getJsonObject(i).getString("state").equals("ACTIVE")) {
         JsonNode childNode = mapper.readTree(childProcessInstances.getJsonObject(i).getString("variables"));
         JsonNode requestFleetNode = childNode.get("requestFleet");
         JsonNode fleetNode;
-        if (requestFleetNode.get("fleet") != null) {
+
+        if (requestFleetNode.get("fleet").asText() != "null") {
           fleetNode = requestFleetNode.get("fleet");
-        } else if (requestFleetNode.get("federatedFleet") != null) {
+        } else if (requestFleetNode.get("federatedFleet").asText() != "null") {
           fleetNode = requestFleetNode.get("federatedFleet");
         } else {
-          continue;
+          throw new ApplicationException("Federated and normal fleet are null");
         }
 
         Fleet fleet = new Fleet();
-        // Set Name
         fleet.setName(fleetNode.get("name").asText());
-        // Set Team Name
         fleet.setTeamName(mainNode.get("teamName").asText());
         fleet.setRoboticsCloudName(mainNode.get("cloudInstanceName").asText());
         fleet.setProcessId(childProcessInstances.getJsonObject(i).getString("id"));
+        DynamicKubernetesObject singleFleet = fleetsApi.get(fleetNode.get("name").asText()).getObject();
+        if (singleFleet == null) {
+          continue;
+        }
+        fleet.setFleetStatus(singleFleet.getRaw().get("status").getAsJsonObject().get("phase").getAsString());
         if (childNode.get("requestFleet").get("federated").asBoolean()) {
           fleet.setType("federated");
         } else {
@@ -1251,4 +1375,61 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
     return teamManager || organizationManager;
   }
 
+  @Override
+  public ArrayList<PhysicalInstanceKubernetes> getPhysicalInstancesRoboticsCloud(String roboticsCloudProcessId)
+      throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException,
+      JsonMappingException, JsonProcessingException {
+    ArrayList<PhysicalInstanceKubernetes> physicalInstances = new ArrayList<PhysicalInstanceKubernetes>();
+    String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\""
+        + roboticsCloudProcessId
+        + "\"}}, {state: {equal: ACTIVE}}]}){id parentProcessInstanceId state variables}}";
+    Response response;
+    try {
+      response = graphqlClient.executeSync(queryStr);
+    } catch (ExecutionException e) {
+      throw new ApplicationException("Error while executing request on graphql.");
+    }
+    javax.json.JsonObject data = response.getData();
+    JsonArray processInstances = data.getJsonArray("ProcessInstances");
+    ObjectMapper mapper = new ObjectMapper();
+    if (processInstances.size() == 0) {
+      throw new ApplicationException(
+          "No process instance found with id: "
+              + roboticsCloudProcessId);
+    }
+
+    JsonNode variables = mapper.readTree(processInstances.getJsonObject(0).getString("variables"));
+    String bufferName = variables.get("bufferName").asText();
+    String provider = variables.get("providerName").asText();
+    String region = variables.get("regionName").asText();
+    String superCluster = variables.get("superClusterName").asText();
+
+    ApiClient vcClient;
+    try {
+      vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(
+          bufferName,
+          provider, region, superCluster);
+    } catch (InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException | IOException
+        | ApiException | MinioException e) {
+      throw new ApplicationException("Error while getting virtual cluster client.");
+    }
+
+    DynamicKubernetesApi dynamicKubernetesApi = new DynamicKubernetesApi("connection-hub.roboscale.io", "v1alpha1",
+        "physicalinstances", vcClient);
+
+    DynamicKubernetesListObject physicalInstanceList = dynamicKubernetesApi.list().getObject();
+
+    for (int i = 0; i < physicalInstanceList.getItems().size(); i++) {
+      PhysicalInstanceKubernetes physicalInstance = new PhysicalInstanceKubernetes();
+      physicalInstance.setName(physicalInstanceList.getItems().get(i).getMetadata().getName());
+      physicalInstances.add(physicalInstance);
+    }
+    return physicalInstances;
+  }
+
+  @Override
+  public Robot getRobot(Organization organization, String teamId, String roboticsCloudName, String fleetName,
+      String robotName) {
+    return null;
+  }
 }
