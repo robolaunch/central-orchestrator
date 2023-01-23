@@ -59,19 +59,25 @@ public class RobotService {
 
   public PlainResponse createBuildManager(RequestBuildManager robotBuildManager) {
     PlainResponse plainResponse = new PlainResponse();
+    System.out.println(" out createRobotBuildManager out");
+
     try {
       String token = jwt.getRawToken();
       if (robotBuildManager.isFederated()) {
+        System.out.println("build manager federated");
+
         robotRepository.createFederatedRobotBuildManager(robotBuildManager, token);
       } else {
+        System.out.println("build manager not federated");
         robotRepository.createRobotBuildManager(robotBuildManager, token);
       }
-      robotLogger.info("Robot build manager created");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Robot build manager created.");
+      robotLogger.info("Robot build manager created");
     } catch (Exception e) {
       plainResponse.setSuccess(false);
       plainResponse.setMessage("Error occured while creating robot build manager.");
+      robotLogger.error("Error occured while creating robot build manager", e);
     }
     return plainResponse;
   }

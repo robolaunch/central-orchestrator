@@ -10,7 +10,7 @@ import org.jboss.logging.Logger;
 import org.robolaunch.models.Fleet;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.PhysicalInstanceKubernetes;
-import org.robolaunch.models.Provider;
+import org.robolaunch.models.ProviderKubernetes;
 import org.robolaunch.models.RegionKubernetes;
 import org.robolaunch.models.Robot;
 import org.robolaunch.models.RoboticsCloudKubernetes;
@@ -163,7 +163,7 @@ public class KubernetesService {
   public ResponseProviders getProviders() {
     ResponseProviders responseProviders = new ResponseProviders();
     try {
-      ArrayList<Provider> providers = kubernetesRepository.getProviders();
+      ArrayList<ProviderKubernetes> providers = kubernetesRepository.getProviders();
       responseProviders.setData(providers);
       responseProviders.setSuccess(true);
       responseProviders.setMessage("Providers fetched successfully.");
@@ -430,6 +430,21 @@ public class KubernetesService {
       kubernetesLogger.error("Error occured while getting robot status", e);
     }
     return responsePhysicalInstances;
+
+  }
+
+  public Robot getRobot(Organization organization, String teamName, String roboticsCloudName, String fleetName,
+      String robotName) {
+    Robot robot = new Robot();
+    try {
+      robot = kubernetesRepository
+          .getRobot(organization, teamName, roboticsCloudName, fleetName, robotName);
+      kubernetesLogger.info("Got robot status");
+      return robot;
+    } catch (Exception e) {
+      kubernetesLogger.error("Error occured while getting robot status", e);
+      return robot;
+    }
 
   }
 

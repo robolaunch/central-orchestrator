@@ -6,12 +6,12 @@ import org.robolaunch.models.Organization;
 
 public class RequestBuildManager implements Serializable {
    private RequestCreateBuildManager buildManager;
-   private String robotProcessId;
    private String targetRobot;
    private Organization organization;
    private String teamId;
+   private String roboticsCloudName;
    private Boolean federated;
-   // private RequestCreateFederatedBuildManager federatedBuildManager;
+   private RequestCreateFederatedBuildManager federatedBuildManager;
 
    public RequestBuildManager() {
    }
@@ -22,14 +22,6 @@ public class RequestBuildManager implements Serializable {
 
    public void setBuildManager(RequestCreateBuildManager buildManager) {
       this.buildManager = buildManager;
-   }
-
-   public String getRobotProcessId() {
-      return robotProcessId;
-   }
-
-   public void setRobotProcessId(String robotProcessId) {
-      this.robotProcessId = robotProcessId;
    }
 
    public String getTargetRobot() {
@@ -62,6 +54,22 @@ public class RequestBuildManager implements Serializable {
 
    public void setFederated(Boolean federated) {
       this.federated = federated;
+   }
+
+   public RequestCreateFederatedBuildManager getFederatedBuildManager() {
+      return federatedBuildManager;
+   }
+
+   public void setFederatedBuildManager(RequestCreateFederatedBuildManager federatedBuildManager) {
+      this.federatedBuildManager = federatedBuildManager;
+   }
+
+   public String getRoboticsCloudName() {
+      return roboticsCloudName;
+   }
+
+   public void setRoboticsCloudName(String roboticsCloudName) {
+      this.roboticsCloudName = roboticsCloudName;
    }
 
 }

@@ -381,7 +381,7 @@ public class AccountService {
 
     public Boolean doesEmailExistWithEmail(String email) throws ApplicationException {
         try {
-            Boolean doesEmailExists = userRepository.doesEmailExist(email);
+            Boolean doesEmailExists = userAdminRepository.doesEmailExist(email);
             accountLogger.info("Email " + email + " exists: " + doesEmailExists);
             return doesEmailExists;
         } catch (Exception e) {

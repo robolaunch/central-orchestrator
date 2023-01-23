@@ -2,10 +2,11 @@ package org.robolaunch.models.request;
 
 import java.io.Serializable;
 
-public class RequestCreateFederatedLaunchManager implements Serializable {
+public class RequestCreateFederatedBuildManager implements Serializable {
    private String apiVersion;
    private String kind;
    private RequestFederatedRobotMetadata metadata;
+   private RequestCreateFederatedBuildManagerSpec spec;
 
    public String getApiVersion() {
       return apiVersion;
@@ -29,6 +30,14 @@ public class RequestCreateFederatedLaunchManager implements Serializable {
 
    public void setMetadata(RequestFederatedRobotMetadata metadata) {
       this.metadata = metadata;
+   }
+
+   public RequestCreateFederatedBuildManagerSpec getSpec() {
+      return spec;
+   }
+
+   public void setSpec(RequestCreateFederatedBuildManagerSpec spec) {
+      this.spec = spec;
    }
 
 }

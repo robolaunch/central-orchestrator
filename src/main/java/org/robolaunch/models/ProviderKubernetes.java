@@ -2,11 +2,11 @@ package org.robolaunch.models;
 
 import java.io.Serializable;
 
-public class Provider implements Serializable {
+public class ProviderKubernetes implements Serializable {
    private String processId;
    private String name;
 
-   public Provider() {
+   public ProviderKubernetes() {
    }
 
    public String getName() {

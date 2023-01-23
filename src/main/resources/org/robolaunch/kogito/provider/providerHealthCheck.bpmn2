@@ -1,17 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_GR4KwXPbEDu3R_60FCyjvQ" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
-  <bpmn2:collaboration id="_76AD4DAF-9A08-40B3-A0D4-9028F9763504" name="Default Collaboration">
-    <bpmn2:participant id="_BF58DADC-10D7-43D9-A635-E8792B4C75D3" name="Pool Participant" processRef="providerHealthCheck"/>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_ZhjuYXn_EDuuNrANyRVnwg" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+  <bpmn2:collaboration id="_29931928-B4AA-4A8A-BAF9-3DC2B574FEE3" name="Default Collaboration">
+    <bpmn2:participant id="_1AEC7169-EAC6-4711-9469-FDDEED335E25" name="Pool Participant" processRef="providerHealthCheck"/>
   </bpmn2:collaboration>
   <bpmn2:process id="providerHealthCheck" drools:packageName="org.robolaunch.kogito.provider" drools:version="1.0" drools:adHoc="false" name="providerHealthCheck" isExecutable="true" processType="Public">
-    <bpmn2:sequenceFlow id="_5A55830D-9654-4093-9D15-39F6F6D36A42" name="infinite" sourceRef="_4CB8AED3-F254-4F72-A934-AFFF04CAB0B7" targetRef="_7FAE0E3A-14A4-43F8-A5F7-0BB4EC625240">
-      <bpmn2:extensionElements>
-        <drools:metaData name="elementname">
-          <drools:metaValue><![CDATA[infinite]]></drools:metaValue>
-        </drools:metaData>
-      </bpmn2:extensionElements>
-      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return 1 == 1;]]></bpmn2:conditionExpression>
-    </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_792702CD-2D5B-4837-8C9E-EEBA2AE7734D" sourceRef="_4CB8AED3-F254-4F72-A934-AFFF04CAB0B7" targetRef="_F5C5BC9D-244B-4E9D-9BCC-7EDEAF508D19">
       <bpmn2:extensionElements>
         <drools:metaData name="isAutoConnection.target">
@@ -19,6 +11,14 @@
         </drools:metaData>
       </bpmn2:extensionElements>
       <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return 1 == 2;]]></bpmn2:conditionExpression>
+    </bpmn2:sequenceFlow>
+    <bpmn2:sequenceFlow id="_5A55830D-9654-4093-9D15-39F6F6D36A42" name="infinite" sourceRef="_4CB8AED3-F254-4F72-A934-AFFF04CAB0B7" targetRef="_7FAE0E3A-14A4-43F8-A5F7-0BB4EC625240">
+      <bpmn2:extensionElements>
+        <drools:metaData name="elementname">
+          <drools:metaValue><![CDATA[infinite]]></drools:metaValue>
+        </drools:metaData>
+      </bpmn2:extensionElements>
+      <bpmn2:conditionExpression xsi:type="bpmn2:tFormalExpression" language="http://www.java.com/java"><![CDATA[return 1 == 1;]]></bpmn2:conditionExpression>
     </bpmn2:sequenceFlow>
     <bpmn2:sequenceFlow id="_450E4AA0-567F-498D-89B2-6A72C996FEDD" sourceRef="_4D0893E2-ADE4-48B4-8F1D-D7765123A1BB" targetRef="_4CB8AED3-F254-4F72-A934-AFFF04CAB0B7"/>
     <bpmn2:sequenceFlow id="_2160FCBB-8959-4D28-AF10-D83AE903E083" sourceRef="_7FAE0E3A-14A4-43F8-A5F7-0BB4EC625240" targetRef="_4D0893E2-ADE4-48B4-8F1D-D7765123A1BB">
@@ -47,8 +47,8 @@
     </bpmn2:intermediateCatchEvent>
     <bpmn2:exclusiveGateway id="_4CB8AED3-F254-4F72-A934-AFFF04CAB0B7" gatewayDirection="Diverging">
       <bpmn2:incoming>_450E4AA0-567F-498D-89B2-6A72C996FEDD</bpmn2:incoming>
-      <bpmn2:outgoing>_792702CD-2D5B-4837-8C9E-EEBA2AE7734D</bpmn2:outgoing>
       <bpmn2:outgoing>_5A55830D-9654-4093-9D15-39F6F6D36A42</bpmn2:outgoing>
+      <bpmn2:outgoing>_792702CD-2D5B-4837-8C9E-EEBA2AE7734D</bpmn2:outgoing>
     </bpmn2:exclusiveGateway>
     <bpmn2:inclusiveGateway id="_4D0893E2-ADE4-48B4-8F1D-D7765123A1BB" gatewayDirection="Converging">
       <bpmn2:incoming>_FDB195C0-AD7C-4E11-9C16-66EBE093270D</bpmn2:incoming>
@@ -88,14 +88,14 @@
         <di:waypoint x="483" y="345.26246953140753"/>
         <di:waypoint x="764" y="345.26246953140753"/>
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="edge_shape__4CB8AED3-F254-4F72-A934-AFFF04CAB0B7_to_shape__F5C5BC9D-244B-4E9D-9BCC-7EDEAF508D19" bpmnElement="_792702CD-2D5B-4837-8C9E-EEBA2AE7734D">
-        <di:waypoint x="764" y="345.26246953140753"/>
-        <di:waypoint x="827" y="345"/>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__4CB8AED3-F254-4F72-A934-AFFF04CAB0B7_to_shape__7FAE0E3A-14A4-43F8-A5F7-0BB4EC625240" bpmnElement="_5A55830D-9654-4093-9D15-39F6F6D36A42">
         <di:waypoint x="764" y="345.26246953140753"/>
         <di:waypoint x="763.9754711588072" y="235.26246953140753"/>
         <di:waypoint x="483.1572722969655" y="235.26246953140753"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="edge_shape__4CB8AED3-F254-4F72-A934-AFFF04CAB0B7_to_shape__F5C5BC9D-244B-4E9D-9BCC-7EDEAF508D19" bpmnElement="_792702CD-2D5B-4837-8C9E-EEBA2AE7734D">
+        <di:waypoint x="764" y="345.26246953140753"/>
+        <di:waypoint x="827" y="345"/>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
@@ -114,7 +114,7 @@
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_GR4KwXPbEDu3R_60FCyjvQ</bpmn2:source>
-    <bpmn2:target>_GR4KwXPbEDu3R_60FCyjvQ</bpmn2:target>
+    <bpmn2:source>_ZhjuYXn_EDuuNrANyRVnwg</bpmn2:source>
+    <bpmn2:target>_ZhjuYXn_EDuuNrANyRVnwg</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>

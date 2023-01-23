@@ -3,12 +3,12 @@ package org.robolaunch.models.response;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import org.robolaunch.models.Provider;
+import org.robolaunch.models.ProviderKubernetes;
 
 public class ResponseProviders implements Serializable {
    private String message;
    private Boolean success;
-   private ArrayList<Provider> data;
+   private ArrayList<ProviderKubernetes> data;
 
    public ResponseProviders() {
    }
@@ -29,11 +29,11 @@ public class ResponseProviders implements Serializable {
       this.success = success;
    }
 
-   public ArrayList<Provider> getData() {
+   public ArrayList<ProviderKubernetes> getData() {
       return data;
    }
 
-   public void setData(ArrayList<Provider> data) {
+   public void setData(ArrayList<ProviderKubernetes> data) {
       this.data = data;
    }
 

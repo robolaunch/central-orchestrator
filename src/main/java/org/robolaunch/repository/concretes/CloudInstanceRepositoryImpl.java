@@ -1483,7 +1483,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 yamlString += "---";
                         }
                         if (type.equals("V1alpha2Certificate")) {
-                                Thread.sleep(5000);
+                                Thread.sleep(7000);
                                 customObjectsApi.createNamespacedCustomObject("cert-manager.io",
                                                 "v1",
                                                 "connection-hub-system", "certificates", object,
@@ -1527,16 +1527,11 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         public void createConnectionHub(String bufferName, Organization organization, String teamId,
                         String cloudInstanceName, String serverIP, String namespaceName, String provider, String region,
                         String superCluster) {
-                System.out.println("buffer name: " + bufferName);
-                System.out.println("organization name: " + organization.getName());
-                System.out.println("team id: " + teamId);
-                System.out.println("cloud instance name: " + cloudInstanceName);
-                System.out.println("server ip: " + serverIP);
-                System.out.println("namespace name: " + namespaceName);
-                System.out.println("provider: " + provider);
-                System.out.println("region: " + region);
-                System.out.println("super cluster: " + superCluster);
-                System.out.println("cloud instance name: " + cloudInstanceName);
+                try {
+                        Thread.sleep(12000);
+                } catch (InterruptedException e) {
+                        e.printStackTrace();
+                }
                 ApiClient vcClient;
                 String version;
                 DynamicKubernetesApi subnetsApi;

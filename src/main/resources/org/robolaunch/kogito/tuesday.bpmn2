@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_11QW8HkiEDuyW7kqCbBcrg" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
-  <bpmn2:itemDefinition id="_bufferNameItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="_providerItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="_regionItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="_superClusterItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="_namespaceNameItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="_isReadyItem" structureRef="Boolean"/>
-  <bpmn2:itemDefinition id="__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_bufferNameInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_providerInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_regionInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_superClusterInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_namespaceNameInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_isReadyOutputXItem" structureRef="Boolean"/>
-  <bpmn2:interface id="_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_ServiceInterface" name="org.robolaunch.service.CloudInstanceHelperService" implementationRef="org.robolaunch.service.CloudInstanceHelperService">
-    <bpmn2:operation id="_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_ServiceOperation" name="isConnectionHubOperatorReady" implementationRef="isConnectionHubOperatorReady"/>
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_Pri5QHoEEDulWuJq_e8zyw" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+  <bpmn2:itemDefinition id="_organizationItem" structureRef="org.robolaunch.models.Organization"/>
+  <bpmn2:itemDefinition id="_teamNameItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_roboticsCloudNameItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_fleetNameItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_robotNameItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="_robotItem" structureRef="org.robolaunch.models.Robot"/>
+  <bpmn2:itemDefinition id="__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
+  <bpmn2:itemDefinition id="__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_teamNameInputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_roboticsCloudNameInputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_fleetNameInputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_robotNameInputXItem" structureRef="String"/>
+  <bpmn2:itemDefinition id="__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_robotOutputXItem" structureRef="org.robolaunch.models.Robot"/>
+  <bpmn2:interface id="_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_ServiceInterface" name="org.robolaunch.service.KubernetesService" implementationRef="org.robolaunch.service.KubernetesService">
+    <bpmn2:operation id="_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_ServiceOperation" name="getRobot" implementationRef="getRobot"/>
   </bpmn2:interface>
-  <bpmn2:collaboration id="_F957A6C9-DA0E-47D7-8B99-7E8ED0529C15" name="Default Collaboration">
-    <bpmn2:participant id="_D6EB0B96-37BA-476E-B637-A3EAFDA488F5" name="Pool Participant" processRef="tuesday"/>
+  <bpmn2:collaboration id="_4A908BF0-7273-47F2-9ADA-F17502F78355" name="Default Collaboration">
+    <bpmn2:participant id="_2C3B242F-08FD-4C80-8C73-34F27A778A64" name="Pool Participant" processRef="tuesday"/>
   </bpmn2:collaboration>
   <bpmn2:process id="tuesday" drools:packageName="com.example" drools:version="1.0" drools:adHoc="false" name="tuesday" isExecutable="true" processType="Public">
-    <bpmn2:property id="bufferName" itemSubjectRef="_bufferNameItem" name="bufferName"/>
-    <bpmn2:property id="provider" itemSubjectRef="_providerItem" name="provider"/>
-    <bpmn2:property id="region" itemSubjectRef="_regionItem" name="region"/>
-    <bpmn2:property id="superCluster" itemSubjectRef="_superClusterItem" name="superCluster"/>
-    <bpmn2:property id="namespaceName" itemSubjectRef="_namespaceNameItem" name="namespaceName"/>
-    <bpmn2:property id="isReady" itemSubjectRef="_isReadyItem" name="isReady"/>
+    <bpmn2:property id="organization" itemSubjectRef="_organizationItem" name="organization"/>
+    <bpmn2:property id="teamName" itemSubjectRef="_teamNameItem" name="teamName"/>
+    <bpmn2:property id="roboticsCloudName" itemSubjectRef="_roboticsCloudNameItem" name="roboticsCloudName"/>
+    <bpmn2:property id="fleetName" itemSubjectRef="_fleetNameItem" name="fleetName"/>
+    <bpmn2:property id="robotName" itemSubjectRef="_robotNameItem" name="robotName"/>
+    <bpmn2:property id="robot" itemSubjectRef="_robotItem" name="robot"/>
     <bpmn2:sequenceFlow id="_DFB4CFA4-BB47-4FA5-B529-04B478C99612" sourceRef="_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4" targetRef="_1D8F68BF-0F7A-484E-B72E-58E3675B08B8"/>
     <bpmn2:sequenceFlow id="_242DB47A-E991-4A5B-A3CA-B65A51020ABD" sourceRef="_BC9A93B7-6024-44BF-93C6-371E269F04A4" targetRef="_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4">
       <bpmn2:extensionElements>
@@ -33,7 +33,7 @@
         </drools:metaData>
       </bpmn2:extensionElements>
     </bpmn2:sequenceFlow>
-    <bpmn2:serviceTask id="_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.CloudInstanceHelperService" drools:serviceoperation="isConnectionHubOperatorReady" name="Get Robots" implementation="Java" operationRef="_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_ServiceOperation">
+    <bpmn2:serviceTask id="_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.KubernetesService" drools:serviceoperation="getRobot" name="Get Robots" implementation="Java" operationRef="_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_ServiceOperation">
       <bpmn2:extensionElements>
         <drools:metaData name="elementname">
           <drools:metaValue><![CDATA[Get Robots]]></drools:metaValue>
@@ -42,46 +42,46 @@
       <bpmn2:incoming>_242DB47A-E991-4A5B-A3CA-B65A51020ABD</bpmn2:incoming>
       <bpmn2:outgoing>_DFB4CFA4-BB47-4FA5-B529-04B478C99612</bpmn2:outgoing>
       <bpmn2:ioSpecification>
-        <bpmn2:dataInput id="_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_bufferNameInputX" drools:dtype="String" itemSubjectRef="__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_bufferNameInputXItem" name="bufferName"/>
-        <bpmn2:dataInput id="_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_providerInputX" drools:dtype="String" itemSubjectRef="__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_providerInputXItem" name="provider"/>
-        <bpmn2:dataInput id="_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_regionInputX" drools:dtype="String" itemSubjectRef="__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_regionInputXItem" name="region"/>
-        <bpmn2:dataInput id="_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_superClusterInputX" drools:dtype="String" itemSubjectRef="__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_superClusterInputXItem" name="superCluster"/>
-        <bpmn2:dataInput id="_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_namespaceNameInputX" drools:dtype="String" itemSubjectRef="__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_namespaceNameInputXItem" name="namespaceName"/>
-        <bpmn2:dataOutput id="_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_isReadyOutputX" drools:dtype="Boolean" itemSubjectRef="__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_isReadyOutputXItem" name="isReady"/>
+        <bpmn2:dataInput id="_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_organizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_organizationInputXItem" name="organization"/>
+        <bpmn2:dataInput id="_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_teamNameInputX" drools:dtype="String" itemSubjectRef="__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_teamNameInputXItem" name="teamName"/>
+        <bpmn2:dataInput id="_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_roboticsCloudNameInputX" drools:dtype="String" itemSubjectRef="__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_roboticsCloudNameInputXItem" name="roboticsCloudName"/>
+        <bpmn2:dataInput id="_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_fleetNameInputX" drools:dtype="String" itemSubjectRef="__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_fleetNameInputXItem" name="fleetName"/>
+        <bpmn2:dataInput id="_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_robotNameInputX" drools:dtype="String" itemSubjectRef="__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_robotNameInputXItem" name="robotName"/>
+        <bpmn2:dataOutput id="_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_robotOutputX" drools:dtype="org.robolaunch.models.Robot" itemSubjectRef="__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_robotOutputXItem" name="robot"/>
         <bpmn2:inputSet>
-          <bpmn2:dataInputRefs>_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_bufferNameInputX</bpmn2:dataInputRefs>
-          <bpmn2:dataInputRefs>_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_providerInputX</bpmn2:dataInputRefs>
-          <bpmn2:dataInputRefs>_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_regionInputX</bpmn2:dataInputRefs>
-          <bpmn2:dataInputRefs>_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_superClusterInputX</bpmn2:dataInputRefs>
-          <bpmn2:dataInputRefs>_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_namespaceNameInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_organizationInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_teamNameInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_roboticsCloudNameInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_fleetNameInputX</bpmn2:dataInputRefs>
+          <bpmn2:dataInputRefs>_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_robotNameInputX</bpmn2:dataInputRefs>
         </bpmn2:inputSet>
         <bpmn2:outputSet>
-          <bpmn2:dataOutputRefs>_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_isReadyOutputX</bpmn2:dataOutputRefs>
+          <bpmn2:dataOutputRefs>_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_robotOutputX</bpmn2:dataOutputRefs>
         </bpmn2:outputSet>
       </bpmn2:ioSpecification>
       <bpmn2:dataInputAssociation>
-        <bpmn2:sourceRef>bufferName</bpmn2:sourceRef>
-        <bpmn2:targetRef>_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_bufferNameInputX</bpmn2:targetRef>
+        <bpmn2:sourceRef>organization</bpmn2:sourceRef>
+        <bpmn2:targetRef>_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_organizationInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataInputAssociation>
-        <bpmn2:sourceRef>provider</bpmn2:sourceRef>
-        <bpmn2:targetRef>_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_providerInputX</bpmn2:targetRef>
+        <bpmn2:sourceRef>teamName</bpmn2:sourceRef>
+        <bpmn2:targetRef>_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_teamNameInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataInputAssociation>
-        <bpmn2:sourceRef>region</bpmn2:sourceRef>
-        <bpmn2:targetRef>_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_regionInputX</bpmn2:targetRef>
+        <bpmn2:sourceRef>roboticsCloudName</bpmn2:sourceRef>
+        <bpmn2:targetRef>_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_roboticsCloudNameInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataInputAssociation>
-        <bpmn2:sourceRef>superCluster</bpmn2:sourceRef>
-        <bpmn2:targetRef>_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_superClusterInputX</bpmn2:targetRef>
+        <bpmn2:sourceRef>fleetName</bpmn2:sourceRef>
+        <bpmn2:targetRef>_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_fleetNameInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataInputAssociation>
-        <bpmn2:sourceRef>namespaceName</bpmn2:sourceRef>
-        <bpmn2:targetRef>_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_namespaceNameInputX</bpmn2:targetRef>
+        <bpmn2:sourceRef>robotName</bpmn2:sourceRef>
+        <bpmn2:targetRef>_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_robotNameInputX</bpmn2:targetRef>
       </bpmn2:dataInputAssociation>
       <bpmn2:dataOutputAssociation>
-        <bpmn2:sourceRef>_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_isReadyOutputX</bpmn2:sourceRef>
-        <bpmn2:targetRef>isReady</bpmn2:targetRef>
+        <bpmn2:sourceRef>_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_robotOutputX</bpmn2:sourceRef>
+        <bpmn2:targetRef>robot</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
     <bpmn2:endEvent id="_1D8F68BF-0F7A-484E-B72E-58E3675B08B8">
@@ -94,21 +94,21 @@
   <bpmndi:BPMNDiagram>
     <bpmndi:BPMNPlane bpmnElement="tuesday">
       <bpmndi:BPMNShape id="shape__BC9A93B7-6024-44BF-93C6-371E269F04A4" bpmnElement="_BC9A93B7-6024-44BF-93C6-371E269F04A4">
-        <dc:Bounds height="56" width="56" x="422" y="361"/>
+        <dc:Bounds height="56" width="56" x="747" y="476"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__1D8F68BF-0F7A-484E-B72E-58E3675B08B8" bpmnElement="_1D8F68BF-0F7A-484E-B72E-58E3675B08B8">
-        <dc:Bounds height="56" width="56" x="702" y="361"/>
+        <dc:Bounds height="56" width="56" x="1027" y="476"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4" bpmnElement="_B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4">
-        <dc:Bounds height="102" width="154" x="513" y="338"/>
+        <dc:Bounds height="102" width="154" x="838" y="453"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="edge_shape__BC9A93B7-6024-44BF-93C6-371E269F04A4_to_shape__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4" bpmnElement="_242DB47A-E991-4A5B-A3CA-B65A51020ABD">
-        <di:waypoint x="450" y="389"/>
-        <di:waypoint x="513" y="389"/>
+        <di:waypoint x="775" y="504"/>
+        <di:waypoint x="838" y="504"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__B5401CC0-02F5-42E5-A35D-D6FADA6E5CF4_to_shape__1D8F68BF-0F7A-484E-B72E-58E3675B08B8" bpmnElement="_DFB4CFA4-BB47-4FA5-B529-04B478C99612">
-        <di:waypoint x="590" y="389"/>
-        <di:waypoint x="730" y="389"/>
+        <di:waypoint x="915" y="504"/>
+        <di:waypoint x="1055" y="504"/>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
@@ -147,7 +147,7 @@
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_11QW8HkiEDuyW7kqCbBcrg</bpmn2:source>
-    <bpmn2:target>_11QW8HkiEDuyW7kqCbBcrg</bpmn2:target>
+    <bpmn2:source>_Pri5QHoEEDulWuJq_e8zyw</bpmn2:source>
+    <bpmn2:target>_Pri5QHoEEDulWuJq_e8zyw</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>

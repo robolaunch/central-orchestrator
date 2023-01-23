@@ -3,7 +3,6 @@ package org.robolaunch.repository.concretes;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
@@ -17,7 +16,6 @@ import org.robolaunch.exception.ApplicationException;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.request.RequestBuildManager;
 import org.robolaunch.models.request.RequestLaunchManager;
-import org.robolaunch.models.request.RequestLaunchManagerSpecLaunch;
 import org.robolaunch.models.request.RequestRobot;
 import org.robolaunch.repository.abstracts.CloudInstanceHelperRepository;
 import org.robolaunch.repository.abstracts.RobotHelperRepository;
@@ -39,7 +37,6 @@ import io.kubernetes.client.openapi.apis.CustomObjectsApi;
 import io.kubernetes.client.openapi.apis.StorageV1Api;
 import io.kubernetes.client.openapi.models.V1StorageClassList;
 import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesApi;
-import io.kubernetes.client.util.generic.dynamic.DynamicKubernetesObject;
 import io.minio.errors.MinioException;
 import io.smallrye.graphql.client.Response;
 import io.smallrye.graphql.client.dynamic.api.DynamicGraphQLClient;
@@ -120,52 +117,78 @@ public class RobotRepositoryImpl implements RobotRepository {
                         throws InvalidKeyException, NoSuchAlgorithmException,
                         IllegalArgumentException, MinioException, IOException, ApiException, InterruptedException,
                         ExecutionException {
-                Gson gson = new Gson();
-                String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\""
-                                + robotBuildManager.getRobotProcessId()
-                                + "\"}}, {state: {equal: ACTIVE}}]}){id state childProcessInstances{id processName state variables}}}";
+
+                System.out.println("createRobotBuildManager");
+                String queryStr = "query{ProcessInstances(where: {and: [{processName: {equal:\"roboticsCloud\"}}, {state: {equal: ACTIVE}}]}){id state variables childProcessInstances{id state variables}}}";
 
                 Response response = graphqlClient.executeSync(queryStr);
                 javax.json.JsonObject data = response.getData();
                 JsonArray processInstances = data.getJsonArray("ProcessInstances");
-
                 ObjectMapper mapper = new ObjectMapper();
-                JsonArray childProcessInstances = processInstances.getJsonObject(0)
-                                .getJsonArray("childProcessInstances");
-                JsonNode childNode = mapper.readTree(childProcessInstances.getJsonObject(0).getString("variables"));
-                String bufferName = childNode.get("bufferName").asText();
-                String providerName = childNode.get("providerName").asText();
-                String regionName = childNode.get("regionName").asText();
-                String superClusterName = childNode.get("superClusterName").asText();
 
-                ApiClient robotsApi = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
-                                providerName, regionName,
-                                superClusterName);
+                for (int i = 0; i < processInstances.size(); i++) {
+                        JsonNode variablesRC = mapper
+                                        .readTree(processInstances.getJsonObject(i).getString("variables"));
+                        JsonNode organizationNode = variablesRC.get("organization");
+                        if (organizationNode.get("name").asText().equals(robotBuildManager.getOrganization().getName())
+                                        && variablesRC.get("teamId").asText().equals(robotBuildManager.getTeamId())
+                                        && variablesRC.get("cloudInstanceName").asText()
+                                                        .equals(robotBuildManager.getRoboticsCloudName())) {
+                                String bufferName = variablesRC.get("bufferName").asText();
+                                String providerName = variablesRC.get("providerName").asText();
+                                String regionName = variablesRC.get("regionName").asText();
+                                String superClusterName = variablesRC.get("superClusterName").asText();
 
-                String json = mapper.writeValueAsString(robotBuildManager);
-                JsonObject buildManagerObject = gson.fromJson(json, JsonObject.class);
+                                ApiClient vcClient = cloudInstanceHelperRepository
+                                                .getVirtualClusterClientWithBufferName(bufferName,
+                                                                providerName, regionName,
+                                                                superClusterName);
 
-                JsonObject labelsObject = new JsonObject();
-                buildManagerObject.get("buildManager").getAsJsonObject().get("metadata").getAsJsonObject().add("labels",
-                                labelsObject);
-
-                buildManagerObject.get("buildManager").getAsJsonObject().get("metadata").getAsJsonObject()
-                                .get("labels")
-                                .getAsJsonObject().addProperty("robolaunch.io/target-robot",
+                                JsonObject buildManagerObject = new JsonObject();
+                                buildManagerObject.addProperty("apiVersion",
+                                                robotBuildManager.getBuildManager().getApiVersion());
+                                buildManagerObject.addProperty("kind", robotBuildManager.getBuildManager().getKind());
+                                JsonObject metadataObject = new JsonObject();
+                                metadataObject.addProperty("name",
+                                                robotBuildManager.getBuildManager().getMetadata().getName());
+                                JsonObject labelsObject = new JsonObject();
+                                labelsObject.addProperty("robolaunch.io/target-robot",
                                                 robotBuildManager.getTargetRobot());
-                com.google.gson.JsonArray steps = buildManagerObject.get("buildManager").getAsJsonObject().get("steps")
-                                .getAsJsonArray();
-                JsonObject emptySpec = new JsonObject();
-                buildManagerObject.get("buildManager").getAsJsonObject().add("spec", emptySpec);
+                                metadataObject.add("labels", labelsObject);
+                                buildManagerObject.add("metadata", metadataObject);
+                                // metadata done
+                                System.out.println("m 7");
 
-                buildManagerObject.get("buildManager").getAsJsonObject().get("spec").getAsJsonObject().add("steps",
-                                steps);
-                buildManagerObject.get("buildManager")
-                                .getAsJsonObject().remove("steps");
+                                JsonObject specObject = new JsonObject();
+                                com.google.gson.JsonArray stepsArray = new com.google.gson.JsonArray();
 
-                CustomObjectsApi customObjectsApi = new CustomObjectsApi(robotsApi);
-                customObjectsApi.createClusterCustomObject("robot.roboscale.io", "v1alpha1", "buildmanagers",
-                                buildManagerObject.get("buildManager"), null, null, null);
+                                robotBuildManager.getBuildManager().getSteps().forEach(step -> {
+                                        JsonObject stepObject = new JsonObject();
+                                        stepObject.addProperty("name", step.getName());
+                                        stepObject.addProperty("workspace", step.getWorkspace());
+                                        if (step.getCommand() != null) {
+                                                stepObject.addProperty("command", step.getCommand());
+                                        } else if (step.getScript() != null) {
+                                                stepObject.addProperty("script", step.getScript());
+                                        }
+
+                                        stepsArray.add(stepObject);
+                                });
+                                specObject.add("steps", stepsArray);
+                                buildManagerObject.add("spec", specObject);
+                                System.out.println("m 8");
+
+                                System.out.println("bmo: " + buildManagerObject);
+
+                                CustomObjectsApi customObjectsApi = new CustomObjectsApi(vcClient);
+                                customObjectsApi.createClusterCustomObject("robot.roboscale.io", "v1alpha1",
+                                                "buildmanagers",
+                                                buildManagerObject, null, null, null);
+                                System.out.println("robot build manager created");
+                                return;
+                        }
+
+                }
 
         }
 
@@ -179,10 +202,7 @@ public class RobotRepositoryImpl implements RobotRepository {
                         throws InvalidKeyException, NoSuchAlgorithmException,
                         IllegalArgumentException, MinioException, IOException, ApiException, InterruptedException,
                         ExecutionException {
-                Gson gson = new Gson();
-                String queryStr = "query{ProcessInstances(where: {and: [{id: {equal:\""
-                                + robotLaunchManager.getRobotProcessId()
-                                + "\"}}, {state: {equal: ACTIVE}}]}){id state childProcessInstances{id processName state variables}}}";
+                String queryStr = "query{ProcessInstances(where: {and: [{processName: {equal:\"roboticsCloud\"}}, {state: {equal: ACTIVE}}]}){id state variables}}";
 
                 Response response = graphqlClient.executeSync(queryStr);
                 javax.json.JsonObject data = response.getData();
@@ -191,70 +211,55 @@ public class RobotRepositoryImpl implements RobotRepository {
                 ObjectMapper mapper = new ObjectMapper();
                 JsonArray childProcessInstances = processInstances.getJsonObject(0)
                                 .getJsonArray("childProcessInstances");
-                JsonNode childNode = mapper.readTree(childProcessInstances.getJsonObject(0).getString("variables"));
-                String bufferName = childNode.get("bufferName").asText();
-                String providerName = childNode.get("providerName").asText();
-                String regionName = childNode.get("regionName").asText();
-                String superClusterName = childNode.get("superClusterName").asText();
+                JsonNode RCVariables = mapper.readTree(childProcessInstances.getJsonObject(0).getString("variables"));
 
-                ApiClient robotsApi = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
+                String bufferName = RCVariables.get("bufferName").asText();
+                String providerName = RCVariables.get("providerName").asText();
+                String regionName = RCVariables.get("regionName").asText();
+                String superClusterName = RCVariables.get("superClusterName").asText();
+
+                ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
                                 providerName, regionName,
                                 superClusterName);
 
-                DynamicKubernetesApi robotBuildManagerApi = new DynamicKubernetesApi("robot.roboscale.io", "v1alpha1",
-                                "launchmanagers", robotsApi);
+                JsonObject launchManagerObject = new JsonObject();
 
-                String json = mapper.writeValueAsString(robotLaunchManager);
-                JsonObject launchManagerObject = gson.fromJson(json, JsonObject.class);
+                launchManagerObject.addProperty("apiVersion", robotLaunchManager.getLaunchManager().getApiVersion());
+                launchManagerObject.addProperty("kind", robotLaunchManager.getLaunchManager().getKind());
 
+                JsonObject metadataObject = new JsonObject();
+                metadataObject.addProperty("name", robotLaunchManager.getLaunchManager().getMetadata().getName());
                 JsonObject labelsObject = new JsonObject();
-                launchManagerObject.get("launchManager").getAsJsonObject().get("metadata").getAsJsonObject().add(
-                                "labels",
-                                labelsObject);
+                labelsObject.addProperty("robolaunch.io/target-robot", robotLaunchManager.getTargetRobot());
+                labelsObject.addProperty("robolaunch.io/target-vdi", robotLaunchManager.getTargetRobot() + "-dev-vdi");
+                metadataObject.add("labels", labelsObject);
 
-                launchManagerObject.get("launchManager").getAsJsonObject().get("metadata").getAsJsonObject()
-                                .get("labels")
-                                .getAsJsonObject().addProperty("robolaunch.io/target-robot",
-                                                robotLaunchManager.getTargetRobot());
+                launchManagerObject.add("metadata", metadataObject);
+                // metadata done
 
-                // TODO: Change this to a dynamic value
-                launchManagerObject.get("launchManager").getAsJsonObject().get("metadata").getAsJsonObject()
-                                .get("labels")
-                                .getAsJsonObject().addProperty("robolaunch.io/target-vdi",
-                                                "sample-dev-vdi");
-
-                ArrayList<RequestLaunchManagerSpecLaunch> rlms = robotLaunchManager.getLaunchManager()
-                                .getLaunch();
-
-                JsonObject launch = new JsonObject();
-                for (RequestLaunchManagerSpecLaunch rlm : rlms) {
+                JsonObject specObject = new JsonObject();
+                specObject.addProperty("display", robotLaunchManager.isVdiEnabled());
+                JsonObject specLaunchObject = new JsonObject();
+                robotLaunchManager.getLaunchManager().getLaunch().forEach(launchObj -> {
                         JsonObject launchInside = new JsonObject();
-                        JsonObject selector = new JsonObject();
-                        if (rlm.getPhysicalInstance() != null)
-                                selector.addProperty("robolaunch.io/physical-instance", rlm.getPhysicalInstance());
-                        if (rlm.getCloudInstance() != null)
-                                selector.addProperty("robolaunch.io/cloud-instance", rlm.getCloudInstance());
-                        launchInside.add("selector", selector);
-                        launchInside.addProperty("workspace", rlm.getWorkspace());
-                        launchInside.addProperty("repository", rlm.getRepository());
-                        launchInside.addProperty("namespacing", rlm.isNamespacing());
-                        launchInside.addProperty("launchFilePath", rlm.getLaunchFilePath());
-                        launch.add(rlm.getName(), launchInside);
-                }
 
-                JsonObject spec = new JsonObject();
-                spec.add("launch", launch);
+                        JsonObject launchInsideLabels = new JsonObject();
+                        launchInsideLabels.addProperty("robolaunch.io/cloud-instance",
+                                        robotLaunchManager.getBufferName());
+                        launchInside.add("selector", launchInsideLabels);
+                        launchInside.addProperty("workspace", launchObj.getWorkspace());
+                        launchInside.addProperty("repository", launchObj.getRepository());
+                        launchInside.addProperty("namespacing", launchObj.isNamespacing());
+                        launchInside.addProperty("launchFilePath", launchObj.getLaunchFilePath());
+                        specLaunchObject.add(launchObj.getName(), launchInside);
+                });
+                specObject.add("launch", specLaunchObject);
 
-                launchManagerObject.get("launchManager").getAsJsonObject()
-                                .remove("launch");
-                launchManagerObject.get("launchManager").getAsJsonObject().add("spec", spec);
+                launchManagerObject.add("spec", specObject);
 
-                robotBuildManagerApi.create(new DynamicKubernetesObject(
-                                launchManagerObject.get("launchManager").getAsJsonObject()));
-
-                CustomObjectsApi customObjectsApi = new CustomObjectsApi(robotsApi);
+                CustomObjectsApi customObjectsApi = new CustomObjectsApi(vcClient);
                 customObjectsApi.createClusterCustomObject("robot.roboscale.io", "v1alpha1", "launchmanagers",
-                                launchManagerObject.get("launchManager"), null, null, null);
+                                launchManagerObject, null, null, null);
         }
 
         @Override
@@ -441,13 +446,13 @@ public class RobotRepositoryImpl implements RobotRepository {
                 customObjectsApi.createNamespacedCustomObject("robot.roboscale.io",
                                 "v1alpha1", "default",
                                 "robots", finalRobotObject, null, null, null);
+
         }
 
         // CREATE FEDERATED ROBOT
         public void createFederatedRobot(RequestRobot requestRobot, String token)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException {
-                System.out.println("Creating federated robot: " + requestRobot.getFleetProcessId());
 
                 Gson gson = new Gson();
                 // GET Robotics cloud instance
@@ -475,7 +480,6 @@ public class RobotRepositoryImpl implements RobotRepository {
                 String roboticsCloud = "query{ProcessInstances(where: {and: [{id: {equal:\""
                                 + innerFleetNode.get("roboticsCloudProcessId").asText()
                                 + "\"}}, {state: {equal: ACTIVE}}]}){id state variables}}";
-                System.out.println("bes");
                 Response responseRoboticsCloud;
                 try {
                         responseRoboticsCloud = graphqlClient.executeSync(roboticsCloud);
@@ -486,8 +490,6 @@ public class RobotRepositoryImpl implements RobotRepository {
                 JsonArray roboticsCloudInstances = responseRC.getJsonArray("ProcessInstances");
                 JsonNode roboticsCloudVariables = mapper
                                 .readTree(roboticsCloudInstances.getJsonObject(0).getString("variables"));
-
-                System.out.println("GOT Robotics Cloud Variables: " + roboticsCloudVariables);
 
                 // GET ROBOTICS CLOUD VARIABLES
                 String bufferName = roboticsCloudVariables.get("bufferName").asText();
@@ -500,8 +502,6 @@ public class RobotRepositoryImpl implements RobotRepository {
                 String cloudInstanceName = roboticsCloudVariables.get("cloudInstanceName").asText();
 
                 String fleetName;
-                System.out.println("innerFleetNode: " + innerFleetNode);
-                System.out.println("innerFleetNode: " + innerFleetNode.get("fleet").asText());
                 if (innerFleetNode.get("fleet").asText() == "null") {
                         JsonNode federatedFleetNode = innerFleetNode.get("federatedFleet");
                         fleetName = federatedFleetNode.get("name").asText();
@@ -515,7 +515,6 @@ public class RobotRepositoryImpl implements RobotRepository {
                 // Start Parsing Robot Object
                 String json = mapper.writeValueAsString(requestRobot);
                 JsonObject robotObject = gson.fromJson(json, JsonObject.class);
-                System.out.println("mile 4");
                 ApiClient superClusterApi = apiClientManager.getAdminApiClient(providerName,
                                 regionName, superClusterName);
 
@@ -523,7 +522,6 @@ public class RobotRepositoryImpl implements RobotRepository {
                 V1StorageClassList storageClassList = storageV1Api.listStorageClass(null, null, null, null,
                                 null, null,
                                 null, null, null, null);
-                System.out.println("mile 6");
 
                 JsonObject specTemplateObject = new JsonObject();
                 specTemplateObject.add("metadata", robotObject.get("federatedRobot").getAsJsonObject()
@@ -537,7 +535,6 @@ public class RobotRepositoryImpl implements RobotRepository {
                                 .getAsJsonObject().get("metadata")
                                 .getAsJsonObject()
                                 .addProperty("namespace", fleetName);
-                System.out.println("mile 10");
 
                 robotObject.get("federatedRobot").getAsJsonObject().get("spec").getAsJsonObject()
                                 .get("template").getAsJsonObject().get("spec").getAsJsonObject().get("storage")
@@ -545,7 +542,6 @@ public class RobotRepositoryImpl implements RobotRepository {
                                 .getAsJsonObject()
                                 .addProperty("name",
                                                 storageClassList.getItems().get(0).getMetadata().getName());
-                System.out.println("mile 12");
 
                 robotObject.get("federatedRobot").getAsJsonObject().get("spec").getAsJsonObject()
                                 .remove("metadata");
@@ -570,7 +566,6 @@ public class RobotRepositoryImpl implements RobotRepository {
                                         .get("robotDevSuiteTemplate")
                                         .getAsJsonObject().get("robotVDITemplate").getAsJsonObject()
                                         .addProperty("webrtcPortRange", webRTCPorts);
-                        System.out.println("mile 12");
 
                 } else {
                         robotObject.get("federatedRobot").getAsJsonObject().get("spec").getAsJsonObject()
@@ -600,7 +595,6 @@ public class RobotRepositoryImpl implements RobotRepository {
                         }
 
                 }
-                System.out.println("milestone 15");
 
                 // Update Repositories
                 robotObject.get("federatedRobot").getAsJsonObject().get("spec").getAsJsonObject()
@@ -627,8 +621,6 @@ public class RobotRepositoryImpl implements RobotRepository {
                                         workspace.getAsJsonObject().remove("repositories");
                                         workspace.getAsJsonObject().add("repositories", repositoriesObject);
                                 });
-
-                System.out.println("milestone 155");
 
                 // Add Placement
                 JsonObject placementObject = new JsonObject();
@@ -787,7 +779,6 @@ public class RobotRepositoryImpl implements RobotRepository {
                                                 .getAsJsonObject().get("enabled")
                                                 .getAsBoolean());
                                 clusterOverrides.add(clusterOverrideObject4);
-                                System.out.println("milestone 267");
 
                                 JsonObject clusterOverrideObject5 = new JsonObject();
                                 clusterOverrideObject5.addProperty("path",
