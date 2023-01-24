@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_K3QtcF-CEDuhAaDCruoQMg" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_l7NxYH3eEDu-DtMWc6ovNg" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_currentUsernameItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_userItem" structureRef="org.robolaunch.models.User"/>
   <bpmn2:itemDefinition id="_plainResponseItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
@@ -14,11 +14,11 @@
   <bpmn2:interface id="_D35AF2A1-4853-4AD1-BDC6-624430FA4601_ServiceInterface" name="org.robolaunch.service.KeycloakService" implementationRef="org.robolaunch.service.KeycloakService">
     <bpmn2:operation id="_D35AF2A1-4853-4AD1-BDC6-624430FA4601_ServiceOperation" name="syncMainFederation" implementationRef="syncMainFederation"/>
   </bpmn2:interface>
-  <bpmn2:interface id="_C0890EC1-D996-4A5D-9375-15867B9E87D7_ServiceInterface" name="org.robolaunch.service.GroupService" implementationRef="org.robolaunch.service.GroupService">
+  <bpmn2:interface id="_C0890EC1-D996-4A5D-9375-15867B9E87D7_ServiceInterface" name="org.robolaunch.service.AccountService" implementationRef="org.robolaunch.service.AccountService">
     <bpmn2:operation id="_C0890EC1-D996-4A5D-9375-15867B9E87D7_ServiceOperation" name="grantAdminPrivileges" implementationRef="grantAdminPrivileges"/>
   </bpmn2:interface>
-  <bpmn2:collaboration id="_B21232E9-A56D-44CD-847D-71D3BA6BD5ED" name="Default Collaboration">
-    <bpmn2:participant id="_BF985897-B9AE-4386-9AC3-B0A027D33415" name="Pool Participant" processRef="userUpdateUser"/>
+  <bpmn2:collaboration id="_59F6234B-D0E3-4151-B643-F7CA81A1D7AE" name="Default Collaboration">
+    <bpmn2:participant id="_B5757AA8-39D4-437E-BED8-B6AC6D407D5A" name="Pool Participant" processRef="userUpdateUser"/>
   </bpmn2:collaboration>
   <bpmn2:process id="userUpdateUser" drools:packageName="org.robolaunch.kogito.user" drools:version="1.0" drools:adHoc="false" name="userUpdate" isExecutable="true" processType="Public">
     <bpmn2:property id="currentUsername" itemSubjectRef="_currentUsernameItem" name="currentUsername">
@@ -59,7 +59,7 @@
         </drools:metaData>
       </bpmn2:extensionElements>
     </bpmn2:sequenceFlow>
-    <bpmn2:serviceTask id="_C0890EC1-D996-4A5D-9375-15867B9E87D7" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.GroupService" drools:serviceoperation="grantAdminPrivileges" name="Grant Admin Privileges" implementation="Java" operationRef="_C0890EC1-D996-4A5D-9375-15867B9E87D7_ServiceOperation">
+    <bpmn2:serviceTask id="_C0890EC1-D996-4A5D-9375-15867B9E87D7" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.AccountService" drools:serviceoperation="grantAdminPrivileges" name="Grant Admin Privileges" implementation="Java" operationRef="_C0890EC1-D996-4A5D-9375-15867B9E87D7_ServiceOperation">
       <bpmn2:extensionElements>
         <drools:metaData name="elementname">
           <drools:metaValue><![CDATA[Grant Admin Privileges]]></drools:metaValue>
@@ -130,35 +130,35 @@
   <bpmndi:BPMNDiagram>
     <bpmndi:BPMNPlane bpmnElement="userUpdateUser">
       <bpmndi:BPMNShape id="shape__669E8054-D07B-4EB7-95C2-2C72F8D5F4C1" bpmnElement="_669E8054-D07B-4EB7-95C2-2C72F8D5F4C1">
-        <dc:Bounds height="56" width="56" x="129" y="412"/>
+        <dc:Bounds height="56" width="56" x="220" y="443"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__4356C088-B6F1-44B4-844E-915B6BC8ACA2" bpmnElement="_4356C088-B6F1-44B4-844E-915B6BC8ACA2">
-        <dc:Bounds height="56" width="56" x="782" y="411"/>
+        <dc:Bounds height="56" width="56" x="879" y="444"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__1DC85E35-E8C0-4B06-9CDD-6D7D3E2B6684" bpmnElement="_1DC85E35-E8C0-4B06-9CDD-6D7D3E2B6684">
-        <dc:Bounds height="68" width="150" x="396" y="405"/>
+        <dc:Bounds height="68" width="150" x="493" y="438"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__D35AF2A1-4853-4AD1-BDC6-624430FA4601" bpmnElement="_D35AF2A1-4853-4AD1-BDC6-624430FA4601">
-        <dc:Bounds height="55" width="146" x="591" y="411"/>
+        <dc:Bounds height="55" width="146" x="688" y="444"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__C0890EC1-D996-4A5D-9375-15867B9E87D7" bpmnElement="_C0890EC1-D996-4A5D-9375-15867B9E87D7">
-        <dc:Bounds height="55" width="143" x="218.5" y="412"/>
+        <dc:Bounds height="66" width="147" x="311.5" y="438"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="edge_shape__669E8054-D07B-4EB7-95C2-2C72F8D5F4C1_to_shape__C0890EC1-D996-4A5D-9375-15867B9E87D7" bpmnElement="_2A59C42C-FFD5-4D06-B256-A5716A291F08">
-        <di:waypoint x="157" y="440"/>
-        <di:waypoint x="290" y="467"/>
+        <di:waypoint x="248" y="471"/>
+        <di:waypoint x="385" y="504"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__D35AF2A1-4853-4AD1-BDC6-624430FA4601_to_shape__4356C088-B6F1-44B4-844E-915B6BC8ACA2" bpmnElement="_625DD8F5-20B6-479F-B8D0-B22FDBF20EFE">
-        <di:waypoint x="664" y="438.5"/>
-        <di:waypoint x="810" y="439"/>
+        <di:waypoint x="761" y="471.5"/>
+        <di:waypoint x="907" y="472"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__C0890EC1-D996-4A5D-9375-15867B9E87D7_to_shape__1DC85E35-E8C0-4B06-9CDD-6D7D3E2B6684" bpmnElement="_8CD3B804-B8F0-4857-9294-660F49297E10">
-        <di:waypoint x="290" y="439.5"/>
-        <di:waypoint x="396" y="439"/>
+        <di:waypoint x="385" y="471"/>
+        <di:waypoint x="493" y="472"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__1DC85E35-E8C0-4B06-9CDD-6D7D3E2B6684_to_shape__D35AF2A1-4853-4AD1-BDC6-624430FA4601" bpmnElement="_5FDA782F-61AE-4DC6-B558-C4A0F6EBC88C">
-        <di:waypoint x="471" y="439"/>
-        <di:waypoint x="664" y="438.5"/>
+        <di:waypoint x="568" y="472"/>
+        <di:waypoint x="761" y="471.5"/>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
@@ -237,7 +237,7 @@
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_K3QtcF-CEDuhAaDCruoQMg</bpmn2:source>
-    <bpmn2:target>_K3QtcF-CEDuhAaDCruoQMg</bpmn2:target>
+    <bpmn2:source>_l7NxYH3eEDu-DtMWc6ovNg</bpmn2:source>
+    <bpmn2:target>_l7NxYH3eEDu-DtMWc6ovNg</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>
