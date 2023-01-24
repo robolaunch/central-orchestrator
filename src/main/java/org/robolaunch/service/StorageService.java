@@ -14,7 +14,6 @@ import org.robolaunch.models.request.RequestCreateProvider;
 import org.robolaunch.models.request.RequestCreateRegion;
 import org.robolaunch.models.request.RequestCreateSuperCluster;
 import org.robolaunch.models.response.PlainResponse;
-import org.robolaunch.repository.abstracts.GroupRepository;
 import org.robolaunch.repository.abstracts.StorageRepository;
 
 import io.quarkus.arc.log.LoggerName;
@@ -30,9 +29,6 @@ public class StorageService {
 
     @Inject
     StorageRepository storageRepository;
-
-    @Inject
-    GroupRepository groupRepository;
 
     @LoggerName("storageService")
     Logger storageLogger;

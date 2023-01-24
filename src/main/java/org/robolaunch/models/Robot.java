@@ -20,6 +20,9 @@ public class Robot implements Serializable {
    private String rosBridgeUrl;
    private String vdiUrl;
    private String ideUrl;
+   private String teamName;
+   private String roboticsCloudName;
+   private String fleetName;
 
    public Robot() {
    }
@@ -150,6 +153,30 @@ public class Robot implements Serializable {
 
    public void setIdeUrl(String ideUrl) {
       this.ideUrl = ideUrl;
+   }
+
+   public String getTeamName() {
+      return teamName;
+   }
+
+   public void setTeamName(String teamName) {
+      this.teamName = teamName;
+   }
+
+   public String getRoboticsCloudName() {
+      return roboticsCloudName;
+   }
+
+   public void setRoboticsCloudName(String roboticsCloudName) {
+      this.roboticsCloudName = roboticsCloudName;
+   }
+
+   public String getFleetName() {
+      return fleetName;
+   }
+
+   public void setFleetName(String fleetName) {
+      this.fleetName = fleetName;
    }
 
 }

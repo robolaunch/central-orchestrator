@@ -8,7 +8,8 @@ import java.util.ArrayList;
 
 import org.robolaunch.models.Fleet;
 import org.robolaunch.models.Organization;
-import org.robolaunch.models.Provider;
+import org.robolaunch.models.PhysicalInstanceKubernetes;
+import org.robolaunch.models.ProviderKubernetes;
 import org.robolaunch.models.RegionKubernetes;
 import org.robolaunch.models.Robot;
 import org.robolaunch.models.RoboticsCloudKubernetes;
@@ -48,7 +49,7 @@ public interface KubernetesRepository {
         public Boolean regionExists(String provider, String region)
                         throws java.util.concurrent.ExecutionException, InterruptedException;
 
-        public ArrayList<Provider> getProviders()
+        public ArrayList<ProviderKubernetes> getProviders()
                         throws java.util.concurrent.ExecutionException, InterruptedException;
 
         public ArrayList<RegionKubernetes> getRegions(String provider)
@@ -76,11 +77,13 @@ public interface KubernetesRepository {
 
         public ArrayList<Robot> getRobotsOrganization(Organization organization)
                         throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
-                        JsonProcessingException, ExecutionException;
+                        JsonProcessingException, ExecutionException, InvalidKeyException, NoSuchAlgorithmException,
+                        IllegalArgumentException, IOException, ApiException, MinioException;
 
         public ArrayList<Robot> getRobotsTeam(Organization organization, String teamId)
                         throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
-                        JsonProcessingException, ExecutionException;
+                        JsonProcessingException, ExecutionException, InvalidKeyException, NoSuchAlgorithmException,
+                        IllegalArgumentException, IOException, ApiException, MinioException;
 
         public ArrayList<Robot> getRobotsRoboticsCloud(String roboticsCloudProcessId)
                         throws java.util.concurrent.ExecutionException, InterruptedException, JsonMappingException,
@@ -112,6 +115,15 @@ public interface KubernetesRepository {
 
         public String getLatestPlatformVersion() throws IOException;
 
+        public Robot getRobot(Organization organization, String teamId, String roboticsCloudName, String fleetName,
+                        String robotName) throws java.util.concurrent.ExecutionException, InterruptedException,
+                        JsonMappingException, JsonProcessingException, InvalidKeyException, ExecutionException,
+                        NoSuchAlgorithmException, IllegalArgumentException, IOException, ApiException, MinioException;
+
         public Boolean isAuthorizedRoboticsCloud(Organization organization, String teamId, String username)
                         throws InternalError, IOException;
+
+        public ArrayList<PhysicalInstanceKubernetes> getPhysicalInstancesRoboticsCloud(String roboticsCloudProcessId)
+                        throws ExecutionException, InterruptedException, java.util.concurrent.ExecutionException,
+                        JsonMappingException, JsonProcessingException;
 }

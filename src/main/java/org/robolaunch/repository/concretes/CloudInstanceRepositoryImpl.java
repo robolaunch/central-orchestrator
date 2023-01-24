@@ -663,7 +663,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
 
                         if (type.equals("V1ServiceAccount")) {
                                 try {
-                                        Thread.sleep(7000);
+                                        Thread.sleep(14000);
                                 } catch (InterruptedException e1) {
                                         e1.printStackTrace();
                                 }
@@ -1483,7 +1483,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 yamlString += "---";
                         }
                         if (type.equals("V1alpha2Certificate")) {
-                                Thread.sleep(5000);
+                                Thread.sleep(7000);
                                 customObjectsApi.createNamespacedCustomObject("cert-manager.io",
                                                 "v1",
                                                 "connection-hub-system", "certificates", object,
@@ -1526,22 +1526,32 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         @Override
         public void createConnectionHub(String bufferName, Organization organization, String teamId,
                         String cloudInstanceName, String serverIP, String namespaceName, String provider, String region,
-                        String superCluster)
-                        throws IOException, ApiException, InterruptedException, InvalidKeyException,
-                        NoSuchAlgorithmException, IllegalArgumentException, MinioException {
-                Thread.sleep(14000);
-                System.out.println("buffer name: " + bufferName);
-                System.out.println("cloud instance name: " + cloudInstanceName);
-                ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
-                                provider, region, superCluster);
-                DynamicKubernetesApi subnetsApi = apiClientManager.getSubnetApi(provider, region, superCluster);
-                String version = kubernetesRepository.getLatestPlatformVersion();
+                        String superCluster) {
+                try {
+                        Thread.sleep(12000);
+                } catch (InterruptedException e) {
+                        e.printStackTrace();
+                }
+                ApiClient vcClient;
+                String version;
+                DynamicKubernetesApi subnetsApi;
+                try {
+                        vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
+                                        provider, region, superCluster);
+                        subnetsApi = apiClientManager.getSubnetApi(provider, region, superCluster);
+                        version = kubernetesRepository.getLatestPlatformVersion();
+                } catch (InvalidKeyException | NoSuchAlgorithmException | IllegalArgumentException | IOException
+                                | InterruptedException | MinioException e) {
+                        throw new ApplicationException("Error while creating clients.");
+                } catch (ApiException e) {
+                        throw new ApplicationException("Error while creating clients ApiException."
+                                        + e.getResponseBody() + " " + e.getCode());
+
+                }
+
                 JsonObject object = kubernetesService.readPlatformContentAsJsonObject(version,
                                 "connectionHubCloud");
-                DynamicKubernetesApi connectionHubApi = new DynamicKubernetesApi(
-                                "connection-hub.roboscale.io", "v1alpha1",
-                                "connectionhubs",
-                                vcClient);
+
                 var subnet = subnetsApi.get("subnet-" + namespaceName);
                 object.get("metadata").getAsJsonObject().get("labels").getAsJsonObject().addProperty(
                                 "robolaunch.io/cloud-instance",
@@ -1562,7 +1572,15 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                                 .get("cidrBlock").getAsString());
 
                 System.out.println("final object connection hub : " + object);
-                connectionHubApi.create(new DynamicKubernetesObject(object));
+                CustomObjectsApi customObjectsApi = new CustomObjectsApi(vcClient);
+                try {
+                        customObjectsApi.createClusterCustomObject("connection-hub.roboscale.io",
+                                        "v1alpha1",
+                                        "connectionhubs", object, null, null, null);
+                } catch (ApiException e) {
+                        throw new ApplicationException("Error while just creating connection hub."
+                                        + e.getResponseBody() + " " + e.getCode());
+                }
 
         }
 

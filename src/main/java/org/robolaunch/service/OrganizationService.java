@@ -27,7 +27,6 @@ import org.robolaunch.models.response.ResponseOrganizationMembers;
 import org.robolaunch.models.response.ResponseTeams;
 import org.robolaunch.models.response.ResponseUserOrganizations;
 import org.robolaunch.repository.abstracts.GroupAdminRepository;
-import org.robolaunch.repository.abstracts.GroupRepository;
 import org.robolaunch.repository.abstracts.KeycloakAdminRepository;
 import org.robolaunch.repository.abstracts.UserAdminRepository;
 import org.robolaunch.repository.abstracts.UserRepository;
@@ -42,9 +41,6 @@ public class OrganizationService {
 
   @Inject
   Logger log;
-
-  @Inject
-  GroupRepository groupRepository;
 
   @Inject
   GroupAdminRepository groupAdminRepository;
@@ -209,7 +205,7 @@ public class OrganizationService {
       User user = new User();
       user.setUsername(jwt.getClaim("preferred_username"));
       if (groupAdminRepository.isGroupMember(user, organization)) {
-        ArrayList<GroupMember> members = groupRepository.getGroupMembers(organization);
+        ArrayList<GroupMember> members = groupAdminRepository.getGroupMembers(organization);
         responseOrganizationMembers.setSuccess(true);
         responseOrganizationMembers.setMessage("Organization users sent.");
         responseOrganizationMembers.setData(members);
@@ -235,7 +231,7 @@ public class OrganizationService {
   public PlainResponse deleteUserFromOrganization(User user, Organization organization) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      Boolean isMemberOrganization = groupRepository.isGroupMember(user, organization);
+      Boolean isMemberOrganization = groupAdminRepository.isGroupMember(user, organization);
 
       User currentUser = new User();
       currentUser.setUsername(jwt.getClaim("preferred_username"));
@@ -245,8 +241,8 @@ public class OrganizationService {
       }
 
       if (isMemberOrganization) {
-        if (groupRepository.isGroupManager(user, organization)) {
-          Set<User> managers = groupRepository.getUsers(organization, "membermanager_user");
+        if (groupAdminRepository.isGroupManager(user, organization)) {
+          Set<User> managers = groupAdminRepository.getUsers(organization, "membermanager_user");
           if (managers.size() == 1) {
             plainResponse.setSuccess(false);
             plainResponse.setMessage("Only manager cannot be deleted from organization.");
@@ -254,21 +250,21 @@ public class OrganizationService {
           }
           groupAdminRepository.removeUserManagerFromGroup(user, organization);
         }
-        groupRepository.removeUserFromGroup(user, organization);
+        groupAdminRepository.removeUserFromGroup(user, organization);
       }
 
-      List<Department> departments = groupRepository.getTeams(organization, "member_group");
+      List<Department> departments = groupAdminRepository.getTeams(organization, "member_group");
       departments.forEach(department -> {
         /* department's description is read as its name on FreeIPA */
         Organization lowerGroup = new Organization();
         lowerGroup.setName(department.getId());
         try {
-          Boolean isMember = groupRepository.isGroupMember(user, lowerGroup);
+          Boolean isMember = groupAdminRepository.isGroupMember(user, lowerGroup);
           if (isMember) {
-            if (groupRepository.isGroupManager(user, lowerGroup)) {
+            if (groupAdminRepository.isGroupManager(user, lowerGroup)) {
               groupAdminRepository.removeUserManagerFromGroup(user, lowerGroup);
             }
-            groupRepository.removeUserFromGroup(user, lowerGroup);
+            groupAdminRepository.removeUserFromGroup(user, lowerGroup);
 
           }
         } catch (MalformedURLException e) {
@@ -314,8 +310,9 @@ public class OrganizationService {
     try {
       User user = new User();
       user.setUsername(jwt.getClaim("preferred_username"));
+      System.out.println(user.getUsername() + " --- " + organization.getName());
       if (groupAdminRepository.isGroupMember(user, organization)) {
-        ArrayList<Department> departments = groupRepository.getTeams(organization, "member_group");
+        ArrayList<Department> departments = groupAdminRepository.getTeams(organization, "member_group");
         responseTeams.setMessage("Teams sent successfully.");
         responseTeams.setSuccess(true);
         responseTeams.setData(departments);
@@ -348,7 +345,7 @@ public class OrganizationService {
       if (organization.getName().contains("org-default-")) {
         throw new ApplicationException("Default organization cannot be deleted.");
       }
-      List<Department> departments = groupRepository.getTeams(organization, "member_group");
+      List<Department> departments = groupAdminRepository.getTeams(organization, "member_group");
       Iterator<Department> it = departments.iterator();
       while (it.hasNext()) {
         Department d = it.next();
@@ -372,7 +369,7 @@ public class OrganizationService {
    */
   public Boolean isUserManagerOrganization(User user, Organization organization) {
     try {
-      Boolean isManager = groupRepository.isGroupManager(user, organization);
+      Boolean isManager = groupAdminRepository.isGroupManager(user, organization);
       return isManager;
     } catch (Exception e) {
       organizationLogger.error("Error checking if user is manager of organization: " + e.getMessage());
@@ -392,7 +389,7 @@ public class OrganizationService {
       user.setUsername(jwt.getClaim("preferred_username"));
       Boolean isManager = false;
 
-      Set<User> parentMemberManagers = groupRepository.getUsers(organization, "membermanager_user");
+      Set<User> parentMemberManagers = groupAdminRepository.getUsers(organization, "membermanager_user");
       Iterator<User> it = parentMemberManagers.iterator();
 
       while (it.hasNext()) {
@@ -415,7 +412,7 @@ public class OrganizationService {
    */
   public Boolean isUserPresentInOrganization(User user, Organization organization) {
     try {
-      Boolean isMemberUpperOrg = groupRepository.isGroupMember(user, organization);
+      Boolean isMemberUpperOrg = groupAdminRepository.isGroupMember(user, organization);
       if (isMemberUpperOrg) {
         return true;
       } else {
@@ -433,7 +430,7 @@ public class OrganizationService {
    */
   public List<GroupMember> getGroupMembers(Organization organization) throws ApplicationException {
     try {
-      List<GroupMember> members = groupRepository.getGroupMembers(organization);
+      List<GroupMember> members = groupAdminRepository.getGroupMembers(organization);
       organizationLogger.info("Members sent.");
       return members;
     } catch (Exception e) {

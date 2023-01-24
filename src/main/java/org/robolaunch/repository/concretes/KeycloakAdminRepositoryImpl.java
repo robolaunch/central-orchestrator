@@ -9,15 +9,11 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.keycloak.Token;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
-import org.keycloak.admin.client.resource.UserResource;
-import org.keycloak.admin.client.token.TokenManager;
 import org.keycloak.common.util.MultivaluedHashMap;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.keycloak.representations.idm.ClientRepresentation;
@@ -29,7 +25,6 @@ import org.keycloak.representations.idm.RoleRepresentation;
 import org.robolaunch.exception.ApplicationException;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.User;
-import org.robolaunch.repository.abstracts.GroupRepository;
 import org.robolaunch.repository.abstracts.KeycloakAdminRepository;
 
 @ApplicationScoped
@@ -38,9 +33,6 @@ public class KeycloakAdminRepositoryImpl implements KeycloakAdminRepository {
 
     @ConfigProperty(name = "keycloak.default.realm")
     String defaultRealm;
-
-    @Inject
-    GroupRepository groupRepository;
 
     @PostConstruct
     public void adminLogin() {

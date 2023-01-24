@@ -4,8 +4,6 @@ import java.io.Serializable;
 
 public class RequestLaunchManagerSpecLaunch implements Serializable {
    private String name;
-   private String physicalInstance;
-   private String cloudInstance;
    private String workspace;
    private String repository;
    private Boolean namespacing;
@@ -20,22 +18,6 @@ public class RequestLaunchManagerSpecLaunch implements Serializable {
 
    public void setName(String name) {
       this.name = name;
-   }
-
-   public String getPhysicalInstance() {
-      return physicalInstance;
-   }
-
-   public void setPhysicalInstance(String physicalInstance) {
-      this.physicalInstance = physicalInstance;
-   }
-
-   public String getCloudInstance() {
-      return cloudInstance;
-   }
-
-   public void setCloudInstance(String cloudInstance) {
-      this.cloudInstance = cloudInstance;
    }
 
    public String getWorkspace() {
@@ -69,9 +51,4 @@ public class RequestLaunchManagerSpecLaunch implements Serializable {
    public void setNamespacing(Boolean namespacing) {
       this.namespacing = namespacing;
    }
-
-   public Boolean getNamespacing() {
-      return namespacing;
-   }
-
 }

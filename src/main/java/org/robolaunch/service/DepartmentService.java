@@ -22,13 +22,11 @@ import org.robolaunch.models.User;
 import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.models.response.ResponseTeamMembers;
 import org.robolaunch.repository.abstracts.GroupAdminRepository;
-import org.robolaunch.repository.abstracts.GroupRepository;
 import org.robolaunch.repository.abstracts.KeycloakAdminRepository;
 import org.robolaunch.repository.abstracts.UserAdminRepository;
 import org.robolaunch.repository.abstracts.UserRepository;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.gson.Gson;
 
 import io.quarkus.arc.log.LoggerName;
 
@@ -36,9 +34,6 @@ import io.quarkus.arc.log.LoggerName;
 public class DepartmentService {
   @Inject
   Logger log;
-
-  @Inject
-  GroupRepository groupRepository;
 
   @Inject
   GroupAdminRepository groupAdminRepository;
@@ -75,7 +70,7 @@ public class DepartmentService {
       User user = new User();
       user.setUsername(jwt.getClaim("preferred_username"));
 
-      List<Department> departments = groupRepository.getTeams(organization, "member_group");
+      List<Department> departments = groupAdminRepository.getTeams(organization, "member_group");
       Iterator<Department> it = departments.iterator();
 
       // Get Team ID from teamName.
@@ -84,7 +79,7 @@ public class DepartmentService {
         Department d = it.next();
         Organization org = new Organization();
         org.setName(d.getId());
-        if (groupRepository.getGroupDescription(org).equals(teamName)) {
+        if (groupAdminRepository.getGroupDescription(org).equals(teamName)) {
           dept.setName(org.getName());
           break;
         }
@@ -92,7 +87,7 @@ public class DepartmentService {
 
       // Get Managers of the team, if you find the user, return true. Else, return
       // false.
-      Set<User> departmentMemberManagers = groupRepository.getUsers(dept, "membermanager_user");
+      Set<User> departmentMemberManagers = groupAdminRepository.getUsers(dept, "membermanager_user");
       Iterator<User> ite = departmentMemberManagers.iterator();
       while (ite.hasNext()) {
         User manager = ite.next();
@@ -173,7 +168,7 @@ public class DepartmentService {
       dept.setName(teamId);
 
       // Get Team Member managers, check if user is admin.
-      Set<User> teamMemberManagers = groupRepository.getUsers(dept, "membermanager_user");
+      Set<User> teamMemberManagers = groupAdminRepository.getUsers(dept, "membermanager_user");
       Iterator<User> ite = teamMemberManagers.iterator();
       while (ite.hasNext()) {
         User manager = ite.next();
@@ -203,7 +198,7 @@ public class DepartmentService {
       dept.setName(teamId);
 
       // Get Team Member managers, check if user is admin.
-      Set<User> teamMemberManagers = groupRepository.getUsers(dept, "membermanager_user");
+      Set<User> teamMemberManagers = groupAdminRepository.getUsers(dept, "membermanager_user");
       Iterator<User> ite = teamMemberManagers.iterator();
       while (ite.hasNext()) {
         User manager = ite.next();
@@ -225,13 +220,13 @@ public class DepartmentService {
   public Boolean doesTeamExists(Organization organization, String teamName)
       throws ApplicationException {
     try {
-      List<Department> departments = groupRepository.getTeams(organization, "member_group");
+      List<Department> departments = groupAdminRepository.getTeams(organization, "member_group");
       Iterator<Department> it = departments.iterator();
       while (it.hasNext()) {
         Department d = it.next();
         Organization org = new Organization();
         org.setName(d.getId());
-        if (groupRepository.getGroupDescription(org).equals(teamName)) {
+        if (groupAdminRepository.getGroupDescription(org).equals(teamName)) {
           departmentLogger.info("Department exists.");
           return true;
         }
@@ -248,7 +243,7 @@ public class DepartmentService {
   public Boolean doesTeamExistsById(Organization organization, String teamId)
       throws ApplicationException {
     try {
-      List<Department> departments = groupRepository.getTeams(organization, "member_group");
+      List<Department> departments = groupAdminRepository.getTeams(organization, "member_group");
       Iterator<Department> it = departments.iterator();
       while (it.hasNext()) {
         Department d = it.next();
@@ -296,7 +291,7 @@ public class DepartmentService {
   public PlainResponse addUserToTeam(User user, Organization organization, String teamName) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      List<Department> departments = groupRepository.getTeams(organization, "member_group");
+      List<Department> departments = groupAdminRepository.getTeams(organization, "member_group");
       Iterator<Department> it = departments.iterator();
 
       // Find the Team ID from teamName.
@@ -304,8 +299,8 @@ public class DepartmentService {
         Department d = it.next();
         Organization org = new Organization();
         org.setName(d.getId());
-        if (groupRepository.getGroupDescription(org).equals(teamName)) {
-          groupRepository.addUserToGroup(user, org);
+        if (groupAdminRepository.getGroupDescription(org).equals(teamName)) {
+          groupAdminRepository.addUserToGroup(user, org);
           break;
         }
       }
@@ -336,12 +331,12 @@ public class DepartmentService {
       }
 
       // Check duplication.
-      ArrayList<Department> departments = groupRepository.getTeams(organization, "member_group");
+      ArrayList<Department> departments = groupAdminRepository.getTeams(organization, "member_group");
       Iterator<Department> duplicateIterator = departments.iterator();
       while (duplicateIterator.hasNext()) {
         Organization og = new Organization();
         og.setName(duplicateIterator.next().getId());
-        if (groupRepository.getGroupDescription(og).equals(newTeamName)) {
+        if (groupAdminRepository.getGroupDescription(og).equals(newTeamName)) {
           plainResponse.setSuccess(false);
           plainResponse.setMessage("Team with this name already exists.");
           return plainResponse;
@@ -355,7 +350,7 @@ public class DepartmentService {
         Department d = it.next();
         Organization org = new Organization();
         org.setName(d.getId());
-        if (groupRepository.getGroupDescription(org).equals(oldTeamName)) {
+        if (groupAdminRepository.getGroupDescription(org).equals(oldTeamName)) {
           dept.setName(d.getId());
           break;
         }
@@ -378,7 +373,7 @@ public class DepartmentService {
       throws ApplicationException {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      List<Department> departments = groupRepository.getTeams(organization, "member_group");
+      List<Department> departments = groupAdminRepository.getTeams(organization, "member_group");
       Iterator<Department> it = departments.iterator();
 
       // Find Team ID from teamName. And add the user as manager.
@@ -386,7 +381,7 @@ public class DepartmentService {
         Department d = it.next();
         Organization org = new Organization();
         org.setName(d.getId());
-        if (groupRepository.getGroupDescription(org).equals(teamName)) {
+        if (groupAdminRepository.getGroupDescription(org).equals(teamName)) {
           groupAdminRepository.addUserToGroupAsManager(user, org);
           break;
         }
@@ -407,16 +402,16 @@ public class DepartmentService {
   public PlainResponse deleteUserFromTeam(User user, Organization organization, String teamName) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      List<Department> departments = groupRepository.getTeams(organization, "member_group");
+      List<Department> departments = groupAdminRepository.getTeams(organization, "member_group");
       Iterator<Department> it = departments.iterator();
       // Get Team ID from teamName.
       while (it.hasNext()) {
         Department d = it.next();
         Organization org = new Organization();
         org.setName(d.getId());
-        if (groupRepository.getGroupDescription(org).equals(teamName)) {
-          groupRepository.removeUserFromGroup(user, org);
-          if (groupRepository.isGroupManager(user, org)) {
+        if (groupAdminRepository.getGroupDescription(org).equals(teamName)) {
+          groupAdminRepository.removeUserFromGroup(user, org);
+          if (groupAdminRepository.isGroupManager(user, org)) {
             groupAdminRepository.removeUserManagerFromGroup(user, org);
           }
           break;
@@ -438,14 +433,14 @@ public class DepartmentService {
       String teamName) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      List<Department> departments = groupRepository.getTeams(organization, "member_group");
+      List<Department> departments = groupAdminRepository.getTeams(organization, "member_group");
       Iterator<Department> it = departments.iterator();
       // Get Team ID from teamName.
       while (it.hasNext()) {
         Department d = it.next();
         Organization org = new Organization();
         org.setName(d.getId());
-        if (groupRepository.getGroupDescription(org).equals(teamName)) {
+        if (groupAdminRepository.getGroupDescription(org).equals(teamName)) {
           groupAdminRepository.removeUserManagerFromGroup(user, org);
           break;
         }
@@ -471,7 +466,7 @@ public class DepartmentService {
         plainResponse.setMessage("This team cannot be deleted.");
         return plainResponse;
       }
-      List<Department> departments = groupRepository.getTeams(organization, "member_group");
+      List<Department> departments = groupAdminRepository.getTeams(organization, "member_group");
       Iterator<Department> it = departments.iterator();
 
       Organization dept = new Organization();
@@ -481,7 +476,7 @@ public class DepartmentService {
         Department d = it.next();
         Organization org = new Organization();
         org.setName(d.getId());
-        if (groupRepository.getGroupDescription(org).equals(teamName)) {
+        if (groupAdminRepository.getGroupDescription(org).equals(teamName)) {
           dept.setName(d.getId());
           break;
         }
@@ -502,7 +497,7 @@ public class DepartmentService {
   public Response deleteManagersDepartment(Organization organization) {
     try {
       String teamId = "managers";
-      List<Department> departments = groupRepository.getTeams(organization, "member_group");
+      List<Department> departments = groupAdminRepository.getTeams(organization, "member_group");
       Iterator<Department> it = departments.iterator();
 
       Organization dept = new Organization();
@@ -510,7 +505,7 @@ public class DepartmentService {
         Department d = it.next();
         Organization org = new Organization();
         org.setName(d.getId());
-        if (groupRepository.getGroupDescription(org).equals(teamId)) {
+        if (groupAdminRepository.getGroupDescription(org).equals(teamId)) {
           dept.setName(d.getId());
           break;
         }
@@ -527,7 +522,7 @@ public class DepartmentService {
   public Response deleteInvitedUsersDepartment(Organization organization) {
     try {
       String teamId = "invitedUsers";
-      List<Department> departments = groupRepository.getTeams(organization, "member_group");
+      List<Department> departments = groupAdminRepository.getTeams(organization, "member_group");
       Iterator<Department> it = departments.iterator();
 
       Organization dept = new Organization();
@@ -535,7 +530,7 @@ public class DepartmentService {
         Department d = it.next();
         Organization org = new Organization();
         org.setName(d.getId());
-        if (groupRepository.getGroupDescription(org).equals(teamId)) {
+        if (groupAdminRepository.getGroupDescription(org).equals(teamId)) {
           dept.setName(d.getId());
           break;
         }
@@ -554,7 +549,7 @@ public class DepartmentService {
       throws ApplicationException {
     ResponseTeamMembers responseTeamMembers = new ResponseTeamMembers();
     try {
-      List<Department> departments = groupRepository.getTeams(organization, "member_group");
+      List<Department> departments = groupAdminRepository.getTeams(organization, "member_group");
       Iterator<Department> it = departments.iterator();
       Organization dept = new Organization();
       // Get Team ID from teamName.
@@ -562,12 +557,12 @@ public class DepartmentService {
         Department d = it.next();
         Organization org = new Organization();
         org.setName(d.getId());
-        if (groupRepository.getGroupDescription(org).equals(teamName)) {
+        if (groupAdminRepository.getGroupDescription(org).equals(teamName)) {
           dept.setName(d.getId());
           break;
         }
       }
-      ArrayList<GroupMember> members = groupRepository.getGroupMembers(dept);
+      ArrayList<GroupMember> members = groupAdminRepository.getGroupMembers(dept);
       departmentLogger.info("Department" + teamName + " members sent.");
       responseTeamMembers.setMessage("Team members sent.");
       responseTeamMembers.setSuccess(true);
@@ -640,7 +635,7 @@ public class DepartmentService {
       throws ApplicationException {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      groupRepository.addSubgroupToGroup(organization, teamName);
+      groupAdminRepository.addSubgroupToGroup(organization, teamName);
       departmentLogger.info("Managers group added as member.");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Managers group added as member.");

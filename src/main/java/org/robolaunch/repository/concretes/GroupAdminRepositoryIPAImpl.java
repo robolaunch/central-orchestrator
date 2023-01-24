@@ -29,7 +29,6 @@ import org.robolaunch.models.GroupMember;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.User;
 import org.robolaunch.repository.abstracts.GroupAdminRepository;
-import org.robolaunch.repository.abstracts.GroupRepository;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,9 +38,6 @@ public class GroupAdminRepositoryIPAImpl implements GroupAdminRepository {
   @Inject
   GroupAdapter groupAdapter;
   private final CookieManager cookieManager = new CookieManager();
-
-  @Inject
-  GroupRepository groupRepository;
 
   @ConfigProperty(name = "freeipa.url")
   String freeIpaURL;
@@ -72,6 +68,16 @@ public class GroupAdminRepositoryIPAImpl implements GroupAdminRepository {
       throw new ApplicationException(rootNode.get("error").get("message").asText());
     }
 
+  }
+
+  @Override
+  public void removeUserFromGroup(User user,
+      Organization organization)
+      throws InternalError, IOException {
+    String requestData = groupAdapter.toRequestWithUser(user, organization);
+    String deleteRequest = String.format("{\"id\": 0, \"method\": \"group_remove_member/1\", \"params\": %s} ",
+        requestData);
+    makeRequest(deleteRequest);
   }
 
   private JsonNode makeRequestForGroup(String body)
@@ -266,9 +272,42 @@ public class GroupAdminRepositoryIPAImpl implements GroupAdminRepository {
   }
 
   @Override
+  public ArrayList<Department> getTeams(Organization group, String fieldName)
+      throws InternalError, IOException {
+    String requestData = groupAdapter.toGetWithAllFlag(group);
+    String getAllRequest = String.format("{\"id\": 0, \"method\": \"group_show/1\", \"params\": %s}",
+        requestData);
+    JsonNode requestedField = makeRequestForGroupField(getAllRequest, fieldName);
+    ArrayList<Department> departments = new ArrayList<>();
+    if (requestedField != null) {
+      requestedField.forEach(department -> {
+        Organization organization = new Organization();
+        organization.setName(department.asText());
+        Department dept = new Department();
+
+        dept.setId(department.asText());
+        try {
+          dept.setName(getGroupDescription(organization));
+        } catch (InternalError | IOException e1) {
+          e1.printStackTrace();
+        }
+
+        try {
+          dept.setUsers(getGroupMembers(organization));
+        } catch (InternalError | IOException e) {
+          e.printStackTrace();
+        }
+        departments.add(dept);
+      });
+    }
+
+    return departments;
+  }
+
+  @Override
   public String getGroupNameFromDescription(Organization organization, String description)
       throws InternalError, IOException {
-    List<Department> departments = groupRepository.getTeams(organization, "member_group");
+    List<Department> departments = getTeams(organization, "member_group");
     for (Department department : departments) {
       if (department.getName().equals(description)) {
         return department.getId();
@@ -292,13 +331,20 @@ public class GroupAdminRepositoryIPAImpl implements GroupAdminRepository {
   }
 
   @Override
+  public Boolean isGroupMemberByEmail(String email, Organization group)
+      throws InternalError, IOException {
+    List<GroupMember> groupMembers = getGroupMembers(group);
+    return groupMembers.stream().anyMatch(member -> member.getEmail().equals(email));
+  }
+
+  @Override
   public void setInitialManagersForDepartment(Organization organization, DepartmentBasic department)
       throws InternalError, IOException {
     Organization departmentIPAFormat = new Organization();
 
     departmentIPAFormat.setName(department.getName());
-    Set<User> parentMemberManagers = groupRepository.getUsers(organization, "membermanager_user");
-    Set<User> subgroupMemberManagers = groupRepository.getUsers(departmentIPAFormat, "membermanager_user");
+    Set<User> parentMemberManagers = getUsers(organization, "membermanager_user");
+    Set<User> subgroupMemberManagers = getUsers(departmentIPAFormat, "membermanager_user");
 
     Iterator<User> upperUsers = parentMemberManagers.iterator();
 

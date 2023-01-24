@@ -13,7 +13,8 @@ import org.robolaunch.models.request.RequestRobot;
 import org.robolaunch.models.response.PlainResponse;
 import org.robolaunch.repository.abstracts.RobotRepository;
 
-import io.kubernetes.client.openapi.ApiException;
+import com.google.gson.Gson;
+
 import io.quarkus.arc.log.LoggerName;
 
 @ApplicationScoped
@@ -58,15 +59,25 @@ public class RobotService {
 
   public PlainResponse createBuildManager(RequestBuildManager robotBuildManager) {
     PlainResponse plainResponse = new PlainResponse();
+    System.out.println(" out createRobotBuildManager out");
+
     try {
       String token = jwt.getRawToken();
-      robotRepository.createRobotBuildManager(robotBuildManager, token);
-      robotLogger.info("Robot build manager created");
+      if (robotBuildManager.isFederated()) {
+        System.out.println("build manager federated");
+
+        robotRepository.createFederatedRobotBuildManager(robotBuildManager, token);
+      } else {
+        System.out.println("build manager not federated");
+        robotRepository.createRobotBuildManager(robotBuildManager, token);
+      }
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Robot build manager created.");
+      robotLogger.info("Robot build manager created");
     } catch (Exception e) {
       plainResponse.setSuccess(false);
       plainResponse.setMessage("Error occured while creating robot build manager.");
+      robotLogger.error("Error occured while creating robot build manager", e);
     }
     return plainResponse;
   }
@@ -75,7 +86,11 @@ public class RobotService {
     PlainResponse plainResponse = new PlainResponse();
     try {
       String token = jwt.getRawToken();
-      robotRepository.createRobotLaunchManager(robotLaunchManager, token);
+      if (robotLaunchManager.isFederated()) {
+        robotRepository.createFederatedRobotLaunchManager(robotLaunchManager, token);
+      } else {
+        robotRepository.createRobotLaunchManager(robotLaunchManager, token);
+      }
       robotLogger.info("Robot launch manager created");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Robot launch manager created.");
@@ -88,9 +103,19 @@ public class RobotService {
 
   public PlainResponse createRobot(RequestRobot requestRobot) {
     PlainResponse plainResponse = new PlainResponse();
+    Gson gson = new Gson();
     try {
       String token = jwt.getRawToken();
-      robotRepository.createRobot(requestRobot, token);
+      if (!requestRobot.isFederated()) {
+        System.out.println("Robot is not federated: " + gson.toJson(requestRobot));
+        System.out.println("------------------------------>");
+        robotRepository.createRobot(requestRobot, token);
+
+      } else {
+        System.out.println("Robot is federated: " + gson.toJson(requestRobot));
+        System.out.println("------------------------------>");
+        robotRepository.createFederatedRobot(requestRobot, token);
+      }
       robotLogger.info("Robot created");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Robot created.");
@@ -117,6 +142,18 @@ public class RobotService {
       return script;
     } catch (Exception e) {
       robotLogger.error("Error occured while creating hybrid robot script", e);
+      return null;
+    }
+  }
+
+  public String getRobotStatus(String fleetProcessId, String robotName) {
+    try {
+      String robotStatus = robotRepository.getRobotStatus(fleetProcessId,
+          robotName);
+      robotLogger.info("Got robot status");
+      return robotStatus;
+    } catch (Exception e) {
+      robotLogger.error("Error occured while getting robot status", e);
       return null;
     }
   }

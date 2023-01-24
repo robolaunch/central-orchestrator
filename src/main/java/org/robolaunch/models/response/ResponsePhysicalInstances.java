@@ -3,15 +3,12 @@ package org.robolaunch.models.response;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-import org.robolaunch.models.ProviderKubernetes;
+import org.robolaunch.models.PhysicalInstanceKubernetes;
 
-public class ResponseProviders implements Serializable {
+public class ResponsePhysicalInstances implements Serializable {
    private String message;
    private Boolean success;
-   private ArrayList<ProviderKubernetes> data;
-
-   public ResponseProviders() {
-   }
+   private ArrayList<PhysicalInstanceKubernetes> data;
 
    public String getMessage() {
       return message;
@@ -29,11 +26,11 @@ public class ResponseProviders implements Serializable {
       this.success = success;
    }
 
-   public ArrayList<ProviderKubernetes> getData() {
+   public ArrayList<PhysicalInstanceKubernetes> getData() {
       return data;
    }
 
-   public void setData(ArrayList<ProviderKubernetes> data) {
+   public void setData(ArrayList<PhysicalInstanceKubernetes> data) {
       this.data = data;
    }
 

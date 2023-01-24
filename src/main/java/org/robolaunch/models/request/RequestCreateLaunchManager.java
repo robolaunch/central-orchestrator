@@ -8,6 +8,8 @@ public class RequestCreateLaunchManager implements Serializable {
    private String kind;
    private RequestCloudRobotMetadata metadata;
    private ArrayList<RequestLaunchManagerSpecLaunch> launch;
+   private Boolean display;
+   private String roboticsCloudName;
 
    public String getApiVersion() {
       return apiVersion;
@@ -39,6 +41,22 @@ public class RequestCreateLaunchManager implements Serializable {
 
    public void setLaunch(ArrayList<RequestLaunchManagerSpecLaunch> launch) {
       this.launch = launch;
+   }
+
+   public Boolean isDisplay() {
+      return display;
+   }
+
+   public void setDisplay(Boolean display) {
+      this.display = display;
+   }
+
+   public String getRoboticsCloudName() {
+      return roboticsCloudName;
+   }
+
+   public void setRoboticsCloudName(String roboticsCloudName) {
+      this.roboticsCloudName = roboticsCloudName;
    }
 
 }
