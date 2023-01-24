@@ -2,6 +2,7 @@ package org.robolaunch.service;
 
 import java.io.IOException;
 import java.net.HttpCookie;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -80,6 +81,39 @@ public class AccountService {
 
     @LoggerName("accountService")
     Logger accountLogger;
+
+    /*
+     * Granting admin privileges, needed when user permissions not enough.
+     * HELPER FUNCTION.
+     */
+    public void grantAdminPrivileges() {
+        groupAdminRepository.getCurrentCookies().forEach(cookie -> {
+            if (cookie.getMaxAge() <= 0) {
+                try {
+                    groupAdminRepository.clearCookies();
+                } catch (URISyntaxException e) {
+                    accountLogger.error("Error happened when granting admin privileges. While clearing cookies: "
+                            + e.getMessage());
+                }
+                IPAAdmin adminLogin = new IPAAdminLogin();
+                List<HttpCookie> innerCookies;
+                try {
+                    innerCookies = adminLogin.login();
+                    innerCookies.forEach(innerCookie -> {
+                        groupAdminRepository.appendCookie(innerCookie);
+                        userAdminRepository.appendCookie(innerCookie);
+                    });
+                } catch (InternalError | IOException e) {
+                    accountLogger.error("Error happened when granting admin privileges. While logging in: "
+                            + e.getMessage());
+                }
+                accountLogger.info("New cookie generated for admin privileges.");
+            } else {
+                accountLogger.info("Cookie still works. No need to refresh.");
+            }
+        });
+
+    }
 
     public ResponseLogin userLogin(LoginRequest loginRequest) throws InterruptedException, ExecutionException {
         ResponseLogin responseLogin = new ResponseLogin();
@@ -208,33 +242,6 @@ public class AccountService {
             groupAdminRepository.clearCookies();
         } catch (Exception e) {
             accountLogger.error("Error when logout: " + e);
-        }
-    }
-
-    public void grantUserAdminPrivileges() {
-        try {
-            IPAAdmin adminLogin = new IPAAdminLogin();
-            List<HttpCookie> cookies = adminLogin.login();
-            cookies.forEach(cookie -> {
-                userAdminRepository.appendCookie(cookie);
-            });
-            accountLogger.info("User Admin privileges granted");
-        } catch (Exception e) {
-            accountLogger.error("Error happened when granting admin privileges " + e.getMessage());
-        }
-    }
-
-    public void grantAdminPrivileges() {
-        try {
-            IPAAdmin adminLogin = new IPAAdminLogin();
-            List<HttpCookie> cookies = adminLogin.login();
-            cookies.forEach(cookie -> {
-                groupAdminRepository.appendCookie(cookie);
-                userAdminRepository.appendCookie(cookie);
-            });
-            accountLogger.info("Admin privileges granted");
-        } catch (Exception e) {
-            accountLogger.error("Error happened when granting admin privileges " + e.getMessage());
         }
     }
 
