@@ -14,17 +14,14 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.robolaunch.core.abstracts.IPALogin;
 import org.robolaunch.core.concretes.IPAUserLogin;
 import org.robolaunch.exception.ApplicationException;
-import org.robolaunch.exception.UserNotFoundException;
-import org.robolaunch.models.LoginRefreshToken;
-import org.robolaunch.models.LoginRefreshTokenOrganization;
-import org.robolaunch.models.LoginRequest;
-import org.robolaunch.models.LoginRequestOrganization;
-import org.robolaunch.models.LoginResponse;
-import org.robolaunch.models.LoginResponseWithIPA;
-import org.robolaunch.models.User;
-import org.robolaunch.repository.abstracts.GroupAdminRepository;
+import org.robolaunch.model.account.LoginRefreshToken;
+import org.robolaunch.model.account.LoginRefreshTokenOrganization;
+import org.robolaunch.model.account.LoginRequest;
+import org.robolaunch.model.account.LoginRequestOrganization;
+import org.robolaunch.model.account.LoginResponse;
+import org.robolaunch.model.account.User;
+import org.robolaunch.repository.abstracts.AccountRepository;
 import org.robolaunch.repository.abstracts.KeycloakRepository;
-import org.robolaunch.repository.abstracts.UserAdminRepository;
 import org.robolaunch.service.KeycloakService;
 
 import io.vertx.core.MultiMap;
@@ -39,10 +36,7 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
     private WebClient client;
 
     @Inject
-    UserAdminRepository userAdminRepository;
-
-    @Inject
-    GroupAdminRepository groupAdminRepository;
+    AccountRepository accountRepository;
 
     @Inject
     KeycloakService keycloakService;
@@ -64,18 +58,19 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
     }
 
     @Override
-    public LoginResponseWithIPA loginOrganization(LoginRequestOrganization loginRequestOrganization)
+    public LoginResponse loginOrganization(LoginRequestOrganization loginRequestOrganization)
             throws InternalError, IOException {
         CompletableFuture<LoginResponse> response = new CompletableFuture<>();
 
         if (loginRequestOrganization.getUsername().contains("@")) {
-            User usr = userAdminRepository.getUserByEmail(loginRequestOrganization.getUsername());
+            User usr = accountRepository.getUserByEmail(loginRequestOrganization.getUsername());
             if (usr == null) {
-                throw new UserNotFoundException("User not found");
+                throw new ApplicationException("User is not found.");
             }
             loginRequestOrganization.setUsername(usr.getUsername());
         }
         MultiMap userFormData = convertUserOrganization(loginRequestOrganization);
+        LoginResponse loginResponse = new LoginResponse();
         this.client
                 .post("/auth/realms/" + loginRequestOrganization.getOrganization() + "/protocol/openid-connect/token")
                 .sendForm(userFormData).onFailure(
@@ -86,7 +81,6 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
                 .onSuccess(
                         httpResponse -> {
                             if (httpResponse.statusCode() == 200) {
-                                LoginResponse loginResponse = new LoginResponse();
                                 loginResponse
                                         .setAccessToken(httpResponse.bodyAsJsonObject().getString("access_token"));
                                 loginResponse.setExpiresIn(httpResponse.bodyAsJsonObject().getString("expires_in"));
@@ -117,15 +111,7 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
                     throw new ApplicationException("An unexpected error happened.");
                 });
 
-        IPALogin ipaLogin = new IPAUserLogin();
-        ipaLogin.setUsername(loginRequestOrganization.getUsername());
-        ipaLogin.setPassword(loginRequestOrganization.getPassword());
-        List<HttpCookie> newCookies = ipaLogin.login();
-        LoginResponseWithIPA loginResponseWithIPA = new LoginResponseWithIPA();
-        loginResponseWithIPA.setLoginResponse(response);
-        loginResponseWithIPA.setCookies(newCookies);
-
-        return loginResponseWithIPA;
+        return loginResponse;
     }
 
     private MultiMap convertUserOrganization(LoginRequestOrganization loginRequest) {
@@ -142,19 +128,20 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
     }
 
     @Override
-    public LoginResponseWithIPA login(LoginRequest loginRequest)
-            throws InternalError, IOException, UserNotFoundException {
+    public LoginResponse login(LoginRequest loginRequest)
+            throws InternalError, IOException {
         CompletableFuture<LoginResponse> response = new CompletableFuture<>();
 
         if (loginRequest.getUsername().contains("@")) {
-            User usr = userAdminRepository.getUserByEmail(loginRequest.getUsername());
+            User usr = accountRepository.getUserByEmail(loginRequest.getUsername());
             if (usr == null) {
-                throw new UserNotFoundException("User not found");
+                throw new ApplicationException("User is not found.");
             }
             loginRequest.setUsername(usr.getUsername());
         }
 
         MultiMap userFormData = convertUser(loginRequest);
+        LoginResponse loginResponse = new LoginResponse();
         this.client
                 .post("/auth/realms/kogito/protocol/openid-connect/token")
                 .sendForm(userFormData).onFailure(
@@ -165,7 +152,6 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
                 .onSuccess(
                         httpResponse -> {
                             if (httpResponse.statusCode() == 200) {
-                                LoginResponse loginResponse = new LoginResponse();
                                 loginResponse.setAccessToken(httpResponse.bodyAsJsonObject().getString("access_token"));
                                 loginResponse.setExpiresIn(httpResponse.bodyAsJsonObject().getString("expires_in"));
                                 loginResponse.setRefreshExpiresIn(
@@ -179,7 +165,6 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
                                 throw new ApplicationException("Login failed.");
                             }
                         })
-
                 .toCompletionStage().toCompletableFuture()
                 .orTimeout(8000, TimeUnit.MILLISECONDS)
                 .thenAccept(resp -> {
@@ -192,14 +177,7 @@ public class KeycloakRepositoryImpl implements KeycloakRepository {
                     throw new ApplicationException("An unexpected error happened.");
                 });
 
-        IPALogin ipaLogin = new IPAUserLogin();
-        ipaLogin.setUsername(loginRequest.getUsername());
-        ipaLogin.setPassword(loginRequest.getPassword());
-        List<HttpCookie> newCookies = ipaLogin.login();
-        LoginResponseWithIPA loginResponseWithIPA = new LoginResponseWithIPA();
-        loginResponseWithIPA.setLoginResponse(response);
-        loginResponseWithIPA.setCookies(newCookies);
-        return loginResponseWithIPA;
+        return loginResponse;
     }
 
     private MultiMap convertUser(LoginRequest loginRequest) {

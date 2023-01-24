@@ -11,7 +11,7 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.robolaunch.exception.ApplicationException;
-import org.robolaunch.models.request.RequestFleet;
+import org.robolaunch.model.request.RequestFleet;
 import org.robolaunch.repository.abstracts.CloudInstanceHelperRepository;
 import org.robolaunch.repository.abstracts.FleetRepository;
 import org.robolaunch.service.ApiClientManager;

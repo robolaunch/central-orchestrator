@@ -23,8 +23,8 @@ import org.keycloak.representations.idm.ProtocolMapperRepresentation;
 import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.robolaunch.exception.ApplicationException;
-import org.robolaunch.models.Organization;
-import org.robolaunch.models.User;
+import org.robolaunch.model.account.Organization;
+import org.robolaunch.model.account.User;
 import org.robolaunch.repository.abstracts.KeycloakAdminRepository;
 
 @ApplicationScoped

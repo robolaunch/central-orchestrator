@@ -10,6 +10,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.robolaunch.core.abstracts.IPAAdmin;
+import org.robolaunch.model.account.UserGroupMember;
 
 public class IPAAdminLogin implements IPAAdmin {
     private String username;

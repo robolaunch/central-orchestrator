@@ -18,30 +18,21 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.robolaunch.core.abstracts.IPAAdmin;
 import org.robolaunch.core.concretes.IPAAdminLogin;
 import org.robolaunch.exception.ApplicationException;
-import org.robolaunch.exception.UserNotFoundException;
-import org.robolaunch.models.CurrentUser;
-import org.robolaunch.models.Department;
-import org.robolaunch.models.GroupMember;
-import org.robolaunch.models.InvitedUser;
-import org.robolaunch.models.LoginRefreshToken;
-import org.robolaunch.models.LoginRefreshTokenOrganization;
-import org.robolaunch.models.LoginRequest;
-import org.robolaunch.models.LoginRequestOrganization;
-import org.robolaunch.models.LoginResponse;
-import org.robolaunch.models.LoginResponseWithIPA;
-import org.robolaunch.models.Organization;
-import org.robolaunch.models.RegisteredDepartment;
-import org.robolaunch.models.User;
-import org.robolaunch.models.response.PlainResponse;
-import org.robolaunch.models.response.ResponseCurrentUser;
-import org.robolaunch.models.response.ResponseLogin;
-import org.robolaunch.models.response.ResponseRefreshToken;
-import org.robolaunch.repository.abstracts.GroupAdminRepository;
-import org.robolaunch.repository.abstracts.GroupRepository;
+import org.robolaunch.model.account.UserGroupMember;
+import org.robolaunch.model.account.LoginRefreshToken;
+import org.robolaunch.model.account.LoginRefreshTokenOrganization;
+import org.robolaunch.model.account.LoginRequest;
+import org.robolaunch.model.account.LoginRequestOrganization;
+import org.robolaunch.model.account.LoginResponse;
+import org.robolaunch.model.account.Organization;
+import org.robolaunch.model.account.Team;
+import org.robolaunch.model.account.User;
+import org.robolaunch.model.response.PlainResponse;
+import org.robolaunch.model.response.ResponseLogin;
+import org.robolaunch.model.response.ResponseRefreshToken;
+import org.robolaunch.repository.abstracts.AccountRepository;
 import org.robolaunch.repository.abstracts.KeycloakAdminRepository;
 import org.robolaunch.repository.abstracts.KeycloakRepository;
-import org.robolaunch.repository.abstracts.UserAdminRepository;
-import org.robolaunch.repository.abstracts.UserRepository;
 
 import io.quarkus.arc.log.LoggerName;
 
@@ -56,19 +47,10 @@ public class AccountService {
     KeycloakAdminRepository keycloakAdminRepository;
 
     @Inject
-    UserRepository userRepository;
-
-    @Inject
     GroupService groupService;
 
     @Inject
-    UserAdminRepository userAdminRepository;
-
-    @Inject
-    GroupRepository groupRepository;
-
-    @Inject
-    GroupAdminRepository groupAdminRepository;
+    AccountRepository accountRepository;
 
     @Inject
     MailService mailService;
@@ -87,21 +69,16 @@ public class AccountService {
      * HELPER FUNCTION.
      */
     public void grantAdminPrivileges() {
-        groupAdminRepository.getCurrentCookies().forEach(cookie -> {
-            if (cookie.getMaxAge() <= 0) {
-                try {
-                    groupAdminRepository.clearCookies();
-                } catch (URISyntaxException e) {
-                    accountLogger.error("Error happened when granting admin privileges. While clearing cookies: "
-                            + e.getMessage());
-                }
+        try {
+            if (accountRepository.getCurrentCookies().isEmpty()) {
+                System.out.println("No cookie found. Generating new cookie.");
                 IPAAdmin adminLogin = new IPAAdminLogin();
                 List<HttpCookie> innerCookies;
                 try {
                     innerCookies = adminLogin.login();
                     innerCookies.forEach(innerCookie -> {
-                        groupAdminRepository.appendCookie(innerCookie);
-                        userAdminRepository.appendCookie(innerCookie);
+                        accountRepository.appendCookie(innerCookie);
+                        accountRepository.appendCookie(innerCookie);
                     });
                 } catch (InternalError | IOException e) {
                     accountLogger.error("Error happened when granting admin privileges. While logging in: "
@@ -109,29 +86,41 @@ public class AccountService {
                 }
                 accountLogger.info("New cookie generated for admin privileges.");
             } else {
-                accountLogger.info("Cookie still works. No need to refresh.");
+                System.out.println("Cookies: " + accountRepository.getCurrentCookies() + " - ");
+                accountRepository.getCurrentCookies().forEach(cookie -> {
+                    if (cookie.getMaxAge() <= 0) {
+                        System.out.println("Cookie expired. Generating new cookie.");
+                        accountRepository.clearCookies();
+                        IPAAdmin adminLogin = new IPAAdminLogin();
+                        List<HttpCookie> innerCookies;
+                        try {
+                            innerCookies = adminLogin.login();
+                            innerCookies.forEach(innerCookie -> {
+                                accountRepository.appendCookie(innerCookie);
+                            });
+                        } catch (InternalError | IOException e) {
+                            accountLogger.error("Error happened when granting admin privileges. While logging in: "
+                                    + e.getMessage());
+                        }
+                        accountLogger.info("New cookie generated for admin privileges.");
+                    } else {
+                        accountLogger.info("Cookie still works. No need to refresh.");
+                    }
+                });
             }
-        });
+        } catch (Exception e) {
+            accountLogger.error("Error happened when granting admin privileges. " + e.getMessage());
+        }
 
     }
 
     public ResponseLogin userLogin(LoginRequest loginRequest) throws InterruptedException, ExecutionException {
         ResponseLogin responseLogin = new ResponseLogin();
         try {
-            LoginResponseWithIPA response = keycloakRepository.login(loginRequest);
-            List<HttpCookie> cookies = response.getCookies();
-            cookies.forEach(cookie -> {
-                groupRepository.appendCookie(cookie);
-                userRepository.appendCookie(cookie);
-            });
+            LoginResponse response = keycloakRepository.login(loginRequest);
             responseLogin.setMessage("Login successful.");
             responseLogin.setSuccess(true);
-            responseLogin.setData(response.getLoginResponse().get());
-            return responseLogin;
-        } catch (UserNotFoundException e) {
-            responseLogin.setMessage(e.getMessage());
-            responseLogin.setSuccess(false);
-            responseLogin.setData(null);
+            responseLogin.setData(response);
             return responseLogin;
         } catch (ApplicationException e) {
             responseLogin.setMessage(e.getMessage());
@@ -150,20 +139,10 @@ public class AccountService {
             throws InterruptedException, ExecutionException {
         ResponseLogin responseLogin = new ResponseLogin();
         try {
-            LoginResponseWithIPA response = keycloakRepository.loginOrganization(loginRequestOrganization);
-            List<HttpCookie> cookies = response.getCookies();
-            cookies.forEach(cookie -> {
-                groupRepository.appendCookie(cookie);
-                userRepository.appendCookie(cookie);
-            });
+            LoginResponse response = keycloakRepository.loginOrganization(loginRequestOrganization);
             responseLogin.setMessage("Login successful.");
             responseLogin.setSuccess(true);
-            responseLogin.setData(response.getLoginResponse().get());
-            return responseLogin;
-        } catch (UserNotFoundException e) {
-            responseLogin.setMessage(e.getMessage());
-            responseLogin.setSuccess(false);
-            responseLogin.setData(null);
+            responseLogin.setData(response);
             return responseLogin;
         } catch (ApplicationException e) {
             responseLogin.setMessage(e.getMessage());
@@ -178,38 +157,11 @@ public class AccountService {
         }
     }
 
-    public void userIPALogin(LoginRequest loginRequest) throws ApplicationException {
-        try {
-            List<HttpCookie> cookies = keycloakRepository.login(loginRequest).getCookies();
-            cookies.forEach(cookie -> {
-                groupRepository.appendCookie(cookie);
-                userRepository.appendCookie(cookie);
-            });
-        } catch (Exception e) {
-            accountLogger.error("Error when getCookies: " + e);
-            throw new ApplicationException("An error occured.");
-        }
-    }
-
-    public void IPALogin(LoginRequest loginRequest) throws ApplicationException {
-        try {
-            List<HttpCookie> cookies = keycloakRepository.login(loginRequest).getCookies();
-            cookies.forEach(cookie -> {
-                groupRepository.appendCookie(cookie);
-                userRepository.appendCookie(cookie);
-            });
-        } catch (Exception e) {
-            accountLogger.error("Error when getCookies: " + e);
-            throw new ApplicationException("An error occured. Please try again.");
-        }
-    }
-
     public LoginResponse login(LoginRequest loginRequest) throws ApplicationException {
         try {
-            CompletableFuture<LoginResponse> response = keycloakRepository.login(loginRequest).getLoginResponse();
-            LoginResponse finalResp = response.get();
+            LoginResponse response = keycloakRepository.login(loginRequest);
             accountLogger.info("Login successful");
-            return finalResp;
+            return response;
         } catch (Exception | InternalError e) {
             accountLogger.error("Error when login: " + e.getMessage() + e.getStackTrace() + e.getLocalizedMessage());
             throw new ApplicationException("Invalid username or password.");
@@ -222,7 +174,7 @@ public class AccountService {
         try {
             User user = new User();
             user.setUsername(jwt.getClaim("preferred_username"));
-            userRepository.changePassword(oldPassword, newPassword, user.getUsername());
+            accountRepository.changePassword(oldPassword, newPassword, user.getUsername());
             accountLogger.info("User password updated.");
             plainResponse.setSuccess(true);
             plainResponse.setMessage("Password updated successfully.");
@@ -236,86 +188,28 @@ public class AccountService {
 
     public void logout() {
         try {
-            userRepository.clearCookies();
-            groupRepository.clearCookies();
-            userAdminRepository.clearCookies();
-            groupAdminRepository.clearCookies();
+            accountRepository.clearCookies();
         } catch (Exception e) {
             accountLogger.error("Error when logout: " + e);
         }
     }
 
-    public GroupMember currentUser(Organization organization) {
+    public UserGroupMember currentUser(Organization organization) {
         try {
             User user = new User();
             user.setUsername(jwt.getClaim("preferred_username"));
-            GroupMember returnedUser = new GroupMember();
+            UserGroupMember returnedUser = new UserGroupMember();
             returnedUser.setUsername(jwt.getClaim("preferred_username"));
             returnedUser.setEmail(jwt.getClaim("email"));
             returnedUser.setFirstName(jwt.getClaim("given_name"));
             returnedUser.setLastName(jwt.getClaim("family_name"));
-            returnedUser.setAdmin(groupAdminRepository.isGroupManager(user, organization));
+            returnedUser.setAdmin(accountRepository.isGroupManager(user, organization));
             accountLogger.info("Current user: " + returnedUser);
             return returnedUser;
         } catch (Exception e) {
             accountLogger.error("Error happened when getting current user " + e.getMessage());
         }
         return null;
-    }
-
-    public CurrentUser getBasicCurrentUser() {
-        User user = new User();
-        user.setUsername(jwt.getClaim("preferred_username"));
-        CurrentUser currentUser = new CurrentUser();
-        currentUser.setUsername(jwt.getClaim("preferred_username"));
-        currentUser.setEmail(jwt.getClaim("email"));
-        currentUser.setFirstName(jwt.getClaim("given_name"));
-        currentUser.setLastName(jwt.getClaim("family_name"));
-
-        return currentUser;
-    }
-
-    public ResponseCurrentUser getCurrentUser(Organization organization) {
-        ResponseCurrentUser responseCurrentUser = new ResponseCurrentUser();
-        try {
-            User user = new User();
-            user.setUsername(jwt.getClaim("preferred_username"));
-            CurrentUser currentUser = new CurrentUser();
-            currentUser.setUsername(jwt.getClaim("preferred_username"));
-            currentUser.setEmail(jwt.getClaim("email"));
-            currentUser.setFirstName(jwt.getClaim("given_name"));
-            currentUser.setLastName(jwt.getClaim("family_name"));
-
-            currentUser.setAdmin(groupAdminRepository.isGroupManager(user, organization));
-            List<Department> departments = groupAdminRepository.getTeams(organization, "member_group");
-            Iterator<Department> it = departments.iterator();
-            ArrayList<RegisteredDepartment> depts = new ArrayList<RegisteredDepartment>();
-            while (it.hasNext()) {
-                Department d = it.next();
-                Organization org = new Organization();
-                org.setName(d.getId());
-                if (groupAdminRepository.isGroupMember(user, org)) {
-                    RegisteredDepartment rdept = new RegisteredDepartment();
-                    rdept.setName(groupAdminRepository.getGroupDescription(org));
-                    if (groupAdminRepository.isGroupManager(user, org)) {
-                        rdept.setAdmin(true);
-                    } else {
-                        rdept.setAdmin(false);
-                    }
-                    depts.add(rdept);
-                }
-            }
-            currentUser.setDepartments(depts);
-
-            responseCurrentUser.setSuccess(true);
-            responseCurrentUser.setUser(currentUser);
-            responseCurrentUser.setMessage("User data retrieved successfully.");
-        } catch (Exception e) {
-            responseCurrentUser.setMessage("Error getting current user.");
-            responseCurrentUser.setSuccess(false);
-        }
-        return responseCurrentUser;
-
     }
 
     public ResponseRefreshToken refreshResponse(LoginRefreshToken loginRequest) {
@@ -354,7 +248,7 @@ public class AccountService {
     /* START Registration Flow */
     public String createUserWithPassword(@Valid User user) throws ApplicationException, IOException {
         try {
-            String password = userAdminRepository.createUserWithPassword(user);
+            String password = accountRepository.createUserWithPassword(user);
             accountLogger.info("User " + user.getUsername() + " created");
             return password;
         } catch (ApplicationException e) {
@@ -365,7 +259,7 @@ public class AccountService {
     public PlainResponse createRegisteredUserWithPassword(@Valid User user) throws ApplicationException, IOException {
         PlainResponse plainResponse = new PlainResponse();
         try {
-            userAdminRepository.createUserWithPassword(user);
+            accountRepository.createUserWithPassword(user);
             plainResponse.setSuccess(true);
             plainResponse.setMessage("User created successfully.");
             accountLogger.info("User " + user.getUsername() + " created");
@@ -379,7 +273,7 @@ public class AccountService {
 
     public void deleteUserFromFreeIPA(@Valid User user) throws ApplicationException, IOException {
         try {
-            userAdminRepository.deleteUser(user);
+            accountRepository.deleteUser(user);
             accountLogger.info("User " + user.getUsername() + " deleted from FreeIPA.");
         } catch (ApplicationException e) {
             throw new ApplicationException(e.getMessage());
@@ -388,7 +282,7 @@ public class AccountService {
 
     public Boolean doesEmailExistWithEmail(String email) throws ApplicationException {
         try {
-            Boolean doesEmailExists = userAdminRepository.doesEmailExist(email);
+            Boolean doesEmailExists = accountRepository.doesEmailExist(email);
             accountLogger.info("Email " + email + " exists: " + doesEmailExists);
             return doesEmailExists;
         } catch (Exception e) {
@@ -400,45 +294,10 @@ public class AccountService {
     public Boolean isMemberCurrentOrganizationWithEmail(Organization organization, String email)
             throws ApplicationException {
         try {
-            return groupAdminRepository.isGroupMemberByEmail(email, organization);
+            return accountRepository.isGroupMemberByEmail(email, organization);
         } catch (Exception e) {
             throw new ApplicationException(
                     "Error happened while checking if the user is a member of the organization.");
-        }
-    }
-
-    public String createUserFromInvite(InvitedUser user) throws ApplicationException {
-        try {
-            String password = userAdminRepository.createUserFromInviteWithPassword(user);
-            accountLogger.info("User " + user.getUsername() + " created");
-            return password;
-        } catch (Exception e) {
-            throw new ApplicationException("Error happened while creating user.");
-
-        }
-    }
-
-    public void assignInvitedUserToDefaultGroup(InvitedUser user) throws ApplicationException {
-        try {
-            User usr = new User();
-            usr.setUsername(user.getUsername());
-            Organization organization = new Organization();
-            organization.setName("fm_users");
-            groupAdminRepository.addUserToGroup(usr, organization);
-            accountLogger.info("User " + user.getUsername() + " assigned to default group");
-        } catch (Exception e) {
-            throw new ApplicationException("Error creating user.");
-
-        }
-    }
-
-    public void sendEmailWithCredentials(InvitedUser user, String password) throws ApplicationException {
-        try {
-            mailService.sendPasswordMail(user, password);
-            accountLogger.info("User " + user.getUsername() + " password email sent");
-        } catch (Exception e) {
-            throw new ApplicationException("Error creating user.");
-
         }
     }
 
@@ -450,7 +309,7 @@ public class AccountService {
                 plainResponse.setMessage("You are not authorized to update this user.");
                 return plainResponse;
             }
-            userRepository.updateUser(currentUsername, user);
+            accountRepository.updateUser(currentUsername, user);
             accountLogger.info("User " + user.getUsername() + " updated");
             plainResponse.setSuccess(true);
             plainResponse.setMessage("User is successfully updated.");
@@ -463,7 +322,7 @@ public class AccountService {
 
     public Boolean doesFirstNameExist(String firstName) throws ApplicationException {
         try {
-            Boolean doesItExist = userRepository.doesFirstNameExist(firstName);
+            Boolean doesItExist = accountRepository.doesFirstNameExist(firstName);
             return doesItExist;
         } catch (Exception e) {
             throw new ApplicationException("Error while checking if the first name exists.");
@@ -472,7 +331,7 @@ public class AccountService {
 
     public Boolean doesEmailExist(User user) {
         try {
-            Boolean doesItExist = userAdminRepository.doesEmailExist(user.getEmail());
+            Boolean doesItExist = accountRepository.doesEmailExist(user.getEmail());
             return doesItExist;
         } catch (Exception e) {
             return null;
@@ -484,6 +343,25 @@ public class AccountService {
             String username = jwt.getClaim("preferred_username");
             accountLogger.info("Username from JWT: " + username);
             return username;
+        } catch (Exception e) {
+            accountLogger.error("Error getting username from JWT: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public User getUserFromJWT() {
+        try {
+            String username = jwt.getClaim("preferred_username");
+            String email = jwt.getClaim("email");
+            String firstName = jwt.getClaim("given_name");
+            String lastName = jwt.getClaim("family_name");
+            User user = new User();
+            user.setUsername(username);
+            user.setEmail(email);
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            accountLogger.info("Username from JWT: " + username);
+            return user;
         } catch (Exception e) {
             accountLogger.error("Error getting username from JWT: " + e.getMessage());
             return null;

@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_zJC9QH3hEDu4ertnA3MlxA" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
-  <bpmn2:itemDefinition id="_cloudInstanceSignalItem" structureRef="org.robolaunch.models.CloudInstanceSignal"/>
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_hjEDkH4ZEDuNXOElHTKV5A" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+  <bpmn2:itemDefinition id="_cloudInstanceSignalItem" structureRef="org.robolaunch.model.robot.CloudInstanceSignal"/>
   <bpmn2:itemDefinition id="_userStageItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_adminStageItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_nodeNameItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_statusItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="_plainResponseItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
-  <bpmn2:itemDefinition id="_requestRobotItem" structureRef="org.robolaunch.models.request.RequestRobot"/>
+  <bpmn2:itemDefinition id="_plainResponseItem" structureRef="org.robolaunch.model.response.PlainResponse"/>
+  <bpmn2:itemDefinition id="_requestRobotItem" structureRef="org.robolaunch.model.request.RequestRobot"/>
   <bpmn2:itemDefinition id="_VCCountItem" structureRef="Integer"/>
   <bpmn2:itemDefinition id="_providerNameItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_regionNameItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_superClusterNameItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_countItem" structureRef="Integer"/>
-  <bpmn2:itemDefinition id="_organizationItem" structureRef="org.robolaunch.models.Organization"/>
+  <bpmn2:itemDefinition id="_organizationItem" structureRef="org.robolaunch.model.account.Organization"/>
   <bpmn2:itemDefinition id="_teamIdItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_cloudInstanceNameItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_isHealthyItem" structureRef="Boolean"/>
@@ -25,14 +25,14 @@
   <bpmn2:itemDefinition id="_usernameItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_isThingReadyItem" structureRef="Boolean"/>
   <bpmn2:itemDefinition id="_teamNameItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="_requestFleetItem" structureRef="org.robolaunch.models.request.RequestFleet"/>
-  <bpmn2:itemDefinition id="_requestBuildManagerItem" structureRef="org.robolaunch.models.request.RequestBuildManager"/>
-  <bpmn2:itemDefinition id="_requestLaunchManagerItem" structureRef="org.robolaunch.models.request.RequestLaunchManager"/>
+  <bpmn2:itemDefinition id="_requestFleetItem" structureRef="org.robolaunch.model.request.RequestFleet"/>
+  <bpmn2:itemDefinition id="_requestBuildManagerItem" structureRef="org.robolaunch.model.request.RequestBuildManager"/>
+  <bpmn2:itemDefinition id="_requestLaunchManagerItem" structureRef="org.robolaunch.model.request.RequestLaunchManager"/>
   <bpmn2:itemDefinition id="_robotStatusItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__814352CC-C7EF-48DC-801D-0EE006A4BFF9_cloudInstanceSignalOutputXItem" structureRef="org.robolaunch.models.CloudInstanceSignal"/>
-  <bpmn2:itemDefinition id="__CF278397-A1BC-4595-80F9-69A3CF01F40A_requestFleetOutputXItem" structureRef="org.robolaunch.models.request.RequestFleet"/>
+  <bpmn2:itemDefinition id="__814352CC-C7EF-48DC-801D-0EE006A4BFF9_cloudInstanceSignalOutputXItem" structureRef="org.robolaunch.model.robot.CloudInstanceSignal"/>
+  <bpmn2:itemDefinition id="__CF278397-A1BC-4595-80F9-69A3CF01F40A_requestFleetOutputXItem" structureRef="org.robolaunch.model.request.RequestFleet"/>
   <bpmn2:itemDefinition id="__95047145-DC2D-4FAF-A608-5779FC9D777D_VCCountInputXItem" structureRef="Integer"/>
-  <bpmn2:itemDefinition id="__95047145-DC2D-4FAF-A608-5779FC9D777D_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
+  <bpmn2:itemDefinition id="__95047145-DC2D-4FAF-A608-5779FC9D777D_organizationInputXItem" structureRef="org.robolaunch.model.account.Organization"/>
   <bpmn2:itemDefinition id="__95047145-DC2D-4FAF-A608-5779FC9D777D_bufferNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__95047145-DC2D-4FAF-A608-5779FC9D777D_cloudInstanceNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__95047145-DC2D-4FAF-A608-5779FC9D777D_teamIdInputXItem" structureRef="String"/>
@@ -46,7 +46,7 @@
   <bpmn2:itemDefinition id="__95047145-DC2D-4FAF-A608-5779FC9D777D_statusInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__95047145-DC2D-4FAF-A608-5779FC9D777D_connectionHubInputXItem" structureRef="Boolean"/>
   <bpmn2:itemDefinition id="__95047145-DC2D-4FAF-A608-5779FC9D777D_usernameInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__95047145-DC2D-4FAF-A608-5779FC9D777D_plainResponseInputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
+  <bpmn2:itemDefinition id="__95047145-DC2D-4FAF-A608-5779FC9D777D_plainResponseInputXItem" structureRef="org.robolaunch.model.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__95047145-DC2D-4FAF-A608-5779FC9D777D_providerNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__95047145-DC2D-4FAF-A608-5779FC9D777D_regionNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__95047145-DC2D-4FAF-A608-5779FC9D777D_superClusterNameInputXItem" structureRef="String"/>
@@ -55,10 +55,10 @@
   <bpmn2:itemDefinition id="__95047145-DC2D-4FAF-A608-5779FC9D777D_statusOutputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__95047145-DC2D-4FAF-A608-5779FC9D777D_adminStageOutputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__95047145-DC2D-4FAF-A608-5779FC9D777D_nodeNameOutputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__95047145-DC2D-4FAF-A608-5779FC9D777D_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
+  <bpmn2:itemDefinition id="__95047145-DC2D-4FAF-A608-5779FC9D777D_plainResponseOutputXItem" structureRef="org.robolaunch.model.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__95047145-DC2D-4FAF-A608-5779FC9D777D_bufferNameOutputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__95047145-DC2D-4FAF-A608-5779FC9D777D_teamNameOutputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__DE3A8153-2FD7-42D5-B939-591CD988E067_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
+  <bpmn2:itemDefinition id="__DE3A8153-2FD7-42D5-B939-591CD988E067_organizationInputXItem" structureRef="org.robolaunch.model.account.Organization"/>
   <bpmn2:itemDefinition id="__DE3A8153-2FD7-42D5-B939-591CD988E067_teamIdInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__DE3A8153-2FD7-42D5-B939-591CD988E067_cloudInstanceNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__DE3A8153-2FD7-42D5-B939-591CD988E067_bufferNameInputXItem" structureRef="String"/>
@@ -68,7 +68,7 @@
   <bpmn2:itemDefinition id="__DE3A8153-2FD7-42D5-B939-591CD988E067_adminStageInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__DE3A8153-2FD7-42D5-B939-591CD988E067_statusInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__DE3A8153-2FD7-42D5-B939-591CD988E067_connectionHubInputXItem" structureRef="Boolean"/>
-  <bpmn2:itemDefinition id="__DE3A8153-2FD7-42D5-B939-591CD988E067_plainResponseInputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
+  <bpmn2:itemDefinition id="__DE3A8153-2FD7-42D5-B939-591CD988E067_plainResponseInputXItem" structureRef="org.robolaunch.model.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__DE3A8153-2FD7-42D5-B939-591CD988E067_providerNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__DE3A8153-2FD7-42D5-B939-591CD988E067_regionNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__DE3A8153-2FD7-42D5-B939-591CD988E067_superClusterNameInputXItem" structureRef="String"/>
@@ -76,9 +76,9 @@
   <bpmn2:itemDefinition id="__DE3A8153-2FD7-42D5-B939-591CD988E067_adminStageOutputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__DE3A8153-2FD7-42D5-B939-591CD988E067_userStageOutputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__DE3A8153-2FD7-42D5-B939-591CD988E067_statusOutputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__DE3A8153-2FD7-42D5-B939-591CD988E067_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
+  <bpmn2:itemDefinition id="__DE3A8153-2FD7-42D5-B939-591CD988E067_plainResponseOutputXItem" structureRef="org.robolaunch.model.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__DE3A8153-2FD7-42D5-B939-591CD988E067_nodeNameOutputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
+  <bpmn2:itemDefinition id="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_organizationInputXItem" structureRef="org.robolaunch.model.account.Organization"/>
   <bpmn2:itemDefinition id="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_teamIdInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_cloudInstanceNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_bufferNameInputXItem" structureRef="String"/>
@@ -87,15 +87,15 @@
   <bpmn2:itemDefinition id="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_adminStageInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_userStageInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_statusInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_plainResponseInputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
+  <bpmn2:itemDefinition id="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_plainResponseInputXItem" structureRef="org.robolaunch.model.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_providerNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_regionNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_superClusterNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_adminStageOutputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_userStageOutputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_statusOutputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
-  <bpmn2:itemDefinition id="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
+  <bpmn2:itemDefinition id="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_plainResponseOutputXItem" structureRef="org.robolaunch.model.response.PlainResponse"/>
+  <bpmn2:itemDefinition id="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_organizationInputXItem" structureRef="org.robolaunch.model.account.Organization"/>
   <bpmn2:itemDefinition id="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_teamIdInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_cloudInstanceNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_bufferNameInputXItem" structureRef="String"/>
@@ -104,7 +104,7 @@
   <bpmn2:itemDefinition id="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_adminStageInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_userStageInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_statusInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_plainResponseInputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
+  <bpmn2:itemDefinition id="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_plainResponseInputXItem" structureRef="org.robolaunch.model.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_providerNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_regionNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_superClusterNameInputXItem" structureRef="String"/>
@@ -112,10 +112,10 @@
   <bpmn2:itemDefinition id="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_userStageOutputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_adminStageOutputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_statusOutputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
+  <bpmn2:itemDefinition id="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_plainResponseOutputXItem" structureRef="org.robolaunch.model.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__82C2C1D6-D3DE-4DC3-903A-94DFFDF058EE_userStageInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__82C2C1D6-D3DE-4DC3-903A-94DFFDF058EE_countInputXItem" structureRef="Integer"/>
-  <bpmn2:itemDefinition id="__82C2C1D6-D3DE-4DC3-903A-94DFFDF058EE_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
+  <bpmn2:itemDefinition id="__82C2C1D6-D3DE-4DC3-903A-94DFFDF058EE_organizationInputXItem" structureRef="org.robolaunch.model.account.Organization"/>
   <bpmn2:itemDefinition id="__82C2C1D6-D3DE-4DC3-903A-94DFFDF058EE_teamIdInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__82C2C1D6-D3DE-4DC3-903A-94DFFDF058EE_cloudInstanceNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__82C2C1D6-D3DE-4DC3-903A-94DFFDF058EE_isHealthyInputXItem" structureRef="Boolean"/>
@@ -126,7 +126,7 @@
   <bpmn2:itemDefinition id="__82C2C1D6-D3DE-4DC3-903A-94DFFDF058EE_userStageOutputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__BB1414CB-A1DD-46F3-9929-B68D5DD0D69F_messageInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__BB1414CB-A1DD-46F3-9929-B68D5DD0D69F_successInputXItem" structureRef="Boolean"/>
-  <bpmn2:itemDefinition id="__BB1414CB-A1DD-46F3-9929-B68D5DD0D69F_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
+  <bpmn2:itemDefinition id="__BB1414CB-A1DD-46F3-9929-B68D5DD0D69F_plainResponseOutputXItem" structureRef="org.robolaunch.model.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__E00BA638-9C94-4D9C-88D3-7AE4EF60453A_nodeNameInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__E00BA638-9C94-4D9C-88D3-7AE4EF60453A_providerInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__E00BA638-9C94-4D9C-88D3-7AE4EF60453A_regionInputXItem" structureRef="String"/>
@@ -137,21 +137,21 @@
   <bpmn2:itemDefinition id="__EC1FE736-52B9-471E-BF31-8680A6A92F15_regionInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__EC1FE736-52B9-471E-BF31-8680A6A92F15_superClusterInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__EC1FE736-52B9-471E-BF31-8680A6A92F15_isThingReadyOutputXItem" structureRef="Boolean"/>
-  <bpmn2:itemDefinition id="__C5DE0648-AD90-4CD0-B584-553353028923_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
+  <bpmn2:itemDefinition id="__C5DE0648-AD90-4CD0-B584-553353028923_organizationInputXItem" structureRef="org.robolaunch.model.account.Organization"/>
   <bpmn2:itemDefinition id="__C5DE0648-AD90-4CD0-B584-553353028923_teamIdInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__C5DE0648-AD90-4CD0-B584-553353028923_isThingReadyOutputXItem" structureRef="Boolean"/>
   <bpmn2:itemDefinition id="__E3BA9EE7-D523-4DBF-A05D-52813C4F6459_messageInputXItem" structureRef="String"/>
   <bpmn2:itemDefinition id="__E3BA9EE7-D523-4DBF-A05D-52813C4F6459_successInputXItem" structureRef="Boolean"/>
-  <bpmn2:itemDefinition id="__E3BA9EE7-D523-4DBF-A05D-52813C4F6459_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
-  <bpmn2:itemDefinition id="__0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_requestFleetInputXItem" structureRef="org.robolaunch.models.request.RequestFleet"/>
+  <bpmn2:itemDefinition id="__E3BA9EE7-D523-4DBF-A05D-52813C4F6459_plainResponseOutputXItem" structureRef="org.robolaunch.model.response.PlainResponse"/>
+  <bpmn2:itemDefinition id="__0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_requestFleetInputXItem" structureRef="org.robolaunch.model.request.RequestFleet"/>
   <bpmn2:itemDefinition id="__0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_isThingReadyInputXItem" structureRef="Boolean"/>
-  <bpmn2:itemDefinition id="__0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_organizationInputXItem" structureRef="org.robolaunch.models.Organization"/>
+  <bpmn2:itemDefinition id="__0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_organizationInputXItem" structureRef="org.robolaunch.model.account.Organization"/>
   <bpmn2:itemDefinition id="__0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_teamIdInputXItem" structureRef="String"/>
-  <bpmn2:itemDefinition id="__0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_plainResponseInputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
-  <bpmn2:itemDefinition id="__0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_plainResponseOutputXItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
+  <bpmn2:itemDefinition id="__0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_plainResponseInputXItem" structureRef="org.robolaunch.model.response.PlainResponse"/>
+  <bpmn2:itemDefinition id="__0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_plainResponseOutputXItem" structureRef="org.robolaunch.model.response.PlainResponse"/>
   <bpmn2:signal id="_1662702951" name="operation"/>
   <bpmn2:signal id="_1354000270" name="newFleet"/>
-  <bpmn2:interface id="_BB1414CB-A1DD-46F3-9929-B68D5DD0D69F_ServiceInterface" name="org.robolaunch.service.ErrorService" implementationRef="org.robolaunch.service.ErrorService">
+  <bpmn2:interface id="_BB1414CB-A1DD-46F3-9929-B68D5DD0D69F_ServiceInterface" name="org.robolaunch.service.ResponseService" implementationRef="org.robolaunch.service.ResponseService">
     <bpmn2:operation id="_BB1414CB-A1DD-46F3-9929-B68D5DD0D69F_ServiceOperation" name="plainResponseTemplate" implementationRef="plainResponseTemplate"/>
   </bpmn2:interface>
   <bpmn2:interface id="_E00BA638-9C94-4D9C-88D3-7AE4EF60453A_ServiceInterface" name="org.robolaunch.service.AmazonService" implementationRef="org.robolaunch.service.AmazonService">
@@ -166,11 +166,11 @@
   <bpmn2:interface id="_1B94F98F-20F7-4965-86EC-054BF6C4D0B7_ServiceInterface" name="org.robolaunch.service.AccountService" implementationRef="org.robolaunch.service.AccountService">
     <bpmn2:operation id="_1B94F98F-20F7-4965-86EC-054BF6C4D0B7_ServiceOperation" name="grantAdminPrivileges" implementationRef="grantAdminPrivileges"/>
   </bpmn2:interface>
-  <bpmn2:interface id="_E3BA9EE7-D523-4DBF-A05D-52813C4F6459_ServiceInterface" name="org.robolaunch.service.ErrorService" implementationRef="org.robolaunch.service.ErrorService">
+  <bpmn2:interface id="_E3BA9EE7-D523-4DBF-A05D-52813C4F6459_ServiceInterface" name="org.robolaunch.service.ResponseService" implementationRef="org.robolaunch.service.ResponseService">
     <bpmn2:operation id="_E3BA9EE7-D523-4DBF-A05D-52813C4F6459_ServiceOperation" name="plainResponseTemplate" implementationRef="plainResponseTemplate"/>
   </bpmn2:interface>
-  <bpmn2:collaboration id="_2A0BF898-845A-425F-9E65-0A5E14B06855" name="Default Collaboration">
-    <bpmn2:participant id="_DA64BC49-5A68-4B3D-AAFA-3A9D5E4537A2" name="Pool Participant" processRef="roboticsCloud"/>
+  <bpmn2:collaboration id="_8D0FB4C4-545D-4DFC-8FBD-A1D7C2A3B894" name="Default Collaboration">
+    <bpmn2:participant id="_64AE6753-370C-498B-94B8-60AC67DF8203" name="Pool Participant" processRef="roboticsCloud"/>
   </bpmn2:collaboration>
   <bpmn2:process id="roboticsCloud" drools:packageName="org.robolaunch.kogito.provider" drools:version="1.0" drools:adHoc="false" name="roboticsCloud" isExecutable="true" processType="Public">
     <bpmn2:property id="cloudInstanceSignal" itemSubjectRef="_cloudInstanceSignalItem" name="cloudInstanceSignal"/>
@@ -440,12 +440,12 @@
       <bpmn2:incoming>_C7470E6E-ECA4-4C4B-932D-87FB9F5B06BD</bpmn2:incoming>
       <bpmn2:outgoing>_1C2E7DB7-3738-4913-A0B0-350EE8F4603C</bpmn2:outgoing>
       <bpmn2:ioSpecification>
-        <bpmn2:dataInput id="_0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_requestFleetInputX" drools:dtype="org.robolaunch.models.request.RequestFleet" itemSubjectRef="__0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_requestFleetInputXItem" name="requestFleet"/>
+        <bpmn2:dataInput id="_0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_requestFleetInputX" drools:dtype="org.robolaunch.model.request.RequestFleet" itemSubjectRef="__0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_requestFleetInputXItem" name="requestFleet"/>
         <bpmn2:dataInput id="_0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_isThingReadyInputX" drools:dtype="Boolean" itemSubjectRef="__0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_isThingReadyInputXItem" name="isThingReady"/>
-        <bpmn2:dataInput id="_0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_organizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_organizationInputXItem" name="organization"/>
+        <bpmn2:dataInput id="_0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_organizationInputX" drools:dtype="org.robolaunch.model.account.Organization" itemSubjectRef="__0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_organizationInputXItem" name="organization"/>
         <bpmn2:dataInput id="_0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_teamIdInputX" drools:dtype="String" itemSubjectRef="__0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_teamIdInputXItem" name="teamId"/>
-        <bpmn2:dataInput id="_0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_plainResponseInputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_plainResponseInputXItem" name="plainResponse"/>
-        <bpmn2:dataOutput id="_0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_plainResponseOutputXItem" name="plainResponse"/>
+        <bpmn2:dataInput id="_0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_plainResponseInputX" drools:dtype="org.robolaunch.model.response.PlainResponse" itemSubjectRef="__0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_plainResponseInputXItem" name="plainResponse"/>
+        <bpmn2:dataOutput id="_0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_plainResponseOutputX" drools:dtype="org.robolaunch.model.response.PlainResponse" itemSubjectRef="__0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_requestFleetInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_0FB7FBBA-BD95-42EE-9C07-E29D8FFCA1D9_isThingReadyInputX</bpmn2:dataInputRefs>
@@ -500,7 +500,7 @@
       <bpmn2:incoming>_5460D065-24D3-4CF3-9B6F-33E1E93CCD8B</bpmn2:incoming>
       <bpmn2:terminateEventDefinition/>
     </bpmn2:endEvent>
-    <bpmn2:serviceTask id="_E3BA9EE7-D523-4DBF-A05D-52813C4F6459" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.ErrorService" drools:serviceoperation="plainResponseTemplate" name="Return Error Response" implementation="Java" operationRef="_E3BA9EE7-D523-4DBF-A05D-52813C4F6459_ServiceOperation">
+    <bpmn2:serviceTask id="_E3BA9EE7-D523-4DBF-A05D-52813C4F6459" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.ResponseService" drools:serviceoperation="plainResponseTemplate" name="Return Error Response" implementation="Java" operationRef="_E3BA9EE7-D523-4DBF-A05D-52813C4F6459_ServiceOperation">
       <bpmn2:extensionElements>
         <drools:metaData name="elementname">
           <drools:metaValue><![CDATA[Return Error Response]]></drools:metaValue>
@@ -511,7 +511,7 @@
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_E3BA9EE7-D523-4DBF-A05D-52813C4F6459_messageInputX" drools:dtype="String" itemSubjectRef="__E3BA9EE7-D523-4DBF-A05D-52813C4F6459_messageInputXItem" name="message"/>
         <bpmn2:dataInput id="_E3BA9EE7-D523-4DBF-A05D-52813C4F6459_successInputX" drools:dtype="Boolean" itemSubjectRef="__E3BA9EE7-D523-4DBF-A05D-52813C4F6459_successInputXItem" name="success"/>
-        <bpmn2:dataOutput id="_E3BA9EE7-D523-4DBF-A05D-52813C4F6459_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__E3BA9EE7-D523-4DBF-A05D-52813C4F6459_plainResponseOutputXItem" name="plainResponse"/>
+        <bpmn2:dataOutput id="_E3BA9EE7-D523-4DBF-A05D-52813C4F6459_plainResponseOutputX" drools:dtype="org.robolaunch.model.response.PlainResponse" itemSubjectRef="__E3BA9EE7-D523-4DBF-A05D-52813C4F6459_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_E3BA9EE7-D523-4DBF-A05D-52813C4F6459_messageInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_E3BA9EE7-D523-4DBF-A05D-52813C4F6459_successInputX</bpmn2:dataInputRefs>
@@ -562,7 +562,7 @@
       <bpmn2:incoming>_DC5CEE0C-61F0-4373-BE09-5E360C9670BB</bpmn2:incoming>
       <bpmn2:outgoing>_C71E09A6-0535-45D7-B227-F9C3A4A86F51</bpmn2:outgoing>
       <bpmn2:ioSpecification>
-        <bpmn2:dataInput id="_C5DE0648-AD90-4CD0-B584-553353028923_organizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__C5DE0648-AD90-4CD0-B584-553353028923_organizationInputXItem" name="organization"/>
+        <bpmn2:dataInput id="_C5DE0648-AD90-4CD0-B584-553353028923_organizationInputX" drools:dtype="org.robolaunch.model.account.Organization" itemSubjectRef="__C5DE0648-AD90-4CD0-B584-553353028923_organizationInputXItem" name="organization"/>
         <bpmn2:dataInput id="_C5DE0648-AD90-4CD0-B584-553353028923_teamIdInputX" drools:dtype="String" itemSubjectRef="__C5DE0648-AD90-4CD0-B584-553353028923_teamIdInputXItem" name="teamId"/>
         <bpmn2:dataOutput id="_C5DE0648-AD90-4CD0-B584-553353028923_isThingReadyOutputX" drools:dtype="Boolean" itemSubjectRef="__C5DE0648-AD90-4CD0-B584-553353028923_isThingReadyOutputXItem" name="isThingReady"/>
         <bpmn2:inputSet>
@@ -726,7 +726,7 @@
         <bpmn2:targetRef>isThingReady</bpmn2:targetRef>
       </bpmn2:dataOutputAssociation>
     </bpmn2:serviceTask>
-    <bpmn2:serviceTask id="_BB1414CB-A1DD-46F3-9929-B68D5DD0D69F" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.ErrorService" drools:serviceoperation="plainResponseTemplate" name="Must be stopped result" implementation="Java" operationRef="_BB1414CB-A1DD-46F3-9929-B68D5DD0D69F_ServiceOperation">
+    <bpmn2:serviceTask id="_BB1414CB-A1DD-46F3-9929-B68D5DD0D69F" drools:serviceimplementation="Java" drools:serviceinterface="org.robolaunch.service.ResponseService" drools:serviceoperation="plainResponseTemplate" name="Must be stopped result" implementation="Java" operationRef="_BB1414CB-A1DD-46F3-9929-B68D5DD0D69F_ServiceOperation">
       <bpmn2:extensionElements>
         <drools:metaData name="elementname">
           <drools:metaValue><![CDATA[Must be stopped result]]></drools:metaValue>
@@ -737,7 +737,7 @@
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_BB1414CB-A1DD-46F3-9929-B68D5DD0D69F_messageInputX" drools:dtype="String" itemSubjectRef="__BB1414CB-A1DD-46F3-9929-B68D5DD0D69F_messageInputXItem" name="message"/>
         <bpmn2:dataInput id="_BB1414CB-A1DD-46F3-9929-B68D5DD0D69F_successInputX" drools:dtype="Boolean" itemSubjectRef="__BB1414CB-A1DD-46F3-9929-B68D5DD0D69F_successInputXItem" name="success"/>
-        <bpmn2:dataOutput id="_BB1414CB-A1DD-46F3-9929-B68D5DD0D69F_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__BB1414CB-A1DD-46F3-9929-B68D5DD0D69F_plainResponseOutputXItem" name="plainResponse"/>
+        <bpmn2:dataOutput id="_BB1414CB-A1DD-46F3-9929-B68D5DD0D69F_plainResponseOutputX" drools:dtype="org.robolaunch.model.response.PlainResponse" itemSubjectRef="__BB1414CB-A1DD-46F3-9929-B68D5DD0D69F_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_BB1414CB-A1DD-46F3-9929-B68D5DD0D69F_messageInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_BB1414CB-A1DD-46F3-9929-B68D5DD0D69F_successInputX</bpmn2:dataInputRefs>
@@ -776,7 +776,7 @@
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_82C2C1D6-D3DE-4DC3-903A-94DFFDF058EE_userStageInputX" drools:dtype="String" itemSubjectRef="__82C2C1D6-D3DE-4DC3-903A-94DFFDF058EE_userStageInputXItem" name="userStage"/>
         <bpmn2:dataInput id="_82C2C1D6-D3DE-4DC3-903A-94DFFDF058EE_countInputX" drools:dtype="Integer" itemSubjectRef="__82C2C1D6-D3DE-4DC3-903A-94DFFDF058EE_countInputXItem" name="count"/>
-        <bpmn2:dataInput id="_82C2C1D6-D3DE-4DC3-903A-94DFFDF058EE_organizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__82C2C1D6-D3DE-4DC3-903A-94DFFDF058EE_organizationInputXItem" name="organization"/>
+        <bpmn2:dataInput id="_82C2C1D6-D3DE-4DC3-903A-94DFFDF058EE_organizationInputX" drools:dtype="org.robolaunch.model.account.Organization" itemSubjectRef="__82C2C1D6-D3DE-4DC3-903A-94DFFDF058EE_organizationInputXItem" name="organization"/>
         <bpmn2:dataInput id="_82C2C1D6-D3DE-4DC3-903A-94DFFDF058EE_teamIdInputX" drools:dtype="String" itemSubjectRef="__82C2C1D6-D3DE-4DC3-903A-94DFFDF058EE_teamIdInputXItem" name="teamId"/>
         <bpmn2:dataInput id="_82C2C1D6-D3DE-4DC3-903A-94DFFDF058EE_cloudInstanceNameInputX" drools:dtype="String" itemSubjectRef="__82C2C1D6-D3DE-4DC3-903A-94DFFDF058EE_cloudInstanceNameInputXItem" name="cloudInstanceName"/>
         <bpmn2:dataInput id="_82C2C1D6-D3DE-4DC3-903A-94DFFDF058EE_isHealthyInputX" drools:dtype="Boolean" itemSubjectRef="__82C2C1D6-D3DE-4DC3-903A-94DFFDF058EE_isHealthyInputXItem" name="isHealthy"/>
@@ -865,7 +865,7 @@
       <bpmn2:incoming>_99B17483-19B3-43D2-A101-45FFE739A5F2</bpmn2:incoming>
       <bpmn2:outgoing>_12C0843D-1D00-462A-86D6-EFC0F6BC1254</bpmn2:outgoing>
       <bpmn2:ioSpecification>
-        <bpmn2:dataInput id="_C94B403F-0582-4C47-AF3F-F4E3C584D50A_organizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_organizationInputXItem" name="organization"/>
+        <bpmn2:dataInput id="_C94B403F-0582-4C47-AF3F-F4E3C584D50A_organizationInputX" drools:dtype="org.robolaunch.model.account.Organization" itemSubjectRef="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_organizationInputXItem" name="organization"/>
         <bpmn2:dataInput id="_C94B403F-0582-4C47-AF3F-F4E3C584D50A_teamIdInputX" drools:dtype="String" itemSubjectRef="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_teamIdInputXItem" name="teamId"/>
         <bpmn2:dataInput id="_C94B403F-0582-4C47-AF3F-F4E3C584D50A_cloudInstanceNameInputX" drools:dtype="String" itemSubjectRef="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_cloudInstanceNameInputXItem" name="cloudInstanceName"/>
         <bpmn2:dataInput id="_C94B403F-0582-4C47-AF3F-F4E3C584D50A_bufferNameInputX" drools:dtype="String" itemSubjectRef="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_bufferNameInputXItem" name="bufferName"/>
@@ -874,7 +874,7 @@
         <bpmn2:dataInput id="_C94B403F-0582-4C47-AF3F-F4E3C584D50A_adminStageInputX" drools:dtype="String" itemSubjectRef="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_adminStageInputXItem" name="adminStage"/>
         <bpmn2:dataInput id="_C94B403F-0582-4C47-AF3F-F4E3C584D50A_userStageInputX" drools:dtype="String" itemSubjectRef="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_userStageInputXItem" name="userStage"/>
         <bpmn2:dataInput id="_C94B403F-0582-4C47-AF3F-F4E3C584D50A_statusInputX" drools:dtype="String" itemSubjectRef="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_statusInputXItem" name="status"/>
-        <bpmn2:dataInput id="_C94B403F-0582-4C47-AF3F-F4E3C584D50A_plainResponseInputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_plainResponseInputXItem" name="plainResponse"/>
+        <bpmn2:dataInput id="_C94B403F-0582-4C47-AF3F-F4E3C584D50A_plainResponseInputX" drools:dtype="org.robolaunch.model.response.PlainResponse" itemSubjectRef="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_plainResponseInputXItem" name="plainResponse"/>
         <bpmn2:dataInput id="_C94B403F-0582-4C47-AF3F-F4E3C584D50A_providerNameInputX" drools:dtype="String" itemSubjectRef="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_providerNameInputXItem" name="providerName"/>
         <bpmn2:dataInput id="_C94B403F-0582-4C47-AF3F-F4E3C584D50A_regionNameInputX" drools:dtype="String" itemSubjectRef="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_regionNameInputXItem" name="regionName"/>
         <bpmn2:dataInput id="_C94B403F-0582-4C47-AF3F-F4E3C584D50A_superClusterNameInputX" drools:dtype="String" itemSubjectRef="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_superClusterNameInputXItem" name="superClusterName"/>
@@ -882,7 +882,7 @@
         <bpmn2:dataOutput id="_C94B403F-0582-4C47-AF3F-F4E3C584D50A_userStageOutputX" drools:dtype="String" itemSubjectRef="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_userStageOutputXItem" name="userStage"/>
         <bpmn2:dataOutput id="_C94B403F-0582-4C47-AF3F-F4E3C584D50A_adminStageOutputX" drools:dtype="String" itemSubjectRef="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_adminStageOutputXItem" name="adminStage"/>
         <bpmn2:dataOutput id="_C94B403F-0582-4C47-AF3F-F4E3C584D50A_statusOutputX" drools:dtype="String" itemSubjectRef="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_statusOutputXItem" name="status"/>
-        <bpmn2:dataOutput id="_C94B403F-0582-4C47-AF3F-F4E3C584D50A_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_plainResponseOutputXItem" name="plainResponse"/>
+        <bpmn2:dataOutput id="_C94B403F-0582-4C47-AF3F-F4E3C584D50A_plainResponseOutputX" drools:dtype="org.robolaunch.model.response.PlainResponse" itemSubjectRef="__C94B403F-0582-4C47-AF3F-F4E3C584D50A_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_C94B403F-0582-4C47-AF3F-F4E3C584D50A_organizationInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_C94B403F-0582-4C47-AF3F-F4E3C584D50A_teamIdInputX</bpmn2:dataInputRefs>
@@ -991,7 +991,7 @@
       <bpmn2:incoming>_67DBB066-E3FE-4F9D-A37E-4AF4994F40EB</bpmn2:incoming>
       <bpmn2:outgoing>_F8E97DAD-C1DA-4E22-BF62-16B7779BC394</bpmn2:outgoing>
       <bpmn2:ioSpecification>
-        <bpmn2:dataInput id="_16EC2DAD-42F9-487B-85D5-BAF6B705A675_organizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_organizationInputXItem" name="organization"/>
+        <bpmn2:dataInput id="_16EC2DAD-42F9-487B-85D5-BAF6B705A675_organizationInputX" drools:dtype="org.robolaunch.model.account.Organization" itemSubjectRef="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_organizationInputXItem" name="organization"/>
         <bpmn2:dataInput id="_16EC2DAD-42F9-487B-85D5-BAF6B705A675_teamIdInputX" drools:dtype="String" itemSubjectRef="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_teamIdInputXItem" name="teamId"/>
         <bpmn2:dataInput id="_16EC2DAD-42F9-487B-85D5-BAF6B705A675_cloudInstanceNameInputX" drools:dtype="String" itemSubjectRef="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_cloudInstanceNameInputXItem" name="cloudInstanceName"/>
         <bpmn2:dataInput id="_16EC2DAD-42F9-487B-85D5-BAF6B705A675_bufferNameInputX" drools:dtype="String" itemSubjectRef="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_bufferNameInputXItem" name="bufferName"/>
@@ -1000,14 +1000,14 @@
         <bpmn2:dataInput id="_16EC2DAD-42F9-487B-85D5-BAF6B705A675_adminStageInputX" drools:dtype="String" itemSubjectRef="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_adminStageInputXItem" name="adminStage"/>
         <bpmn2:dataInput id="_16EC2DAD-42F9-487B-85D5-BAF6B705A675_userStageInputX" drools:dtype="String" itemSubjectRef="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_userStageInputXItem" name="userStage"/>
         <bpmn2:dataInput id="_16EC2DAD-42F9-487B-85D5-BAF6B705A675_statusInputX" drools:dtype="String" itemSubjectRef="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_statusInputXItem" name="status"/>
-        <bpmn2:dataInput id="_16EC2DAD-42F9-487B-85D5-BAF6B705A675_plainResponseInputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_plainResponseInputXItem" name="plainResponse"/>
+        <bpmn2:dataInput id="_16EC2DAD-42F9-487B-85D5-BAF6B705A675_plainResponseInputX" drools:dtype="org.robolaunch.model.response.PlainResponse" itemSubjectRef="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_plainResponseInputXItem" name="plainResponse"/>
         <bpmn2:dataInput id="_16EC2DAD-42F9-487B-85D5-BAF6B705A675_providerNameInputX" drools:dtype="String" itemSubjectRef="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_providerNameInputXItem" name="providerName"/>
         <bpmn2:dataInput id="_16EC2DAD-42F9-487B-85D5-BAF6B705A675_regionNameInputX" drools:dtype="String" itemSubjectRef="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_regionNameInputXItem" name="regionName"/>
         <bpmn2:dataInput id="_16EC2DAD-42F9-487B-85D5-BAF6B705A675_superClusterNameInputX" drools:dtype="String" itemSubjectRef="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_superClusterNameInputXItem" name="superClusterName"/>
         <bpmn2:dataOutput id="_16EC2DAD-42F9-487B-85D5-BAF6B705A675_adminStageOutputX" drools:dtype="String" itemSubjectRef="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_adminStageOutputXItem" name="adminStage"/>
         <bpmn2:dataOutput id="_16EC2DAD-42F9-487B-85D5-BAF6B705A675_userStageOutputX" drools:dtype="String" itemSubjectRef="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_userStageOutputXItem" name="userStage"/>
         <bpmn2:dataOutput id="_16EC2DAD-42F9-487B-85D5-BAF6B705A675_statusOutputX" drools:dtype="String" itemSubjectRef="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_statusOutputXItem" name="status"/>
-        <bpmn2:dataOutput id="_16EC2DAD-42F9-487B-85D5-BAF6B705A675_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_plainResponseOutputXItem" name="plainResponse"/>
+        <bpmn2:dataOutput id="_16EC2DAD-42F9-487B-85D5-BAF6B705A675_plainResponseOutputX" drools:dtype="org.robolaunch.model.response.PlainResponse" itemSubjectRef="__16EC2DAD-42F9-487B-85D5-BAF6B705A675_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_16EC2DAD-42F9-487B-85D5-BAF6B705A675_organizationInputX</bpmn2:dataInputRefs>
           <bpmn2:dataInputRefs>_16EC2DAD-42F9-487B-85D5-BAF6B705A675_teamIdInputX</bpmn2:dataInputRefs>
@@ -1108,7 +1108,7 @@
       <bpmn2:incoming>_EE1C359B-2BE9-43DA-95EB-BEDE0C113F49</bpmn2:incoming>
       <bpmn2:outgoing>_2A8A2E14-30C1-4278-80D8-93D425E1A068</bpmn2:outgoing>
       <bpmn2:ioSpecification>
-        <bpmn2:dataInput id="_DE3A8153-2FD7-42D5-B939-591CD988E067_organizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__DE3A8153-2FD7-42D5-B939-591CD988E067_organizationInputXItem" name="organization"/>
+        <bpmn2:dataInput id="_DE3A8153-2FD7-42D5-B939-591CD988E067_organizationInputX" drools:dtype="org.robolaunch.model.account.Organization" itemSubjectRef="__DE3A8153-2FD7-42D5-B939-591CD988E067_organizationInputXItem" name="organization"/>
         <bpmn2:dataInput id="_DE3A8153-2FD7-42D5-B939-591CD988E067_teamIdInputX" drools:dtype="String" itemSubjectRef="__DE3A8153-2FD7-42D5-B939-591CD988E067_teamIdInputXItem" name="teamId"/>
         <bpmn2:dataInput id="_DE3A8153-2FD7-42D5-B939-591CD988E067_cloudInstanceNameInputX" drools:dtype="String" itemSubjectRef="__DE3A8153-2FD7-42D5-B939-591CD988E067_cloudInstanceNameInputXItem" name="cloudInstanceName"/>
         <bpmn2:dataInput id="_DE3A8153-2FD7-42D5-B939-591CD988E067_bufferNameInputX" drools:dtype="String" itemSubjectRef="__DE3A8153-2FD7-42D5-B939-591CD988E067_bufferNameInputXItem" name="bufferName"/>
@@ -1118,7 +1118,7 @@
         <bpmn2:dataInput id="_DE3A8153-2FD7-42D5-B939-591CD988E067_adminStageInputX" drools:dtype="String" itemSubjectRef="__DE3A8153-2FD7-42D5-B939-591CD988E067_adminStageInputXItem" name="adminStage"/>
         <bpmn2:dataInput id="_DE3A8153-2FD7-42D5-B939-591CD988E067_statusInputX" drools:dtype="String" itemSubjectRef="__DE3A8153-2FD7-42D5-B939-591CD988E067_statusInputXItem" name="status"/>
         <bpmn2:dataInput id="_DE3A8153-2FD7-42D5-B939-591CD988E067_connectionHubInputX" drools:dtype="Boolean" itemSubjectRef="__DE3A8153-2FD7-42D5-B939-591CD988E067_connectionHubInputXItem" name="connectionHub"/>
-        <bpmn2:dataInput id="_DE3A8153-2FD7-42D5-B939-591CD988E067_plainResponseInputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__DE3A8153-2FD7-42D5-B939-591CD988E067_plainResponseInputXItem" name="plainResponse"/>
+        <bpmn2:dataInput id="_DE3A8153-2FD7-42D5-B939-591CD988E067_plainResponseInputX" drools:dtype="org.robolaunch.model.response.PlainResponse" itemSubjectRef="__DE3A8153-2FD7-42D5-B939-591CD988E067_plainResponseInputXItem" name="plainResponse"/>
         <bpmn2:dataInput id="_DE3A8153-2FD7-42D5-B939-591CD988E067_providerNameInputX" drools:dtype="String" itemSubjectRef="__DE3A8153-2FD7-42D5-B939-591CD988E067_providerNameInputXItem" name="providerName"/>
         <bpmn2:dataInput id="_DE3A8153-2FD7-42D5-B939-591CD988E067_regionNameInputX" drools:dtype="String" itemSubjectRef="__DE3A8153-2FD7-42D5-B939-591CD988E067_regionNameInputXItem" name="regionName"/>
         <bpmn2:dataInput id="_DE3A8153-2FD7-42D5-B939-591CD988E067_superClusterNameInputX" drools:dtype="String" itemSubjectRef="__DE3A8153-2FD7-42D5-B939-591CD988E067_superClusterNameInputXItem" name="superClusterName"/>
@@ -1126,7 +1126,7 @@
         <bpmn2:dataOutput id="_DE3A8153-2FD7-42D5-B939-591CD988E067_adminStageOutputX" drools:dtype="String" itemSubjectRef="__DE3A8153-2FD7-42D5-B939-591CD988E067_adminStageOutputXItem" name="adminStage"/>
         <bpmn2:dataOutput id="_DE3A8153-2FD7-42D5-B939-591CD988E067_userStageOutputX" drools:dtype="String" itemSubjectRef="__DE3A8153-2FD7-42D5-B939-591CD988E067_userStageOutputXItem" name="userStage"/>
         <bpmn2:dataOutput id="_DE3A8153-2FD7-42D5-B939-591CD988E067_statusOutputX" drools:dtype="String" itemSubjectRef="__DE3A8153-2FD7-42D5-B939-591CD988E067_statusOutputXItem" name="status"/>
-        <bpmn2:dataOutput id="_DE3A8153-2FD7-42D5-B939-591CD988E067_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__DE3A8153-2FD7-42D5-B939-591CD988E067_plainResponseOutputXItem" name="plainResponse"/>
+        <bpmn2:dataOutput id="_DE3A8153-2FD7-42D5-B939-591CD988E067_plainResponseOutputX" drools:dtype="org.robolaunch.model.response.PlainResponse" itemSubjectRef="__DE3A8153-2FD7-42D5-B939-591CD988E067_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:dataOutput id="_DE3A8153-2FD7-42D5-B939-591CD988E067_nodeNameOutputX" drools:dtype="String" itemSubjectRef="__DE3A8153-2FD7-42D5-B939-591CD988E067_nodeNameOutputXItem" name="nodeName"/>
         <bpmn2:inputSet>
           <bpmn2:dataInputRefs>_DE3A8153-2FD7-42D5-B939-591CD988E067_organizationInputX</bpmn2:dataInputRefs>
@@ -1250,7 +1250,7 @@
       <bpmn2:outgoing>_E58D3909-B831-476A-84A0-3D1B7248E2F3</bpmn2:outgoing>
       <bpmn2:ioSpecification>
         <bpmn2:dataInput id="_95047145-DC2D-4FAF-A608-5779FC9D777D_VCCountInputX" drools:dtype="Integer" itemSubjectRef="__95047145-DC2D-4FAF-A608-5779FC9D777D_VCCountInputXItem" name="VCCount"/>
-        <bpmn2:dataInput id="_95047145-DC2D-4FAF-A608-5779FC9D777D_organizationInputX" drools:dtype="org.robolaunch.models.Organization" itemSubjectRef="__95047145-DC2D-4FAF-A608-5779FC9D777D_organizationInputXItem" name="organization"/>
+        <bpmn2:dataInput id="_95047145-DC2D-4FAF-A608-5779FC9D777D_organizationInputX" drools:dtype="org.robolaunch.model.account.Organization" itemSubjectRef="__95047145-DC2D-4FAF-A608-5779FC9D777D_organizationInputXItem" name="organization"/>
         <bpmn2:dataInput id="_95047145-DC2D-4FAF-A608-5779FC9D777D_bufferNameInputX" drools:dtype="String" itemSubjectRef="__95047145-DC2D-4FAF-A608-5779FC9D777D_bufferNameInputXItem" name="bufferName"/>
         <bpmn2:dataInput id="_95047145-DC2D-4FAF-A608-5779FC9D777D_cloudInstanceNameInputX" drools:dtype="String" itemSubjectRef="__95047145-DC2D-4FAF-A608-5779FC9D777D_cloudInstanceNameInputXItem" name="cloudInstanceName"/>
         <bpmn2:dataInput id="_95047145-DC2D-4FAF-A608-5779FC9D777D_teamIdInputX" drools:dtype="String" itemSubjectRef="__95047145-DC2D-4FAF-A608-5779FC9D777D_teamIdInputXItem" name="teamId"/>
@@ -1264,7 +1264,7 @@
         <bpmn2:dataInput id="_95047145-DC2D-4FAF-A608-5779FC9D777D_statusInputX" drools:dtype="String" itemSubjectRef="__95047145-DC2D-4FAF-A608-5779FC9D777D_statusInputXItem" name="status"/>
         <bpmn2:dataInput id="_95047145-DC2D-4FAF-A608-5779FC9D777D_connectionHubInputX" drools:dtype="Boolean" itemSubjectRef="__95047145-DC2D-4FAF-A608-5779FC9D777D_connectionHubInputXItem" name="connectionHub"/>
         <bpmn2:dataInput id="_95047145-DC2D-4FAF-A608-5779FC9D777D_usernameInputX" drools:dtype="String" itemSubjectRef="__95047145-DC2D-4FAF-A608-5779FC9D777D_usernameInputXItem" name="username"/>
-        <bpmn2:dataInput id="_95047145-DC2D-4FAF-A608-5779FC9D777D_plainResponseInputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__95047145-DC2D-4FAF-A608-5779FC9D777D_plainResponseInputXItem" name="plainResponse"/>
+        <bpmn2:dataInput id="_95047145-DC2D-4FAF-A608-5779FC9D777D_plainResponseInputX" drools:dtype="org.robolaunch.model.response.PlainResponse" itemSubjectRef="__95047145-DC2D-4FAF-A608-5779FC9D777D_plainResponseInputXItem" name="plainResponse"/>
         <bpmn2:dataInput id="_95047145-DC2D-4FAF-A608-5779FC9D777D_providerNameInputX" drools:dtype="String" itemSubjectRef="__95047145-DC2D-4FAF-A608-5779FC9D777D_providerNameInputXItem" name="providerName"/>
         <bpmn2:dataInput id="_95047145-DC2D-4FAF-A608-5779FC9D777D_regionNameInputX" drools:dtype="String" itemSubjectRef="__95047145-DC2D-4FAF-A608-5779FC9D777D_regionNameInputXItem" name="regionName"/>
         <bpmn2:dataInput id="_95047145-DC2D-4FAF-A608-5779FC9D777D_superClusterNameInputX" drools:dtype="String" itemSubjectRef="__95047145-DC2D-4FAF-A608-5779FC9D777D_superClusterNameInputXItem" name="superClusterName"/>
@@ -1273,7 +1273,7 @@
         <bpmn2:dataOutput id="_95047145-DC2D-4FAF-A608-5779FC9D777D_statusOutputX" drools:dtype="String" itemSubjectRef="__95047145-DC2D-4FAF-A608-5779FC9D777D_statusOutputXItem" name="status"/>
         <bpmn2:dataOutput id="_95047145-DC2D-4FAF-A608-5779FC9D777D_adminStageOutputX" drools:dtype="String" itemSubjectRef="__95047145-DC2D-4FAF-A608-5779FC9D777D_adminStageOutputXItem" name="adminStage"/>
         <bpmn2:dataOutput id="_95047145-DC2D-4FAF-A608-5779FC9D777D_nodeNameOutputX" drools:dtype="String" itemSubjectRef="__95047145-DC2D-4FAF-A608-5779FC9D777D_nodeNameOutputXItem" name="nodeName"/>
-        <bpmn2:dataOutput id="_95047145-DC2D-4FAF-A608-5779FC9D777D_plainResponseOutputX" drools:dtype="org.robolaunch.models.response.PlainResponse" itemSubjectRef="__95047145-DC2D-4FAF-A608-5779FC9D777D_plainResponseOutputXItem" name="plainResponse"/>
+        <bpmn2:dataOutput id="_95047145-DC2D-4FAF-A608-5779FC9D777D_plainResponseOutputX" drools:dtype="org.robolaunch.model.response.PlainResponse" itemSubjectRef="__95047145-DC2D-4FAF-A608-5779FC9D777D_plainResponseOutputXItem" name="plainResponse"/>
         <bpmn2:dataOutput id="_95047145-DC2D-4FAF-A608-5779FC9D777D_bufferNameOutputX" drools:dtype="String" itemSubjectRef="__95047145-DC2D-4FAF-A608-5779FC9D777D_bufferNameOutputXItem" name="bufferName"/>
         <bpmn2:dataOutput id="_95047145-DC2D-4FAF-A608-5779FC9D777D_teamNameOutputX" drools:dtype="String" itemSubjectRef="__95047145-DC2D-4FAF-A608-5779FC9D777D_teamNameOutputXItem" name="teamName"/>
         <bpmn2:inputSet>
@@ -1422,7 +1422,7 @@
     </bpmn2:startEvent>
     <bpmn2:boundaryEvent id="_814352CC-C7EF-48DC-801D-0EE006A4BFF9" drools:dockerinfo="122.46464646464648^-28|" drools:boundaryca="false" attachedToRef="_82C2C1D6-D3DE-4DC3-903A-94DFFDF058EE" cancelActivity="false">
       <bpmn2:outgoing>_120CE358-1DFE-4DAE-8633-C56B4558761D</bpmn2:outgoing>
-      <bpmn2:dataOutput id="_814352CC-C7EF-48DC-801D-0EE006A4BFF9_cloudInstanceSignalOutputX" drools:dtype="org.robolaunch.models.CloudInstanceSignal" itemSubjectRef="__814352CC-C7EF-48DC-801D-0EE006A4BFF9_cloudInstanceSignalOutputXItem" name="cloudInstanceSignal"/>
+      <bpmn2:dataOutput id="_814352CC-C7EF-48DC-801D-0EE006A4BFF9_cloudInstanceSignalOutputX" drools:dtype="org.robolaunch.model.robot.CloudInstanceSignal" itemSubjectRef="__814352CC-C7EF-48DC-801D-0EE006A4BFF9_cloudInstanceSignalOutputXItem" name="cloudInstanceSignal"/>
       <bpmn2:dataOutputAssociation>
         <bpmn2:sourceRef>_814352CC-C7EF-48DC-801D-0EE006A4BFF9_cloudInstanceSignalOutputX</bpmn2:sourceRef>
         <bpmn2:targetRef>cloudInstanceSignal</bpmn2:targetRef>
@@ -1451,7 +1451,7 @@
     </bpmn2:boundaryEvent>
     <bpmn2:boundaryEvent id="_CF278397-A1BC-4595-80F9-69A3CF01F40A" drools:dockerinfo="-9.141414141414131^-27.999999999999993|" drools:boundaryca="false" attachedToRef="_82C2C1D6-D3DE-4DC3-903A-94DFFDF058EE" cancelActivity="false">
       <bpmn2:outgoing>_C7470E6E-ECA4-4C4B-932D-87FB9F5B06BD</bpmn2:outgoing>
-      <bpmn2:dataOutput id="_CF278397-A1BC-4595-80F9-69A3CF01F40A_requestFleetOutputX" drools:dtype="org.robolaunch.models.request.RequestFleet" itemSubjectRef="__CF278397-A1BC-4595-80F9-69A3CF01F40A_requestFleetOutputXItem" name="requestFleet"/>
+      <bpmn2:dataOutput id="_CF278397-A1BC-4595-80F9-69A3CF01F40A_requestFleetOutputX" drools:dtype="org.robolaunch.model.request.RequestFleet" itemSubjectRef="__CF278397-A1BC-4595-80F9-69A3CF01F40A_requestFleetOutputXItem" name="requestFleet"/>
       <bpmn2:dataOutputAssociation>
         <bpmn2:sourceRef>_CF278397-A1BC-4595-80F9-69A3CF01F40A_requestFleetOutputX</bpmn2:sourceRef>
         <bpmn2:targetRef>requestFleet</bpmn2:targetRef>
@@ -2020,7 +2020,7 @@
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_zJC9QH3hEDu4ertnA3MlxA</bpmn2:source>
-    <bpmn2:target>_zJC9QH3hEDu4ertnA3MlxA</bpmn2:target>
+    <bpmn2:source>_hjEDkH4ZEDuNXOElHTKV5A</bpmn2:source>
+    <bpmn2:target>_hjEDkH4ZEDuNXOElHTKV5A</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>

@@ -6,14 +6,14 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
-import org.robolaunch.models.Fleet;
-import org.robolaunch.models.Organization;
-import org.robolaunch.models.PhysicalInstanceKubernetes;
-import org.robolaunch.models.ProviderKubernetes;
-import org.robolaunch.models.RegionKubernetes;
-import org.robolaunch.models.Robot;
-import org.robolaunch.models.RoboticsCloudKubernetes;
-import org.robolaunch.models.SuperClusterKubernetes;
+import org.robolaunch.model.account.Organization;
+import org.robolaunch.model.robot.Fleet;
+import org.robolaunch.model.robot.PhysicalInstanceKubernetes;
+import org.robolaunch.model.robot.ProviderKubernetes;
+import org.robolaunch.model.robot.RegionKubernetes;
+import org.robolaunch.model.robot.Robot;
+import org.robolaunch.model.robot.RoboticsCloudKubernetes;
+import org.robolaunch.model.robot.SuperClusterKubernetes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;

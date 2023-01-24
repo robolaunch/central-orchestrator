@@ -4,15 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import javax.enterprise.context.ApplicationScoped;
 
 import org.robolaunch.core.abstracts.GroupAdapter;
 import org.robolaunch.core.abstracts.RandomGenerator;
-import org.robolaunch.models.DepartmentBasic;
-import org.robolaunch.models.Group;
-import org.robolaunch.models.Organization;
-import org.robolaunch.models.User;
+import org.robolaunch.model.account.User;
+import org.robolaunch.model.ipa.IPAGroup;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,7 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class GroupIPAAdapter implements GroupAdapter {
 
         @Override
-        public String toRequest(Group group) throws JsonProcessingException {
+        public String toRequest(IPAGroup group) throws JsonProcessingException {
                 var params = new ArrayList<String>();
                 params.add(group.getName());
                 HashMap<String, ArrayList<String>> data = new HashMap<String, ArrayList<String>>();
@@ -36,9 +33,9 @@ public class GroupIPAAdapter implements GroupAdapter {
         }
 
         @Override
-        public String toRequestWithUser(User user, Organization organization) throws JsonProcessingException {
+        public String toRequestWithUser(User user, String group) throws JsonProcessingException {
                 var params = new ArrayList<String>();
-                params.add(organization.getName());
+                params.add(group);
                 var userArray = new ArrayList<String>();
                 userArray.add(user.getUsername());
 
@@ -54,9 +51,9 @@ public class GroupIPAAdapter implements GroupAdapter {
         }
 
         @Override
-        public String toGroupRequest(User user, Organization organization) throws JsonProcessingException {
+        public String toGroupRequest(User user, String group) throws JsonProcessingException {
                 List<String> userGroup = new ArrayList<String>();
-                userGroup.add(organization.getName());
+                userGroup.add(group);
 
                 List<String> username = new ArrayList<String>();
                 username.add(user.getUsername());
@@ -76,11 +73,11 @@ public class GroupIPAAdapter implements GroupAdapter {
         }
 
         @Override
-        public String toCreateGroup(Organization organization) throws JsonProcessingException {
+        public String toCreateGroup(String group) throws JsonProcessingException {
                 var params = new ArrayList<String>();
-                params.add(organization.getName());
+                params.add(group);
                 HashMap<String, String> versionInfo = new HashMap<String, String>();
-                versionInfo.put("description", organization.getName().substring(4));
+                versionInfo.put("description", group.substring(4));
                 versionInfo.put("version", "2.245");
 
                 Object[] request = new Object[] {
@@ -94,15 +91,15 @@ public class GroupIPAAdapter implements GroupAdapter {
 
         /* Returns the request and the generated subgroup name. */
         @Override
-        public ArrayList<String> toCreateSubgroup(Organization organization, DepartmentBasic department)
+        public ArrayList<String> toCreateSubgroup(String group, String subgroup)
                         throws JsonProcessingException {
                 var params = new ArrayList<String>();
                 RandomGenerator randomGenerator = new RandomGeneratorImpl();
-                params.add(organization.getName() + "-dep-" + randomGenerator.generateRandomString(8));
+                params.add(group + "-team-" + randomGenerator.generateRandomString(8));
                 ArrayList<String> array = new ArrayList<String>();
 
                 HashMap<String, String> versionInfo = new HashMap<String, String>();
-                versionInfo.put("description", department.getName());
+                versionInfo.put("description", subgroup);
                 versionInfo.put("version", "2.245");
                 Object[] request = new Object[] {
                                 params,
@@ -117,10 +114,10 @@ public class GroupIPAAdapter implements GroupAdapter {
         }
 
         @Override
-        public String toDeleteGroup(Organization group) throws JsonProcessingException {
+        public String toDeleteGroup(String group) throws JsonProcessingException {
                 var deletedGroupArray = new ArrayList<ArrayList<String>>();
                 var deletedGroup = new ArrayList<String>();
-                deletedGroup.add(group.getName());
+                deletedGroup.add(group);
                 deletedGroupArray.add(deletedGroup);
                 HashMap<String, String> versionInfo = new HashMap<String, String>();
                 versionInfo.put("version", "2.245");
@@ -134,12 +131,12 @@ public class GroupIPAAdapter implements GroupAdapter {
         }
 
         @Override
-        public String toAssignSubgroup(Organization group, DepartmentBasic subgroup) throws JsonProcessingException {
+        public String toAssignSubgroup(String group, String subgroup) throws JsonProcessingException {
                 List<String> upperGroup = new ArrayList<String>();
-                upperGroup.add(group.getName());
+                upperGroup.add(group);
 
                 List<String> lowerGroup = new ArrayList<String>();
-                lowerGroup.add(subgroup.getName());
+                lowerGroup.add(subgroup);
                 Map userMap = new HashMap();
                 userMap.put("group", lowerGroup);
                 userMap.put("version", "2.245");
@@ -155,9 +152,9 @@ public class GroupIPAAdapter implements GroupAdapter {
         }
 
         @Override
-        public String toGetWithAllFlag(Organization organization) throws JsonProcessingException {
+        public String toGetWithAllFlag(String group) throws JsonProcessingException {
                 List<String> groupName = new ArrayList<String>();
-                groupName.add(organization.getName());
+                groupName.add(group);
                 Map versionInfo = new HashMap();
                 versionInfo.put("all", true);
                 versionInfo.put("version", "2.245");
@@ -172,11 +169,11 @@ public class GroupIPAAdapter implements GroupAdapter {
         }
 
         @Override
-        public String toGetUsersWithParams(Organization group) throws JsonProcessingException {
+        public String toGetUsersWithParams(String group) throws JsonProcessingException {
                 List<String> emptyArray = new ArrayList<String>();
                 Map otherParams = new HashMap();
                 List<String> groupName = new ArrayList<String>();
-                groupName.add(group.getName());
+                groupName.add(group);
                 otherParams.put("in_group", groupName);
                 otherParams.put("version", "2.245");
                 Object[] request = new Object[] {
@@ -189,9 +186,9 @@ public class GroupIPAAdapter implements GroupAdapter {
         }
 
         @Override
-        public String toChangeGroup(Organization department, String newName) throws JsonProcessingException {
+        public String toChangeGroup(String subgroup, String newName) throws JsonProcessingException {
                 List<String> groupName = new ArrayList<String>();
-                groupName.add(department.getName());
+                groupName.add(subgroup);
 
                 HashMap<String, String> versionInfo = new HashMap<String, String>();
                 versionInfo.put("description", newName);
@@ -206,9 +203,9 @@ public class GroupIPAAdapter implements GroupAdapter {
         }
 
         @Override
-        public String toGetGroup(Organization group) throws JsonProcessingException {
+        public String toGetGroup(String group) throws JsonProcessingException {
                 List<String> groupName = new ArrayList<String>();
-                groupName.add(group.getName());
+                groupName.add(group);
                 HashMap<String, String> versionInfo = new HashMap<String, String>();
                 versionInfo.put("version", "2.245");
                 Object[] request = new Object[] {
@@ -221,11 +218,11 @@ public class GroupIPAAdapter implements GroupAdapter {
         }
 
         @Override
-        public String toCreateDNSRecord(Organization organization, String IPAddress, String zone)
+        public String toCreateDNSRecord(String group, String IPAddress, String zone)
                         throws JsonProcessingException {
                 ArrayList<String> params = new ArrayList<String>();
                 params.add(zone);
-                params.add(organization.getName());
+                params.add(group);
 
                 HashMap<String, String> versionInfo = new HashMap<String, String>();
                 versionInfo.put("a_part_ip_address", IPAddress);
@@ -240,12 +237,12 @@ public class GroupIPAAdapter implements GroupAdapter {
         }
 
         @Override
-        public String toDeleteDNSRecord(Organization organization, String IPAddress, String zone)
+        public String toDeleteDNSRecord(String group, String IPAddress, String zone)
                         throws JsonProcessingException {
                 ArrayList params = new ArrayList();
                 params.add(zone);
                 HashMap<String, String> dnsName = new HashMap<String, String>();
-                dnsName.put("__dns_name__", organization.getName());
+                dnsName.put("__dns_name__", group);
                 params.add(dnsName);
 
                 ArrayList<String> recordArray = new ArrayList<String>();

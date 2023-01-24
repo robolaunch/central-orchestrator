@@ -9,13 +9,11 @@ import javax.inject.Inject;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
 import org.robolaunch.exception.ApplicationException;
-import org.robolaunch.models.Organization;
-import org.robolaunch.models.Response;
-import org.robolaunch.models.User;
-import org.robolaunch.repository.abstracts.GroupAdminRepository;
+import org.robolaunch.model.account.Organization;
+import org.robolaunch.model.account.User;
+import org.robolaunch.model.response.PlainResponse;
+import org.robolaunch.repository.abstracts.AccountRepository;
 import org.robolaunch.repository.abstracts.KeycloakAdminRepository;
-import org.robolaunch.repository.abstracts.UserAdminRepository;
-import org.robolaunch.repository.abstracts.UserRepository;
 
 import io.quarkus.arc.log.LoggerName;
 
@@ -25,13 +23,7 @@ public class GroupService {
   Logger log;
 
   @Inject
-  GroupAdminRepository groupAdminRepository;
-
-  @Inject
-  UserAdminRepository userAdminRepository;
-
-  @Inject
-  UserRepository userRepository;
+  AccountRepository accountRepository;
 
   @Inject
   KeycloakAdminRepository keycloakAdminRepository;
@@ -43,7 +35,7 @@ public class GroupService {
   OrganizationService organizationService;
 
   @Inject
-  DepartmentService departmentService;
+  TeamService departmentService;
 
   @Inject
   JsonWebToken jwt;
@@ -53,7 +45,7 @@ public class GroupService {
 
   public void addUserToIPAGroup(User user, Organization organization) throws ApplicationException {
     try {
-      groupAdminRepository.addUserToGroup(user, organization);
+      accountRepository.addUserToGroup(user, organization);
       groupLogger.info("User " + user.getUsername() + " added user to group");
     } catch (Exception e) {
       groupLogger.error("Error happened when adding user to group " + e.getMessage());
@@ -63,31 +55,35 @@ public class GroupService {
   }
 
   /* Add as user and as manager to group(who created the organization) */
-  public Response addFounderToIPAGroup(Organization organization) throws ApplicationException {
+  public PlainResponse addFounderToIPAGroup(Organization organization) throws ApplicationException {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       User user = new User();
       user.setUsername(jwt.getClaim("preferred_username"));
-      groupAdminRepository.addUserToGroup(user, organization);
-      groupAdminRepository.addUserToGroupAsManager(user, organization);
+      accountRepository.addUserToGroup(user, organization);
+      accountRepository.addUserToGroupAsManager(user, organization);
 
       // Add Also Big Boss to the group. This is needed for managing robotics clouds.
       User bigBossUser = new User();
       bigBossUser.setUsername("bigboss");
-      groupAdminRepository.addUserToGroup(bigBossUser, organization);
+      accountRepository.addUserToGroup(bigBossUser, organization);
 
       groupLogger.info("Admin " + user.getUsername() + " added to group as manager");
-      return new Response(true, UUID.randomUUID().toString());
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("User added to group");
     } catch (Exception e) {
       groupLogger.error("Error happened when adding user to group " + e.getMessage());
-      return new Response(false, UUID.randomUUID().toString());
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error happened while adding user to organization. Please try again.");
     }
+    return plainResponse;
   }
 
   public void assignToDefaultGroup(User user) throws ApplicationException, IOException {
     try {
       Organization organization = new Organization();
       organization.setName("fm_users");
-      groupAdminRepository.addUserToGroup(user, organization);
+      accountRepository.addUserToGroup(user, organization);
       groupLogger.info("User " + user.getUsername() + " assigned to default group");
     } catch (ApplicationException e) {
       groupLogger.error("Error happened when assigning user to default group " + e.getMessage());

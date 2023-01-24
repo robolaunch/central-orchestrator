@@ -1,6 +1,6 @@
 package org.robolaunch.repository.abstracts;
 
-import org.robolaunch.models.Organization;
+import org.robolaunch.model.account.Organization;
 
 import io.smallrye.graphql.execution.ExecutionException;
 

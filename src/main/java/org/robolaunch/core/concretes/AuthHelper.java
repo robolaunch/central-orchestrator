@@ -2,8 +2,8 @@ package org.robolaunch.core.concretes;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.robolaunch.models.LoginRequest;
-import org.robolaunch.models.User;
+import org.robolaunch.model.account.LoginRequest;
+import org.robolaunch.model.account.User;
 
 @ApplicationScoped
 public class AuthHelper {

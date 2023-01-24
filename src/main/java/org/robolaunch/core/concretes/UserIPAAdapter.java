@@ -7,8 +7,8 @@ import java.util.List;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.robolaunch.core.abstracts.UserAdapter;
-import org.robolaunch.models.IPAUser;
-import org.robolaunch.models.User;
+import org.robolaunch.model.account.User;
+import org.robolaunch.model.ipa.IPAUser;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -24,8 +24,6 @@ public class UserIPAAdapter implements UserAdapter {
         params.add(user.getUsername());
         var ipaUser = new IPAUser();
         ipaUser.setGivenname(user.getFirstName());
-        ipaUser.setSn(user.getInvitedOrganization() + "&" + user.getInvitedBy() + "&" + user.getLastName()
-                + "&" + user.getInvitedStatus());
         ipaUser.setVersion("2.246");
 
         Object[] request = new Object[] {

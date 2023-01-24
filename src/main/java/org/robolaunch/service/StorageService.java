@@ -7,13 +7,12 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.robolaunch.exception.ApplicationException;
-import org.robolaunch.models.Artifact;
-import org.robolaunch.models.Organization;
-import org.robolaunch.models.Response;
-import org.robolaunch.models.request.RequestCreateProvider;
-import org.robolaunch.models.request.RequestCreateRegion;
-import org.robolaunch.models.request.RequestCreateSuperCluster;
-import org.robolaunch.models.response.PlainResponse;
+import org.robolaunch.model.account.MinioArtifact;
+import org.robolaunch.model.account.Organization;
+import org.robolaunch.model.request.RequestCreateProvider;
+import org.robolaunch.model.request.RequestCreateRegion;
+import org.robolaunch.model.request.RequestCreateSuperCluster;
+import org.robolaunch.model.response.PlainResponse;
 import org.robolaunch.repository.abstracts.StorageRepository;
 
 import io.quarkus.arc.log.LoggerName;
@@ -44,7 +43,7 @@ public class StorageService {
         }
     }
 
-    public void removeArtifact(Artifact artifact, String bucket) {
+    public void removeArtifact(MinioArtifact artifact, String bucket) {
         try {
             storageRepository.remove(artifact, bucket);
         } catch (Exception e) {
@@ -55,26 +54,27 @@ public class StorageService {
     public void removeClusterArtifacts(Organization organization, String cloudInstanceName)
             throws ApplicationException {
         try {
-            storageRepository.removeDir(new Artifact("name", cloudInstanceName), organization.getName());
+            storageRepository.removeDir(new MinioArtifact("name", cloudInstanceName), organization.getName());
         } catch (Exception e) {
             storageLogger.error("Remove objects operation is failed: " + e);
             throw new ApplicationException("Remove minio objects operation is failed, the objects may not exist.");
         }
     }
 
-    public Response createBucketForOrganization(Organization organization) throws ApplicationException {
+    public PlainResponse createBucketForOrganization(Organization organization) throws ApplicationException {
+        PlainResponse plainResponse = new PlainResponse();
         try {
             Organization org = new Organization();
             org.setName(organization.getName().toLowerCase());
             org.setEnterprise(organization.isEnterprise());
             storageRepository.createBucket(org.getName());
             storageLogger.info("Bucket is created: " + organization.getName());
-            return new Response(true, UUID.randomUUID().toString());
+            plainResponse.setSuccess(true);
         } catch (Exception e) {
             storageLogger.error("Create bucket operation is failed: " + e);
-            return new Response(false, UUID.randomUUID().toString());
-
+            plainResponse.setSuccess(false);
         }
+        return plainResponse;
     }
 
     public PlainResponse createProvider(RequestCreateProvider requestCreateProvider) throws ApplicationException {

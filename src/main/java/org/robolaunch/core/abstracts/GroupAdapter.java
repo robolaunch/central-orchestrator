@@ -1,42 +1,39 @@
 package org.robolaunch.core.abstracts;
 
 import java.util.ArrayList;
-
-import org.robolaunch.models.DepartmentBasic;
-import org.robolaunch.models.Group;
-import org.robolaunch.models.Organization;
-import org.robolaunch.models.User;
+import org.robolaunch.model.account.User;
+import org.robolaunch.model.ipa.IPAGroup;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 public interface GroupAdapter {
-        String toRequest(Group Group) throws JsonProcessingException;
+        String toRequest(IPAGroup Group) throws JsonProcessingException;
 
-        String toGroupRequest(User user, Organization organization) throws JsonProcessingException;
+        String toGroupRequest(User user, String group) throws JsonProcessingException;
 
-        String toRequestWithUser(User user, Organization organization)
+        String toRequestWithUser(User user, String group)
                         throws JsonProcessingException;
 
-        String toCreateGroup(Organization organization) throws JsonProcessingException;
+        String toCreateGroup(String group) throws JsonProcessingException;
 
-        ArrayList<String> toCreateSubgroup(Organization organization, DepartmentBasic department)
+        ArrayList<String> toCreateSubgroup(String group, String subgroup)
                         throws JsonProcessingException;
 
-        String toDeleteGroup(Organization group) throws JsonProcessingException;
+        String toDeleteGroup(String group) throws JsonProcessingException;
 
-        String toAssignSubgroup(Organization group, DepartmentBasic subgroup) throws JsonProcessingException;
+        String toAssignSubgroup(String group, String subgroup) throws JsonProcessingException;
 
-        String toGetWithAllFlag(Organization group) throws JsonProcessingException;
+        String toGetWithAllFlag(String group) throws JsonProcessingException;
 
-        String toGetUsersWithParams(Organization group) throws JsonProcessingException;
+        String toGetUsersWithParams(String group) throws JsonProcessingException;
 
-        String toGetGroup(Organization group) throws JsonProcessingException;
+        String toGetGroup(String group) throws JsonProcessingException;
 
-        String toChangeGroup(Organization department, String newName) throws JsonProcessingException;
+        String toChangeGroup(String subgroup, String newName) throws JsonProcessingException;
 
-        String toCreateDNSRecord(Organization organization, String IPAddress, String zone)
+        String toCreateDNSRecord(String group, String IPAddress, String zone)
                         throws JsonProcessingException;
 
-        String toDeleteDNSRecord(Organization organization, String IPAddress, String zone)
+        String toDeleteDNSRecord(String group, String IPAddress, String zone)
                         throws JsonProcessingException;
 }

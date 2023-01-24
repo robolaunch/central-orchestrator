@@ -5,7 +5,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutionException;
 
-import org.robolaunch.models.request.RequestFleet;
+import org.robolaunch.model.request.RequestFleet;
 
 import io.kubernetes.client.openapi.ApiException;
 import io.minio.errors.MinioException;

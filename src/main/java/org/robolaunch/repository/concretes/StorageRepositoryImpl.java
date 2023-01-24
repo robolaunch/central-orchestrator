@@ -20,11 +20,10 @@ import javax.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
+import org.robolaunch.core.minio.MinioAdminClient;
 import org.robolaunch.exception.ApplicationException;
-import org.robolaunch.minio.MinioAdminClient;
-import org.robolaunch.models.Artifact;
-import org.robolaunch.models.Cluster;
-import org.robolaunch.models.Organization;
+import org.robolaunch.model.account.MinioArtifact;
+import org.robolaunch.model.account.Organization;
 import org.robolaunch.repository.abstracts.StorageRepository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -84,20 +83,20 @@ public class StorageRepositoryImpl implements StorageRepository {
     }
 
     @Override
-    public void push(byte[] content, Artifact artifact, String bucket)
+    public void push(byte[] content, MinioArtifact artifact, String bucket)
             throws MinioException, InvalidKeyException, NoSuchAlgorithmException,
             IllegalArgumentException, IOException {
         Path tempFile = Files.createTempFile("hello", ".yaml");
         Files.write(tempFile, content);
         UploadObjectArgs.Builder builder = UploadObjectArgs.builder().bucket(bucket)
-                .object(artifact.getClusterName() + "/" + artifact.getName()).filename(tempFile.toString());
+                .object(artifact.getBucketName() + "/" + artifact.getName()).filename(tempFile.toString());
         minioClient.uploadObject(builder.build());
 
     }
 
     /* Get Template from "template-artifacts bucket" */
     @Override
-    public JsonObject getYamlTemplate(Artifact artifact, String bucket)
+    public JsonObject getYamlTemplate(MinioArtifact artifact, String bucket)
             throws MinioException, InvalidKeyException, NoSuchAlgorithmException,
             IllegalArgumentException, IOException {
         InputStream inputStream = minioClient.getObject(GetObjectArgs.builder().bucket(bucket)
@@ -120,7 +119,7 @@ public class StorageRepositoryImpl implements StorageRepository {
 
     /* Get text content of the object on minio. */
     @Override
-    public String getContent(Artifact artifact, String bucket)
+    public String getContent(MinioArtifact artifact, String bucket)
             throws InvalidKeyException, ErrorResponseException, InsufficientDataException,
             InternalException, InvalidResponseException, NoSuchAlgorithmException, ServerException, XmlParserException,
             IllegalArgumentException, IOException {
@@ -143,49 +142,36 @@ public class StorageRepositoryImpl implements StorageRepository {
 
     /* Delete an object from minio. */
     @Override
-    public void remove(Artifact artifact, String bucket)
+    public void remove(MinioArtifact artifact, String bucket)
             throws MinioException, InvalidKeyException, NoSuchAlgorithmException, IOException {
         minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucket).object(artifact.getName()).build());
     }
 
     /* Get list of buckets. */
     @Override
-    public List<Artifact> list() throws MinioException, InvalidKeyException,
+    public List<MinioArtifact> list() throws MinioException, InvalidKeyException,
             NoSuchAlgorithmException, IOException {
         List<Bucket> buckets = null;
-        List<Artifact> artifacts = new ArrayList<Artifact>();
+        List<MinioArtifact> artifacts = new ArrayList<MinioArtifact>();
         buckets = minioClient.listBuckets();
         for (Bucket bucket : buckets) {
-            artifacts.add(new Artifact(bucket.name(), ""));
+            artifacts.add(new MinioArtifact(bucket.name(), ""));
         }
         return artifacts;
 
     }
 
     @Override
-    public void removeDir(Artifact artifact, String bucket)
+    public void removeDir(MinioArtifact artifact, String bucket)
             throws MinioException, InvalidKeyException, NoSuchAlgorithmException,
             IOException {
         Iterable<Result<Item>> items = minioClient
                 .listObjects(ListObjectsArgs.builder().bucket(bucket).recursive(true).build());
         for (Result<Item> item : items) {
-            if (item.get().objectName().contains(artifact.getClusterName()))
-                remove(new Artifact(item.get().objectName(), artifact.getClusterName()),
+            if (item.get().objectName().contains(artifact.getBucketName()))
+                remove(new MinioArtifact(item.get().objectName(), artifact.getBucketName()),
                         bucket);
         }
-    }
-
-    @Override
-    public Boolean doesExist(Cluster cluster, String bucket)
-            throws MinioException, InvalidKeyException, IllegalArgumentException,
-            NoSuchAlgorithmException, IOException {
-        Iterable<Result<Item>> items = minioClient.listObjects(ListObjectsArgs.builder().bucket(bucket).build());
-        for (Result<Item> result : items) {
-            if (result.get().objectName().equals(cluster.getName() + "/")) {
-                return true;
-            }
-        }
-        return false;
     }
 
     @Override
@@ -273,7 +259,7 @@ public class StorageRepositoryImpl implements StorageRepository {
             String teamId, String physicalInstanceName, String username) throws InvalidKeyException,
             ErrorResponseException, InsufficientDataException, InternalException, InvalidResponseException,
             NoSuchAlgorithmException, ServerException, XmlParserException, IllegalArgumentException, IOException {
-        Artifact artifact = new Artifact("template_script.sh", "");
+        MinioArtifact artifact = new MinioArtifact("template_script.sh", "");
         String bucketName = "template-artifacts";
         String scriptContent = getContent(artifact, bucketName);
         return null;

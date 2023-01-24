@@ -6,11 +6,11 @@ import javax.inject.Inject;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
 import org.robolaunch.exception.ApplicationException;
-import org.robolaunch.models.Organization;
-import org.robolaunch.models.request.RequestBuildManager;
-import org.robolaunch.models.request.RequestLaunchManager;
-import org.robolaunch.models.request.RequestRobot;
-import org.robolaunch.models.response.PlainResponse;
+import org.robolaunch.model.account.Organization;
+import org.robolaunch.model.request.RequestBuildManager;
+import org.robolaunch.model.request.RequestLaunchManager;
+import org.robolaunch.model.request.RequestRobot;
+import org.robolaunch.model.response.PlainResponse;
 import org.robolaunch.repository.abstracts.RobotRepository;
 
 import com.google.gson.Gson;

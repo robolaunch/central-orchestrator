@@ -9,10 +9,9 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
-import org.robolaunch.models.Organization;
-import org.robolaunch.models.Response;
-import org.robolaunch.models.Result;
-import org.robolaunch.models.CreateRCResult;
+import org.robolaunch.model.account.Organization;
+import org.robolaunch.model.response.PlainResponse;
+import org.robolaunch.model.robot.CreateRCResult;
 import org.robolaunch.repository.abstracts.CloudInstanceHelperRepository;
 
 import com.google.gson.Gson;
@@ -46,19 +45,6 @@ public class CloudInstanceHelperService {
 
   @Inject
   ApiClientManager apiClientManager;
-
-  public String stageSetter(String newStage) {
-    try {
-      String newestStage = newStage;
-      return newestStage;
-    } catch (Exception e) {
-      return null;
-    }
-  }
-
-  public Result limitResult(CreateRCResult tCreateRCResult) {
-    return new Result(tCreateRCResult.getReason(), false);
-  }
 
   public String getBufferName(Organization organization, String teamId, String cloudInstanceName, String provider,
       String region, String superCluster)
@@ -265,15 +251,20 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Response deleteDNSRecord(Organization organization, String nodeName, String provider, String region,
+  public PlainResponse deleteDNSRecord(Organization organization, String nodeName, String provider, String region,
       String superCluster) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       cloudInstanceHelperRepository.deleteDNSRecord(organization, nodeName, provider, region, superCluster);
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("DNS Record deleted");
       cloudInstanceHelperLogger.info("DNS Record deleted");
-      return new Response(true, "DNS Record deleted.");
     } catch (Exception e) {
-      return new Response(false, "Error deleting DNS Record.");
+      cloudInstanceHelperLogger.error("Error while deleting DNS Record.", e);
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error while deleting DNS Record.");
     }
+    return plainResponse;
   }
 
   public Boolean isNodeUnschedulable(String nodeName, String provider, String region, String superCluster) {
@@ -298,37 +289,50 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Response deleteClusterVersion(String bufferName, String provider, String region, String superCluster) {
+  public PlainResponse deleteClusterVersion(String bufferName, String provider, String region, String superCluster) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       cloudInstanceHelperRepository.deleteClusterVersion(bufferName, provider, region, superCluster);
       cloudInstanceHelperLogger.info("Cluster version deleted");
-      return new Response(true, "Cluster version deleted.");
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Cluster version deleted");
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while deleting cluster version.", e);
-      return new Response(false, "Error deleting cluster version.");
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error while deleting cluster version.");
     }
+    return plainResponse;
   }
 
-  public Response deleteOAuth2ProxyResources(String bufferName, String provider, String region, String superCluster) {
+  public PlainResponse deleteOAuth2ProxyResources(String bufferName, String provider, String region,
+      String superCluster) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       cloudInstanceHelperRepository.deleteOAuth2ProxyResources(bufferName, provider, region, superCluster);
       cloudInstanceHelperLogger.info("OAuth2 Proxy resources deleted");
-      return new Response(true, "OAuth2 Proxy resources deleted.");
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("OAuth2 Proxy resources deleted");
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while deleting OAuth2 Proxy resources.", e);
-      return new Response(false, "Error deleting OAuth2 Proxy resources.");
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error while deleting OAuth2 Proxy resources.");
     }
+    return plainResponse;
   }
 
-  public Response deleteVirtualCluster(String bufferName, String provider, String region, String superCluster) {
+  public PlainResponse deleteVirtualCluster(String bufferName, String provider, String region, String superCluster) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       cloudInstanceHelperRepository.deleteVirtualCluster(bufferName, provider, region, superCluster);
       cloudInstanceHelperLogger.info("Virtual cluster deleted");
-      return new Response(true, "Virtual cluster deleted.");
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Virtual cluster deleted");
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while deleting virtual cluster.", e);
-      return new Response(false, "Error deleting virtual cluster.");
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error while deleting virtual cluster.");
     }
+    return plainResponse;
   }
 
   public Boolean isSubnetUsed(String bufferName, String provider, String region, String superCluster) {
@@ -354,48 +358,65 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Response deleteSubnet(String bufferName, String provider, String region, String superCluster) {
+  public PlainResponse deleteSubnet(String bufferName, String provider, String region, String superCluster) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       cloudInstanceHelperRepository.deleteSubnet(bufferName, provider, region, superCluster);
       cloudInstanceHelperLogger.info("Subnet deleted");
-      return new Response(true, "Subnet deleted.");
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Subnet deleted");
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while deleting subnet.", e);
-      return new Response(false, "Error deleting subnet.");
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error while deleting subnet.");
     }
+    return plainResponse;
   }
 
-  public Response deleteMachineDeployment(String bufferName, String provider, String region, String superCluster) {
+  public PlainResponse deleteMachineDeployment(String bufferName, String provider, String region, String superCluster) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       cloudInstanceHelperRepository.deleteMachineDeployment(bufferName, provider, region, superCluster);
       cloudInstanceHelperLogger.info("Machine deployment deleted");
-      return new Response(true, "Machine deployment deleted.");
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Machine deployment deleted");
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while deleting machine deployment.", e);
-      return new Response(false, "Error deleting machine deployment.");
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error while deleting machine deployment.");
     }
+    return plainResponse;
   }
 
-  public Response deleteOrganizationLabelsFromNode(String nodeName, String provider, String region,
+  public PlainResponse deleteOrganizationLabelsFromNode(String nodeName, String provider, String region,
       String superCluster) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       cloudInstanceHelperRepository.deleteOrganizationLabelsFromSuperCluster(nodeName, provider, region, superCluster);
       cloudInstanceHelperLogger.info("Node unlabelled");
-      return new Response(true, "Node unlabelled.");
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Node unlabelled.");
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while unlabelling node.", e);
-      return new Response(false, "Error unlabelling node.");
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error while unlabelling node.");
     }
+    return plainResponse;
   }
 
-  public Response deleteWorkerLabelFromNode(String nodeName, String provider, String region, String superCluster) {
+  public PlainResponse deleteWorkerLabelFromNode(String nodeName, String provider, String region, String superCluster) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       cloudInstanceHelperRepository.deleteWorkerLabelFromNode(nodeName, provider, region, superCluster);
       cloudInstanceHelperLogger.info("Node unlabelled");
-      return new Response(true, "Node unlabelled.");
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Node unlabelled.");
     } catch (Exception e) {
-      return new Response(false, "Error unlabelling node.");
+      cloudInstanceHelperLogger.error("Error while unlabelling node.", e);
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error while unlabelling node.");
     }
+    return plainResponse;
   }
 
   public String findNode(String bufferName, Organization organization, String teamId,
@@ -411,15 +432,19 @@ public class CloudInstanceHelperService {
     }
   }
 
-  public Response deleteVCNodes(String bufferName, String provider, String region, String superCluster) {
+  public PlainResponse deleteVCNodes(String bufferName, String provider, String region, String superCluster) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       cloudInstanceHelperRepository.deleteVirtualClusterNodes(bufferName, provider, region, superCluster);
       cloudInstanceHelperLogger.info("VC nodes deleted");
-      return new Response(true, "VC nodes deleted.");
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("VC nodes deleted");
     } catch (Exception e) {
       cloudInstanceHelperLogger.error("Error while deleting VC nodes.", e);
-      return new Response(false, "Error deleting VC nodes.");
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error while deleting VC nodes.");
     }
+    return plainResponse;
   }
 
   public Boolean healthCheck(Organization organization, String teamId, String cloudInstanceName,

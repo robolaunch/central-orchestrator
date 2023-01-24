@@ -9,17 +9,14 @@ import javax.inject.Inject;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
 import org.robolaunch.exception.ApplicationException;
-import org.robolaunch.models.LoginRequest;
-import org.robolaunch.models.LoginResponse;
-import org.robolaunch.models.Organization;
-import org.robolaunch.models.Response;
-import org.robolaunch.models.User;
-import org.robolaunch.models.response.PlainResponse;
-import org.robolaunch.repository.abstracts.GroupAdminRepository;
+import org.robolaunch.model.account.LoginRequest;
+import org.robolaunch.model.account.LoginResponse;
+import org.robolaunch.model.account.Organization;
+import org.robolaunch.model.account.User;
+import org.robolaunch.model.response.PlainResponse;
+import org.robolaunch.repository.abstracts.AccountRepository;
 import org.robolaunch.repository.abstracts.KeycloakAdminRepository;
 import org.robolaunch.repository.abstracts.KeycloakRepository;
-import org.robolaunch.repository.abstracts.UserAdminRepository;
-import org.robolaunch.repository.abstracts.UserRepository;
 
 import io.quarkus.arc.log.LoggerName;
 
@@ -35,13 +32,7 @@ public class KeycloakService {
   KeycloakRepository keycloakRepository;
 
   @Inject
-  GroupAdminRepository groupAdminRepository;
-
-  @Inject
-  UserAdminRepository userAdminRepository;
-
-  @Inject
-  UserRepository userRepository;
+  AccountRepository accountRepository;
 
   @Inject
   KeycloakAdminRepository keycloakAdminRepository;
@@ -55,39 +46,49 @@ public class KeycloakService {
   @LoggerName("keycloakService")
   Logger keycloakLogger;
 
-  public Response createClientScope(Organization organization) {
+  public PlainResponse createClientScope(Organization organization) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       keycloakAdminRepository.createClientScope(organization);
       keycloakLogger.info("Client scope created for organization: " + organization.getName());
-      return new Response(true, "Client scope created successfully");
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Client scope created successfully.");
     } catch (Exception e) {
       keycloakLogger.error("Error creating client scope for organization: " + organization.getName());
-      return new Response(false,
-          "Error creating client scope for organization: " + organization.getName());
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Client scope cannot be created.");
     }
-
+    return plainResponse;
   }
 
-  public Response createGatekeeperClient(Organization organization) {
+  public PlainResponse createGatekeeperClient(Organization organization) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       keycloakAdminRepository.createGatekeeperClient(organization);
       keycloakLogger.info("Gatekeeper client created for organization: " + organization.getName());
-      return new Response(true, "Gatekeeper client created successfully.");
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Gatekeeper client created successfully.");
     } catch (Exception e) {
       keycloakLogger.error("Error creating gatekeeper client for organization: " + organization.getName());
-      return new Response(false, "Gatekeeper cannot be created.");
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Gatekeeper client cannot be created.");
     }
+    return plainResponse;
   }
 
-  public Response createOAuthProxyClient(Organization organization) {
+  public PlainResponse createOAuthProxyClient(Organization organization) {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       keycloakAdminRepository.createOAuthProxyClient(organization);
       keycloakLogger.info("OAuth proxy client created for organization: " + organization.getName());
-      return new Response(true, UUID.randomUUID().toString());
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("OAuth proxy client created successfully.");
     } catch (Exception e) {
       keycloakLogger.error("Error creating oauth proxy client for organization: " + organization.getName());
-      return new Response(false, UUID.randomUUID().toString());
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("OAuth proxy client cannot be created.");
     }
+    return plainResponse;
   }
 
   public void deleteRealm(Organization organization) {
@@ -237,7 +238,7 @@ public class KeycloakService {
   public PlainResponse forgotPasswordWithEmail(String email) throws IOException {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      User user = userAdminRepository.getUserByEmail(email);
+      User user = accountRepository.getUserByEmail(email);
       keycloakAdminRepository.forgotPassword(user.getUsername());
       keycloakLogger.info("User password email sent to " + email + "");
       plainResponse.setSuccess(true);
@@ -253,15 +254,19 @@ public class KeycloakService {
     }
   }
 
-  public Response sendPasswordMailRegisteredUser(User user) throws ApplicationException {
+  public PlainResponse sendPasswordMailRegisteredUser(User user) throws ApplicationException {
+    PlainResponse plainResponse = new PlainResponse();
     try {
       keycloakAdminRepository.forgotPassword(user.getUsername());
       keycloakLogger.info("User password email sent to " + user.getUsername() + "");
-      return new Response(true, UUID.randomUUID().toString());
+      plainResponse.setSuccess(true);
+      plainResponse.setMessage("Password email sent to " + user.getUsername() + "");
     } catch (Exception e) {
       keycloakLogger.error("Error password email send: " + e);
-      return new Response(false, UUID.randomUUID().toString());
+      plainResponse.setSuccess(false);
+      plainResponse.setMessage("Error sending password mail. Please try again.");
     }
+    return plainResponse;
   }
 
   public PlainResponse changePassword(LoginRequest loginRequest) throws ApplicationException {

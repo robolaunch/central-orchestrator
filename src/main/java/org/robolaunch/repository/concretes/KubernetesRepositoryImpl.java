@@ -17,21 +17,21 @@ import javax.json.JsonObject;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.robolaunch.exception.ApplicationException;
-import org.robolaunch.models.Fleet;
-import org.robolaunch.models.Organization;
-import org.robolaunch.models.PhysicalInstanceKubernetes;
-import org.robolaunch.models.ProviderKubernetes;
-import org.robolaunch.models.RegionKubernetes;
-import org.robolaunch.models.Repository;
-import org.robolaunch.models.Robot;
-import org.robolaunch.models.RoboticsCloudKubernetes;
-import org.robolaunch.models.SuperClusterKubernetes;
-import org.robolaunch.models.User;
-import org.robolaunch.models.Workspace;
+import org.robolaunch.model.account.Organization;
+import org.robolaunch.model.account.User;
+import org.robolaunch.model.robot.Fleet;
+import org.robolaunch.model.robot.PhysicalInstanceKubernetes;
+import org.robolaunch.model.robot.ProviderKubernetes;
+import org.robolaunch.model.robot.RegionKubernetes;
+import org.robolaunch.model.robot.Repository;
+import org.robolaunch.model.robot.Robot;
+import org.robolaunch.model.robot.RoboticsCloudKubernetes;
+import org.robolaunch.model.robot.SuperClusterKubernetes;
+import org.robolaunch.model.robot.Workspace;
 import org.robolaunch.repository.abstracts.CloudInstanceHelperRepository;
 import org.robolaunch.repository.abstracts.KubernetesRepository;
 import org.robolaunch.service.ApiClientManager;
-import org.robolaunch.service.DepartmentService;
+import org.robolaunch.service.TeamService;
 import org.robolaunch.service.OrganizationService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -63,7 +63,7 @@ public class KubernetesRepositoryImpl implements KubernetesRepository {
   @Inject
   ApiClientManager apiClientManager;
   @Inject
-  DepartmentService departmentService;
+  TeamService departmentService;
   @Inject
   OrganizationService organizationService;
   @Inject

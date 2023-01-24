@@ -22,13 +22,13 @@ import org.robolaunch.core.abstracts.GroupAdapter;
 import org.robolaunch.core.abstracts.RandomGenerator;
 import org.robolaunch.core.concretes.RandomGeneratorImpl;
 import org.robolaunch.exception.ApplicationException;
-import org.robolaunch.models.Artifact;
-import org.robolaunch.models.Organization;
-import org.robolaunch.models.kubernetes.V1MachineDeployment;
-import org.robolaunch.models.kubernetes.V1VirtualCluster;
+import org.robolaunch.model.account.MinioArtifact;
+import org.robolaunch.model.account.Organization;
+import org.robolaunch.model.kubernetes.V1MachineDeployment;
+import org.robolaunch.model.kubernetes.V1VirtualCluster;
+import org.robolaunch.repository.abstracts.AccountRepository;
 import org.robolaunch.repository.abstracts.AmazonRepository;
 import org.robolaunch.repository.abstracts.CloudInstanceHelperRepository;
-import org.robolaunch.repository.abstracts.GroupAdminRepository;
 import org.robolaunch.repository.abstracts.KubernetesRepository;
 import org.robolaunch.repository.abstracts.StorageRepository;
 import org.robolaunch.service.ApiClientManager;
@@ -91,7 +91,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
   @Inject
   KubernetesRepository kubernetesRepository;
   @Inject
-  GroupAdminRepository groupAdminRepository;
+  AccountRepository accountRepository;
   @Inject
   GroupAdapter groupAdapter;
   @Inject
@@ -568,10 +568,10 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
         externalIP = nodeAddresses.get().get(i).getAddress().toString();
       }
     }
-    String requestData = groupAdapter.toDeleteDNSRecord(organization, externalIP, dnsZoneName);
+    String requestData = groupAdapter.toDeleteDNSRecord(organization.getName(), externalIP, dnsZoneName);
     String deleteDNSRecord = String.format("{\"id\": 0, \"method\": \"dnsrecord_del/1\", \"params\": %s} ",
         requestData);
-    groupAdminRepository.makeRequest(deleteDNSRecord);
+    accountRepository.makeRequest(deleteDNSRecord);
   }
 
   @Override
@@ -590,7 +590,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     AppsV1Api appsApi = apiClientManager.getAppsApi(provider, region, superCluster);
     String namespaceName = getNamespaceNameWithBufferName(bufferName, provider, region, superCluster);
 
-    Artifact artifact = new Artifact();
+    MinioArtifact artifact = new MinioArtifact();
     artifact.setName("oauth2Proxy.yaml");
     String bucket = "template-artifacts";
     String yaml = storageRepository.getContent(artifact, bucket);
@@ -931,7 +931,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
       throws IOException, ApiException, InterruptedException, InvalidKeyException, NoSuchAlgorithmException,
       IllegalArgumentException, MinioException {
     String clusterName = provider + "/" + region + "/" + superCluster + "/" + "kubeconfig.yaml";
-    Artifact artifact = new Artifact();
+    MinioArtifact artifact = new MinioArtifact();
     artifact.setName(clusterName);
     com.google.gson.JsonObject object = storageRepository.getYamlTemplate(artifact, "providers");
 

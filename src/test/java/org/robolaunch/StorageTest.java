@@ -1,7 +1,7 @@
 package org.robolaunch;
 
 import org.junit.jupiter.api.Test;
-import org.robolaunch.models.Organization;
+import org.robolaunch.model.account.Organization;
 import org.robolaunch.service.StorageService;
 
 import javax.inject.Inject;

@@ -7,7 +7,7 @@ import java.security.NoSuchAlgorithmException;
 
 import org.json.JSONException;
 import org.robolaunch.exception.ApplicationException;
-import org.robolaunch.models.Organization;
+import org.robolaunch.model.account.Organization;
 
 import io.kubernetes.client.extended.kubectl.exception.KubectlException;
 import io.kubernetes.client.openapi.ApiException;

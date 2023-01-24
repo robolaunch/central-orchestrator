@@ -1,6 +1,6 @@
 package org.robolaunch.core.abstracts;
 
-import org.robolaunch.models.User;
+import org.robolaunch.model.account.User;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 

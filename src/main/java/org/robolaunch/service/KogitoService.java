@@ -4,7 +4,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.logging.Logger;
-import org.robolaunch.models.Organization;
+import org.robolaunch.model.account.Organization;
 import org.robolaunch.repository.abstracts.KogitoRepository;
 
 import io.quarkus.arc.log.LoggerName;

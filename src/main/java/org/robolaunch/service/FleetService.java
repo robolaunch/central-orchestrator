@@ -5,8 +5,8 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
-import org.robolaunch.models.request.RequestFleet;
-import org.robolaunch.models.response.PlainResponse;
+import org.robolaunch.model.request.RequestFleet;
+import org.robolaunch.model.response.PlainResponse;
 import org.robolaunch.repository.abstracts.FleetRepository;
 
 import com.google.gson.Gson;

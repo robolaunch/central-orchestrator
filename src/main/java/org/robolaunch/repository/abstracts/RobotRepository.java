@@ -5,10 +5,10 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.ExecutionException;
 
-import org.robolaunch.models.Organization;
-import org.robolaunch.models.request.RequestBuildManager;
-import org.robolaunch.models.request.RequestLaunchManager;
-import org.robolaunch.models.request.RequestRobot;
+import org.robolaunch.model.account.Organization;
+import org.robolaunch.model.request.RequestBuildManager;
+import org.robolaunch.model.request.RequestLaunchManager;
+import org.robolaunch.model.request.RequestRobot;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;

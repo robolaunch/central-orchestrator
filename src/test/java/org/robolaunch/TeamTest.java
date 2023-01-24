@@ -1,6 +1,6 @@
 package org.robolaunch;
 
-import org.robolaunch.service.DepartmentService;
+import org.robolaunch.service.TeamService;
 
 import com.google.inject.Inject;
 
@@ -13,7 +13,7 @@ import static org.hamcrest.CoreMatchers.is;
 public class TeamTest {
 
   @Inject
-  DepartmentService departmentService;
+  TeamService departmentService;
 
   /*
    * @Test

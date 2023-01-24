@@ -4,7 +4,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.jboss.logging.Logger;
-import org.robolaunch.models.response.PlainResponse;
+import org.robolaunch.model.response.PlainResponse;
 import org.robolaunch.repository.abstracts.AmazonRepository;
 
 import io.quarkus.arc.log.LoggerName;

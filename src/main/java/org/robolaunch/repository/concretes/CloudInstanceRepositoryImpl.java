@@ -19,12 +19,12 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.json.JSONObject;
 import org.robolaunch.core.abstracts.GroupAdapter;
 import org.robolaunch.exception.ApplicationException;
-import org.robolaunch.models.Artifact;
-import org.robolaunch.models.Organization;
-import org.robolaunch.models.kubernetes.V1VirtualCluster;
+import org.robolaunch.model.account.MinioArtifact;
+import org.robolaunch.model.account.Organization;
+import org.robolaunch.model.kubernetes.V1VirtualCluster;
+import org.robolaunch.repository.abstracts.AccountRepository;
 import org.robolaunch.repository.abstracts.AmazonRepository;
 import org.robolaunch.repository.abstracts.CloudInstanceHelperRepository;
-import org.robolaunch.repository.abstracts.GroupAdminRepository;
 import org.robolaunch.repository.abstracts.KeycloakAdminRepository;
 import org.robolaunch.repository.abstracts.KubernetesRepository;
 import org.robolaunch.repository.abstracts.CloudInstanceRepository;
@@ -104,7 +104,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
         @Inject
         CloudInstanceHelperRepository cloudInstanceHelperRepository;
         @Inject
-        GroupAdminRepository groupAdminRepository;
+        AccountRepository accountRepository;
         @Inject
         AmazonRepository amazonRepository;
         @Inject
@@ -144,7 +144,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 | ApiException | InterruptedException | MinioException e) {
                         throw new ApplicationException("Error creating machine deployment api.");
                 }
-                Artifact artifact = new Artifact();
+                MinioArtifact artifact = new MinioArtifact();
 
                 artifact.setName(provider + "/" + region + "/" + superCluster + "/" + "machineDeployment.yaml");
                 String bucket = "providers";
@@ -207,7 +207,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 | ApiException | InterruptedException | MinioException e) {
                         throw new ApplicationException("Error creating cluster version api." + e.getMessage());
                 }
-                Artifact artifact = new Artifact();
+                MinioArtifact artifact = new MinioArtifact();
                 artifact.setName("clusterVersion.yaml");
                 String bucket = "template-artifacts";
                 JsonObject object;
@@ -259,7 +259,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         ApiException, InterruptedException {
                 DynamicKubernetesApi virtualClustersApi = apiClientManager.getVirtualClusterApi(provider, region,
                                 superCluster);
-                Artifact artifact = new Artifact();
+                MinioArtifact artifact = new MinioArtifact();
                 artifact.setName("virtualCluster.yaml");
                 String bucket = "template-artifacts";
                 JsonObject object = storageRepository.getYamlTemplate(artifact, bucket);
@@ -461,7 +461,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, MinioException,
                         IOException, ApiException, InterruptedException {
                 DynamicKubernetesApi subnetsApi = apiClientManager.getSubnetApi(provider, region, superCluster);
-                Artifact artifact = new Artifact();
+                MinioArtifact artifact = new MinioArtifact();
                 artifact.setName("subnet.yaml");
                 String bucket = "template-artifacts";
                 JsonObject object = storageRepository.getYamlTemplate(artifact, bucket);
@@ -528,8 +528,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 subnetsApi.create(new DynamicKubernetesObject(object)).throwsApiException();
 
                 String yamlString = cloudInstanceHelperRepository.convertJsonStringToYamlString(object.toString());
-                Artifact artifact2 = new Artifact();
-                artifact2.setClusterName(cloudInstanceName);
+                MinioArtifact artifact2 = new MinioArtifact();
+                artifact2.setBucketName(cloudInstanceName);
                 artifact2.setName("subnet.yaml");
                 storageRepository.push(yamlString.getBytes(StandardCharsets.UTF_8), artifact2, organization.getName());
 
@@ -546,7 +546,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 DynamicKubernetesApi subnetsApi = apiClientManager.getSubnetApi(provider, region, superCluster);
                 DynamicKubernetesApi machineDeploymentApi = apiClientManager.getMachineDeploymentApi(provider, region,
                                 superCluster);
-                Artifact artifact = new Artifact();
+                MinioArtifact artifact = new MinioArtifact();
                 artifact.setName("virtualLink.yaml");
                 String bucket = "template-artifacts";
                 String yaml = storageRepository.getContent(artifact, bucket);
@@ -605,9 +605,9 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         IOException, InterruptedException, MinioException {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
                                 provider, region, superCluster);
-                Artifact artifactCrt = new Artifact();
+                MinioArtifact artifactCrt = new MinioArtifact();
                 artifactCrt.setName("server.crt");
-                Artifact artifactKey = new Artifact();
+                MinioArtifact artifactKey = new MinioArtifact();
                 artifactKey.setName("server.key");
                 String bucket = "secrets";
                 String contentCrt = storageRepository.getContent(artifactCrt, bucket);
@@ -642,7 +642,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 | ApiException | InterruptedException | MinioException e) {
                         throw new ApplicationException("Error creating apis.");
                 }
-                Artifact artifact = new Artifact();
+                MinioArtifact artifact = new MinioArtifact();
                 artifact.setName("oauth2Proxy.yaml");
                 String bucket = "template-artifacts";
                 String yaml;
@@ -774,7 +774,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
                                 provider, region, superCluster);
                 String yamlString = "";
-                Artifact artifact = new Artifact();
+                MinioArtifact artifact = new MinioArtifact();
                 artifact.setName("ingress.yaml");
                 String bucket = "template-artifacts";
                 String yaml = storageRepository.getContent(artifact, bucket);
@@ -798,8 +798,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 yamlString += cloudInstanceHelperRepository.convertJsonStringToYamlString(mJSONObject.toString());
                 yamlString += "---";
                 networkingV1Api.createNamespacedIngress("oauth2-proxy", ingress, null, null, null, null);
-                Artifact artifact2 = new Artifact();
-                artifact2.setClusterName(cloudInstanceName);
+                MinioArtifact artifact2 = new MinioArtifact();
+                artifact2.setBucketName(cloudInstanceName);
                 artifact2.setName("ingress.yaml");
                 storageRepository.push(yamlString.getBytes(StandardCharsets.UTF_8), artifact2, organization.getName());
         }
@@ -814,7 +814,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 ApiClient vcClient = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
                                 provider, region, superCluster);
                 String yamlString = "";
-                Artifact artifact = new Artifact();
+                MinioArtifact artifact = new MinioArtifact();
                 artifact.setName("coreDNS.yaml");
                 String bucket = "template-artifacts";
                 String yaml = storageRepository.getContent(artifact, bucket);
@@ -927,8 +927,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
 
                         }
                 }
-                Artifact artifact2 = new Artifact();
-                artifact2.setClusterName(cloudInstanceName);
+                MinioArtifact artifact2 = new MinioArtifact();
+                artifact2.setBucketName(cloudInstanceName);
                 artifact2.setName("coreDNS.yaml");
                 storageRepository.push(yamlString.getBytes(StandardCharsets.UTF_8), artifact2, organization.getName());
         }
@@ -1126,8 +1126,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         }
 
                 }
-                Artifact artifact2 = new Artifact();
-                artifact2.setClusterName(cloudInstanceName);
+                MinioArtifact artifact2 = new MinioArtifact();
+                artifact2.setBucketName(cloudInstanceName);
                 artifact2.setName("certManager.yaml");
                 storageRepository.push(yamlString.getBytes(StandardCharsets.UTF_8), artifact2, organization.getName());
         }
@@ -1338,8 +1338,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         }
                 }
 
-                Artifact artifact3 = new Artifact();
-                artifact3.setClusterName(cloudInstanceName);
+                MinioArtifact artifact3 = new MinioArtifact();
+                artifact3.setBucketName(cloudInstanceName);
                 artifact3.setName("fleetOperator.yaml");
                 storageRepository.push(yamlString.getBytes(StandardCharsets.UTF_8), artifact3,
                                 organization.getName());
@@ -1360,10 +1360,10 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                 String yaml = kubernetesService.readPlatformContent(version, "connectionHub");
                 String bucket = "template-artifacts";
 
-                Artifact artifact2 = new Artifact();
+                MinioArtifact artifact2 = new MinioArtifact();
                 artifact2.setName("certificateConnectionHub.yaml");
                 JsonObject object = storageRepository.getYamlTemplate(artifact2, bucket);
-                Artifact artifact4 = new Artifact();
+                MinioArtifact artifact4 = new MinioArtifact();
                 artifact4.setName("issuerConnectionHub.yaml");
 
                 JsonObject objectIssuer = storageRepository.getYamlTemplate(artifact4, bucket);
@@ -1790,8 +1790,8 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         }
                 }
 
-                Artifact artifact3 = new Artifact();
-                artifact3.setClusterName(cloudInstanceName);
+                MinioArtifact artifact3 = new MinioArtifact();
+                artifact3.setBucketName(cloudInstanceName);
                 artifact3.setName("robotOperator.yaml");
                 storageRepository.push(yamlString.getBytes(StandardCharsets.UTF_8), artifact3, organization.getName());
 
@@ -1816,10 +1816,10 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                                 externalIP = nodeAddresses.get().get(i).getAddress().toString();
                         }
                 }
-                String requestData = groupAdapter.toCreateDNSRecord(organization, externalIP, dnsZoneName);
+                String requestData = groupAdapter.toCreateDNSRecord(organization.getName(), externalIP, dnsZoneName);
                 String createDNSRecord = String.format("{\"id\": 0, \"method\": \"dnsrecord_add/1\", \"params\": %s} ",
                                 requestData);
-                groupAdminRepository.makeRequest(createDNSRecord);
+                accountRepository.makeRequest(createDNSRecord);
 
         }
 
@@ -1972,7 +1972,7 @@ public class CloudInstanceRepositoryImpl implements CloudInstanceRepository {
                         String provider, String region, String superCluster)
                         throws InvalidKeyException, NoSuchAlgorithmException, IllegalArgumentException, IOException,
                         ApiException, InterruptedException, MinioException {
-                Artifact artifact = new Artifact();
+                MinioArtifact artifact = new MinioArtifact();
                 artifact.setName("clusterAdminRole.yaml");
                 String bucket = "template-artifacts";
                 String yaml = storageRepository.getContent(artifact, bucket);

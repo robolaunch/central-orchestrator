@@ -4,8 +4,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import org.jboss.logging.Logger;
 import org.robolaunch.exception.ApplicationException;
-import org.robolaunch.models.Organization;
-import org.robolaunch.models.response.PlainResponse;
+import org.robolaunch.model.account.Organization;
+import org.robolaunch.model.response.PlainResponse;
 import org.robolaunch.repository.abstracts.CloudInstanceRepository;
 
 import io.kubernetes.client.openapi.ApiException;

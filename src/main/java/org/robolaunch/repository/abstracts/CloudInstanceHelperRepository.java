@@ -5,7 +5,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 import org.jboss.resteasy.spi.ApplicationException;
-import org.robolaunch.models.Organization;
+import org.robolaunch.model.account.Organization;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 

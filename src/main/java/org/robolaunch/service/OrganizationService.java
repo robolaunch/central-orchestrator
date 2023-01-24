@@ -16,20 +16,16 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
 import org.robolaunch.exception.ApplicationException;
-import org.robolaunch.models.Department;
-import org.robolaunch.models.GroupMember;
-import org.robolaunch.models.Organization;
-import org.robolaunch.models.Response;
-import org.robolaunch.models.Result;
-import org.robolaunch.models.User;
-import org.robolaunch.models.response.PlainResponse;
-import org.robolaunch.models.response.ResponseOrganizationMembers;
-import org.robolaunch.models.response.ResponseTeams;
-import org.robolaunch.models.response.ResponseUserOrganizations;
-import org.robolaunch.repository.abstracts.GroupAdminRepository;
+import org.robolaunch.model.account.UserGroupMember;
+import org.robolaunch.model.account.Organization;
+import org.robolaunch.model.account.Team;
+import org.robolaunch.model.account.User;
+import org.robolaunch.model.response.PlainResponse;
+import org.robolaunch.model.response.ResponseOrganizationMembers;
+import org.robolaunch.model.response.ResponseTeams;
+import org.robolaunch.model.response.ResponseUserOrganizations;
+import org.robolaunch.repository.abstracts.AccountRepository;
 import org.robolaunch.repository.abstracts.KeycloakAdminRepository;
-import org.robolaunch.repository.abstracts.UserAdminRepository;
-import org.robolaunch.repository.abstracts.UserRepository;
 
 import io.quarkus.arc.log.LoggerName;
 import io.smallrye.graphql.client.dynamic.api.DynamicGraphQLClient;
@@ -43,13 +39,7 @@ public class OrganizationService {
   Logger log;
 
   @Inject
-  GroupAdminRepository groupAdminRepository;
-
-  @Inject
-  UserAdminRepository userAdminRepository;
-
-  @Inject
-  UserRepository userRepository;
+  AccountRepository accountRepository;
 
   @Inject
   KeycloakAdminRepository keycloakAdminRepository;
@@ -71,11 +61,6 @@ public class OrganizationService {
 
   }
 
-  public Result errorHandler() {
-    organizationLogger.info("Error occured organization service");
-    return new Result("Error creating organization. Please try again.", false);
-  }
-
   public Boolean getOrganizationType(Organization organization) throws ApplicationException {
     try {
       Boolean organizationType = organization.isEnterprise();
@@ -86,20 +71,16 @@ public class OrganizationService {
     }
   }
 
-  public Result successResult() {
-    return new Result("Organization created successfully.", true);
-  }
-
   /* Does organization exist */
   public Boolean doesOrganizationExist(Organization organization) throws InternalError, IOException {
     try {
       Boolean doesOrganizationExist;
       if (organization.isEnterprise()) {
-        doesOrganizationExist = groupAdminRepository.doesGroupExist(organization);
+        doesOrganizationExist = accountRepository.doesGroupExist(organization);
       } else {
         Organization individualOrganization = new Organization();
         individualOrganization.setName("org-" + organization.getName());
-        doesOrganizationExist = groupAdminRepository.doesGroupExist(individualOrganization);
+        doesOrganizationExist = accountRepository.doesGroupExist(individualOrganization);
       }
       organizationLogger.info("Organization exists: " + doesOrganizationExist);
       return doesOrganizationExist;
@@ -112,7 +93,7 @@ public class OrganizationService {
   /* Does organization exist */
   public Boolean doesOrganizationExistForRoboticsCloud(Organization organization) throws InternalError, IOException {
     try {
-      Boolean doesOrganizationExist = groupAdminRepository.doesGroupExist(organization);
+      Boolean doesOrganizationExist = accountRepository.doesGroupExist(organization);
       organizationLogger.info("Organization exists: " + doesOrganizationExist);
       return doesOrganizationExist;
     } catch (Exception e) {
@@ -143,7 +124,7 @@ public class OrganizationService {
         plainResponse.setMessage("Organization name cannot contain spaces, underscores (_) or dollar signs ($).");
         return plainResponse;
       }
-      groupAdminRepository.createGroup(organization);
+      accountRepository.createGroup(organization);
       organizationLogger.info("Organization created: " + organization.getName());
       plainResponse.setSuccess(true);
       plainResponse.setMessage("Organization IPA Group created successfully.");
@@ -155,57 +136,14 @@ public class OrganizationService {
     return plainResponse;
   }
 
-  public Organization formatDefaultOrganization(User user) throws InternalError, IOException {
-    String suffix = "default-org-" + user.getUsername();
-    Organization organization = new Organization();
-    organization.setName(suffix);
-    return organization;
-  }
-
-  public Response createDefaultOrganization(Organization organization)
-      throws ApplicationException, InternalError, IOException {
-    try {
-      groupAdminRepository.createGroup(organization);
-      organizationLogger.info("IPA Group for default organization created.");
-      return new Response(true,
-          UUID.randomUUID().toString());
-    } catch (ApplicationException e) {
-      return new Response(false,
-          UUID.randomUUID().toString());
-    }
-
-  }
-
-  public void deleteDefaultOrganization(Organization organization)
-      throws ApplicationException, InternalError, IOException {
-    try {
-      groupAdminRepository.deleteGroup(organization);
-      organizationLogger.info("IPA Group for default organization deleted.");
-    } catch (ApplicationException e) {
-      throw new ApplicationException(e.getMessage());
-    }
-
-  }
-
-  public void addUserToDefaultOrganization(User user, Organization organization)
-      throws ApplicationException, InternalError, IOException {
-    try {
-      groupAdminRepository.addUserToGroup(user, organization);
-      groupAdminRepository.addUserToGroupAsManager(user, organization);
-    } catch (ApplicationException e) {
-      organizationLogger.error("Error adding user to default organization " + e.getMessage());
-      throw new ApplicationException(e.getMessage());
-    }
-  }
-
   /* Get users of the given organization. */
   public ResponseOrganizationMembers getOrganizationUsers(Organization organization) throws ApplicationException {
     ResponseOrganizationMembers responseOrganizationMembers = new ResponseOrganizationMembers();
     try {
       User user = new User();
       user.setUsername(jwt.getClaim("preferred_username"));
-      if (groupAdminRepository.isGroupMember(user, organization)) {
-        ArrayList<GroupMember> members = groupAdminRepository.getGroupMembers(organization);
+      if (accountRepository.isGroupMember(user, organization)) {
+        ArrayList<UserGroupMember> members = accountRepository.getGroupMembers(organization);
         responseOrganizationMembers.setSuccess(true);
         responseOrganizationMembers.setMessage("Organization users sent.");
         responseOrganizationMembers.setData(members);
@@ -231,7 +169,7 @@ public class OrganizationService {
   public PlainResponse deleteUserFromOrganization(User user, Organization organization) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      Boolean isMemberOrganization = groupAdminRepository.isGroupMember(user, organization);
+      Boolean isMemberOrganization = accountRepository.isGroupMember(user, organization);
 
       User currentUser = new User();
       currentUser.setUsername(jwt.getClaim("preferred_username"));
@@ -241,30 +179,30 @@ public class OrganizationService {
       }
 
       if (isMemberOrganization) {
-        if (groupAdminRepository.isGroupManager(user, organization)) {
-          Set<User> managers = groupAdminRepository.getUsers(organization, "membermanager_user");
+        if (accountRepository.isGroupManager(user, organization)) {
+          Set<User> managers = accountRepository.getUsers(organization, "membermanager_user");
           if (managers.size() == 1) {
             plainResponse.setSuccess(false);
             plainResponse.setMessage("Only manager cannot be deleted from organization.");
             return plainResponse;
           }
-          groupAdminRepository.removeUserManagerFromGroup(user, organization);
+          accountRepository.removeUserManagerFromGroup(user, organization);
         }
-        groupAdminRepository.removeUserFromGroup(user, organization);
+        accountRepository.removeUserFromGroup(user, organization);
       }
 
-      List<Department> departments = groupAdminRepository.getTeams(organization, "member_group");
+      List<Team> departments = accountRepository.getTeams(organization, "member_group");
       departments.forEach(department -> {
         /* department's description is read as its name on FreeIPA */
         Organization lowerGroup = new Organization();
         lowerGroup.setName(department.getId());
         try {
-          Boolean isMember = groupAdminRepository.isGroupMember(user, lowerGroup);
+          Boolean isMember = accountRepository.isGroupMember(user, lowerGroup);
           if (isMember) {
-            if (groupAdminRepository.isGroupManager(user, lowerGroup)) {
-              groupAdminRepository.removeUserManagerFromGroup(user, lowerGroup);
+            if (accountRepository.isGroupManager(user, lowerGroup)) {
+              accountRepository.removeUserManagerFromGroup(user, lowerGroup);
             }
-            groupAdminRepository.removeUserFromGroup(user, lowerGroup);
+            accountRepository.removeUserFromGroup(user, lowerGroup);
 
           }
         } catch (MalformedURLException e) {
@@ -292,7 +230,7 @@ public class OrganizationService {
   public PlainResponse deleteUserManagershipFromOrganization(User user, Organization organization) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      groupAdminRepository.removeUserManagerFromGroup(user, organization);
+      accountRepository.removeUserManagerFromGroup(user, organization);
       organizationLogger.info("User " + user.getUsername() + " removed from organization");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("User managership deleted from organization.");
@@ -311,8 +249,8 @@ public class OrganizationService {
       User user = new User();
       user.setUsername(jwt.getClaim("preferred_username"));
       System.out.println(user.getUsername() + " --- " + organization.getName());
-      if (groupAdminRepository.isGroupMember(user, organization)) {
-        ArrayList<Department> departments = groupAdminRepository.getTeams(organization, "member_group");
+      if (accountRepository.isGroupMember(user, organization)) {
+        ArrayList<Team> departments = accountRepository.getTeams(organization, "member_group");
         responseTeams.setMessage("Teams sent successfully.");
         responseTeams.setSuccess(true);
         responseTeams.setData(departments);
@@ -328,7 +266,7 @@ public class OrganizationService {
   public PlainResponse addUserToOrganizationAsManager(User user, Organization organization) {
     PlainResponse plainResponse = new PlainResponse();
     try {
-      groupAdminRepository.addUserToGroupAsManager(user, organization);
+      accountRepository.addUserToGroupAsManager(user, organization);
       organizationLogger.info("User " + user.getUsername() + " added to group as manager");
       plainResponse.setSuccess(true);
       plainResponse.setMessage("User added to organization as manager.");
@@ -342,19 +280,16 @@ public class OrganizationService {
 
   public void deleteOrganizationGroup(Organization organization) throws ApplicationException {
     try {
-      if (organization.getName().contains("org-default-")) {
-        throw new ApplicationException("Default organization cannot be deleted.");
-      }
-      List<Department> departments = groupAdminRepository.getTeams(organization, "member_group");
-      Iterator<Department> it = departments.iterator();
+      List<Team> departments = accountRepository.getTeams(organization, "member_group");
+      Iterator<Team> it = departments.iterator();
       while (it.hasNext()) {
-        Department d = it.next();
+        Team d = it.next();
         Organization org = new Organization();
         org.setName(d.getId());
-        groupAdminRepository.deleteGroup(org);
+        accountRepository.deleteGroup(org);
       }
 
-      groupAdminRepository.deleteGroup(organization);
+      accountRepository.deleteGroup(organization);
       organizationLogger.info("Organization deleted.");
     } catch (Exception e) {
       organizationLogger.error("Error deleting organization: " + e.getMessage());
@@ -369,7 +304,7 @@ public class OrganizationService {
    */
   public Boolean isUserManagerOrganization(User user, Organization organization) {
     try {
-      Boolean isManager = groupAdminRepository.isGroupManager(user, organization);
+      Boolean isManager = accountRepository.isGroupManager(user, organization);
       return isManager;
     } catch (Exception e) {
       organizationLogger.error("Error checking if user is manager of organization: " + e.getMessage());
@@ -389,7 +324,7 @@ public class OrganizationService {
       user.setUsername(jwt.getClaim("preferred_username"));
       Boolean isManager = false;
 
-      Set<User> parentMemberManagers = groupAdminRepository.getUsers(organization, "membermanager_user");
+      Set<User> parentMemberManagers = accountRepository.getUsers(organization, "membermanager_user");
       Iterator<User> it = parentMemberManagers.iterator();
 
       while (it.hasNext()) {
@@ -412,7 +347,7 @@ public class OrganizationService {
    */
   public Boolean isUserPresentInOrganization(User user, Organization organization) {
     try {
-      Boolean isMemberUpperOrg = groupAdminRepository.isGroupMember(user, organization);
+      Boolean isMemberUpperOrg = accountRepository.isGroupMember(user, organization);
       if (isMemberUpperOrg) {
         return true;
       } else {
@@ -428,9 +363,9 @@ public class OrganizationService {
    * Get group members, it only fetches members(not managers), so every manager
    * must be a member of the current group.
    */
-  public List<GroupMember> getGroupMembers(Organization organization) throws ApplicationException {
+  public List<UserGroupMember> getGroupMembers(Organization organization) throws ApplicationException {
     try {
-      List<GroupMember> members = groupAdminRepository.getGroupMembers(organization);
+      List<UserGroupMember> members = accountRepository.getGroupMembers(organization);
       organizationLogger.info("Members sent.");
       return members;
     } catch (Exception e) {
@@ -445,7 +380,7 @@ public class OrganizationService {
     try {
       User user = new User();
       user.setUsername(jwt.getClaim("preferred_username"));
-      ArrayList<Organization> organizations = userAdminRepository.getOrganizations(user);
+      ArrayList<Organization> organizations = accountRepository.getOrganizations(user);
       responseUserOrganizations.setSuccess(true);
       responseUserOrganizations.setMessage("User organizations sent.");
       responseUserOrganizations.setData(organizations);
