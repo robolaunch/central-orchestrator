@@ -4,7 +4,7 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.robolaunch</groupId>
-  <artifactId>cluster-ops</artifactId>
+  <artifactId>central-orchestrator</artifactId>
   <version>1.26.0.Final</version>
   <properties>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
