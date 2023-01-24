@@ -1,8 +1,6 @@
 package org.robolaunch.service;
 
 import java.io.IOException;
-import java.net.HttpCookie;
-import java.util.List;
 import java.util.UUID;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -10,8 +8,6 @@ import javax.inject.Inject;
 
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
-import org.robolaunch.core.abstracts.IPAAdmin;
-import org.robolaunch.core.concretes.IPAAdminLogin;
 import org.robolaunch.exception.ApplicationException;
 import org.robolaunch.models.Organization;
 import org.robolaunch.models.Response;
@@ -54,34 +50,6 @@ public class GroupService {
 
   @LoggerName("groupService")
   Logger groupLogger;
-
-  /*
-   * Granting admin privileges, needed when user permissions not enough.
-   * HELPER FUNCTION.
-   */
-  public void grantAdminPrivileges() {
-    try {
-      IPAAdmin adminLogin = new IPAAdminLogin();
-      List<HttpCookie> cookies = adminLogin.login();
-      System.out.println("cs: " + cookies.size());
-      cookies.forEach(cookie -> {
-        groupAdminRepository.appendCookie(cookie);
-        userAdminRepository.appendCookie(cookie);
-      });
-      groupLogger.info("Admin privileges granted");
-    } catch (Exception e) {
-      groupLogger.error("Error happened when granting admin privileges " + e.getMessage());
-    }
-  }
-
-  public void deleteAdminCookies() {
-    try {
-      groupAdminRepository.clearCookies();
-      groupLogger.info("Admin cookies deleted.");
-    } catch (Exception e) {
-      groupLogger.error("Error deleting admin cookies.");
-    }
-  }
 
   public void addUserToIPAGroup(User user, Organization organization) throws ApplicationException {
     try {
