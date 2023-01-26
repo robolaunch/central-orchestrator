@@ -86,32 +86,19 @@ public class AccountService {
      * Granting admin privileges, needed when user permissions not enough.
      * HELPER FUNCTION.
      */
-    public void grantAdminPrivileges() {
-        groupAdminRepository.getCurrentCookies().forEach(cookie -> {
-            if (cookie.getMaxAge() <= 0) {
-                try {
-                    groupAdminRepository.clearCookies();
-                } catch (URISyntaxException e) {
-                    accountLogger.error("Error happened when granting admin privileges. While clearing cookies: "
-                            + e.getMessage());
-                }
-                IPAAdmin adminLogin = new IPAAdminLogin();
-                List<HttpCookie> innerCookies;
-                try {
-                    innerCookies = adminLogin.login();
-                    innerCookies.forEach(innerCookie -> {
-                        groupAdminRepository.appendCookie(innerCookie);
-                        userAdminRepository.appendCookie(innerCookie);
-                    });
-                } catch (InternalError | IOException e) {
-                    accountLogger.error("Error happened when granting admin privileges. While logging in: "
-                            + e.getMessage());
-                }
-                accountLogger.info("New cookie generated for admin privileges.");
-            } else {
-                accountLogger.info("Cookie still works. No need to refresh.");
-            }
-        });
+    public void grantAdminPrivileges() throws InternalError, IOException {
+        try {
+            IPAAdmin adminLogin = new IPAAdminLogin();
+            List<HttpCookie> innerCookies;
+            innerCookies = adminLogin.login();
+            innerCookies.forEach(innerCookie -> {
+                groupAdminRepository.appendCookie(innerCookie);
+                userAdminRepository.appendCookie(innerCookie);
+            });
+            accountLogger.info("Admin privileges granted.");
+        } catch (Exception e) {
+            accountLogger.error("Admin privileges not granted.");
+        }
 
     }
 
