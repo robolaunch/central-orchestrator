@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_ztsN4HlsEDu3l4rP-XgUQQ" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_3GCFIYKgEDuYoog70djhKw" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_requestFleetItem" structureRef="org.robolaunch.models.request.RequestFleet"/>
   <bpmn2:itemDefinition id="_plainResponseItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="_requestRobotItem" structureRef="org.robolaunch.models.request.RequestRobot"/>
@@ -28,8 +28,8 @@
   <bpmn2:interface id="_EA28A215-A345-465B-B888-A318E5D2DDEE_ServiceInterface" name="org.robolaunch.service.ErrorService" implementationRef="org.robolaunch.service.ErrorService">
     <bpmn2:operation id="_EA28A215-A345-465B-B888-A318E5D2DDEE_ServiceOperation" name="plainResponseTemplate" implementationRef="plainResponseTemplate"/>
   </bpmn2:interface>
-  <bpmn2:collaboration id="_5437AF05-8CC0-4956-A2DA-86FD26CF4BC7" name="Default Collaboration">
-    <bpmn2:participant id="_BEA86704-B6D5-4BD8-8D5A-6763D79271A1" name="Pool Participant" processRef="fleet"/>
+  <bpmn2:collaboration id="_B846D8C7-B3C7-4284-832A-0F019A4C3BD7" name="Default Collaboration">
+    <bpmn2:participant id="_6893F239-C7C2-4D09-854E-6DB7DA24A398" name="Pool Participant" processRef="fleet"/>
   </bpmn2:collaboration>
   <bpmn2:process id="fleet" drools:packageName="org.robolaunch.kogito.provider" drools:version="1.0" drools:adHoc="false" name="fleet" isExecutable="true" processType="Public">
     <bpmn2:property id="requestFleet" itemSubjectRef="_requestFleetItem" name="requestFleet"/>
@@ -458,7 +458,7 @@
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_ztsN4HlsEDu3l4rP-XgUQQ</bpmn2:source>
-    <bpmn2:target>_ztsN4HlsEDu3l4rP-XgUQQ</bpmn2:target>
+    <bpmn2:source>_3GCFIYKgEDuYoog70djhKw</bpmn2:source>
+    <bpmn2:target>_3GCFIYKgEDuYoog70djhKw</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>

@@ -61,7 +61,6 @@ public class FleetRepositoryImpl implements FleetRepository {
             javax.json.JsonObject data = response.getData();
             javax.json.JsonArray processInstances = data.getJsonArray("ProcessInstances");
 
-            System.out.println("milestone 1");
             ObjectMapper mapper = new ObjectMapper();
             // GET ROBOTICS CLOUD VARIABLES
             if (processInstances.size() == 0) {
@@ -77,7 +76,6 @@ public class FleetRepositoryImpl implements FleetRepository {
             String teamId = childNode.get("teamId").asText();
             String cloudInstanceName = childNode.get("cloudInstanceName").asText();
             JsonNode organizationNode = childNode.get("organization");
-            System.out.println("milestone 2");
 
             JsonObject fleetObject = new JsonObject();
             fleetObject.addProperty("apiVersion", "fleet.roboscale.io/v1alpha1");
@@ -102,14 +100,12 @@ public class FleetRepositoryImpl implements FleetRepository {
                         .getAsJsonObject().addProperty("robolaunch.io/cloud-instance-alias",
                                     cloudInstanceName);
             metadataObject.add("labels", labelsObject);
-            System.out.println("milestone 3");
 
             JsonObject referenceObject = new JsonObject();
             referenceObject.addProperty("name",
                         requestFleet.getFleet().getName() + "-discovery");
             referenceObject.addProperty("namespace",
                         requestFleet.getFleet().getName());
-            System.out.println("milestone 4");
 
             fleetObject.add("metadata", metadataObject);
 
@@ -120,7 +116,6 @@ public class FleetRepositoryImpl implements FleetRepository {
             specDiscoveryServerObject.addProperty("type", "Server");
             specDiscoveryServerObject.addProperty("hostname", "xxx");
             specDiscoveryServerObject.addProperty("subdomain", "yyy");
-            System.out.println("milestone 5");
 
             specObject.add("discoveryServerTemplate", specDiscoveryServerObject);
             fleetObject.add("spec", specObject);
@@ -129,15 +124,11 @@ public class FleetRepositoryImpl implements FleetRepository {
             ApiClient vcApi = cloudInstanceHelperRepository.getVirtualClusterClientWithBufferName(bufferName,
                         provider, region, superCluster);
             CustomObjectsApi customObjectsApi = new CustomObjectsApi(vcApi);
-            System.out.println("milestone 6");
 
             customObjectsApi.createClusterCustomObject("fleet.roboscale.io", "v1alpha1", "fleets",
                         fleetObject,
                         null,
                         null, null);
-
-            System.out.println("milestone 7");
-
       }
 
       @Override

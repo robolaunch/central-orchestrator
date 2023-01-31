@@ -5,8 +5,8 @@ import java.io.Serializable;
 public class BuildManagerStep implements Serializable {
    private String name;
    private String workspace;
-   private String command;
-   private String script;
+   private String codeType;
+   private String code;
 
    public BuildManagerStep() {
    }
@@ -27,20 +27,20 @@ public class BuildManagerStep implements Serializable {
       this.workspace = workspace;
    }
 
-   public String getCommand() {
-      return command;
+   public String getCodeType() {
+      return codeType;
    }
 
-   public void setCommand(String command) {
-      this.command = command;
+   public void setCodeType(String codeType) {
+      this.codeType = codeType;
    }
 
-   public String getScript() {
-      return script;
+   public String getCode() {
+      return code;
    }
 
-   public void setScript(String script) {
-      this.script = script;
+   public void setCode(String code) {
+      this.code = code;
    }
 
 }

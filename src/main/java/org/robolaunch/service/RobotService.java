@@ -64,11 +64,9 @@ public class RobotService {
     try {
       String token = jwt.getRawToken();
       if (robotBuildManager.isFederated()) {
-        System.out.println("build manager federated");
 
         robotRepository.createFederatedRobotBuildManager(robotBuildManager, token);
       } else {
-        System.out.println("build manager not federated");
         robotRepository.createRobotBuildManager(robotBuildManager, token);
       }
       plainResponse.setSuccess(true);

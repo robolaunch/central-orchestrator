@@ -23,6 +23,8 @@ public class Robot implements Serializable {
    private String teamName;
    private String roboticsCloudName;
    private String fleetName;
+   private String buildManagerStatus;
+   private String launchManagerStatus;
 
    public Robot() {
    }
@@ -177,6 +179,22 @@ public class Robot implements Serializable {
 
    public void setFleetName(String fleetName) {
       this.fleetName = fleetName;
+   }
+
+   public String getBuildManagerStatus() {
+      return buildManagerStatus;
+   }
+
+   public void setBuildManagerStatus(String buildManagerStatus) {
+      this.buildManagerStatus = buildManagerStatus;
+   }
+
+   public String getLaunchManagerStatus() {
+      return launchManagerStatus;
+   }
+
+   public void setLaunchManagerStatus(String launchManagerStatus) {
+      this.launchManagerStatus = launchManagerStatus;
    }
 
 }

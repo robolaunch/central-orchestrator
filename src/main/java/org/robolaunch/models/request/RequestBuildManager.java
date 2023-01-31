@@ -11,6 +11,7 @@ public class RequestBuildManager implements Serializable {
    private String teamId;
    private String roboticsCloudName;
    private Boolean federated;
+   private String fleetName;
    private RequestCreateFederatedBuildManager federatedBuildManager;
 
    public RequestBuildManager() {
@@ -70,6 +71,14 @@ public class RequestBuildManager implements Serializable {
 
    public void setRoboticsCloudName(String roboticsCloudName) {
       this.roboticsCloudName = roboticsCloudName;
+   }
+
+   public String getFleetName() {
+      return fleetName;
+   }
+
+   public void setFleetName(String fleetName) {
+      this.fleetName = fleetName;
    }
 
 }

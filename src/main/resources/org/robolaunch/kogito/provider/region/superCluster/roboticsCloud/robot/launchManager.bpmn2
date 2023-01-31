@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_8ZVhoXlnEDu9apcH_lnoCw" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" xmlns:xsi="xsi" id="_ciFskILFEDuCKt7w0l0oNA" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_requestLaunchManagerItem" structureRef="org.robolaunch.models.request.RequestLaunchManager"/>
   <bpmn2:itemDefinition id="_plainResponseItem" structureRef="org.robolaunch.models.response.PlainResponse"/>
   <bpmn2:itemDefinition id="__DA6CEFC4-6B93-46C5-A16D-227BE5664936_requestLaunchManagerInputXItem" structureRef="org.robolaunch.models.request.RequestLaunchManager"/>
@@ -7,8 +7,8 @@
   <bpmn2:interface id="_DA6CEFC4-6B93-46C5-A16D-227BE5664936_ServiceInterface" name="org.robolaunch.service.RobotService" implementationRef="org.robolaunch.service.RobotService">
     <bpmn2:operation id="_DA6CEFC4-6B93-46C5-A16D-227BE5664936_ServiceOperation" name="createLaunchManager" implementationRef="createLaunchManager"/>
   </bpmn2:interface>
-  <bpmn2:collaboration id="_32B2F96E-3EDC-4DF9-A4EA-191F69F9C07F" name="Default Collaboration">
-    <bpmn2:participant id="_5DE40DA7-A2FF-4239-AC96-FC943A97DB26" name="Pool Participant" processRef="launchManager"/>
+  <bpmn2:collaboration id="_3FFED768-BA47-43ED-80BA-8052D0026736" name="Default Collaboration">
+    <bpmn2:participant id="_58DD0340-792B-4BB1-BDF4-CB4FE0C0DFC4" name="Pool Participant" processRef="launchManager"/>
   </bpmn2:collaboration>
   <bpmn2:process id="launchManager" drools:packageName="org.robolaunch.kogito.provider" drools:version="1.0" drools:adHoc="false" name="launchManager" isExecutable="true" processType="Public">
     <bpmn2:property id="requestLaunchManager" itemSubjectRef="_requestLaunchManagerItem" name="requestLaunchManager"/>
@@ -80,27 +80,27 @@
   <bpmndi:BPMNDiagram>
     <bpmndi:BPMNPlane bpmnElement="launchManager">
       <bpmndi:BPMNShape id="shape__2FA708FB-62E4-4323-B100-6A1BD0FBA683" bpmnElement="_2FA708FB-62E4-4323-B100-6A1BD0FBA683">
-        <dc:Bounds height="56" width="56" x="448" y="346"/>
+        <dc:Bounds height="56" width="56" x="320" y="346"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__11C8C669-F6C5-49CC-93D8-B2399D92A6FC" bpmnElement="_11C8C669-F6C5-49CC-93D8-B2399D92A6FC">
         <dc:Bounds height="56" width="56" x="940" y="346"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__DA6CEFC4-6B93-46C5-A16D-227BE5664936" bpmnElement="_DA6CEFC4-6B93-46C5-A16D-227BE5664936">
-        <dc:Bounds height="102" width="154" x="543" y="323"/>
+        <dc:Bounds height="102" width="154" x="415" y="323"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="shape__AD8B3F90-C542-45C5-AD13-24B0AD3DBEC2" bpmnElement="_AD8B3F90-C542-45C5-AD13-24B0AD3DBEC2">
         <dc:Bounds height="101" width="153" x="749" y="323"/>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="edge_shape__2FA708FB-62E4-4323-B100-6A1BD0FBA683_to_shape__DA6CEFC4-6B93-46C5-A16D-227BE5664936" bpmnElement="_B79B73BF-9463-4133-A939-FA02FBE935F5">
-        <di:waypoint x="476" y="374"/>
-        <di:waypoint x="543" y="374"/>
+        <di:waypoint x="348" y="374"/>
+        <di:waypoint x="415" y="374"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__AD8B3F90-C542-45C5-AD13-24B0AD3DBEC2_to_shape__11C8C669-F6C5-49CC-93D8-B2399D92A6FC" bpmnElement="_C67F2D9C-412D-4908-A063-7335649169CE">
         <di:waypoint x="825.5" y="373.5"/>
         <di:waypoint x="940" y="374"/>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="edge_shape__DA6CEFC4-6B93-46C5-A16D-227BE5664936_to_shape__AD8B3F90-C542-45C5-AD13-24B0AD3DBEC2" bpmnElement="_50DDBC6B-A1B4-4EFE-80A6-3FD173EFE957">
-        <di:waypoint x="620" y="374"/>
+        <di:waypoint x="492" y="374"/>
         <di:waypoint x="749" y="373.5"/>
       </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
@@ -160,7 +160,7 @@
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_8ZVhoXlnEDu9apcH_lnoCw</bpmn2:source>
-    <bpmn2:target>_8ZVhoXlnEDu9apcH_lnoCw</bpmn2:target>
+    <bpmn2:source>_ciFskILFEDuCKt7w0l0oNA</bpmn2:source>
+    <bpmn2:target>_ciFskILFEDuCKt7w0l0oNA</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>

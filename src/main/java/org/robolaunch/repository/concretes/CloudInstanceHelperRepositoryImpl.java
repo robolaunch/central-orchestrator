@@ -492,7 +492,7 @@ public class CloudInstanceHelperRepositoryImpl implements CloudInstanceHelperRep
     V1NodeList nodeList = coreV1Api.listNode(null, null, null, null,
         "!node-role.kubernetes.io/master, robolaunch.io/organization=" + organization.getName()
             + ", robolaunch.io/team=" + teamId
-            + ", robolaunch.io/cloud-instance=" + cloudInstanceName,
+            + ", robolaunch.io/cloud-instance-alias=" + cloudInstanceName,
         null, null, null, null, null);
     Optional<V1ObjectMeta> nodeMetadata = Optional.ofNullable(nodeList.getItems().get(0)).map(V1Node::getMetadata);
     return nodeMetadata.get().getName();

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_3OeMcH3fEDu5hIhtjEavpw" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
+<bpmn2:definitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:bpsim="http://www.bpsim.org/schemas/1.0" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:drools="http://www.jboss.org/drools" id="_2Ch1MIKqEDuAy8XfezeU8A" xsi:schemaLocation="http://www.omg.org/spec/BPMN/20100524/MODEL BPMN20.xsd http://www.jboss.org/drools drools.xsd http://www.bpsim.org/schemas/1.0 bpsim.xsd http://www.omg.org/spec/DD/20100524/DC DC.xsd http://www.omg.org/spec/DD/20100524/DI DI.xsd " exporter="jBPM Process Modeler" exporterVersion="2.0" targetNamespace="http://www.omg.org/bpmn20">
   <bpmn2:itemDefinition id="_organizationItem" structureRef="org.robolaunch.models.Organization"/>
   <bpmn2:itemDefinition id="_teamIdItem" structureRef="String"/>
   <bpmn2:itemDefinition id="_cloudInstanceNameItem" structureRef="String"/>
@@ -133,8 +133,8 @@
   <bpmn2:interface id="_760272D2-6388-4C46-B6A5-4B7452F24464_ServiceInterface" name="org.robolaunch.service.AmazonService" implementationRef="org.robolaunch.service.AmazonService">
     <bpmn2:operation id="_760272D2-6388-4C46-B6A5-4B7452F24464_ServiceOperation" name="isInstanceStopped" implementationRef="isInstanceStopped"/>
   </bpmn2:interface>
-  <bpmn2:collaboration id="_3269479E-147C-4786-A2E2-924954A95F83" name="Default Collaboration">
-    <bpmn2:participant id="_7E04FC06-6B70-4DCC-A3BD-3FE61580D26A" name="Pool Participant" processRef="stopCloudInstance"/>
+  <bpmn2:collaboration id="_452A6432-09FC-4B91-9F5D-A1554E74A834" name="Default Collaboration">
+    <bpmn2:participant id="_CA7B1BB7-6B97-48AC-8BDC-7B8D87880917" name="Pool Participant" processRef="stopCloudInstance"/>
   </bpmn2:collaboration>
   <bpmn2:process id="stopCloudInstance" drools:packageName="org.robolaunch.kogito.provider" drools:version="1.0" drools:adHoc="false" name="stopCloudInstance" isExecutable="true" processType="Public">
     <bpmn2:property id="organization" itemSubjectRef="_organizationItem" name="organization"/>
@@ -2637,7 +2637,7 @@ kcontext.setVariable("status", "Stopping");</bpmn2:script>
         </bpsim:Scenario>
       </bpsim:BPSimData>
     </bpmn2:extensionElements>
-    <bpmn2:source>_3OeMcH3fEDu5hIhtjEavpw</bpmn2:source>
-    <bpmn2:target>_3OeMcH3fEDu5hIhtjEavpw</bpmn2:target>
+    <bpmn2:source>_2Ch1MIKqEDuAy8XfezeU8A</bpmn2:source>
+    <bpmn2:target>_2Ch1MIKqEDuAy8XfezeU8A</bpmn2:target>
   </bpmn2:relationship>
 </bpmn2:definitions>

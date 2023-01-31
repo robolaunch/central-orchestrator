@@ -11,6 +11,7 @@ public class RequestLaunchManager implements Serializable {
    private String bufferName;
    private Boolean federated;
    private Boolean vdiEnabled;
+   private String fleetName;
 
    private RequestCreateFederatedLaunchManager federatedLaunchManager;
 
@@ -88,4 +89,13 @@ public class RequestLaunchManager implements Serializable {
    public void setBufferName(String bufferName) {
       this.bufferName = bufferName;
    }
+
+   public String getFleetName() {
+      return fleetName;
+   }
+
+   public void setFleetName(String fleetName) {
+      this.fleetName = fleetName;
+   }
+
 }

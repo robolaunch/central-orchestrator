@@ -442,7 +442,7 @@ public class KubernetesService {
       kubernetesLogger.info("Got robot status");
       return robot;
     } catch (Exception e) {
-      kubernetesLogger.error("Error occured while getting robot status", e);
+      kubernetesLogger.error("Error occured while getting robot", e);
       return robot;
     }
 
